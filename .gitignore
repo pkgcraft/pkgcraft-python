@@ -1,0 +1,17 @@
+# rust
+Cargo.lock
+/target
+
+# python
+*.so
+/build
+/dist
+/*.egg-info
+
+# unit testing / coverage
+.coverage*
+/htmlcov
+.tox
+
+# distutils/setuptools
+MANIFEST
