@@ -1,2 +1,3 @@
-include Cargo.toml setup.py pyproject.toml README.md
+include Cargo.toml pyproject.toml README.md tox.ini
 recursive-include src *
+recursive-include tests *
