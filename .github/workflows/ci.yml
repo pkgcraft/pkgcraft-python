@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+    branches-ignore: [deploy]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: pkgcraft-python
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ['3.8', '3.9', '3.10']
+        experimental: [false]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        path: pkgcraft-python
+
+    - name: Checkout pkgcraft
+      uses: actions/checkout@v2
+      with:
+        repository: pkgcraft/pkgcraft
+        path: pkgcraft
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Set up rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: 1.56.0
+        profile: minimal
+        override: true
+        components: rustfmt
+
+    - name: Set up rust cache
+      uses: Swatinem/rust-cache@v1
+      with:
+        working-directory: pkgcraft-python
+        cache-on-failure: true
+
+    - name: Install dependencies
+      run: pip install maturin pytest
+
+    - name: Build wheel
+      run: |
+        # remove any erroneously cached wheels
+        rm -rf target/wheels
+        maturin build --no-sdist -i python${{ matrix.python-version }}
+
+    - name: Install wheel
+      run: |
+        pip install target/wheels/*.whl
+        # don't cache wheels via rust-cache
+        rm -rf target/wheels
+
+    - name: Test with pytest
+      # forcibly enable pytest colors
+      env:
+        PY_COLORS: 1
+      run: pytest -v
+
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: pkgcraft-python
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        path: pkgcraft-python
+
+    - name: Checkout pkgcraft
+      uses: actions/checkout@v2
+      with:
+        repository: pkgcraft/pkgcraft
+        path: pkgcraft
+
+    - name: Set up rust toolchain
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: 1.56.0
+        profile: minimal
+        override: true
+        components: clippy, rustfmt
+
+    - name: Run rustfmt
+      run: cargo fmt --all -- --check
+
+    - name: Set up rust cache
+      uses: Swatinem/rust-cache@v1
+      with:
+        working-directory: pkgcraft-python
+        cache-on-failure: true
+
+    - name: Run clippy
+      uses: actions-rs/clippy-check@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        # workaround since working-directory isn't supported yet
+        # https://github.com/actions-rs/clippy-check/issues/28
+        args: --manifest-path pkgcraft-python/Cargo.toml
