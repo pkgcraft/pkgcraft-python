@@ -1,9 +1,9 @@
 use std::{error, fmt};
 
-use pyo3::{PyErr, create_exception};
 use pyo3::basic::CompareOp;
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
+use pyo3::{create_exception, PyErr};
 
 use pkgcraft::{atom, eapi};
 
@@ -103,12 +103,12 @@ impl Atom {
 
     fn __richcmp__(&self, other: PyRef<Atom>, op: CompareOp) -> bool {
         match op {
-          CompareOp::Eq => self.0 == other.0,
-          CompareOp::Ne => self.0 != other.0,
-          CompareOp::Lt => self.0 < other.0,
-          CompareOp::Gt => self.0 > other.0,
-          CompareOp::Le => self.0 <= other.0,
-          CompareOp::Ge => self.0 >= other.0,
+            CompareOp::Eq => self.0 == other.0,
+            CompareOp::Ne => self.0 != other.0,
+            CompareOp::Lt => self.0 < other.0,
+            CompareOp::Gt => self.0 > other.0,
+            CompareOp::Le => self.0 <= other.0,
+            CompareOp::Ge => self.0 >= other.0,
         }
     }
 }
