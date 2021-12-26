@@ -3,12 +3,27 @@ name: audit
 on:
   schedule:
     - cron: '0 0 * * 0'
+  push:
+    branches: [audit]
 
 jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout pkgcraft
+        uses: actions/checkout@v2
+        with:
+          repository: pkgcraft/pkgcraft
+          path: pkgcraft
+
+      # hack for missing working-directory option
+      # https://github.com/actions-rs/audit-check/issues/194
+      - name: Move pkgcraft into expected location
+        run: mv pkgcraft ../
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - uses: actions-rs/audit-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

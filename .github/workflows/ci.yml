@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches-ignore: [deploy]
+    branches-ignore: [audit,deploy]
   pull_request:
     branches: [main]
 
