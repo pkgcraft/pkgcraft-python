@@ -52,25 +52,13 @@ jobs:
         cache-on-failure: true
 
     - name: Install dependencies
-      run: pip install maturin pytest
+      run: pip install tox
 
-    - name: Build wheel
+    - name: Run tests via tox
       run: |
-        # remove any erroneously cached wheels
-        rm -rf target/wheels
-        maturin build --no-sdist -i python${{ matrix.python-version }}
-
-    - name: Install wheel
-      run: |
-        pip install target/wheels/*.whl
+        tox -e python
         # don't cache wheels via rust-cache
         rm -rf target/wheels
-
-    - name: Test with pytest
-      # forcibly enable pytest colors
-      env:
-        PY_COLORS: 1
-      run: pytest -v
 
   lint:
     runs-on: ubuntu-latest
