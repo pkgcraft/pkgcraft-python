@@ -67,10 +67,7 @@ impl Atom {
 
     #[getter]
     fn use_deps(&self) -> Option<Vec<String>> {
-        match &self.0.use_deps {
-            Some(use_deps) => Some(use_deps.clone()),
-            None => None,
-        }
+        self.0.use_deps.as_ref().cloned()
     }
 
     #[getter]
