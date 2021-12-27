@@ -5,7 +5,7 @@ use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::{create_exception, PyErr};
 
-use pkgcraft::{atom, eapi};
+use pkgcraft::atom;
 
 #[derive(Debug)]
 struct Error(pkgcraft::Error);
@@ -33,11 +33,7 @@ struct Atom(atom::Atom);
 impl Atom {
     #[new]
     fn new(s: &str, eapi: Option<&str>) -> PyResult<Self> {
-        let eapi = match eapi {
-            Some(e) => eapi::get_eapi(e).map_err(Error)?,
-            None => &eapi::EAPI_PKGCRAFT,
-        };
-        Ok(Self(atom::parse::dep(s, eapi).map_err(Error)?))
+        Ok(Self(atom::Atom::new(s, eapi).map_err(Error)?))
     }
 
     #[getter]
