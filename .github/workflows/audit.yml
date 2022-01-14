@@ -10,14 +10,22 @@ jobs:
   audit:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout scallop
+        uses: actions/checkout@v2
+        with:
+          repository: pkgcraft/scallop
+          path: scallop
+          submodules: true
+
+      - name: Move scallop into expected location
+        run: mv scallop ../
+
       - name: Checkout pkgcraft
         uses: actions/checkout@v2
         with:
           repository: pkgcraft/pkgcraft
           path: pkgcraft
 
-      # hack for missing working-directory option
-      # https://github.com/actions-rs/audit-check/issues/194
       - name: Move pkgcraft into expected location
         run: mv pkgcraft ../
 
