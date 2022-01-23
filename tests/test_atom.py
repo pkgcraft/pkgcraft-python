@@ -49,9 +49,13 @@ class TestAtom:
 
         for s in (
                 '=cat/pkg-0 < =cat/pkg-1',
-                '=cat/pkg-1_rc < =cat/pkg-1',
-                '=cat/pkg-1 < =cat/pkg-1_p',
+                '=cat/pkg-0 <= =cat/pkg-1',
+                '=cat/pkg-1 <= =cat/pkg-1-r0',
                 '=cat/pkg-1 == =cat/pkg-1-r0',
+                '=cat/pkg-1 >= =cat/pkg-1-r0',
+                '=cat/pkg-1.0 >= =cat/pkg-1',
+                '=cat/pkg-1.0 > =cat/pkg-1',
+                '=cat/pkg-1.0 != =cat/pkg-1',
                 ):
             a, op, b = s.split()
             op_func = ops[op]
