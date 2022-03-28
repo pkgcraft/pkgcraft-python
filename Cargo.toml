@@ -17,4 +17,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pkgcraft = { path = "../pkgcraft", version = "0.0.2" }
-pyo3 = { version = "0.15", features = ["extension-module"] }
+pyo3 = { version = "0.16", features = ["extension-module"] }
