@@ -37,28 +37,28 @@ impl Atom {
     }
 
     #[getter]
-    fn category(&self) -> &String {
+    fn category(&self) -> &str {
         &self.0.category
     }
 
     #[getter]
-    fn package(&self) -> &String {
+    fn package(&self) -> &str {
         &self.0.package
     }
 
     #[getter]
-    fn slot(&self) -> Option<&String> {
-        self.0.slot.as_ref()
+    fn slot(&self) -> Option<&str> {
+        self.0.slot()
     }
 
     #[getter]
-    fn subslot(&self) -> Option<&String> {
-        self.0.subslot.as_ref()
+    fn subslot(&self) -> Option<&str> {
+        self.0.subslot()
     }
 
     #[getter]
-    fn slot_op(&self) -> Option<&String> {
-        self.0.slot_op.as_ref()
+    fn slot_op(&self) -> Option<&str> {
+        self.0.slot_op()
     }
 
     #[getter]
@@ -67,8 +67,8 @@ impl Atom {
     }
 
     #[getter]
-    fn repo(&self) -> Option<&String> {
-        self.0.repo.as_ref()
+    fn repo(&self) -> Option<&str> {
+        self.0.repo()
     }
 
     #[getter]
