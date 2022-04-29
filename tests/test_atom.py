@@ -2,7 +2,7 @@ import operator
 
 import pytest
 
-from pkgcraft import Atom
+from pkgcraft import Atom, PkgcraftError
 
 
 class TestAtom:
@@ -36,6 +36,12 @@ class TestAtom:
         assert a.cpv == 'cat/pkg-1'
         assert str(a) == '=cat/pkg-1:0/2=[use]::repo'
         assert repr(a).startswith("<Atom '=cat/pkg-1:0/2=[use]::repo' at 0x")
+
+    def test_invalid(self):
+        with pytest.raises(PkgcraftError, match='invalid atom'):
+            Atom('invalid')
+        with pytest.raises(PkgcraftError, match='invalid atom'):
+            Atom('cat-1')
 
     def test_cmp(self):
         ops = {

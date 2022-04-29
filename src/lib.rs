@@ -18,7 +18,12 @@ impl fmt::Display for Error {
     }
 }
 
-create_exception!(pkgcraft, PkgcraftError, PyException);
+create_exception!(
+    pkgcraft,
+    PkgcraftError,
+    PyException,
+    "Generic pkgcraft error."
+);
 
 impl From<Error> for PyErr {
     fn from(err: Error) -> PyErr {
@@ -107,7 +112,8 @@ impl Atom {
 }
 
 #[pymodule]
-fn pkgcraft(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn pkgcraft(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Atom>()?;
+    m.add("PkgcraftError", py.get_type::<PkgcraftError>())?;
     Ok(())
 }
