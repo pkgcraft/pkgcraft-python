@@ -9,13 +9,11 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ['3.9', '3.10']
         rust-version: ['1.59.0', 'stable']
-        experimental: [false]
 
     steps:
     - name: Checkout scallop
