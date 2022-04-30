@@ -31,6 +31,6 @@ def test_cpv():
     assert a.fullver == '1'
 
     # invalid
-    for s in ('cat', 'cat/pkg'):
+    for s in ('cat', 'cat/pkg', '=cat/pkg-1'):
         with pytest.raises(PkgcraftError, match=f'invalid cpv: "{s}"'):
             parse.cpv(s)
