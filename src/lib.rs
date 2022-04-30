@@ -147,6 +147,14 @@ impl Repo {
     fn id(&self) -> &str {
         self.0.id()
     }
+
+    fn __str__(&self) -> PyResult<String> {
+        Ok(self.0.id().to_string())
+    }
+
+    fn __repr__(&self) -> PyResult<String> {
+        Ok(format!("<Repo '{}' at {:p}>", self.0, self))
+    }
 }
 
 #[pymodule]
