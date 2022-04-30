@@ -1,11 +1,13 @@
 use std::{error, fmt};
 
+use camino::Utf8Path;
 use pyo3::basic::CompareOp;
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::{create_exception, PyErr};
 
-use pkgcraft::{atom, config};
+use pkgcraft::repo::Repo as RepoTrait;
+use pkgcraft::{atom, config, repo};
 
 #[derive(Debug)]
 struct Error(pkgcraft::Error);
@@ -124,10 +126,34 @@ impl Config {
     }
 }
 
+#[pyclass]
+struct Repo(repo::Repository);
+
+#[pymethods]
+impl Repo {
+    #[new]
+    #[args(id = "None")]
+    fn new(path: &str, id: Option<&str>) -> PyResult<Self> {
+        let path = Utf8Path::new(path);
+        let id = match id {
+            Some(id) => id,
+            None => path.as_str(),
+        };
+        let (_format, repo) = repo::Repository::from_path(id, path).map_err(Error)?;
+        Ok(Self(repo))
+    }
+
+    #[getter]
+    fn id(&self) -> &str {
+        self.0.id()
+    }
+}
+
 #[pymodule]
 fn pkgcraft(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Atom>()?;
     m.add_class::<Config>()?;
+    m.add_class::<Repo>()?;
     m.add("PkgcraftError", py.get_type::<PkgcraftError>())?;
     Ok(())
 }
