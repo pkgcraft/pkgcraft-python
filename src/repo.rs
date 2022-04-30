@@ -6,7 +6,7 @@ use pyo3::prelude::*;
 use crate::Error;
 
 #[pyclass]
-pub(crate) struct Repo(repo::Repository);
+pub(super) struct Repo(repo::Repository);
 
 #[pymethods]
 impl Repo {

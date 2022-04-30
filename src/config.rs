@@ -4,7 +4,7 @@ use pyo3::prelude::*;
 use crate::Error;
 
 #[pyclass]
-pub(crate) struct Config(config::Config);
+pub(super) struct Config(config::Config);
 
 #[pymethods]
 impl Config {

@@ -2,10 +2,11 @@ use std::{error, fmt};
 
 use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
-use pyo3::{create_exception, PyErr};
+use pyo3::{create_exception, wrap_pymodule, PyErr};
 
 mod atom;
 mod config;
+mod parse;
 mod repo;
 
 #[derive(Debug)]
@@ -33,7 +34,8 @@ impl From<Error> for PyErr {
 }
 
 #[pymodule]
-fn pkgcraft(py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn pkgcraft(py: Python, m: &PyModule) -> PyResult<()> {
+    m.add_wrapped(wrap_pymodule!(parse::module))?;
     m.add_class::<atom::Atom>()?;
     m.add_class::<config::Config>()?;
     m.add_class::<repo::Repo>()?;

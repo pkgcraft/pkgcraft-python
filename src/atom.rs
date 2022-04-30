@@ -5,7 +5,7 @@ use pyo3::prelude::*;
 use crate::Error;
 
 #[pyclass]
-pub(crate) struct Atom(atom::Atom);
+pub(crate) struct Atom(pub(crate) atom::Atom);
 
 #[pymethods]
 impl Atom {
