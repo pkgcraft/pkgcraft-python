@@ -5,7 +5,7 @@ use pyo3::exceptions::PyException;
 use pyo3::prelude::*;
 use pyo3::{create_exception, PyErr};
 
-use pkgcraft::atom;
+use pkgcraft::{atom, config};
 
 #[derive(Debug)]
 struct Error(pkgcraft::Error);
@@ -111,9 +111,23 @@ impl Atom {
     }
 }
 
+#[pyclass]
+struct Config(config::Config);
+
+#[pymethods]
+impl Config {
+    #[staticmethod]
+    fn load() -> PyResult<Self> {
+        Ok(Self(
+            config::Config::new("pkgcraft", "", false).map_err(Error)?,
+        ))
+    }
+}
+
 #[pymodule]
 fn pkgcraft(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Atom>()?;
+    m.add_class::<Config>()?;
     m.add("PkgcraftError", py.get_type::<PkgcraftError>())?;
     Ok(())
 }
