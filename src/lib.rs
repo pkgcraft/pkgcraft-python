@@ -37,6 +37,7 @@ impl From<Error> for PyErr {
 fn pkgcraft(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pymodule!(parse::module))?;
     m.add_class::<atom::Atom>()?;
+    m.add_class::<atom::Version>()?;
     m.add_class::<config::Config>()?;
     m.add_class::<repo::Repo>()?;
     m.add("PkgcraftError", py.get_type::<PkgcraftError>())?;

@@ -72,7 +72,37 @@ impl Atom {
         Ok(format!("<Atom '{}' at {:p}>", self.0, self))
     }
 
-    fn __richcmp__(&self, other: PyRef<Atom>, op: CompareOp) -> bool {
+    fn __richcmp__(&self, other: PyRef<Self>, op: CompareOp) -> bool {
+        match op {
+            CompareOp::Eq => self.0 == other.0,
+            CompareOp::Ne => self.0 != other.0,
+            CompareOp::Lt => self.0 < other.0,
+            CompareOp::Gt => self.0 > other.0,
+            CompareOp::Le => self.0 <= other.0,
+            CompareOp::Ge => self.0 >= other.0,
+        }
+    }
+}
+
+#[pyclass]
+pub(crate) struct Version(pub(crate) atom::Version);
+
+#[pymethods]
+impl Version {
+    #[new]
+    fn new(s: &str) -> PyResult<Self> {
+        Ok(Self(atom::parse::version(s).map_err(Error)?))
+    }
+
+    fn __str__(&self) -> PyResult<String> {
+        Ok(format!("{}", self.0))
+    }
+
+    fn __repr__(&self) -> PyResult<String> {
+        Ok(format!("<Version '{}' at {:p}>", self.0, self))
+    }
+
+    fn __richcmp__(&self, other: PyRef<Self>, op: CompareOp) -> bool {
         match op {
             CompareOp::Eq => self.0 == other.0,
             CompareOp::Ne => self.0 != other.0,
