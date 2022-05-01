@@ -25,7 +25,7 @@ class TestAtom:
         assert a.slot_op is None
         assert a.use_deps is None
         assert a.repo is None
-        assert a.fullver is None
+        assert a.version is None
         assert a.key == 'cat/pkg'
         assert a.cpv == 'cat/pkg'
         assert str(a) == 'cat/pkg'
@@ -40,7 +40,7 @@ class TestAtom:
         assert a.slot_op == '='
         assert a.use_deps == ['use']
         assert a.repo == 'repo'
-        assert a.fullver == '1'
+        assert a.version == '1'
         assert a.key == 'cat/pkg'
         assert a.cpv == 'cat/pkg-1'
         assert str(a) == '=cat/pkg-1:0/2=[use]::repo'

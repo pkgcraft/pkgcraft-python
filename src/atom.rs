@@ -50,8 +50,8 @@ impl Atom {
     }
 
     #[getter]
-    fn fullver(&self) -> Option<&str> {
-        self.0.fullver()
+    fn version(&self) -> Option<&str> {
+        self.0.version().map(|v| v.as_str())
     }
 
     #[getter]

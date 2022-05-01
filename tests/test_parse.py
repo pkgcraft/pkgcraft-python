@@ -41,7 +41,7 @@ def test_cpv():
     a = parse.cpv('cat/pkg-1')
     assert a.category == 'cat'
     assert a.package == 'pkg'
-    assert a.fullver == '1'
+    assert a.version == '1'
 
     # invalid
     for s in ('cat', 'cat/pkg', '=cat/pkg-1'):
