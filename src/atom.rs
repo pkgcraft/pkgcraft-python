@@ -16,12 +16,12 @@ impl Atom {
 
     #[getter]
     fn category(&self) -> &str {
-        &self.0.category
+        self.0.category()
     }
 
     #[getter]
     fn package(&self) -> &str {
-        &self.0.package
+        self.0.package()
     }
 
     #[getter]
@@ -40,8 +40,8 @@ impl Atom {
     }
 
     #[getter]
-    fn use_deps(&self) -> Option<Vec<String>> {
-        self.0.use_deps.as_ref().cloned()
+    fn use_deps(&self) -> Option<Vec<&str>> {
+        self.0.use_deps()
     }
 
     #[getter]
