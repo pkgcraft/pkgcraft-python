@@ -50,7 +50,7 @@ impl Atom {
     }
 
     #[getter]
-    fn fullver(&self) -> Option<String> {
+    fn fullver(&self) -> Option<&str> {
         self.0.fullver()
     }
 
