@@ -96,9 +96,9 @@ class EbuildRepo:
                     f.write(f'{p.eapi}\n')
 
     def create_ebuild(self, cpvstr, data=None, **kwargs):
-        #from pkgcore.ebuild import cpv as cpv_mod
-        #cpv = cpv_mod.VersionedCPV(cpvstr)
-        ebuild_dir = pjoin(self.path, cpv.category, cpv.package)
+        from pkgcraft import Atom
+        atom = Atom(cpvstr)
+        ebuild_dir = pjoin(self.path, atom.category, atom.package)
         os.makedirs(ebuild_dir, exist_ok=True)
 
         # use defaults for some ebuild metadata if unset
@@ -108,7 +108,7 @@ class EbuildRepo:
         homepage = kwargs.pop('homepage', 'https://github.com/pkgcore/pkgcheck')
         license = kwargs.pop('license', 'blank')
 
-        ebuild_path = pjoin(ebuild_dir, f'{cpv.package}-{cpv.fullver}.ebuild')
+        ebuild_path = pjoin(ebuild_dir, f'{atom.package}-{atom.version}.ebuild')
         with open(ebuild_path, 'w') as f:
             if self.repo_id == 'gentoo':
                 f.write(textwrap.dedent(f"""\
