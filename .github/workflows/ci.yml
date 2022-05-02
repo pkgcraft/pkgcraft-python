@@ -72,10 +72,13 @@ jobs:
       run: pip install tox
 
     - name: Run tests via tox
-      run: |
-        tox -e python
-        # don't cache wheels via rust-cache
-        rm -rf target/wheels
+      run: tox -e python
+
+    - name: Run benchmarks via tox
+      run: tox -e bench
+
+    # remove wheels so they aren't cached
+    - run: rm -rf target/wheels
 
   lint:
     runs-on: ubuntu-latest
