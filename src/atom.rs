@@ -51,7 +51,12 @@ impl Atom {
 
     #[getter]
     fn version(&self) -> Option<&str> {
-        self.0.version().map(|v| v.as_str())
+        self.0.version().map(|x| x.as_str())
+    }
+
+    #[getter]
+    fn revision(&self) -> Option<&str> {
+        self.0.revision().map(|x| x.as_str())
     }
 
     #[getter]

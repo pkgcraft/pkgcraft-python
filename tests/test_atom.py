@@ -26,13 +26,14 @@ class TestAtom:
         assert a.use_deps is None
         assert a.repo is None
         assert a.version is None
+        assert a.revision is None
         assert a.key == 'cat/pkg'
         assert a.cpv == 'cat/pkg'
         assert str(a) == 'cat/pkg'
         assert repr(a).startswith("<Atom 'cat/pkg' at 0x")
 
     def test_full(self):
-        a = Atom('=cat/pkg-1:0/2=[a,b,c]::repo')
+        a = Atom('=cat/pkg-1-r2:0/2=[a,b,c]::repo')
         assert a.category == 'cat'
         assert a.package == 'pkg'
         assert a.slot == '0'
@@ -40,11 +41,12 @@ class TestAtom:
         assert a.slot_op == '='
         assert a.use_deps == ['a', 'b', 'c']
         assert a.repo == 'repo'
-        assert a.version == '1'
+        assert a.version == '1-r2'
+        assert a.revision == '2'
         assert a.key == 'cat/pkg'
-        assert a.cpv == 'cat/pkg-1'
-        assert str(a) == '=cat/pkg-1:0/2=[a,b,c]::repo'
-        assert repr(a).startswith("<Atom '=cat/pkg-1:0/2=[a,b,c]::repo' at 0x")
+        assert a.cpv == 'cat/pkg-1-r2'
+        assert str(a) == '=cat/pkg-1-r2:0/2=[a,b,c]::repo'
+        assert repr(a).startswith("<Atom '=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
 
     def test_invalid(self):
         for s in ('invalid', 'cat-1'):
