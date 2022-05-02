@@ -66,6 +66,13 @@ class TestAtom:
             op_func = OperatorMap[op]
             assert op_func(Atom(a), Atom(b)), f'failed comparison: {s}'
 
+        for (unsorted, expected) in (
+                (("=a/b-1_p2", "=a/b-1_p1", "=a/b-1_p0"), ("=a/b-1_p0", "=a/b-1_p1", "=a/b-1_p2")),
+                (("=a/b-1-r2", "=a/b-1-r1", "=a/b-1-r0"), ("=a/b-1-r0", "=a/b-1-r1", "=a/b-1-r2")),
+                ):
+            atoms = sorted(Atom(s) for s in unsorted)
+            assert tuple(map(str, atoms)) == expected
+
 
 class TestVersion:
 
@@ -88,3 +95,10 @@ class TestVersion:
             a, op, b = s.split()
             op_func = OperatorMap[op]
             assert op_func(Version(a), Version(b)), f'failed comparison: {s}'
+
+        for (unsorted, expected) in (
+                (("1_p2", "1_p1", "1_p0"), ("1_p0", "1_p1", "1_p2")),
+                (("1-r2", "1-r1", "1-r0"), ("1-r0", "1-r1", "1-r2")),
+                ):
+            versions = sorted(Version(s) for s in unsorted)
+            assert tuple(map(str, versions)) == expected
