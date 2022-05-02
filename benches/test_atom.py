@@ -26,3 +26,10 @@ def test_bench_atom_static(benchmark, lib, func):
 @pytest.mark.parametrize("lib,func", atom_funcs)
 def test_bench_atom_random(benchmark, lib, func):
     benchmark(random_pkg, func)
+
+# portage doesn't appear to support Atom object comparisons
+@pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_atom), ('pkgcore', pkgcore_atom)))
+def test_bench_atom_sorted(benchmark, lib, func):
+    pkgs = [func(f'=cat/pkg-{v}-r1:2/3=[a,b,c]') for v in reversed(range(100))]
+    result = benchmark(sorted, pkgs)
+    assert result == list(reversed(pkgs))
