@@ -33,6 +33,7 @@ impl From<Error> for PyErr {
     }
 }
 
+/// Python library for pkgcraft.
 #[pymodule]
 fn pkgcraft(py: Python, m: &PyModule) -> PyResult<()> {
     m.add_wrapped(wrap_pymodule!(parse::module))?;
