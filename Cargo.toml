@@ -16,6 +16,5 @@ name = "pkgcraft"
 crate-type = ["cdylib"]
 
 [dependencies]
-camino = "1.0.7"
 pkgcraft = { path = "../pkgcraft", version = "0.0.2" }
 pyo3 = { version = "0.16", features = ["extension-module"] }
