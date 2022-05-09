@@ -6,7 +6,7 @@ Python bindings for pkgcraft.
 
 ## Development
 
-Requirements: >=python-3.8 and [tox](https://pypi.org/project/tox/)
+Requirements: >=rust-1.59, >=python-3.8, and [tox](https://pypi.org/project/tox/)
 
 For development purposes, it's easiest to build and test using tox:
 
