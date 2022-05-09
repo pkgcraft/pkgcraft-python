@@ -38,6 +38,10 @@ def test_bench_atom_sorted(benchmark, lib, func):
     assert result == list(reversed(pkgs))
 
 @pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_version),))
+def test_bench_version_static(benchmark, lib, func):
+    benchmark(func, '1.2.3_alpha4-r5')
+
+@pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_version),))
 def test_bench_version_sorted(benchmark, lib, func):
     pkgs = [func(str(v)) for v in reversed(range(100))]
     result = benchmark(sorted, pkgs)
