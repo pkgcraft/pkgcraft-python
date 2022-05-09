@@ -16,8 +16,8 @@ git clone https://github.com/pkgcraft/pkgcraft.git
 git clone https://github.com/pkgcraft/pkgcraft-python.git
 
 cd pkgcraft-python
-# build the bindings
+# build and test
 tox -e python
-# benchmark the bindings
+# benchmark
 tox -e bench
 ```
