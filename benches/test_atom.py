@@ -3,7 +3,10 @@ import os
 
 import pytest
 
-from pkgcraft import Atom as pkgcraft_atom
+from pkgcraft import (
+    Atom as pkgcraft_atom,
+    Version as pkgcraft_version,
+)
 from pkgcore.ebuild.atom import atom as pkgcore_atom
 from portage.dep import Atom as portage_atom
 
@@ -31,5 +34,11 @@ def test_bench_atom_random(benchmark, lib, func):
 @pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_atom), ('pkgcore', pkgcore_atom)))
 def test_bench_atom_sorted(benchmark, lib, func):
     pkgs = [func(f'=cat/pkg-{v}-r1:2/3=[a,b,c]') for v in reversed(range(100))]
+    result = benchmark(sorted, pkgs)
+    assert result == list(reversed(pkgs))
+
+@pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_version),))
+def test_bench_version_sorted(benchmark, lib, func):
+    pkgs = [func(str(v)) for v in reversed(range(100))]
     result = benchmark(sorted, pkgs)
     assert result == list(reversed(pkgs))
