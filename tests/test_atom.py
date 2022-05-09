@@ -16,7 +16,8 @@ OperatorMap = {
 
 class TestAtom:
 
-    def test_no_version(self):
+    def test_new(self):
+        # no version
         a = Atom('cat/pkg')
         assert a.category == 'cat'
         assert a.package == 'pkg'
@@ -32,7 +33,7 @@ class TestAtom:
         assert str(a) == 'cat/pkg'
         assert repr(a).startswith("<Atom 'cat/pkg' at 0x")
 
-    def test_full(self):
+        # all fields
         a = Atom('=cat/pkg-1-r2:0/2=[a,b,c]::repo')
         assert a.category == 'cat'
         assert a.package == 'pkg'
@@ -77,6 +78,25 @@ class TestAtom:
 
 
 class TestVersion:
+
+    def test_creation(self):
+        # no revision
+        v = Version('1')
+        assert v.revision is None
+        assert str(v) == '1'
+        assert repr(v).startswith("<Version '1' at 0x")
+
+        # revisioned
+        v = Version('1-r1')
+        assert v.revision == '1'
+        assert str(v) == '1-r1'
+        assert repr(v).startswith("<Version '1-r1' at 0x")
+
+        # explicit '0' revision
+        v = Version('1-r0')
+        assert v.revision == '0'
+        assert str(v) == '1-r0'
+        assert repr(v).startswith("<Version '1-r0' at 0x")
 
     def test_invalid(self):
         for s in ('-1', '1a1'):

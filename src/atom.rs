@@ -99,6 +99,11 @@ impl Version {
         Ok(Self(atom::parse::version(s).map_err(Error)?))
     }
 
+    #[getter]
+    fn revision(&self) -> Option<&str> {
+        self.0.revision().map(|x| x.as_str())
+    }
+
     fn __str__(&self) -> PyResult<String> {
         Ok(format!("{}", self.0))
     }
