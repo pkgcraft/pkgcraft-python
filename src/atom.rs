@@ -1,7 +1,4 @@
-use std::collections::hash_map::DefaultHasher;
-use std::hash::{Hash, Hasher};
-
-use pkgcraft::atom;
+use pkgcraft::{atom, utils::hash};
 use pyo3::basic::CompareOp;
 use pyo3::prelude::*;
 
@@ -73,9 +70,7 @@ impl Atom {
     }
 
     fn __hash__(&self) -> Result<isize, PyErr> {
-        let mut hasher = DefaultHasher::new();
-        self.0.hash(&mut hasher);
-        Ok(hasher.finish() as isize)
+        Ok(hash(&self.0) as isize)
     }
 
     fn __str__(&self) -> PyResult<String> {
@@ -114,9 +109,7 @@ impl Version {
     }
 
     fn __hash__(&self) -> Result<isize, PyErr> {
-        let mut hasher = DefaultHasher::new();
-        self.0.hash(&mut hasher);
-        Ok(hasher.finish() as isize)
+        Ok(hash(&self.0) as isize)
     }
 
     fn __str__(&self) -> PyResult<String> {
