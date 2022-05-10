@@ -1,3 +1,6 @@
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
+
 use pkgcraft::atom;
 use pyo3::basic::CompareOp;
 use pyo3::prelude::*;
@@ -69,6 +72,12 @@ impl Atom {
         self.0.cpv()
     }
 
+    fn __hash__(&self) -> Result<isize, PyErr> {
+        let mut hasher = DefaultHasher::new();
+        self.0.hash(&mut hasher);
+        Ok(hasher.finish() as isize)
+    }
+
     fn __str__(&self) -> PyResult<String> {
         Ok(format!("{}", self.0))
     }
@@ -102,6 +111,12 @@ impl Version {
     #[getter]
     fn revision(&self) -> Option<&str> {
         self.0.revision().map(|x| x.as_str())
+    }
+
+    fn __hash__(&self) -> Result<isize, PyErr> {
+        let mut hasher = DefaultHasher::new();
+        self.0.hash(&mut hasher);
+        Ok(hasher.finish() as isize)
     }
 
     fn __str__(&self) -> PyResult<String> {

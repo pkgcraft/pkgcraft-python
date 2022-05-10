@@ -76,6 +76,26 @@ class TestAtom:
             atoms = sorted(Atom(s) for s in unsorted)
             assert tuple(map(str, atoms)) == expected
 
+    def test_hash(self):
+        for equal_versions in (
+                ('0', '0-r0', '0-r00'),
+                ('1', '01', '001'),
+                ('1.0', '1.00'),
+                ('0001.1', '1.1'),
+                ('0_beta1', '0_beta01', '0_beta001'),
+                ('1.0.2', '1.0.2-r0', '1.000.2', '1.00.2-r0'),
+                ):
+            s = {Atom(f'=cat/pkg-{x}') for x in equal_versions}
+            assert len(s) == 1
+
+        for unequal_versions in (
+                ('0', '1'),
+                ('1.01.2', '1.010.02'),
+                ('1.0', '1'),
+                ('0.1', '0.01', '0.001'),
+                ):
+            s = {Atom(f'=cat/pkg-{x}') for x in unequal_versions}
+            assert len(s) == len(unequal_versions)
 
 class TestVersion:
 
@@ -124,3 +144,24 @@ class TestVersion:
                 ):
             versions = sorted(Version(s) for s in unsorted)
             assert tuple(map(str, versions)) == expected
+
+    def test_hash(self):
+        for equal_versions in (
+                ('0', '0-r0', '0-r00'),
+                ('1', '01', '001'),
+                ('1.0', '1.00'),
+                ('0001.1', '1.1'),
+                ('0_beta1', '0_beta01', '0_beta001'),
+                ('1.0.2', '1.0.2-r0', '1.000.2', '1.00.2-r0'),
+                ):
+            s = {Version(x) for x in equal_versions}
+            assert len(s) == 1
+
+        for unequal_versions in (
+                ('0', '1'),
+                ('1.01.2', '1.010.02'),
+                ('1.0', '1'),
+                ('0.1', '0.01', '0.001'),
+                ):
+            s = {Version(x) for x in unequal_versions}
+            assert len(s) == len(unequal_versions)
