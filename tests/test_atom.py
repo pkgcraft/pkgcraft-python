@@ -35,7 +35,7 @@ class TestAtom:
         assert repr(a).startswith("<Atom 'cat/pkg' at 0x")
 
         # all fields
-        a = Atom('=cat/pkg-1-r2:0/2=[a,b,c]::repo')
+        a = Atom('=cat/pkg-1-r2:0/2=[a,b,c]::repo', 'pkgcraft')
         assert a.category == 'cat'
         assert a.package == 'pkg'
         assert a.slot == '0'
