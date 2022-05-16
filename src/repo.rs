@@ -1,11 +1,11 @@
 use std::sync::Arc;
 
 use pkgcraft::repo;
-use pkgcraft::repo::Repo as RepoTrait;
+use pkgcraft::repo::Repository;
 use pyo3::prelude::*;
 
 #[pyclass]
-pub(super) struct Repo(pub(super) Arc<repo::Repository>);
+pub(super) struct Repo(pub(super) Arc<repo::Repo>);
 
 #[pymethods]
 impl Repo {
