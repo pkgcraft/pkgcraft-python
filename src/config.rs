@@ -19,10 +19,10 @@ impl Config {
     }
 
     #[args(id = "None")]
-    fn add_repo(&mut self, path: &str, id: Option<&str>) -> PyResult<()> {
+    fn add_repo(&mut self, path: &str, id: Option<&str>) -> PyResult<Repo> {
         let id = id.unwrap_or(path);
-        self.0.repos.add(id, path).map_err(Error)?;
-        Ok(())
+        let repo = self.0.repos.add(id, path).map_err(Error)?;
+        Ok(Repo(repo))
     }
 
     #[getter]

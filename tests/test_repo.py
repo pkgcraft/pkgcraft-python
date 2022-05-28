@@ -8,15 +8,13 @@ class TestRepo:
         config = Config.load()
 
         # default
-        config.add_repo(path)
-        repo = config.repos[path]
+        repo = config.add_repo(path)
         assert repo.id == path
         assert str(repo) == path
         assert repr(repo).startswith(f"<Repo '{path}' at 0x")
 
         # custom
-        config.add_repo(path, "fake")
-        repo = config.repos["fake"]
+        repo = config.add_repo(path, "fake")
         assert repo.id == "fake"
         assert str(repo) == "fake"
         assert repr(repo).startswith(f"<Repo 'fake: {path}' at 0x")
