@@ -104,8 +104,8 @@ impl Version {
     }
 
     #[getter]
-    fn revision(&self) -> Option<&str> {
-        self.0.revision().map(|x| x.as_str())
+    fn revision(&self) -> &str {
+        self.0.revision().as_str()
     }
 
     fn __hash__(&self) -> Result<isize, PyErr> {
