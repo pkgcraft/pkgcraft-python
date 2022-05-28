@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
-use pkgcraft::repo;
 use pkgcraft::repo::Repository;
+use pkgcraft::utils::hash;
 use pyo3::basic::CompareOp;
 use pyo3::prelude::*;
 
 #[pyclass]
-pub(super) struct Repo(pub(super) Arc<repo::Repo>);
+pub(super) struct Repo(pub(super) Arc<pkgcraft::repo::Repo>);
 
 #[pymethods]
 impl Repo {
@@ -32,5 +32,9 @@ impl Repo {
             CompareOp::Le => self.0 <= other.0,
             CompareOp::Ge => self.0 >= other.0,
         }
+    }
+
+    fn __hash__(&self) -> Result<isize, PyErr> {
+        Ok(hash(&self.0) as isize)
     }
 }

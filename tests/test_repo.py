@@ -20,3 +20,11 @@ class TestRepo:
         assert repo.id == "fake"
         assert str(repo) == "fake"
         assert repr(repo).startswith(f"<Repo 'fake: {path}' at 0x")
+
+    def test_hash(self, repo):
+        path = repo.path
+        config = Config.load()
+        repo1 = config.add_repo(path)
+        repo2 = config.add_repo(path, "fake")
+        s = {repo1, repo2}
+        assert len(s) == 2
