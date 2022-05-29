@@ -18,10 +18,10 @@ impl Config {
         ))
     }
 
-    #[args(id = "None")]
-    fn add_repo(&mut self, path: &str, id: Option<&str>) -> PyResult<Repo> {
+    #[args(id = "None", priority = "None")]
+    fn add_repo(&mut self, path: &str, id: Option<&str>, priority: Option<i32>) -> PyResult<Repo> {
         let id = id.unwrap_or(path);
-        let repo = self.0.repos.add(id, path).map_err(Error)?;
+        let repo = self.0.repos.add(id, priority, path).map_err(Error)?;
         Ok(Repo(repo))
     }
 
