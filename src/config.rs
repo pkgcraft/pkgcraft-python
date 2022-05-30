@@ -21,6 +21,7 @@ impl Config {
     #[args(id = "None", priority = "None")]
     fn add_repo(&mut self, path: &str, id: Option<&str>, priority: Option<i32>) -> PyResult<Repo> {
         let id = id.unwrap_or(path);
+        let priority = priority.unwrap_or(0);
         let repo = self.0.repos.add(id, priority, path).map_err(Error)?;
         Ok(Repo(repo))
     }
@@ -28,8 +29,8 @@ impl Config {
     #[getter]
     fn repos(&self) -> HashMap<String, Repo> {
         let mut map = HashMap::<String, Repo>::new();
-        for (id, repo) in self.0.repos.repos.iter() {
-            map.insert(id.clone(), Repo(repo.clone()));
+        for (id, repo) in self.0.repos.iter() {
+            map.insert(id.to_string(), Repo(repo.clone()));
         }
         map
     }
