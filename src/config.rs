@@ -22,7 +22,7 @@ impl Config {
     fn add_repo(&mut self, path: &str, id: Option<&str>, priority: Option<i32>) -> PyResult<Repo> {
         let id = id.unwrap_or(path);
         let priority = priority.unwrap_or(0);
-        let repo = self.0.repos.add(id, priority, path).map_err(Error)?;
+        let repo = self.0.add_repo(id, priority, path).map_err(Error)?;
         Ok(Repo(repo))
     }
 
