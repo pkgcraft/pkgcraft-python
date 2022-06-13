@@ -19,11 +19,7 @@ def test_package():
 
 def test_version():
     v = parse.version('1-r0')
-    assert str(v) == '1-r0'
-
-    v1 = parse.version('1_pre1')
-    v2 = parse.version('1_p0')
-    assert v2 > v1
+    assert v == '1-r0'
 
     # invalid
     for s in ('-1', '1a1'):
@@ -39,9 +35,7 @@ def test_repo():
 
 def test_cpv():
     a = parse.cpv('cat/pkg-1')
-    assert a.category == 'cat'
-    assert a.package == 'pkg'
-    assert a.version == '1'
+    assert a == 'cat/pkg-1'
 
     # invalid
     for s in ('cat', 'cat/pkg', '=cat/pkg-1'):

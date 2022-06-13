@@ -100,7 +100,7 @@ pub(crate) struct Version(pub(crate) atom::Version);
 impl Version {
     #[new]
     fn new(s: &str) -> PyResult<Self> {
-        Ok(Self(atom::parse::version(s).map_err(Error)?))
+        Ok(Self(atom::Version::new(s).map_err(Error)?))
     }
 
     #[getter]

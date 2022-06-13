@@ -1,7 +1,6 @@
 use pkgcraft::atom;
 use pyo3::prelude::*;
 
-use crate::atom::{Atom, Version};
 use crate::Error;
 
 /// category(s, /)
@@ -27,8 +26,9 @@ fn package(s: &str) -> PyResult<&str> {
 ///
 /// Parse an atom version string.
 #[pyfunction]
-fn version(s: &str) -> PyResult<Version> {
-    Ok(Version(atom::parse::version(s).map_err(Error)?))
+fn version(s: &str) -> PyResult<&str> {
+    atom::Version::valid(s).map_err(Error)?;
+    Ok(s)
 }
 
 /// repo(s, /)
@@ -45,8 +45,9 @@ fn repo(s: &str) -> PyResult<&str> {
 ///
 /// Parse an atom CPV string (e.g. cat/pkg-1).
 #[pyfunction]
-fn cpv(s: &str) -> PyResult<Atom> {
-    Ok(Atom(atom::parse::cpv(s).map_err(Error)?))
+fn cpv(s: &str) -> PyResult<&str> {
+    atom::Atom::valid_cpv(s).map_err(Error)?;
+    Ok(s)
 }
 
 /// Parsing support to convert strings into various pkgcraft objects.
