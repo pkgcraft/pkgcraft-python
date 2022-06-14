@@ -88,7 +88,8 @@ cdef class Version:
         ptr = C.pkgcraft_version_str(self._version)
         s = ptr.decode()
         C.pkgcraft_str_free(ptr)
-        return f"<Version '{s}' at 0x{addr:0x}>"
+        name = self.__class__.__name__
+        return f"<{name} '{s}' at 0x{addr:0x}>"
 
     def __hash__(self):
         return C.pkgcraft_version_hash(self._version)
