@@ -2,7 +2,6 @@ import copy
 import os
 import subprocess
 import sys
-from multiprocessing import cpu_count
 
 from setuptools import setup
 from setuptools.command import build_ext as dst_build_ext, sdist as dst_sdist
@@ -91,7 +90,7 @@ class sdist(dst_sdist.sdist):
         extensions = list(cython_pyx())
         if extensions:
             from Cython.Build import cythonize
-            cythonize(extensions, nthreads=cpu_count())
+            cythonize(extensions)
 
         super().run()
 
@@ -169,7 +168,7 @@ class build_ext(dst_build_ext.build_ext):
             any(not os.path.exists(x) for ext in self.no_cythonize() for x in ext.sources))
         if use_cython:
             from Cython.Build import cythonize
-            cythonize(self.extensions, nthreads=cpu_count())
+            cythonize(self.extensions)
 
         self.extensions = self.no_cythonize()
         super().run()
