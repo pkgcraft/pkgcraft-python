@@ -1,5 +1,5 @@
 [build-system]
-requires = ["cython", "setuptools>=60", "setuptools_scm>=6.2", "wheel"]
+requires = ["cython>=0.29.20", "setuptools>=60", "setuptools_scm>=6.2", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
