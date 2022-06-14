@@ -35,7 +35,6 @@ cdef class Version:
 
     def __cinit__(self, str version):
         self._version = C.pkgcraft_version(version.encode())
-
         if not self._version:
             raise PkgcraftError
 
@@ -93,6 +92,12 @@ cdef class Version:
 
     def __hash__(self):
         return C.pkgcraft_version_hash(self._version)
+
+    def __reduce__(self):
+        cdef char* ptr = C.pkgcraft_version_str(self._version)
+        s = ptr.decode()
+        C.pkgcraft_str_free(ptr)
+        return (Version, (s,))
 
     def __dealloc__(self):
         C.pkgcraft_version_free(self._version)

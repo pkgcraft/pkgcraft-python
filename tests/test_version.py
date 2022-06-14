@@ -1,4 +1,5 @@
 import operator
+import pickle
 
 import pytest
 
@@ -82,3 +83,8 @@ class TestVersion:
                 ):
             s = {Version(x) for x in unequal_versions}
             assert len(s) == len(unequal_versions)
+
+    def test_pickle(self):
+        v1 = Version('1-r1')
+        v2 = pickle.loads(pickle.dumps(v1))
+        assert v1 == v2
