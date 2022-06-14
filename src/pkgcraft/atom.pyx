@@ -75,7 +75,7 @@ cdef class Atom:
         >>> a.category
         'cat'
         """
-        ptr = C.pkgcraft_atom_category(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_category(self._atom)
         s = ptr.decode()
         C.pkgcraft_str_free(ptr)
         return s
@@ -89,7 +89,7 @@ cdef class Atom:
         >>> a.package
         'pkg'
         """
-        ptr = C.pkgcraft_atom_package(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_package(self._atom)
         s = ptr.decode()
         C.pkgcraft_str_free(ptr)
         return s
@@ -106,7 +106,7 @@ cdef class Atom:
         >>> a.version is None
         True
         """
-        ptr = C.pkgcraft_atom_version(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_version(self._atom)
         if ptr:
             s = ptr.decode()
             C.pkgcraft_str_free(ptr)
@@ -129,7 +129,7 @@ cdef class Atom:
         >>> a.revision is None
         True
         """
-        ptr = C.pkgcraft_atom_revision(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_revision(self._atom)
         if ptr:
             s = ptr.decode()
             C.pkgcraft_str_free(ptr)
@@ -149,7 +149,7 @@ cdef class Atom:
         >>> a.slot is None
         True
         """
-        ptr = C.pkgcraft_atom_slot(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_slot(self._atom)
         if ptr:
             s = ptr.decode()
             C.pkgcraft_str_free(ptr)
@@ -169,7 +169,7 @@ cdef class Atom:
         >>> a.subslot is None
         True
         """
-        ptr = C.pkgcraft_atom_subslot(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_subslot(self._atom)
         if ptr:
             s = ptr.decode()
             C.pkgcraft_str_free(ptr)
@@ -189,7 +189,7 @@ cdef class Atom:
         >>> a.slot_op is None
         True
         """
-        ptr = C.pkgcraft_atom_slot_op(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_slot_op(self._atom)
         if ptr:
             s = ptr.decode()
             C.pkgcraft_str_free(ptr)
@@ -235,7 +235,7 @@ cdef class Atom:
         >>> a.repo is None
         True
         """
-        ptr = C.pkgcraft_atom_repo(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_repo(self._atom)
         if ptr:
             s = ptr.decode()
             C.pkgcraft_str_free(ptr)
@@ -252,7 +252,7 @@ cdef class Atom:
         >>> a.key
         'cat/pkg'
         """
-        ptr = C.pkgcraft_atom_key(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_key(self._atom)
         s = ptr.decode()
         C.pkgcraft_str_free(ptr)
         return s
@@ -266,7 +266,7 @@ cdef class Atom:
         >>> a.cpv
         'cat/pkg-1-r2'
         """
-        ptr = C.pkgcraft_atom_cpv(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_cpv(self._atom)
         s = ptr.decode()
         C.pkgcraft_str_free(ptr)
         return s
@@ -290,15 +290,15 @@ cdef class Atom:
         return C.pkgcraft_atom_cmp(self._atom, other._atom) >= 0
 
     def __str__(self):
-        ptr = C.pkgcraft_atom_str(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_str(self._atom)
         s = ptr.decode()
         C.pkgcraft_str_free(ptr)
         return s
 
     def __repr__(self):
         cdef size_t addr = <size_t>&self._atom
-        ptr = C.pkgcraft_atom_str(self._atom)
-        s = ptr.decode()
+        cdef char* ptr = C.pkgcraft_atom_str(self._atom)
+        cdef str s = ptr.decode()
         C.pkgcraft_str_free(ptr)
         name = self.__class__.__name__
         return f"<{name} '{s}' at 0x{addr:0x}>"
@@ -307,7 +307,7 @@ cdef class Atom:
         return C.pkgcraft_atom_hash(self._atom)
 
     def __reduce__(self):
-        ptr = C.pkgcraft_atom_str(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_str(self._atom)
         s = ptr.decode()
         C.pkgcraft_str_free(ptr)
         return (Atom, (s, self._eapi))
@@ -349,7 +349,7 @@ cdef class Cpv(Atom):
             raise PkgcraftError
 
     def __reduce__(self):
-        ptr = C.pkgcraft_atom_str(self._atom)
+        cdef char* ptr = C.pkgcraft_atom_str(self._atom)
         s = ptr.decode()
         C.pkgcraft_str_free(ptr)
         return (Cpv, (s,))

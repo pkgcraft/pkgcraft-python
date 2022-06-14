@@ -51,7 +51,7 @@ cdef class Version:
         >>> v.revision
         '0'
         """
-        ptr = C.pkgcraft_version_revision(self._version)
+        cdef char* ptr = C.pkgcraft_version_revision(self._version)
         if ptr:
             s = ptr.decode()
             C.pkgcraft_str_free(ptr)
@@ -78,15 +78,15 @@ cdef class Version:
         return C.pkgcraft_version_cmp(self._version, other._version) >= 0
 
     def __str__(self):
-        ptr = C.pkgcraft_version_str(self._version)
+        cdef char* ptr = C.pkgcraft_version_str(self._version)
         s = ptr.decode()
         C.pkgcraft_str_free(ptr)
         return s
 
     def __repr__(self):
         cdef size_t addr = <size_t>&self._version
-        ptr = C.pkgcraft_version_str(self._version)
-        s = ptr.decode()
+        cdef char* ptr = C.pkgcraft_version_str(self._version)
+        cdef str s = ptr.decode()
         C.pkgcraft_str_free(ptr)
         name = self.__class__.__name__
         return f"<{name} '{s}' at 0x{addr:0x}>"
