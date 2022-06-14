@@ -3,18 +3,21 @@ import os
 
 import pytest
 
-from pkgcraft import (
-    Atom as pkgcraft_atom,
-    Version as pkgcraft_version,
-)
+from pkgcraft import Atom as pkgcraft_atom
 from pkgcore.ebuild.atom import atom as pkgcore_atom
 from portage.dep import Atom as portage_atom
 
-def random_pkg(func):
+def random_atom(func):
     cat = binascii.b2a_hex(os.urandom(10)).decode()
     pkg = binascii.b2a_hex(os.urandom(10)).decode()
-    s = f'={cat}/{pkg}-1-r2:3/4=[a,b,c]'
-    func(s)
+    s = f'=cat_{cat}/pkg_{pkg}-1-r2:3/4=[a,b,c]'
+    return func(s)
+
+def random_cp(func):
+    cat = binascii.b2a_hex(os.urandom(10)).decode()
+    pkg = binascii.b2a_hex(os.urandom(10)).decode()
+    s = f'cat_{cat}/pkg_{pkg}'
+    return func(s)
 
 atom_funcs = [
     ('pkgcraft', pkgcraft_atom),
@@ -28,21 +31,23 @@ def test_bench_atom_static(benchmark, lib, func):
 
 @pytest.mark.parametrize("lib,func", atom_funcs)
 def test_bench_atom_random(benchmark, lib, func):
-    benchmark(random_pkg, func)
+    benchmark(random_atom, func)
+
+@pytest.mark.parametrize("lib,func", atom_funcs)
+def test_bench_atom_property(benchmark, lib, func):
+    f = lambda s: getattr(func(s), 'version')
+    version = benchmark(random_atom, f)
+    assert version.startswith('1')
+
+@pytest.mark.parametrize("lib,func", atom_funcs)
+def test_bench_atom_property_none(benchmark, lib, func):
+    f = lambda s: getattr(func(s), 'version')
+    version = benchmark(random_cp, f)
+    assert version is None
 
 # portage doesn't appear to support Atom object comparisons
 @pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_atom), ('pkgcore', pkgcore_atom)))
 def test_bench_atom_sorted(benchmark, lib, func):
     pkgs = [func(f'=cat/pkg-{v}-r1:2/3=[a,b,c]') for v in reversed(range(100))]
-    result = benchmark(sorted, pkgs)
-    assert result == list(reversed(pkgs))
-
-@pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_version),))
-def test_bench_version_static(benchmark, lib, func):
-    benchmark(func, '1.2.3_alpha4-r5')
-
-@pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_version),))
-def test_bench_version_sorted(benchmark, lib, func):
-    pkgs = [func(str(v)) for v in reversed(range(100))]
     result = benchmark(sorted, pkgs)
     assert result == list(reversed(pkgs))

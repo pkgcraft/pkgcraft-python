@@ -13,7 +13,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ['3.9', '3.10']
-        rust-version: ['1.60.0', 'stable']
 
     steps:
     - name: Checkout scallop
@@ -35,8 +34,20 @@ jobs:
     - name: Move pkgcraft into expected location
       run: mv pkgcraft ../
 
+    - name: Checkout pkgcraft-c
+      uses: actions/checkout@v3
+      with:
+        repository: pkgcraft/pkgcraft-c
+        path: pkgcraft-c
+
+    - name: Move pkgcraft-c into expected location
+      run: mv pkgcraft-c ../
+
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        # checkout full history for setuptools-scm
+        fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
@@ -47,11 +58,11 @@ jobs:
       uses: actions-rs/toolchain@v1
       id: rust
       with:
-        toolchain: ${{ matrix.rust-version }}
+        toolchain: stable
         profile: minimal
         override: true
 
-    - name: Set up rust cache
+    - name: Set up cache
       uses: actions/cache@v3
       id: cache
       with:
@@ -62,11 +73,23 @@ jobs:
           ~/.cargo/git/db
           ~/.cache/pip
           target
-        key: v3-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}-cargo-${{ hashFiles('Cargo.lock') }}
-        restore-keys: v3-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}-cargo-
+        key: v4-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}
+        restore-keys: v4-${{ github.job }}-${{ runner.os }}-rust-
 
     - name: Update deps
-      run: cargo update
+      run: cargo update --manifest-path=../pkgcraft-c/Cargo.toml
+
+    - name: Install cargo-c
+      run: |
+        # ignore return value since `cargo install` errors out when already installed
+        cargo install cargo-c || true
+
+    - name: Build and install C library
+      run: |
+        cargo cinstall --manifest-path=../pkgcraft-c/Cargo.toml --prefix="${PWD}/pkgcraft" --pkgconfigdir="${PWD}/pkgcraft" --target-dir target
+        echo "PKG_CONFIG_PATH=${PWD}/pkgcraft" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=${PWD}/pkgcraft/lib" >> $GITHUB_ENV
+        echo "DYLD_LIBRARY_PATH=${PWD}/pkgcraft/lib" >> $GITHUB_ENV
 
     - name: Install dependencies
       run: pip install tox
@@ -76,64 +99,3 @@ jobs:
 
     - name: Run benchmarks via tox
       run: tox -e bench
-
-    # remove wheels so they aren't cached
-    - run: rm -rf target/wheels
-
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout scallop
-      uses: actions/checkout@v3
-      with:
-        repository: pkgcraft/scallop
-        path: scallop
-        submodules: true
-
-    - name: Move scallop into expected location
-      run: mv scallop ../
-
-    - name: Checkout pkgcraft
-      uses: actions/checkout@v3
-      with:
-        repository: pkgcraft/pkgcraft
-        path: pkgcraft
-
-    - name: Move pkgcraft into expected location
-      run: mv pkgcraft ../
-
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Set up rust toolchain
-      uses: actions-rs/toolchain@v1
-      id: rust
-      with:
-        toolchain: stable
-        profile: minimal
-        override: true
-        components: clippy, rustfmt
-
-    - name: Set up rust cache
-      uses: actions/cache@v3
-      id: cache
-      with:
-        path: |
-          ~/.cargo/bin
-          ~/.cargo/registry/index
-          ~/.cargo/registry/cache
-          ~/.cargo/git/db
-          target
-        key: v3-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}-cargo-${{ hashFiles('Cargo.lock') }}
-        restore-keys: v3-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}-cargo-
-
-    - name: Update deps
-      run: cargo update
-
-    - name: Run rustfmt
-      run: cargo fmt --all -- --check
-
-    - name: Run clippy
-      uses: actions-rs/clippy-check@v1
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
