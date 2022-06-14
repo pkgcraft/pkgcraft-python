@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 from setuptools import setup
-from setuptools.command import build_ext as dst_build_ext, sdist as dst_sdist
+from setuptools.command import sdist as dst_sdist
 from setuptools.extension import Extension
 
 MODULEDIR = 'src/pkgcraft'
@@ -93,104 +93,6 @@ class sdist(dst_sdist.sdist):
             cythonize(extensions)
 
         super().run()
-
-
-class build_ext(dst_build_ext.build_ext):
-    """Build native extensions."""
-
-    user_options = dst_build_ext.build_ext.user_options + [
-        ("disable-distutils-flag-fixing", None,
-         "disable fixing of issue 969718 in python, adding missing -fno-strict-aliasing"),
-    ]
-
-    def initialize_options(self):
-        super().initialize_options()
-        self.disable_distutils_flag_fixing = False
-        self.default_header_install_dir = None
-
-    def finalize_options(self):
-        super().finalize_options()
-        # add header install dir to the search path
-        # (fixes virtualenv builds for consumer extensions)
-        self.set_undefined_options(
-            'install',
-            ('install_headers', 'default_header_install_dir'))
-        if self.default_header_install_dir:
-            self.default_header_install_dir = os.path.dirname(self.default_header_install_dir)
-            for e in self.extensions:
-                # include_dirs may actually be shared between multiple extensions
-                if self.default_header_install_dir not in e.include_dirs:
-                    e.include_dirs.append(self.default_header_install_dir)
-
-    @staticmethod
-    def determine_ext_lang(ext_path):
-        """Determine file extensions for generated cython extensions."""
-        with open(ext_path) as f:
-            for line in f:
-                line = line.lstrip()
-                if not line:
-                    continue
-                elif line[0] != '#':
-                    return None
-                line = line[1:].lstrip()
-                if line[:10] == 'distutils:':
-                    key, _, value = [s.strip() for s in line[10:].partition('=')]
-                    if key == 'language':
-                        return value
-            else:
-                return None
-
-    def no_cythonize(self):
-        """Determine file paths for generated cython extensions."""
-        extensions = copy.deepcopy(self.extensions)
-        for extension in extensions:
-            sources = []
-            for sfile in extension.sources:
-                path, ext = os.path.splitext(sfile)
-                if ext in ('.pyx', '.py'):
-                    lang = build_ext.determine_ext_lang(sfile)
-                    if lang == 'c++':
-                        ext = '.cpp'
-                    else:
-                        ext = '.c'
-                    sfile = path + ext
-                sources.append(sfile)
-            extension.sources[:] = sources
-        return extensions
-
-    def run(self):
-        # ensure that the platform checks were performed
-        self.run_command('config')
-
-        # only regenerate cython extensions if requested or required
-        use_cython = (
-            os.environ.get('USE_CYTHON', False) or
-            any(not os.path.exists(x) for ext in self.no_cythonize() for x in ext.sources))
-        if use_cython:
-            from Cython.Build import cythonize
-            cythonize(self.extensions)
-
-        self.extensions = self.no_cythonize()
-        super().run()
-
-    def build_extensions(self):
-        for x in ("compiler_so", "compiler", "compiler_cxx"):
-            if self.debug:
-                l = [y for y in getattr(self.compiler, x) if y != '-DNDEBUG']
-                l.append('-Wall')
-                setattr(self.compiler, x, l)
-            if not self.disable_distutils_flag_fixing:
-                val = getattr(self.compiler, x)
-                if "-fno-strict-aliasing" not in val:
-                    val.append("-fno-strict-aliasing")
-            if getattr(self.distribution, 'check_defines', None):
-                val = getattr(self.compiler, x)
-                for d, result in self.distribution.check_defines.items():
-                    if result:
-                        val.append(f'-D{d}=1')
-                    else:
-                        val.append(f'-U{d}')
-        super().build_extensions()
 
 
 setup(
