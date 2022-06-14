@@ -7,18 +7,14 @@ from . cimport pkgcraft_c as C
 cdef class PkgcraftError(Exception):
     """Generic pkgcraft exception."""
 
-    cdef char *_error
-
-    def __cinit__(self):
-        self._error = C.pkgcraft_last_error()
-
     def __init__(self, str msg=None):
+        cdef char* c_error = C.pkgcraft_last_error()
+        cdef str error = None if c_error is NULL else c_error.decode()
+        C.pkgcraft_str_free(c_error)
+
         if msg:
             super().__init__(msg)
-        elif self._error:
-            super().__init__(self._error.decode())
+        elif error:
+            super().__init__(error)
         else:
             raise RuntimeError("no error message passed and no C error occurred")
-
-    def __dealloc__(self):
-        C.pkgcraft_str_free(self._error)
