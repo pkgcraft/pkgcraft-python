@@ -2,4 +2,6 @@ include README.md pyproject.toml *.py tox.ini
 recursive-include benches *
 recursive-include src *
 recursive-include tests *
+exclude .gitignore
+prune .github
 global-exclude *.pyc *.pyo __pycache__
