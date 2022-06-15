@@ -6,10 +6,7 @@ from libc.stdint cimport uint8_t
 from . cimport pkgcraft_c as C
 from .error import PkgcraftError
 
-cpdef enum Blocker:
-    NONE,
-    Strong,
-    Weak,
+include "pkgcraft.pxi"
 
 
 cdef class Atom:

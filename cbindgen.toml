@@ -4,6 +4,7 @@ language = "cython"
 tab_width = 4
 line_length = 110
 documentation = false
+after_includes = "\ninclude \"pkgcraft.pxi\""
 
 [cython]
 header = '"pkgcraft.h"'

@@ -9,6 +9,8 @@ cdef extern from *:
     ctypedef bint bool
     ctypedef struct va_list
 
+include "pkgcraft.pxi"
+
 cdef extern from "pkgcraft.h":
 
     cdef struct Atom:
