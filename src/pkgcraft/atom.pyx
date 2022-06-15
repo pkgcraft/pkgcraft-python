@@ -1,8 +1,6 @@
 # SPDX-License-Identifier: MIT
 # cython: language_level=3
 
-from libc.stdint cimport uint8_t
-
 from . cimport pkgcraft_c as C
 from .error import PkgcraftError
 
@@ -111,11 +109,10 @@ cdef class Atom:
         >>> a.blocker is Blocker.Strong
         True
         """
-        cdef uint8_t blocker = C.pkgcraft_atom_blocker(self._atom)
-        if blocker > 0:
-            return Blocker(blocker)
-        else:
+        cdef int blocker = C.pkgcraft_atom_blocker(self._atom)
+        if not blocker:
             return None
+        return Blocker(blocker)
 
     @property
     def version(self):
