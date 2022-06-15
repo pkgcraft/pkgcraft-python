@@ -7,7 +7,7 @@ from . cimport pkgcraft_c as C
 from .error import PkgcraftError
 
 cpdef enum Blocker:
-    Null,
+    NONE,
     Strong,
     Weak,
 
