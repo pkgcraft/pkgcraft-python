@@ -82,10 +82,7 @@ class sdist(dst_sdist.sdist):
     """sdist command wrapper to bundle generated files for release."""
 
     def run(self):
-        build_ext = self.reinitialize_command('build_ext')
-        build_ext.ensure_finalized()
-
-        # generate cython extensions if any exist
+        # generate cython extensions
         extensions = list(cython_pyx())
         if extensions:
             from Cython.Build import cythonize
