@@ -96,8 +96,5 @@ class sdist(dst_sdist.sdist):
 
 setup(
     ext_modules=cython_exts(build_opts=pkg_config('pkgcraft')),
-    zip_safe=False,
-    cmdclass={
-        'sdist': sdist,
-    }
+    cmdclass={'sdist': sdist},
 )
