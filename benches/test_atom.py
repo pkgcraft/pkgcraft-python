@@ -45,9 +45,16 @@ def test_bench_atom_property_none(benchmark, lib, func):
     version = benchmark(random_cp, f)
     assert version is None
 
-# portage doesn't appear to support Atom object comparisons
+# portage atoms don't natively support comparisons
 @pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_atom), ('pkgcore', pkgcore_atom)))
-def test_bench_atom_sorted(benchmark, lib, func):
-    pkgs = [func(f'=cat/pkg-{v}-r1:2/3=[a,b,c]') for v in reversed(range(100))]
-    result = benchmark(sorted, pkgs)
-    assert result == list(reversed(pkgs))
+def test_bench_atom_sorting_worst_case(benchmark, lib, func):
+    atoms = [func(f'=cat/pkg-{v}-r1:2/3=[a,b,c]') for v in reversed(range(100))]
+    result = benchmark(sorted, atoms)
+    assert result == list(reversed(atoms))
+
+# portage atoms don't natively support comparisons
+@pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_atom), ('pkgcore', pkgcore_atom)))
+def test_bench_atom_sorting_best_case(benchmark, lib, func):
+    atoms = [func(f'=cat/pkg-{v}-r1:2/3=[a,b,c]') for v in range(100)]
+    result = benchmark(sorted, atoms)
+    assert result == atoms
