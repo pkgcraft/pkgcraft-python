@@ -330,6 +330,15 @@ cdef class Atom:
         return C.pkgcraft_atom_hash(self._atom)
 
     def __reduce__(self):
+        """Support pickling Atom objects.
+
+        >>> import pickle
+        >>> from pkgcraft import Atom
+        >>> a = Atom('=cat/pkg-1-r2:0/2=[a,b,c]')
+        >>> b = pickle.loads(pickle.dumps(a))
+        >>> a == b
+        True
+        """
         cdef char* c_str = C.pkgcraft_atom_str(self._atom)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
@@ -372,6 +381,15 @@ cdef class Cpv(Atom):
             raise PkgcraftError
 
     def __reduce__(self):
+        """Support pickling Cpv objects.
+
+        >>> import pickle
+        >>> from pkgcraft import Cpv
+        >>> a = Cpv('cat/pkg-1-r2')
+        >>> b = pickle.loads(pickle.dumps(a))
+        >>> a == b
+        True
+        """
         cdef char* c_str = C.pkgcraft_atom_str(self._atom)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)

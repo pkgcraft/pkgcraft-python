@@ -91,6 +91,15 @@ cdef class Version:
         return C.pkgcraft_version_hash(self._version)
 
     def __reduce__(self):
+        """Support pickling Version objects.
+
+        >>> import pickle
+        >>> from pkgcraft import Version
+        >>> a = Version('1-r1')
+        >>> b = pickle.loads(pickle.dumps(a))
+        >>> a == b
+        True
+        """
         cdef char* c_str = C.pkgcraft_version_str(self._version)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)

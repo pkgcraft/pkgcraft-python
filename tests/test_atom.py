@@ -1,5 +1,4 @@
 import operator
-import pickle
 
 import pytest
 import re
@@ -114,11 +113,6 @@ class TestAtom:
             s = {Atom(f'=cat/pkg-{x}') for x in unequal_versions}
             assert len(s) == len(unequal_versions)
 
-    def test_pickle(self):
-        a = Atom('=cat/pkg-1-r2:0/2=[a,b,c]')
-        b = pickle.loads(pickle.dumps(a))
-        assert a == b
-
 
 class TestCpv:
 
@@ -142,8 +136,3 @@ class TestCpv:
         for s in ('invalid', 'cat-1', '=cat/pkg-1'):
             with pytest.raises(PkgcraftError, match=f'invalid cpv: "{s}"'):
                 Cpv(s)
-
-    def test_pickle(self):
-        a = Cpv('cat/pkg-1-r2')
-        b = pickle.loads(pickle.dumps(a))
-        assert a == b
