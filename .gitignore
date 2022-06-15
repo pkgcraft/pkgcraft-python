@@ -1,12 +1,9 @@
-# rust
-Cargo.lock
-/target
-
 # python
+*.c
 *.so
 /build
 /dist
-/*.egg-info
+*.egg-info
 __pycache__
 
 # unit testing / coverage
@@ -14,5 +11,8 @@ __pycache__
 /htmlcov
 .tox
 
-# distutils/setuptools
+# setuptools
 MANIFEST
+
+# setuptools-scm
+src/pkgcraft/_version.py
