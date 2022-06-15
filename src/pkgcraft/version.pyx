@@ -50,10 +50,10 @@ cdef class Version:
         >>> v.revision
         '0'
         """
-        cdef char* ptr = C.pkgcraft_version_revision(self._version)
-        if ptr:
-            s = ptr.decode()
-            C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_version_revision(self._version)
+        if c_str:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
             return s
         else:
             return None
@@ -77,9 +77,9 @@ cdef class Version:
         return C.pkgcraft_version_cmp(self._version, other._version) >= 0
 
     def __str__(self):
-        cdef char* ptr = C.pkgcraft_version_str(self._version)
-        s = ptr.decode()
-        C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_version_str(self._version)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
         return s
 
     def __repr__(self):
@@ -94,9 +94,9 @@ cdef class Version:
         return C.pkgcraft_version_hash(self._version)
 
     def __reduce__(self):
-        cdef char* ptr = C.pkgcraft_version_str(self._version)
-        s = ptr.decode()
-        C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_version_str(self._version)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
         return (Version, (s,))
 
     def __dealloc__(self):

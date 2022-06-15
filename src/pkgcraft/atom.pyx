@@ -75,9 +75,9 @@ cdef class Atom:
         >>> a.category
         'cat'
         """
-        cdef char* ptr = C.pkgcraft_atom_category(self._atom)
-        s = ptr.decode()
-        C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_category(self._atom)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
         return s
 
     @property
@@ -89,9 +89,9 @@ cdef class Atom:
         >>> a.package
         'pkg'
         """
-        cdef char* ptr = C.pkgcraft_atom_package(self._atom)
-        s = ptr.decode()
-        C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_package(self._atom)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
         return s
 
     @property
@@ -106,10 +106,10 @@ cdef class Atom:
         >>> a.version is None
         True
         """
-        cdef char* ptr = C.pkgcraft_atom_version(self._atom)
-        if ptr:
-            s = ptr.decode()
-            C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_version(self._atom)
+        if c_str:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
             return s
         else:
             return None
@@ -129,10 +129,10 @@ cdef class Atom:
         >>> a.revision is None
         True
         """
-        cdef char* ptr = C.pkgcraft_atom_revision(self._atom)
-        if ptr:
-            s = ptr.decode()
-            C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_revision(self._atom)
+        if c_str:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
             return s
         else:
             return None
@@ -149,10 +149,10 @@ cdef class Atom:
         >>> a.slot is None
         True
         """
-        cdef char* ptr = C.pkgcraft_atom_slot(self._atom)
-        if ptr:
-            s = ptr.decode()
-            C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_slot(self._atom)
+        if c_str:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
             return s
         else:
             return None
@@ -169,10 +169,10 @@ cdef class Atom:
         >>> a.subslot is None
         True
         """
-        cdef char* ptr = C.pkgcraft_atom_subslot(self._atom)
-        if ptr:
-            s = ptr.decode()
-            C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_subslot(self._atom)
+        if c_str:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
             return s
         else:
             return None
@@ -189,10 +189,10 @@ cdef class Atom:
         >>> a.slot_op is None
         True
         """
-        cdef char* ptr = C.pkgcraft_atom_slot_op(self._atom)
-        if ptr:
-            s = ptr.decode()
-            C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_slot_op(self._atom)
+        if c_str:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
             return s
         else:
             return None
@@ -235,10 +235,10 @@ cdef class Atom:
         >>> a.repo is None
         True
         """
-        cdef char* ptr = C.pkgcraft_atom_repo(self._atom)
-        if ptr:
-            s = ptr.decode()
-            C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_repo(self._atom)
+        if c_str:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
             return s
         else:
             return None
@@ -252,9 +252,9 @@ cdef class Atom:
         >>> a.key
         'cat/pkg'
         """
-        cdef char* ptr = C.pkgcraft_atom_key(self._atom)
-        s = ptr.decode()
-        C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_key(self._atom)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
         return s
 
     @property
@@ -266,9 +266,9 @@ cdef class Atom:
         >>> a.cpv
         'cat/pkg-1-r2'
         """
-        cdef char* ptr = C.pkgcraft_atom_cpv(self._atom)
-        s = ptr.decode()
-        C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_cpv(self._atom)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
         return s
 
     def __lt__(self, Atom other):
@@ -290,9 +290,9 @@ cdef class Atom:
         return C.pkgcraft_atom_cmp(self._atom, other._atom) >= 0
 
     def __str__(self):
-        cdef char* ptr = C.pkgcraft_atom_str(self._atom)
-        s = ptr.decode()
-        C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_str(self._atom)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
         return s
 
     def __repr__(self):
@@ -307,9 +307,9 @@ cdef class Atom:
         return C.pkgcraft_atom_hash(self._atom)
 
     def __reduce__(self):
-        cdef char* ptr = C.pkgcraft_atom_str(self._atom)
-        s = ptr.decode()
-        C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_str(self._atom)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
         return (Atom, (s, self._eapi))
 
     def __dealloc__(self):
@@ -349,7 +349,7 @@ cdef class Cpv(Atom):
             raise PkgcraftError
 
     def __reduce__(self):
-        cdef char* ptr = C.pkgcraft_atom_str(self._atom)
-        s = ptr.decode()
-        C.pkgcraft_str_free(ptr)
+        cdef char* c_str = C.pkgcraft_atom_str(self._atom)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
         return (Cpv, (s,))
