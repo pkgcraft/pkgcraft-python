@@ -56,13 +56,13 @@ def cython_pyx(path=MODULEDIR):
                 yield str(os.path.join(root, f))
 
 
-def cython_exts(path=MODULEDIR, build_opts=None):
-    """Prepare all cython extensions under a given path to be built."""
-    if build_opts is None:
+def extensions(**build_opts):
+    """Register cython extensions to be built."""
+    if not build_opts:
         build_opts = {'depends': [], 'include_dirs': []}
     exts = []
 
-    for ext in cython_pyx(path):
+    for ext in CYTHON_EXTS:
         cythonized = os.path.splitext(ext)[0] + '.c'
         if os.path.exists(cythonized):
             ext_path = cythonized
@@ -83,15 +83,16 @@ class sdist(dst_sdist.sdist):
 
     def run(self):
         # generate cython extensions
-        extensions = list(cython_pyx())
-        if extensions:
+        if CYTHON_EXTS:
             from Cython.Build import cythonize
-            cythonize(extensions)
+            cythonize(CYTHON_EXTS)
 
         super().run()
 
 
+CYTHON_EXTS = list(cython_pyx(MODULEDIR))
+
 setup(
-    ext_modules=cython_exts(build_opts=pkg_config('pkgcraft')),
+    ext_modules=extensions(**pkg_config('pkgcraft')),
     cmdclass={'sdist': sdist},
 )
