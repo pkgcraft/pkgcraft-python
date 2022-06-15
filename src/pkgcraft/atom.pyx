@@ -1,8 +1,15 @@
 # SPDX-License-Identifier: MIT
 # cython: language_level=3
 
+from libc.stdint cimport uint8_t
+
 from . cimport pkgcraft_c as C
 from .error import PkgcraftError
+
+cpdef enum Blocker:
+    Null,
+    Strong,
+    Weak,
 
 
 cdef class Atom:
@@ -93,6 +100,27 @@ cdef class Atom:
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
+
+    @property
+    def blocker(self):
+        """Get an atom's blocker.
+
+        >>> from pkgcraft import Atom
+        >>> a = Atom("cat/pkg")
+        >>> a.blocker is None
+        True
+        >>> a = Atom("!cat/pkg")
+        >>> a.blocker is Blocker.Weak
+        True
+        >>> a = Atom("!!cat/pkg")
+        >>> a.blocker is Blocker.Strong
+        True
+        """
+        cdef uint8_t blocker = C.pkgcraft_atom_blocker(self._atom)
+        if blocker > 0:
+            return Blocker(blocker)
+        else:
+            return None
 
     @property
     def version(self):

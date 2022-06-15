@@ -27,6 +27,8 @@ cdef extern from "pkgcraft.h":
 
     char *pkgcraft_atom_package(Atom *atom);
 
+    uint8_t pkgcraft_atom_blocker(Atom *atom);
+
     char *pkgcraft_atom_version(Atom *atom);
 
     char *pkgcraft_atom_revision(Atom *atom);
