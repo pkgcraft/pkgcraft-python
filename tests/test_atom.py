@@ -4,7 +4,7 @@ import pickle
 import pytest
 import re
 
-from pkgcraft import Atom, Cpv, PkgcraftError
+from pkgcraft import Atom, Blocker, Cpv, PkgcraftError
 
 OperatorMap = {
     '<': operator.lt,
@@ -23,6 +23,7 @@ class TestAtom:
         a = Atom('cat/pkg')
         assert a.category == 'cat'
         assert a.package == 'pkg'
+        assert a.blocker is None
         assert a.slot is None
         assert a.subslot is None
         assert a.slot_op is None
@@ -36,9 +37,10 @@ class TestAtom:
         assert repr(a).startswith("<Atom 'cat/pkg' at 0x")
 
         # all fields
-        a = Atom('=cat/pkg-1-r2:0/2=[a,b,c]::repo', 'pkgcraft')
+        a = Atom('!!=cat/pkg-1-r2:0/2=[a,b,c]::repo', 'pkgcraft')
         assert a.category == 'cat'
         assert a.package == 'pkg'
+        assert a.blocker is Blocker.Strong
         assert a.slot == '0'
         assert a.subslot == '2'
         assert a.slot_op == '='
@@ -48,8 +50,8 @@ class TestAtom:
         assert a.revision == '2'
         assert a.key == 'cat/pkg'
         assert a.cpv == 'cat/pkg-1-r2'
-        assert str(a) == '=cat/pkg-1-r2:0/2=[a,b,c]::repo'
-        assert repr(a).startswith("<Atom '=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
+        assert str(a) == '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo'
+        assert repr(a).startswith("<Atom '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
 
     def test_invalid(self):
         for s in ('invalid', 'cat-1', 'cat/pkg-1'):

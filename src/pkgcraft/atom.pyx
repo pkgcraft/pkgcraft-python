@@ -23,8 +23,6 @@ cdef class Atom:
     'cat'
     >>> a.package
     'pkg'
-    >>> attrs = ("version", "slot", "subslot", "use_deps", "repo")
-    >>> assert all(getattr(a, attr) is None for attr in attrs)
 
     Complex atom
     >>> a = Atom("=cat/pkg-1-r2:0/2[a,b]::repo")
