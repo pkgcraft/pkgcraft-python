@@ -297,11 +297,8 @@ cdef class Atom:
 
     def __repr__(self):
         cdef size_t addr = <size_t>&self._atom
-        cdef char* ptr = C.pkgcraft_atom_str(self._atom)
-        cdef str s = ptr.decode()
-        C.pkgcraft_str_free(ptr)
         name = self.__class__.__name__
-        return f"<{name} '{s}' at 0x{addr:0x}>"
+        return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
         return C.pkgcraft_atom_hash(self._atom)
