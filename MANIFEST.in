@@ -1,7 +1,4 @@
-include README.md pyproject.toml *.py tox.ini
-recursive-include benches *
-recursive-include src *
-recursive-include tests *
+# all vcs-tracked files are auto-included by setuptools_scm
+include src/pkgcraft/*.c
 exclude .gitignore
 prune .github
-global-exclude *.pyc *.pyo __pycache__
