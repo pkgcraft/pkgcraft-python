@@ -6,5 +6,9 @@ line_length = 110
 documentation = false
 after_includes = "\ninclude \"pkgcraft.pxi\""
 
+[export]
+# exclude manually included exports
+exclude = ["Blocker"]
+
 [cython]
 header = '"pkgcraft.h"'

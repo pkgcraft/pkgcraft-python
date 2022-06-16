@@ -19,8 +19,6 @@ cdef extern from "pkgcraft.h":
     cdef struct Version:
         pass
 
-    ctypedef Blocker Blocker;
-
     Atom *pkgcraft_atom(char *atom, const char *eapi);
 
     Atom *pkgcraft_cpv(char *atom);
