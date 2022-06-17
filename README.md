@@ -13,9 +13,6 @@ everything required to build
 Use the following commands to set up a Linux dev environment:
 
 ```bash
-# install cargo-c
-cargo install cargo-c
-
 # clone the pkgcraft workspace
 git clone --recursive-submodules https://github.com/pkgcraft/pkgcraft-workspace.git
 
