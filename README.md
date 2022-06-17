@@ -16,7 +16,7 @@ Use the following commands to set up a Linux dev environment:
 # clone the pkgcraft workspace
 git clone --recursive-submodules https://github.com/pkgcraft/pkgcraft-workspace.git
 
-# build pkgcraft-c library and set shell variables (e.g. $LD_LIBRARY_PATH)
+# build pkgcraft-c library and set shell variables (e.g. $PKG_CONFIG_PATH)
 cd pkgcraft-workspace
 source ./build-c-lib
 
