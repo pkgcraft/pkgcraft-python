@@ -18,7 +18,7 @@ git clone --recursive-submodules https://github.com/pkgcraft/pkgcraft-workspace.
 cd pkgcraft-workspace
 
 # build pkgcraft-c library and set shell variables (e.g. $PKG_CONFIG_PATH)
-source ./build-c-lib
+source ./build pkgcraft-c
 
 cd pkgcraft-python
 # build and test
