@@ -41,7 +41,7 @@ cdef extern from "pkgcraft.h":
 
     char *pkgcraft_atom_slot_op(Atom *atom);
 
-    char **pkgcraft_atom_use_deps(Atom *atom);
+    char **pkgcraft_atom_use_deps(Atom *atom, uintptr_t *len);
 
     char *pkgcraft_atom_repo(Atom *atom);
 
@@ -59,7 +59,7 @@ cdef extern from "pkgcraft.h":
 
     void pkgcraft_str_free(char *s);
 
-    void pkgcraft_str_array_free(char **array);
+    void pkgcraft_str_array_free(char **array, uintptr_t len);
 
     char *pkgcraft_parse_atom(char *atom, const char *eapi);
 

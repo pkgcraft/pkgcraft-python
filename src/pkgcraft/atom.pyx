@@ -230,15 +230,13 @@ cdef class Atom:
         True
         """
         cdef char **array
-        cdef int i = 0
+        cdef size_t length
         cdef list l = []
 
-        array = C.pkgcraft_atom_use_deps(self._atom)
+        array = C.pkgcraft_atom_use_deps(self._atom, &length)
         if array:
-            while array[i]:
-                l.append(array[i].decode())
-                i += 1
-            C.pkgcraft_str_array_free(array)
+            l = [array[i].decode() for i in range(length)]
+            C.pkgcraft_str_array_free(array, length)
             return l
         else:
             return None
