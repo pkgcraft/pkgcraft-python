@@ -199,7 +199,7 @@ cdef class Atom:
 
     @property
     def slot_op(self):
-        """Get an atom's slot_op.
+        """Get an atom's slot operator.
 
         >>> from pkgcraft import Atom
         >>> a = Atom("=cat/pkg-1-r2:=")
