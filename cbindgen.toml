@@ -5,6 +5,9 @@ tab_width = 4
 line_length = 110
 after_includes = "\ninclude \"pkgcraft.pxi\""
 
+[fn]
+sort_by = "Name"
+
 [export]
 # exclude manually included exports
 exclude = ["Blocker"]
