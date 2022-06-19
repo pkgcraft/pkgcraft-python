@@ -21,6 +21,7 @@ def random_cp(func):
 
 atom_funcs = [
     ('pkgcraft', pkgcraft_atom),
+    ('pkgcraft', pkgcraft_atom.cached),
     ('pkgcore', pkgcore_atom),
     ('portage', portage_atom),
 ]

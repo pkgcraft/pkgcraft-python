@@ -1,10 +1,19 @@
 # SPDX-License-Identifier: MIT
 # cython: language_level=3
 
+import functools
+
 from . cimport pkgcraft_c as C
 from .error import PkgcraftError
 
 include "pkgcraft.pxi"
+
+
+# TODO: merge with Atom.cached function when cython bug is fixed
+# https://github.com/cython/cython/issues/1434
+@functools.lru_cache(maxsize=10000)
+def _cached_atom(cls, atom_str, eapi_str=None):
+    return cls(atom_str, eapi_str)
 
 
 cdef class Atom:
@@ -65,6 +74,11 @@ cdef class Atom:
 
         if not self._atom:
             raise PkgcraftError
+
+    @classmethod
+    def cached(cls, str atom_str, str eapi_str=None):
+        """Return a cached Atom if one exists, otherwise return a new instance."""
+        return _cached_atom(cls, atom_str, eapi_str)
 
     @property
     def category(self):
