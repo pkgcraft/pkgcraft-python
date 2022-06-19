@@ -36,14 +36,14 @@ def test_bench_atom_random(benchmark, lib, func):
 
 @pytest.mark.parametrize("lib,func", atom_funcs)
 def test_bench_atom_property(benchmark, lib, func):
-    f = lambda s: getattr(func(s), 'version')
-    version = benchmark(random_atom, f)
+    atom = func('=cat/pkg-1-r2:3/4=[a,b,c]')
+    version = benchmark(getattr, atom, 'version')
     assert version.startswith('1')
 
 @pytest.mark.parametrize("lib,func", atom_funcs)
 def test_bench_atom_property_none(benchmark, lib, func):
-    f = lambda s: getattr(func(s), 'version')
-    version = benchmark(random_cp, f)
+    atom = func('cat/pkg')
+    version = benchmark(getattr, atom, 'version')
     assert version is None
 
 # portage atoms don't natively support comparisons
