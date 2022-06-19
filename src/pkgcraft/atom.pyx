@@ -58,9 +58,6 @@ cdef class Atom:
       |            ^ Expected: one of ",", "]"
       |
     """
-    cdef C.Atom *_atom
-    cdef str _eapi
-
     def __init__(self, str atom_str, str eapi_str=None):
         atom_bytes = atom_str.encode()
         cdef char* atom = atom_bytes
