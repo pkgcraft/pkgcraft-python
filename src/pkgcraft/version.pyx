@@ -30,13 +30,22 @@ cdef class Version:
       | ^ Expected: ['0' ..= '9']
       |
     """
+    def __init__(self, str version, with_op=False):
+        version_bytes = version.encode()
+        if not with_op:
+            self._version = C.pkgcraft_version(version_bytes)
+        else:
+            self._version = C.pkgcraft_version_with_op(version_bytes)
 
-    cdef C.Version *_version
-
-    def __cinit__(self, str version):
-        self._version = C.pkgcraft_version(version.encode())
         if not self._version:
             raise PkgcraftError
+
+    @staticmethod
+    cdef Version borrowed(const C.Version *ver):
+        # create instance without calling __init__()
+        obj = <_BorrowedVersion>_BorrowedVersion.__new__(_BorrowedVersion)
+        obj._version = <C.Version *>ver
+        return obj
 
     @property
     def revision(self):
@@ -84,8 +93,7 @@ cdef class Version:
 
     def __repr__(self):
         cdef size_t addr = <size_t>&self._version
-        name = self.__class__.__name__
-        return f"<{name} '{self}' at 0x{addr:0x}>"
+        return f"<Version '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
         return C.pkgcraft_version_hash(self._version)
@@ -105,5 +113,13 @@ cdef class Version:
         C.pkgcraft_str_free(c_str)
         return (Version, (s,))
 
+    # TODO: move to __del__() when migrating to >=cython-3 since it's not
+    # supported in <cython-3 for cdef classes:
+    # https://github.com/cython/cython/pull/3804
     def __dealloc__(self):
-        C.pkgcraft_version_free(self._version)
+        if self.__class__ is Version:
+            C.pkgcraft_version_free(self._version)
+
+
+cdef class _BorrowedVersion(Version):
+    """Wrapper class that avoids deallocating the borrowed version pointer."""

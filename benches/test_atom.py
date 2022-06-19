@@ -38,7 +38,7 @@ def test_bench_atom_random(benchmark, lib, func):
 def test_bench_atom_property(benchmark, lib, func):
     atom = func('=cat/pkg-1-r2:3/4=[a,b,c]')
     version = benchmark(getattr, atom, 'version')
-    assert version.startswith('1')
+    assert str(version).startswith('1')
 
 @pytest.mark.parametrize("lib,func", atom_funcs)
 def test_bench_atom_property_none(benchmark, lib, func):

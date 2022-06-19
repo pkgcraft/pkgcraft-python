@@ -3,7 +3,7 @@ import operator
 import pytest
 import re
 
-from pkgcraft import Atom, Blocker, Cpv, PkgcraftError
+from pkgcraft import Atom, Blocker, Cpv, PkgcraftError, Version
 
 OperatorMap = {
     '<': operator.lt,
@@ -45,7 +45,7 @@ class TestAtom:
         assert a.slot_op == '='
         assert a.use_deps == ['a', 'b', 'c']
         assert a.repo == 'repo'
-        assert a.version == '1-r2'
+        assert a.version == Version('=1-r2', with_op=True)
         assert a.revision == '2'
         assert a.key == 'cat/pkg'
         assert a.cpv == 'cat/pkg-1-r2'
@@ -125,7 +125,7 @@ class TestCpv:
         assert a.slot_op is None
         assert a.use_deps is None
         assert a.repo is None
-        assert a.version == '1-r2'
+        assert a.version == Version('1-r2')
         assert a.revision == '2'
         assert a.key == 'cat/pkg'
         assert a.cpv == 'cat/pkg-1-r2'

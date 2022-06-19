@@ -141,8 +141,10 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on nonexistence.
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
-    char *pkgcraft_atom_version(Atom *atom);
+    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom(). Also, note
+    # that the returned pointer is borrowed from its related Atom object and should never be freed
+    # manually.
+    const Version *pkgcraft_atom_version(Atom *atom);
 
     # Parse a CPV string into an atom.
     #
@@ -259,3 +261,11 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The version argument should be a non-null Version pointer received from pkgcraft_version().
     char *pkgcraft_version_str(Version *version);
+
+    # Parse a string into a version with an operator.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The version argument should point to a valid string.
+    Version *pkgcraft_version_with_op(const char *version);

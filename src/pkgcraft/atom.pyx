@@ -4,6 +4,7 @@
 import functools
 
 from . cimport pkgcraft_c as C
+from .version cimport Version
 from .error import PkgcraftError
 
 include "pkgcraft.pxi"
@@ -34,7 +35,7 @@ cdef class Atom:
     'cat'
     >>> a.package
     'pkg'
-    >>> a.version
+    >>> str(a.version)
     '1-r2'
     >>> a.revision
     '2'
@@ -134,17 +135,15 @@ cdef class Atom:
 
         >>> from pkgcraft import Atom
         >>> a = Atom("=cat/pkg-1-r2")
-        >>> a.version
+        >>> str(a.version)
         '1-r2'
         >>> a = Atom("cat/pkg")
         >>> a.version is None
         True
         """
-        cdef char* c_str = C.pkgcraft_atom_version(self._atom)
-        if c_str:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
+        cdef const C.Version* ver = C.pkgcraft_atom_version(self._atom)
+        if ver:
+            return Version.borrowed(ver)
         else:
             return None
 
@@ -350,6 +349,9 @@ cdef class Atom:
         C.pkgcraft_str_free(c_str)
         return (Atom, (s, self._eapi))
 
+    # TODO: move to __del__() when migrating to >=cython-3 since it's not
+    # supported in <cython-3 for cdef classes:
+    # https://github.com/cython/cython/pull/3804
     def __dealloc__(self):
         C.pkgcraft_atom_free(self._atom)
 
@@ -365,7 +367,7 @@ cdef class Cpv(Atom):
     'cat'
     >>> cpv.package
     'pkg'
-    >>> cpv.version
+    >>> str(cpv.version)
     '1-r2'
 
     Invalid CPV
