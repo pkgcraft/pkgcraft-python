@@ -20,7 +20,7 @@ cdef class Version:
     >>> v.revision
     '2'
 
-    Invalid version
+    Invalid versions
     >>> v = Version("a")
     Traceback (most recent call last):
         ...
@@ -29,14 +29,18 @@ cdef class Version:
     1 | a
       | ^ Expected: ['0' ..= '9']
       |
+    >>> v = Version(">1-r2")
+    Traceback (most recent call last):
+        ...
+    pkgcraft.error.PkgcraftError: parsing failure: invalid version: ">1-r2"
+      |
+    1 | >1-r2
+      | ^ Expected: ['0' ..= '9']
+      |
     """
-    def __init__(self, str version, with_op=False):
+    def __init__(self, str version):
         version_bytes = version.encode()
-        if not with_op:
-            self._version = C.pkgcraft_version(version_bytes)
-        else:
-            self._version = C.pkgcraft_version_with_op(version_bytes)
-
+        self._version = C.pkgcraft_version(version_bytes)
         if not self._version:
             raise PkgcraftError
 
@@ -118,6 +122,31 @@ cdef class Version:
     def __dealloc__(self):
         if self.__class__ is Version:
             C.pkgcraft_version_free(self._version)
+
+
+cdef class VersionWithOp(Version):
+    """Package version with an operator.
+
+    Simple version
+    >>> v = VersionWithOp("=1")
+    >>> v.revision
+    '0'
+
+    Invalid version
+    >>> v = VersionWithOp("1-r2")
+    Traceback (most recent call last):
+        ...
+    pkgcraft.error.PkgcraftError: parsing failure: invalid version: "1-r2"
+      |
+    1 | 1-r2
+      | ^ Expected: one of "<", "=", ">", "~"
+      |
+    """
+    def __init__(self, str version):
+        version_bytes = version.encode()
+        self._version = C.pkgcraft_version_with_op(version_bytes)
+        if not self._version:
+            raise PkgcraftError
 
 
 cdef class _BorrowedVersion(Version):
