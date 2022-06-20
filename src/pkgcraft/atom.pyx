@@ -122,9 +122,9 @@ cdef class Atom:
         True
         """
         cdef int blocker = C.pkgcraft_atom_blocker(self._atom)
-        if not blocker:
-            return None
-        return Blocker(blocker)
+        if blocker:
+            return Blocker(blocker)
+        return None
 
     @property
     def version(self):
@@ -141,8 +141,7 @@ cdef class Atom:
         cdef const C.Version* ver = C.pkgcraft_atom_version(self._atom)
         if ver:
             return Version.borrowed(ver)
-        else:
-            return None
+        return None
 
     @property
     def revision(self):
@@ -164,8 +163,7 @@ cdef class Atom:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
             return s
-        else:
-            return None
+        return None
 
     @property
     def slot(self):
@@ -184,8 +182,7 @@ cdef class Atom:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
             return s
-        else:
-            return None
+        return None
 
     @property
     def subslot(self):
@@ -204,8 +201,7 @@ cdef class Atom:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
             return s
-        else:
-            return None
+        return None
 
     @property
     def slot_op(self):
@@ -224,8 +220,7 @@ cdef class Atom:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
             return s
-        else:
-            return None
+        return None
 
     @property
     def use_deps(self):
@@ -248,8 +243,7 @@ cdef class Atom:
             l = [array[i].decode() for i in range(length)]
             C.pkgcraft_str_array_free(array, length)
             return l
-        else:
-            return None
+        return None
 
     @property
     def repo(self):
@@ -268,8 +262,7 @@ cdef class Atom:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
             return s
-        else:
-            return None
+        return None
 
     @property
     def key(self):
