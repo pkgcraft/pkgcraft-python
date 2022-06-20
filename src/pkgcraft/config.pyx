@@ -9,10 +9,17 @@ from .error import PkgcraftError
 cdef class Config:
     """Config for the system."""
 
-    def __cinit__(self):
-        self._config = C.pkgcraft_config()
-        if not self._config:
+    def __init__(self):
+        self.load()
+
+    @staticmethod
+    def load():
+        """Load the system config."""
+        obj = <Config>Config.__new__(Config)
+        obj._config = C.pkgcraft_config()
+        if not obj._config:
             raise PkgcraftError
+        return obj
 
     @property
     def repos(self):
