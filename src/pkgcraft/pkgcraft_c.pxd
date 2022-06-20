@@ -17,9 +17,22 @@ cdef extern from "pkgcraft.h":
     cdef struct Atom:
         pass
 
+    # Opaque wrapper for Config objects.
+    cdef struct Config:
+        pass
+
+    # Opaque wrapper for Repo objects.
+    cdef struct Repo:
+        pass
+
     # Opaque wrapper for Version objects.
     cdef struct Version:
         pass
+
+    # Wrapper for configured repos.
+    cdef struct RepoConfig:
+        char *id;
+        const Repo *repo;
 
     # Parse a string into an atom using a specific EAPI. Pass NULL for the eapi argument in
     # order to parse using the latest EAPI with extensions (e.g. support for repo deps).
@@ -146,6 +159,33 @@ cdef extern from "pkgcraft.h":
     # manually.
     const Version *pkgcraft_atom_version(Atom *atom);
 
+    # Return the pkgcraft config for the system.
+    #
+    # Returns NULL on error.
+    Config *pkgcraft_config();
+
+    # Add an external repo to a config.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The path argument should be a valid path on the system.
+    const Repo *pkgcraft_config_add_repo(Config *config, const char *id, int priority, char *path);
+
+    # Free a config.
+    #
+    # # Safety
+    # The config argument should be a Config pointer received from pkgcraft_config().
+    void pkgcraft_config_free(Config *config);
+
+    # Return the repos for a config.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The config argument should be a Config pointer received from pkgcraft_config().
+    RepoConfig **pkgcraft_config_repos(Config *config, uintptr_t *len);
+
     # Parse a CPV string into an atom.
     #
     # Returns NULL on error.
@@ -208,6 +248,31 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument should point to a valid UTF-8 string.
     const char *pkgcraft_parse_version(const char *cstr);
+
+    # Compare two repos returning -1, 0, or 1 if the first repo is less than, equal to, or greater
+    # than the second repo, respectively.
+    #
+    # # Safety
+    # The repo arguments should be non-null Repo pointers.
+    int pkgcraft_repo_cmp(Repo *ptr1, Repo *ptr2);
+
+    # Return the hash value for a given repo.
+    #
+    # # Safety
+    # The repo argument should be a non-null Repo pointer.
+    uint64_t pkgcraft_repo_hash(Repo *repo);
+
+    # Return a given repo's id.
+    #
+    # # Safety
+    # The repo argument should be a non-null Repo pointer.
+    char *pkgcraft_repo_id(Repo *repo);
+
+    # Free an array of configured repos.
+    #
+    # # Safety
+    # The array argument should be the value received from pkgcraft_config_repos() or NULL.
+    void pkgcraft_repos_free(RepoConfig **array, uintptr_t len);
 
     # Free an array of strings previously allocated by rust.
     #

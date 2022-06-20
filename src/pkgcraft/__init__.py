@@ -7,5 +7,6 @@ except _PackageNotFoundError:
     pass
 
 from .atom import *
+from .config import *
 from .error import *
 from .version import *
