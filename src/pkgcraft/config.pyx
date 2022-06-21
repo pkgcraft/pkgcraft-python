@@ -3,6 +3,7 @@
 
 from . cimport pkgcraft_c as C
 from .repo cimport Repo
+from ._misc import ImmutableDict
 from .error import PkgcraftError
 
 
@@ -26,16 +27,17 @@ cdef class Config:
         """Return the config's repo mapping."""
         cdef C.RepoConfig **repos
         cdef size_t length
-        cdef dict d = {}
+        cdef dict d
 
         if self._repos is None:
             repos = C.pkgcraft_config_repos(self._config, &length)
+            d = {}
             if repos:
                 for i in range(length):
                     r = repos[i]
                     d[r.id.decode()] = Repo.borrowed(r.repo)
                 C.pkgcraft_repos_free(repos, length)
-            self._repos = d
+            self._repos = ImmutableDict(d)
         return self._repos
 
     def add_repo(self, str path_str, str id_str=None, int priority=0):

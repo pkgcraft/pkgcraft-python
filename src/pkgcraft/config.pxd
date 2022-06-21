@@ -6,4 +6,4 @@ from . cimport pkgcraft_c as C
 cdef class Config:
     cdef C.Config *_config
     # cached fields
-    cdef dict _repos
+    cdef object _repos
