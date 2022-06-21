@@ -4,11 +4,11 @@
 import functools
 
 from . cimport pkgcraft_c as C
+from ._misc cimport SENTINEL
 from .version cimport Version
 from .error import PkgcraftError
 
 include "pkgcraft.pxi"
-
 
 # TODO: merge with Atom.cached function when cython bug is fixed
 # https://github.com/cython/cython/issues/1434
@@ -43,7 +43,7 @@ cdef class Atom:
     '0'
     >>> a.subslot
     '2'
-    >>> a.use_deps
+    >>> a.use
     ['a', 'b']
     >>> a.repo
     'repo'
@@ -58,6 +58,10 @@ cdef class Atom:
       |            ^ Expected: one of ",", "]"
       |
     """
+    def __cinit__(self):
+        self._version = SENTINEL
+        self._use = SENTINEL
+
     def __init__(self, str atom_str, str eapi_str=None):
         atom_bytes = atom_str.encode()
         cdef char* atom = atom_bytes
@@ -142,10 +146,12 @@ cdef class Atom:
         >>> a.version is None
         True
         """
-        cdef const C.Version* ver = C.pkgcraft_atom_version(self._atom)
-        if ver:
-            return Version.borrowed(ver)
-        return None
+        cdef const C.Version* ver
+
+        if self._version is SENTINEL:
+            ver = C.pkgcraft_atom_version(self._atom)
+            self._version = Version.borrowed(ver) if ver else None
+        return self._version
 
     @property
     def revision(self):
@@ -227,27 +233,29 @@ cdef class Atom:
         return None
 
     @property
-    def use_deps(self):
+    def use(self):
         """Get an atom's USE deps.
 
         >>> from pkgcraft import Atom
         >>> a = Atom("=cat/pkg-1-r2[a,b,c]")
-        >>> a.use_deps
+        >>> a.use
         ['a', 'b', 'c']
         >>> a = Atom("=cat/pkg-1-r2")
-        >>> a.use_deps is None
+        >>> a.use is None
         True
         """
         cdef char **array
         cdef size_t length
         cdef list l = []
 
-        array = C.pkgcraft_atom_use_deps(self._atom, &length)
-        if array:
-            l = [array[i].decode() for i in range(length)]
-            C.pkgcraft_str_array_free(array, length)
-            return l
-        return None
+        if self._use is SENTINEL:
+            array = C.pkgcraft_atom_use_deps(self._atom, &length)
+            if array:
+                self._use = [array[i].decode() for i in range(length)]
+                C.pkgcraft_str_array_free(array, length)
+            else:
+                self._use = None
+        return self._use
 
     @property
     def repo(self):

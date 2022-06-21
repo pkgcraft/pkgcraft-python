@@ -26,7 +26,7 @@ class TestAtom:
         assert a.slot is None
         assert a.subslot is None
         assert a.slot_op is None
-        assert a.use_deps is None
+        assert a.use is None
         assert a.repo is None
         assert a.version is None
         assert a.revision is None
@@ -43,7 +43,7 @@ class TestAtom:
         assert a.slot == '0'
         assert a.subslot == '2'
         assert a.slot_op == '='
-        assert a.use_deps == ['a', 'b', 'c']
+        assert a.use == ['a', 'b', 'c']
         assert a.repo == 'repo'
         assert a.version == VersionWithOp('=1-r2')
         assert a.revision == '2'
@@ -123,7 +123,7 @@ class TestCpv:
         assert a.slot is None
         assert a.subslot is None
         assert a.slot_op is None
-        assert a.use_deps is None
+        assert a.use is None
         assert a.repo is None
         assert a.version == Version('1-r2')
         assert a.revision == '2'
