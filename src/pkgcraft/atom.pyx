@@ -87,10 +87,12 @@ cdef class Atom:
         >>> a.category
         'cat'
         """
-        cdef char* c_str = C.pkgcraft_atom_category(self._atom)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        cdef char* c_str
+        if self._category is None:
+            c_str = C.pkgcraft_atom_category(self._atom)
+            self._category = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+        return self._category
 
     @property
     def package(self):
@@ -101,10 +103,12 @@ cdef class Atom:
         >>> a.package
         'pkg'
         """
-        cdef char* c_str = C.pkgcraft_atom_package(self._atom)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        cdef char* c_str
+        if self._package is None:
+            c_str = C.pkgcraft_atom_package(self._atom)
+            self._package = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+        return self._package
 
     @property
     def blocker(self):
