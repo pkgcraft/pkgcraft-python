@@ -20,7 +20,7 @@ def _cached_atom(cls, atom_str, eapi_str=None):
 cdef class Cpv:
     """CPV string parsing.
 
-    >>> from pkgcraft import Cpv
+    >>> from pkgcraft.atom import Cpv
 
     Valid CPV
     >>> cpv = Cpv("cat/pkg-1-r2")
@@ -56,7 +56,7 @@ cdef class Cpv:
     def category(self):
         """Get an atom's category.
 
-        >>> from pkgcraft import Cpv
+        >>> from pkgcraft.atom import Cpv
         >>> a = Cpv("cat/pkg-1-r2")
         >>> a.category
         'cat'
@@ -72,7 +72,7 @@ cdef class Cpv:
     def package(self):
         """Get an atom's package.
 
-        >>> from pkgcraft import Cpv
+        >>> from pkgcraft.atom import Cpv
         >>> a = Cpv("cat/pkg-1-r2")
         >>> a.package
         'pkg'
@@ -88,7 +88,7 @@ cdef class Cpv:
     def version(self):
         """Get an atom's version.
 
-        >>> from pkgcraft import Cpv
+        >>> from pkgcraft.atom import Cpv
         >>> a = Cpv("cat/pkg-1-r2")
         >>> str(a.version)
         '1-r2'
@@ -104,7 +104,7 @@ cdef class Cpv:
     def revision(self):
         """Get an atom's revision.
 
-        >>> from pkgcraft import Cpv
+        >>> from pkgcraft.atom import Cpv
         >>> a = Cpv("cat/pkg-1-r2")
         >>> a.revision
         '2'
@@ -123,7 +123,7 @@ cdef class Cpv:
     def key(self):
         """Get the concatenated string of an atom's category and package.
 
-        >>> from pkgcraft import Cpv
+        >>> from pkgcraft.atom import Cpv
         >>> a = Cpv("cat/pkg-1-r2")
         >>> a.key
         'cat/pkg'
@@ -169,7 +169,7 @@ cdef class Cpv:
         """Support pickling Cpv objects.
 
         >>> import pickle
-        >>> from pkgcraft import Cpv
+        >>> from pkgcraft.atom import Cpv
         >>> a = Cpv('cat/pkg-1-r2')
         >>> b = pickle.loads(pickle.dumps(a))
         >>> a == b
@@ -190,7 +190,7 @@ cdef class Cpv:
 cdef class Atom(Cpv):
     """Package atom parsing.
 
-    >>> from pkgcraft import Atom
+    >>> from pkgcraft.atom import Atom
 
     Simple atom
     >>> a = Atom("cat/pkg")
@@ -255,7 +255,7 @@ cdef class Atom(Cpv):
     def blocker(self):
         """Get an atom's blocker.
 
-        >>> from pkgcraft import Atom
+        >>> from pkgcraft.atom import Atom
         >>> a = Atom("cat/pkg")
         >>> a.blocker is None
         True
@@ -275,7 +275,7 @@ cdef class Atom(Cpv):
     def slot(self):
         """Get an atom's slot.
 
-        >>> from pkgcraft import Atom
+        >>> from pkgcraft.atom import Atom
         >>> a = Atom("=cat/pkg-1-r2:3/4")
         >>> a.slot
         '3'
@@ -294,7 +294,7 @@ cdef class Atom(Cpv):
     def subslot(self):
         """Get an atom's subslot.
 
-        >>> from pkgcraft import Atom
+        >>> from pkgcraft.atom import Atom
         >>> a = Atom("=cat/pkg-1-r2:3/4")
         >>> a.subslot
         '4'
@@ -313,7 +313,7 @@ cdef class Atom(Cpv):
     def slot_op(self):
         """Get an atom's slot operator.
 
-        >>> from pkgcraft import Atom
+        >>> from pkgcraft.atom import Atom
         >>> a = Atom("=cat/pkg-1-r2:=")
         >>> a.slot_op
         '='
@@ -332,7 +332,7 @@ cdef class Atom(Cpv):
     def use(self):
         """Get an atom's USE deps.
 
-        >>> from pkgcraft import Atom
+        >>> from pkgcraft.atom import Atom
         >>> a = Atom("=cat/pkg-1-r2[a,b,c]")
         >>> a.use
         ('a', 'b', 'c')
@@ -356,7 +356,7 @@ cdef class Atom(Cpv):
     def repo(self):
         """Get an atom's repo.
 
-        >>> from pkgcraft import Atom
+        >>> from pkgcraft.atom import Atom
         >>> a = Atom("=cat/pkg-1-r2::repo")
         >>> a.repo
         'repo'
@@ -375,7 +375,7 @@ cdef class Atom(Cpv):
     def cpv(self):
         """Get the concatenated string of an atom's category, package, and version.
 
-        >>> from pkgcraft import Atom
+        >>> from pkgcraft.atom import Atom
         >>> a = Atom("=cat/pkg-1-r2")
         >>> a.cpv
         'cat/pkg-1-r2'
@@ -389,7 +389,7 @@ cdef class Atom(Cpv):
         """Support pickling Atom objects.
 
         >>> import pickle
-        >>> from pkgcraft import Atom
+        >>> from pkgcraft.atom import Atom
         >>> a = Atom('=cat/pkg-1-r2:0/2=[a,b,c]')
         >>> b = pickle.loads(pickle.dumps(a))
         >>> a == b

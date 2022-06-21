@@ -1,11 +1,11 @@
-from pkgcraft import Config
+import pkgcraft
 
 
 class TestRepo:
 
     def test_id(self, repo):
         path = repo.path
-        config = Config.load()
+        config = pkgcraft.config.load()
 
         # default
         repo = config.add_repo(path)
@@ -23,7 +23,7 @@ class TestRepo:
 
     def test_hash(self, repo):
         path = repo.path
-        config = Config.load()
+        config = pkgcraft.config.load()
         repo1 = config.add_repo(path)
         repo2 = config.add_repo(path, "fake")
         s = {repo1, repo2}

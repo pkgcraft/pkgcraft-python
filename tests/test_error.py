@@ -2,7 +2,7 @@ import pickle
 
 import pytest
 
-from pkgcraft import PkgcraftError
+from pkgcraft.error import PkgcraftError
 
 
 class TestPkgcraftError:

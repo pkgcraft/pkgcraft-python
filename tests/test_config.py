@@ -1,8 +1,8 @@
-from pkgcraft import Config
+from pkgcraft.config import Config
 
 
 class TestConfig:
 
     def test_load(self):
-        config = Config.load()
+        config = Config()
         assert config

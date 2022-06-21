@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from pkgcraft import Atom as pkgcraft_atom
+from pkgcraft.atom import Atom as pkgcraft_atom
 from pkgcore.ebuild.atom import atom as pkgcore_atom
 from portage.dep import Atom as portage_atom
 

@@ -1,6 +1,7 @@
 import pytest
 
-from pkgcraft import parse, PkgcraftError
+from pkgcraft import parse
+from pkgcraft.error import PkgcraftError
 
 
 def test_category():

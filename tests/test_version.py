@@ -2,7 +2,8 @@ import operator
 
 import pytest
 
-from pkgcraft import PkgcraftError, Version
+from pkgcraft.error import PkgcraftError
+from pkgcraft.version import Version
 
 OperatorMap = {
     '<': operator.lt,

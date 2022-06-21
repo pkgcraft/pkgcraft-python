@@ -7,20 +7,18 @@ from ._misc import ImmutableDict
 from .error import PkgcraftError
 
 
+def load():
+    """Load the system config."""
+    return Config()
+
+
 cdef class Config:
     """Config for the system."""
 
     def __init__(self):
-        self.load()
-
-    @staticmethod
-    def load():
-        """Load the system config."""
-        obj = <Config>Config.__new__(Config)
-        obj._config = C.pkgcraft_config()
-        if not obj._config:
+        self._config = C.pkgcraft_config()
+        if not self._config:
             raise PkgcraftError
-        return obj
 
     @property
     def repos(self):

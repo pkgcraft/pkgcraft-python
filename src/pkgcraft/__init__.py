@@ -5,8 +5,3 @@ try:
 except _PackageNotFoundError:
     # package is not installed
     pass
-
-from .atom import *
-from .config import *
-from .error import *
-from .version import *

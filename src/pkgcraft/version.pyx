@@ -8,7 +8,7 @@ from .error import PkgcraftError
 cdef class Version:
     """Package version parsing.
 
-    >>> from pkgcraft import Version
+    >>> from pkgcraft.version import Version
 
     Simple version
     >>> v = Version("1")
@@ -55,7 +55,7 @@ cdef class Version:
     def revision(self):
         """Get a version's revision.
 
-        >>> from pkgcraft import Version
+        >>> from pkgcraft.version import Version
         >>> v = Version("1-r2")
         >>> v.revision
         '2'
@@ -105,7 +105,7 @@ cdef class Version:
         """Support pickling Version objects.
 
         >>> import pickle
-        >>> from pkgcraft import Version
+        >>> from pkgcraft.version import Version
         >>> a = Version('1-r1')
         >>> b = pickle.loads(pickle.dumps(a))
         >>> a == b
