@@ -6,8 +6,6 @@ from . cimport pkgcraft_c as C
 
 cdef class Cpv:
     cdef C.Atom *_atom
-    cdef str _eapi
-
     # cached fields
     cdef str _category
     cdef str _package
@@ -15,4 +13,6 @@ cdef class Cpv:
 
 
 cdef class Atom(Cpv):
+    cdef str _eapi
+    # cached fields
     cdef object _use

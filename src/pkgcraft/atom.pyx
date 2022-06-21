@@ -187,7 +187,7 @@ cdef class Cpv:
         C.pkgcraft_atom_free(self._atom)
 
 
-cdef class Atom:
+cdef class Atom(Cpv):
     """Package atom parsing.
 
     >>> from pkgcraft import Atom
