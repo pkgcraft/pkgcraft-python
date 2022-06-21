@@ -43,7 +43,7 @@ class TestAtom:
         assert a.slot == '0'
         assert a.subslot == '2'
         assert a.slot_op == '='
-        assert a.use == ['a', 'b', 'c']
+        assert a.use == ('a', 'b', 'c')
         assert a.repo == 'repo'
         assert a.version == VersionWithOp('=1-r2')
         assert a.revision == '2'

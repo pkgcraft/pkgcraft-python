@@ -214,7 +214,7 @@ cdef class Atom(Cpv):
     >>> a.subslot
     '2'
     >>> a.use
-    ['a', 'b']
+    ('a', 'b')
     >>> a.repo
     'repo'
 
@@ -335,19 +335,18 @@ cdef class Atom(Cpv):
         >>> from pkgcraft import Atom
         >>> a = Atom("=cat/pkg-1-r2[a,b,c]")
         >>> a.use
-        ['a', 'b', 'c']
+        ('a', 'b', 'c')
         >>> a = Atom("=cat/pkg-1-r2")
         >>> a.use is None
         True
         """
         cdef char **array
         cdef size_t length
-        cdef list l = []
 
         if self._use is SENTINEL:
             array = C.pkgcraft_atom_use_deps(self._atom, &length)
             if array:
-                self._use = [array[i].decode() for i in range(length)]
+                self._use = tuple(array[i].decode() for i in range(length))
                 C.pkgcraft_str_array_free(array, length)
             else:
                 self._use = None
