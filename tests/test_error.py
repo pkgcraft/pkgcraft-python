@@ -11,6 +11,10 @@ class TestPkgcraftError:
         with pytest.raises(PkgcraftError, match=f'error message'):
             raise PkgcraftError('error message')
 
+    def test_no_c_error(self):
+        with pytest.raises(RuntimeError, match=f'no error message'):
+            raise PkgcraftError
+
     def test_pickle(self):
         e1 = PkgcraftError('error message')
         e2 = pickle.loads(pickle.dumps(e1))
