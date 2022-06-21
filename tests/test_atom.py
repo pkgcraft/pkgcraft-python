@@ -120,19 +120,13 @@ class TestCpv:
         a = Cpv('cat/pkg-1-r2')
         assert a.category == 'cat'
         assert a.package == 'pkg'
-        assert a.slot is None
-        assert a.subslot is None
-        assert a.slot_op is None
-        assert a.use is None
-        assert a.repo is None
         assert a.version == Version('1-r2')
         assert a.revision == '2'
         assert a.key == 'cat/pkg'
-        assert a.cpv == 'cat/pkg-1-r2'
         assert str(a) == 'cat/pkg-1-r2'
         assert repr(a).startswith("<Cpv 'cat/pkg-1-r2' at 0x")
 
     def test_invalid(self):
-        for s in ('invalid', 'cat-1', '=cat/pkg-1'):
+        for s in ('invalid', 'cat-1', 'cat/pkg', '=cat/pkg-1'):
             with pytest.raises(PkgcraftError, match=f'invalid cpv: "{s}"'):
                 Cpv(s)

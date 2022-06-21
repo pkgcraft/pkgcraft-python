@@ -4,7 +4,7 @@
 from . cimport pkgcraft_c as C
 
 
-cdef class Atom:
+cdef class Cpv:
     cdef C.Atom *_atom
     cdef str _eapi
 
@@ -12,8 +12,7 @@ cdef class Atom:
     cdef str _category
     cdef str _package
     cdef object _version
+
+
+cdef class Atom(Cpv):
     cdef object _use
-
-
-cdef class Cpv(Atom):
-    pass
