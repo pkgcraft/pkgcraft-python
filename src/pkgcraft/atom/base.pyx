@@ -3,12 +3,12 @@
 
 import functools
 
-from . cimport pkgcraft_c as C
-from ._misc cimport SENTINEL
+from .. cimport pkgcraft_c as C
+from .._misc cimport SENTINEL
 from .version cimport Version
-from .error import PkgcraftError
+from ..error import PkgcraftError
 
-include "pkgcraft.pxi"
+include "../pkgcraft.pxi"
 
 # TODO: merge with Atom.cached function when cython bug is fixed
 # https://github.com/cython/cython/issues/1434

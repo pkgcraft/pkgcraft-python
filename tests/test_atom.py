@@ -5,7 +5,7 @@ import re
 
 from pkgcraft.atom import Atom, Blocker, Cpv
 from pkgcraft.error import PkgcraftError
-from pkgcraft.version import Version, VersionWithOp
+from pkgcraft.atom import Version, VersionWithOp
 
 OperatorMap = {
     '<': operator.lt,
