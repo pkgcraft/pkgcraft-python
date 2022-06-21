@@ -28,13 +28,15 @@ cdef class Config:
         cdef size_t length
         cdef dict d = {}
 
-        repos = C.pkgcraft_config_repos(self._config, &length)
-        if repos:
-            for i in range(length):
-                r = repos[i]
-                d[r.id.decode()] = Repo.borrowed(r.repo)
-            C.pkgcraft_repos_free(repos, length)
-        return d
+        if self._repos is None:
+            repos = C.pkgcraft_config_repos(self._config, &length)
+            if repos:
+                for i in range(length):
+                    r = repos[i]
+                    d[r.id.decode()] = Repo.borrowed(r.repo)
+                C.pkgcraft_repos_free(repos, length)
+            self._repos = d
+        return self._repos
 
     def add_repo(self, str path_str, str id_str=None, int priority=0):
         path_bytes = path_str.encode()
@@ -45,6 +47,9 @@ cdef class Config:
         cdef const C.Repo* repo = C.pkgcraft_config_add_repo(self._config, id, priority, path)
         if not repo:
             raise PkgcraftError
+
+        # reset cached repos
+        self._repos = None
         return Repo.borrowed(repo)
 
     def __dealloc__(self):
