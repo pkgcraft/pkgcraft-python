@@ -8,8 +8,11 @@ from .error import PkgcraftError
 cdef class Repo:
     """Package repo."""
 
+    def __init__(self):
+        raise PkgcraftError(f"{self.__class__} doesn't support regular creation")
+
     @staticmethod
-    cdef Repo borrowed(const C.Repo *repo):
+    cdef Repo ref(const C.Repo *repo):
         # create instance without calling __init__()
         obj = <Repo>Repo.__new__(Repo)
         obj._repo = <C.Repo *>repo

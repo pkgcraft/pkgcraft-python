@@ -33,7 +33,7 @@ cdef class Config:
             if repos:
                 for i in range(length):
                     r = repos[i]
-                    d[r.id.decode()] = Repo.borrowed(r.repo)
+                    d[r.id.decode()] = Repo.ref(r.repo)
                 C.pkgcraft_repos_free(repos, length)
             self._repos = ImmutableDict(d)
         return self._repos
@@ -50,7 +50,7 @@ cdef class Config:
 
         # reset cached repos
         self._repos = None
-        return Repo.borrowed(repo)
+        return Repo.ref(repo)
 
     def __dealloc__(self):
         C.pkgcraft_config_free(self._config)

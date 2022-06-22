@@ -7,4 +7,4 @@ cdef class Repo:
     cdef C.Repo *_repo
 
     @staticmethod
-    cdef Repo borrowed(const C.Repo *)
+    cdef Repo ref(const C.Repo *)
