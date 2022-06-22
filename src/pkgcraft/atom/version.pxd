@@ -5,6 +5,8 @@ from pkgcraft cimport pkgcraft_c as C
 
 cdef class Version:
     cdef C.Version *_version
+    # flag denoting borrowed _version that shouldn't be deallocated
+    cdef bint _ref
 
     @staticmethod
-    cdef Version borrowed(const C.Version *)
+    cdef Version ref(const C.Version *)

@@ -87,7 +87,7 @@ cdef class Cpv:
 
         if self._version is SENTINEL:
             ver = C.pkgcraft_atom_version(self._atom)
-            self._version = Version.borrowed(ver) if ver else None
+            self._version = Version.ref(ver) if ver else None
         return self._version
 
     @property

@@ -6,7 +6,7 @@ from ..error import PkgcraftError
 
 
 cdef class Version:
-    """Package version parsing.
+    """Atom version.
 
     >>> from pkgcraft.atom import Version
 
@@ -45,10 +45,11 @@ cdef class Version:
             raise PkgcraftError
 
     @staticmethod
-    cdef Version borrowed(const C.Version *ver):
+    cdef Version ref(const C.Version *ver):
         # create instance without calling __init__()
-        obj = <_BorrowedVersion>_BorrowedVersion.__new__(_BorrowedVersion)
+        obj = <Version>Version.__new__(Version)
         obj._version = <C.Version *>ver
+        obj._ref = True
         return obj
 
     @property
@@ -120,12 +121,12 @@ cdef class Version:
     # supported in <cython-3 for cdef classes:
     # https://github.com/cython/cython/pull/3804
     def __dealloc__(self):
-        if self.__class__ is Version:
+        if not self._ref:
             C.pkgcraft_version_free(self._version)
 
 
 cdef class VersionWithOp(Version):
-    """Package version with an operator.
+    """Atom version with an operator.
 
     Simple version
     >>> v = VersionWithOp("=1")
@@ -147,7 +148,3 @@ cdef class VersionWithOp(Version):
         self._version = C.pkgcraft_version_with_op(version_bytes)
         if not self._version:
             raise PkgcraftError
-
-
-cdef class _BorrowedVersion(Version):
-    """Wrapper class that avoids deallocating the borrowed version pointer."""
