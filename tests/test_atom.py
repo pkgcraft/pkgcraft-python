@@ -3,9 +3,8 @@ import operator
 import pytest
 import re
 
-from pkgcraft.atom import Atom, Blocker, Cpv
+from pkgcraft.atom import Atom, Blocker, Cpv, Version, VersionWithOp
 from pkgcraft.error import PkgcraftError
-from pkgcraft.atom import Version, VersionWithOp
 
 OperatorMap = {
     '<': operator.lt,
