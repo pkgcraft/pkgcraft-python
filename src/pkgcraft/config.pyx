@@ -25,11 +25,10 @@ cdef class Config:
         if self._repos is None:
             repos = C.pkgcraft_config_repos(self._config, &length)
             d = {}
-            if repos:
-                for i in range(length):
-                    r = repos[i]
-                    d[r.id.decode()] = Repo.ref(r.repo)
-                C.pkgcraft_repos_free(repos, length)
+            for i in range(length):
+                r = repos[i]
+                d[r.id.decode()] = Repo.ref(r.repo)
+            C.pkgcraft_repos_free(repos, length)
             self._repos = ImmutableDict(d)
         return self._repos
 

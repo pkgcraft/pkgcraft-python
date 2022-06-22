@@ -180,8 +180,6 @@ cdef extern from "pkgcraft.h":
 
     # Return the repos for a config.
     #
-    # Returns NULL on nonexistence.
-    #
     # # Safety
     # The config argument should be a Config pointer received from pkgcraft_config().
     RepoConfig **pkgcraft_config_repos(Config *config, uintptr_t *len);
