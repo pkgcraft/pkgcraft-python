@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: MIT
 # cython: language_level=3
 
-from .base cimport Atom, Blocker
-from .cpv cimport Cpv
-from .version cimport Version, VersionWithOp
+from .atom.base cimport Atom, Blocker
+from .atom.cpv cimport Cpv
+from .atom.version cimport Version, VersionWithOp

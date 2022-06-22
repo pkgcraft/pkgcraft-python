@@ -21,6 +21,14 @@ cdef extern from "pkgcraft.h":
     cdef struct Config:
         pass
 
+    # Opaque wrapper for Pkg objects.
+    cdef struct Pkg:
+        pass
+
+    # Opaque wrapper for PkgIter objects.
+    cdef struct PkgIter:
+        pass
+
     # Opaque wrapper for Repo objects.
     cdef struct Repo:
         pass
@@ -247,24 +255,56 @@ cdef extern from "pkgcraft.h":
     # The argument should point to a valid UTF-8 string.
     const char *pkgcraft_parse_version(const char *cstr);
 
+    # Return a given package's atom.
+    #
+    # # Safety
+    # The ptr argument should be a non-null Pkg pointer.
+    const Atom *pkgcraft_pkg_atom(Pkg *ptr);
+
+    # Free an package.
+    #
+    # # Safety
+    # The ptr argument should be a non-null Pkg pointer.
+    void pkgcraft_pkg_free(Pkg *ptr);
+
     # Compare two repos returning -1, 0, or 1 if the first repo is less than, equal to, or greater
     # than the second repo, respectively.
     #
     # # Safety
-    # The repo arguments should be non-null Repo pointers.
+    # The ptr arguments should be non-null Repo pointers.
     int pkgcraft_repo_cmp(Repo *ptr1, Repo *ptr2);
 
     # Return the hash value for a given repo.
     #
     # # Safety
-    # The repo argument should be a non-null Repo pointer.
-    uint64_t pkgcraft_repo_hash(Repo *repo);
+    # The ptr argument should be a non-null Repo pointer.
+    uint64_t pkgcraft_repo_hash(Repo *ptr);
 
     # Return a given repo's id.
     #
     # # Safety
-    # The repo argument should be a non-null Repo pointer.
-    char *pkgcraft_repo_id(Repo *repo);
+    # The ptr argument should be a non-null Repo pointer.
+    char *pkgcraft_repo_id(Repo *ptr);
+
+    # Return a package iterator for a given repo.
+    #
+    # # Safety
+    # The ptr argument should be a non-null Repo pointer.
+    PkgIter *pkgcraft_repo_iter(Repo *ptr);
+
+    # Free a repo iterator.
+    #
+    # # Safety
+    # The ptr argument should be a non-null PkgIter pointer received from pkgcraft_repo_iter().
+    void pkgcraft_repo_iter_free(PkgIter *ptr);
+
+    # Return the next package from a given package iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The ptr argument should be a non-null PkgIter pointer.
+    Pkg *pkgcraft_repo_iter_next(PkgIter *ptr);
 
     # Free an array of configured repos.
     #

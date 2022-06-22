@@ -2,6 +2,7 @@
 # cython: language_level=3
 
 from . cimport pkgcraft_c as C
+from .pkg cimport Pkg
 from .error import PkgcraftError
 
 
@@ -21,10 +22,26 @@ cdef class Repo:
     @property
     def id(self):
         """Get a repo's id."""
-        cdef char* c_str = C.pkgcraft_repo_id(self._repo)
+        cdef char *c_str = C.pkgcraft_repo_id(self._repo)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
+
+    def __iter__(self):
+        if self._repo_iter:
+            C.pkgcraft_repo_iter_free(self._repo_iter)
+        self._repo_iter = C.pkgcraft_repo_iter(self._repo)
+        return self
+
+    def __next__(self):
+        # verify __iter__() was called since cython's generated next() method doesn't check
+        if not self._repo_iter:
+            raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
+
+        cdef C.Pkg *pkg = C.pkgcraft_repo_iter_next(self._repo_iter)
+        if pkg:
+            return Pkg.create(pkg)
+        raise StopIteration
 
     def __lt__(self, Repo other):
         return C.pkgcraft_repo_cmp(self._repo, other._repo) == -1
@@ -54,3 +71,6 @@ cdef class Repo:
 
     def __hash__(self):
         return C.pkgcraft_repo_hash(self._repo)
+
+    def __dealloc__(self):
+        C.pkgcraft_repo_iter_free(self._repo_iter)

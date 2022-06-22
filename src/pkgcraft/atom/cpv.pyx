@@ -42,6 +42,14 @@ cdef class Cpv:
         if not self._atom:
             raise PkgcraftError
 
+    @staticmethod
+    cdef Cpv ref(const C.Atom *atom):
+        # create instance without calling __init__()
+        obj = <Cpv>Cpv.__new__(Cpv)
+        obj._atom = <C.Atom *>atom
+        obj._ref = True
+        return obj
+
     @property
     def category(self):
         """Get an atom's category.
@@ -174,4 +182,5 @@ cdef class Cpv:
     # supported in <cython-3 for cdef classes:
     # https://github.com/cython/cython/pull/3804
     def __dealloc__(self):
-        C.pkgcraft_atom_free(self._atom)
+        if not self._ref:
+            C.pkgcraft_atom_free(self._atom)

@@ -3,9 +3,8 @@
 
 from . cimport pkgcraft_c as C
 
-cdef class Repo:
-    cdef C.Repo *_repo
-    cdef C.PkgIter *_repo_iter
+cdef class Pkg:
+    cdef C.Pkg *_pkg
 
     @staticmethod
-    cdef Repo ref(const C.Repo *)
+    cdef Pkg create(C.Pkg *)

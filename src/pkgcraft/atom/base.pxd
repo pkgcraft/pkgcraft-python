@@ -3,6 +3,7 @@
 
 from .cpv cimport Cpv
 
+include "../pkgcraft.pxi"
 
 cdef class Atom(Cpv):
     cdef str _eapi

@@ -8,8 +8,6 @@ from .._misc cimport SENTINEL
 from .cpv cimport Cpv
 from ..error import PkgcraftError
 
-include "../pkgcraft.pxi"
-
 # TODO: merge with Atom.cached function when cython bug is fixed
 # https://github.com/cython/cython/issues/1434
 @functools.lru_cache(maxsize=10000)
