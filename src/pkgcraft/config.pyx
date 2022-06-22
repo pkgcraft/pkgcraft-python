@@ -7,11 +7,6 @@ from ._misc import ImmutableDict
 from .error import PkgcraftError
 
 
-def load():
-    """Load the system config."""
-    return Config()
-
-
 cdef class Config:
     """Config for the system."""
 
