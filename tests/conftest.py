@@ -5,6 +5,8 @@ from collections.abc import MutableSet
 
 import pytest
 
+from pkgcraft.atom import Cpv
+
 pjoin = os.path.join
 
 class _FileSet(MutableSet):
@@ -57,6 +59,7 @@ class EbuildRepo:
 
     def __init__(self, path, repo_id='fake', eapi='8', masters=(), arches=()):
         self.path = path
+        self.repo_id = repo_id
         self.arches = _FileSet(pjoin(self.path, 'profiles', 'arch.list'))
         self._today = datetime.today()
         try:
@@ -96,9 +99,8 @@ class EbuildRepo:
                     f.write(f'{p.eapi}\n')
 
     def create_ebuild(self, cpvstr, data=None, **kwargs):
-        from pkgcraft import Atom
-        atom = Atom(cpvstr)
-        ebuild_dir = pjoin(self.path, atom.category, atom.package)
+        cpv = Cpv(cpvstr)
+        ebuild_dir = pjoin(self.path, cpv.category, cpv.package)
         os.makedirs(ebuild_dir, exist_ok=True)
 
         # use defaults for some ebuild metadata if unset
@@ -108,7 +110,7 @@ class EbuildRepo:
         homepage = kwargs.pop('homepage', 'https://github.com/pkgcore/pkgcheck')
         license = kwargs.pop('license', 'blank')
 
-        ebuild_path = pjoin(ebuild_dir, f'{atom.package}-{atom.version}.ebuild')
+        ebuild_path = pjoin(ebuild_dir, f'{cpv.package}-{cpv.version}.ebuild')
         with open(ebuild_path, 'w') as f:
             if self.repo_id == 'gentoo':
                 f.write(textwrap.dedent(f"""\
