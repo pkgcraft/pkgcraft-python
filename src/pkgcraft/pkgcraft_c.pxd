@@ -48,57 +48,57 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on error.
     #
     # # Safety
-    # The atom argument should be a valid string while eapi can be a string or may be
+    # The atom argument should be a UTF-8 string while eapi can be a string or may be
     # NULL to use the default EAPI.
     Atom *pkgcraft_atom(char *atom, const char *eapi);
 
     # Return a given atom's blocker status, e.g. the atom "!cat/pkg" has a weak blocker.
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     Blocker pkgcraft_atom_blocker(Atom *atom);
 
     # Return a given atom's category, e.g. the atom "=cat/pkg-1-r2" has a category of "cat".
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_category(Atom *atom);
 
     # Compare two atoms returning -1, 0, or 1 if the first atom is less than, equal to, or greater
     # than the second atom, respectively.
     #
     # # Safety
-    # The atom arguments should be non-null Atom pointers received from pkgcraft_atom().
+    # The arguments must be non-null Atom pointers.
     int pkgcraft_atom_cmp(Atom *a1, Atom *a2);
 
     # Return a given atom's cpv, e.g. the atom "=cat/pkg-1-r2" has a cpv of "cat/pkg-1-r2".
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_cpv(Atom *atom);
 
     # Free an atom.
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a Atom pointer or NULL.
     void pkgcraft_atom_free(Atom *atom);
 
     # Return the hash value for a given atom.
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     uint64_t pkgcraft_atom_hash(Atom *atom);
 
     # Return a given atom's key, e.g. the atom "=cat/pkg-1-r2" has a key of "cat/pkg".
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_key(Atom *atom);
 
     # Return a given atom's package, e.g. the atom "=cat/pkg-1-r2" has a package of "pkg".
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_package(Atom *atom);
 
     # Return a given atom's repo, e.g. the atom "=cat/pkg-1-r2:3/4::repo" has a repo of "repo".
@@ -106,7 +106,7 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on nonexistence.
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_repo(Atom *atom);
 
     # Return a given atom's revision, e.g. the atom "=cat/pkg-1-r2" has a revision of "2".
@@ -114,7 +114,7 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on nonexistence.
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_revision(Atom *atom);
 
     # Return a given atom's slot, e.g. the atom "=cat/pkg-1-r2:3" has a slot of "3".
@@ -122,7 +122,7 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on nonexistence.
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_slot(Atom *atom);
 
     # Return a given atom's slot operator, e.g. the atom "=cat/pkg-1-r2:0=" has a slot operator of
@@ -131,13 +131,13 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on nonexistence.
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_slot_op(Atom *atom);
 
     # Return the string for a given atom.
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_str(Atom *atom);
 
     # Return a given atom's subslot, e.g. the atom "=cat/pkg-1-r2:3/4" has a subslot of "4".
@@ -145,7 +145,7 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on nonexistence.
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_subslot(Atom *atom);
 
     # Return a given atom's USE dependencies, e.g. the atom "=cat/pkg-1-r2[a,b,c]" has USE
@@ -154,7 +154,7 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on nonexistence.
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom().
+    # The argument must be a non-null Atom pointer.
     char **pkgcraft_atom_use_deps(Atom *atom, uintptr_t *len);
 
     # Return a given atom's version, e.g. the atom "=cat/pkg-1-r2" has a version of "1-r2".
@@ -162,9 +162,8 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on nonexistence.
     #
     # # Safety
-    # The atom argument should be a non-null Atom pointer received from pkgcraft_atom(). Also, note
-    # that the returned pointer is borrowed from its related Atom object and should never be freed
-    # manually.
+    # The argument must be a non-null Atom pointer. Also, note that the returned pointer
+    # is borrowed from its related Atom object and should never be freed manually.
     const Version *pkgcraft_atom_version(Atom *atom);
 
     # Return the pkgcraft config for the system.
@@ -183,13 +182,13 @@ cdef extern from "pkgcraft.h":
     # Free a config.
     #
     # # Safety
-    # The config argument should be a Config pointer received from pkgcraft_config().
+    # The argument must be a Config pointer or NULL.
     void pkgcraft_config_free(Config *config);
 
     # Return the repos for a config.
     #
     # # Safety
-    # The config argument should be a Config pointer received from pkgcraft_config().
+    # The config argument must be a non-null Config pointer.
     RepoConfig **pkgcraft_config_repos(Config *config, uintptr_t *len);
 
     # Parse a CPV string into an atom.
@@ -197,14 +196,15 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on error.
     #
     # # Safety
-    # The atom argument should be a valid UTF-8 string.
-    Atom *pkgcraft_cpv(char *atom);
+    # The argument should be a UTF-8 string.
+    Atom *pkgcraft_cpv(char *s);
 
-    # Get the most recent error message as a UTF-8 string, if none exists a null pointer is returned.
+    # Get the most recent error message.
+    #
+    # Returns NULL on nonexistence.
     #
     # # Safety
-    # The caller is expected to free the error string using error_message_free() after they're
-    # finished using it.
+    # The caller is expected to free the error string using pkgcraft_str_free().
     char *pkgcraft_last_error();
 
     # Parse an atom string.
@@ -212,7 +212,8 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on error.
     #
     # # Safety
-    # The argument should point to a valid UTF-8 string.
+    # The atom argument should be a UTF-8 string while eapi can be a string or may be
+    # NULL to use the default EAPI.
     char *pkgcraft_parse_atom(char *atom, const char *eapi);
 
     # Parse an atom category string.
@@ -220,123 +221,122 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on error.
     #
     # # Safety
-    # The argument should point to a valid UTF-8 string.
-    const char *pkgcraft_parse_category(const char *cstr);
+    # The argument should point to a UTF-8 string.
+    const char *pkgcraft_parse_category(const char *s);
 
     # Parse an atom cpv string.
     #
     # Returns NULL on error.
     #
     # # Safety
-    # The argument should point to a valid UTF-8 string.
-    const char *pkgcraft_parse_cpv(const char *cstr);
+    # The argument should point to a UTF-8 string.
+    const char *pkgcraft_parse_cpv(const char *s);
 
     # Parse an atom package string.
     #
     # Returns NULL on error.
     #
     # # Safety
-    # The argument should point to a valid UTF-8 string.
-    const char *pkgcraft_parse_package(const char *cstr);
+    # The argument should point to a UTF-8 string.
+    const char *pkgcraft_parse_package(const char *s);
 
     # Parse an atom repo string.
     #
     # Returns NULL on error.
     #
     # # Safety
-    # The argument should point to a valid UTF-8 string.
-    const char *pkgcraft_parse_repo(const char *cstr);
+    # The argument should point to a UTF-8 string.
+    const char *pkgcraft_parse_repo(const char *s);
 
     # Parse an atom version string.
     #
     # Returns NULL on error.
     #
     # # Safety
-    # The argument should point to a valid UTF-8 string.
-    const char *pkgcraft_parse_version(const char *cstr);
+    # The argument should point to a UTF-8 string.
+    const char *pkgcraft_parse_version(const char *s);
 
     # Return a given package's atom.
     #
     # # Safety
-    # The ptr argument should be a non-null Pkg pointer.
-    const Atom *pkgcraft_pkg_atom(Pkg *ptr);
+    # The argument must be a non-null Pkg pointer.
+    const Atom *pkgcraft_pkg_atom(Pkg *p);
 
     # Compare two packages returning -1, 0, or 1 if the first package is less than, equal to, or
     # greater than the second package, respectively.
     #
     # # Safety
-    # The ptr arguments should be non-null Pkg pointers.
-    int pkgcraft_pkg_cmp(Pkg *ptr1, Pkg *ptr2);
+    # The arguments must be non-null Pkg pointers.
+    int pkgcraft_pkg_cmp(Pkg *p1, Pkg *p2);
 
     # Free an package.
     #
     # # Safety
-    # The ptr argument should be a non-null Pkg pointer.
-    void pkgcraft_pkg_free(Pkg *ptr);
+    # The argument must be a non-null Pkg pointer or NULL.
+    void pkgcraft_pkg_free(Pkg *p);
 
     # Return the hash value for a given package.
     #
     # # Safety
-    # The ptr argument should be a non-null Pkg pointer.
-    uint64_t pkgcraft_pkg_hash(Pkg *ptr);
+    # The argument must be a non-null Pkg pointer.
+    uint64_t pkgcraft_pkg_hash(Pkg *p);
 
     # Compare two repos returning -1, 0, or 1 if the first repo is less than, equal to, or greater
     # than the second repo, respectively.
     #
     # # Safety
-    # The ptr arguments should be non-null Repo pointers.
-    int pkgcraft_repo_cmp(Repo *ptr1, Repo *ptr2);
+    # The arguments must be non-null Repo pointers.
+    int pkgcraft_repo_cmp(Repo *r1, Repo *r2);
 
     # Return the hash value for a given repo.
     #
     # # Safety
-    # The ptr argument should be a non-null Repo pointer.
-    uint64_t pkgcraft_repo_hash(Repo *ptr);
+    # The argument must be a non-null Repo pointer.
+    uint64_t pkgcraft_repo_hash(Repo *r);
 
     # Return a given repo's id.
     #
     # # Safety
-    # The ptr argument should be a non-null Repo pointer.
-    char *pkgcraft_repo_id(Repo *ptr);
+    # The argument must be a non-null Repo pointer.
+    char *pkgcraft_repo_id(Repo *p);
 
     # Return a package iterator for a given repo.
     #
     # # Safety
-    # The ptr argument should be a non-null Repo pointer.
-    PkgIter *pkgcraft_repo_iter(Repo *ptr);
+    # The argument must be a non-null Repo pointer.
+    PkgIter *pkgcraft_repo_iter(Repo *r);
 
     # Free a repo iterator.
     #
     # # Safety
-    # The ptr argument should be a non-null PkgIter pointer received from pkgcraft_repo_iter().
-    void pkgcraft_repo_iter_free(PkgIter *ptr);
+    # The argument must be a non-null PkgIter pointer or NULL.
+    void pkgcraft_repo_iter_free(PkgIter *i);
 
     # Return the next package from a given package iterator.
     #
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The ptr argument should be a non-null PkgIter pointer.
-    Pkg *pkgcraft_repo_iter_next(PkgIter *ptr);
+    # The argument must be a non-null PkgIter pointer.
+    Pkg *pkgcraft_repo_iter_next(PkgIter *i);
 
     # Free an array of configured repos.
     #
     # # Safety
-    # The array argument should be the value received from pkgcraft_config_repos() or NULL.
-    void pkgcraft_repos_free(RepoConfig **array, uintptr_t len);
+    # The argument must be the value received from pkgcraft_config_repos() or NULL along with the
+    # length of the array.
+    void pkgcraft_repos_free(RepoConfig **repos, uintptr_t len);
 
-    # Free an array of strings previously allocated by rust.
+    # Free an array of strings.
     #
     # # Safety
-    # This allows calling against NULL since some string array related functions return NULL when no
-    # value exists.
-    void pkgcraft_str_array_free(char **array, uintptr_t len);
+    # The argument must be a pointer to a string array or NULL along with the length of the array.
+    void pkgcraft_str_array_free(char **strs, uintptr_t len);
 
-    # Free a string previously allocated by rust.
+    # Free a string.
     #
     # # Safety
-    # This allows calling against NULL since some string-related functions return NULL when no value
-    # exists.
+    # The argument must be a string pointer or NULL.
     void pkgcraft_str_free(char *s);
 
     # Parse a string into a version.
