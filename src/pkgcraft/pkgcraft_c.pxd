@@ -298,7 +298,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Repo pointer.
-    char *pkgcraft_repo_id(Repo *p);
+    char *pkgcraft_repo_id(Repo *r);
 
     # Return a package iterator for a given repo.
     #
@@ -319,6 +319,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null PkgIter pointer.
     Pkg *pkgcraft_repo_iter_next(PkgIter *i);
+
+    # Return a given repo's length.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    uintptr_t pkgcraft_repo_len(Repo *r);
 
     # Free an array of configured repos.
     #

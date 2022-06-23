@@ -28,6 +28,9 @@ cdef class Repo:
         C.pkgcraft_str_free(c_str)
         return s
 
+    def __len__(self):
+        return C.pkgcraft_repo_len(self._repo)
+
     def __iter__(self):
         if self._repo_iter is not NULL:
             C.pkgcraft_repo_iter_free(self._repo_iter)
