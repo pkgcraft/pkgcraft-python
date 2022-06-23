@@ -29,18 +29,18 @@ cdef class Repo:
         return s
 
     def __iter__(self):
-        if self._repo_iter:
+        if self._repo_iter is not NULL:
             C.pkgcraft_repo_iter_free(self._repo_iter)
         self._repo_iter = C.pkgcraft_repo_iter(self._repo)
         return self
 
     def __next__(self):
         # verify __iter__() was called since cython's generated next() method doesn't check
-        if not self._repo_iter:
+        if self._repo_iter is NULL:
             raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
 
         cdef C.Pkg *pkg = C.pkgcraft_repo_iter_next(self._repo_iter)
-        if pkg:
+        if pkg is not NULL:
             return Pkg.create(pkg)
         raise StopIteration
 

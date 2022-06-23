@@ -12,7 +12,7 @@ cdef class Config:
 
     def __init__(self):
         self._config = C.pkgcraft_config()
-        if not self._config:
+        if self._config is NULL:
             raise PkgcraftError
 
     @property
@@ -32,14 +32,14 @@ cdef class Config:
             self._repos = ImmutableDict(d)
         return self._repos
 
-    def add_repo(self, str path_str, str id_str=None, int priority=0):
-        path_bytes = path_str.encode()
-        id_bytes = id_str.encode() if id_str is not None else path_bytes
-        cdef char* path = path_bytes
-        cdef char* id = id_bytes
+    def add_repo(self, str path not None, str id=None, int priority=0):
+        path_bytes = path.encode()
+        id_bytes = id.encode() if id is not None else path_bytes
+        cdef char *path_p = path_bytes
+        cdef char *id_p = id_bytes
 
-        cdef const C.Repo* repo = C.pkgcraft_config_add_repo(self._config, id, priority, path)
-        if not repo:
+        cdef const C.Repo* repo = C.pkgcraft_config_add_repo(self._config, id_p, priority, path_p)
+        if repo is NULL:
             raise PkgcraftError
 
         # reset cached repos

@@ -34,12 +34,12 @@ cdef class Cpv:
     def __cinit__(self):
         self._version = SENTINEL
 
-    def __init__(self, str atom_str):
-        atom_bytes = atom_str.encode()
-        cdef char* atom = atom_bytes
+    def __init__(self, str atom not None):
+        atom_bytes = atom.encode()
+        cdef char* atom_p = atom_bytes
 
-        self._atom = C.pkgcraft_cpv(atom)
-        if not self._atom:
+        self._atom = C.pkgcraft_cpv(atom_p)
+        if self._atom is NULL:
             raise PkgcraftError
 
     @staticmethod
@@ -96,7 +96,7 @@ cdef class Cpv:
 
         if self._version is SENTINEL:
             ver = C.pkgcraft_atom_version(self._atom)
-            self._version = Version.from_ptr(ver) if ver else None
+            self._version = Version.from_ptr(ver) if ver is not NULL else None
         return self._version
 
     @property
@@ -112,7 +112,7 @@ cdef class Cpv:
         '0'
         """
         cdef char* c_str = C.pkgcraft_atom_revision(self._atom)
-        if c_str:
+        if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
             return s

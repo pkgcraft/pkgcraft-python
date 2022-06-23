@@ -11,8 +11,8 @@ from ..error import PkgcraftError
 # TODO: merge with Atom.cached function when cython bug is fixed
 # https://github.com/cython/cython/issues/1434
 @functools.lru_cache(maxsize=10000)
-def _cached_atom(cls, atom_str, eapi_str=None):
-    return cls(atom_str, eapi_str)
+def _cached_atom(cls, atom, eapi=None):
+    return cls(atom, eapi)
 
 
 cdef class Atom(Cpv):
@@ -59,25 +59,25 @@ cdef class Atom(Cpv):
     def __cinit__(self):
         self._use = SENTINEL
 
-    def __init__(self, str atom_str, str eapi_str=None):
-        atom_bytes = atom_str.encode()
-        cdef char* atom = atom_bytes
+    def __init__(self, str atom not None, str eapi=None):
+        atom_bytes = atom.encode()
+        cdef char* atom_p = atom_bytes
 
-        cdef char* eapi = NULL
-        if eapi_str:
-            eapi_bytes = eapi_str.encode()
-            eapi = eapi_bytes
+        cdef char* eapi_p = NULL
+        if eapi is not None:
+            eapi_bytes = eapi.encode()
+            eapi_p = eapi_bytes
 
-        self._eapi = eapi_str
-        self._atom = C.pkgcraft_atom(atom, eapi)
+        self._eapi = eapi
+        self._atom = C.pkgcraft_atom(atom_p, eapi_p)
 
-        if not self._atom:
+        if self._atom is NULL:
             raise PkgcraftError
 
     @classmethod
-    def cached(cls, str atom_str, str eapi_str=None):
+    def cached(cls, str atom not None, str eapi=None):
         """Return a cached Atom if one exists, otherwise return a new instance."""
-        return _cached_atom(cls, atom_str, eapi_str)
+        return _cached_atom(cls, atom, eapi)
 
     @property
     def blocker(self):
@@ -95,7 +95,7 @@ cdef class Atom(Cpv):
         True
         """
         cdef int blocker = C.pkgcraft_atom_blocker(self._atom)
-        if blocker:
+        if blocker > 0:
             return Blocker(blocker)
         return None
 
@@ -112,7 +112,7 @@ cdef class Atom(Cpv):
         True
         """
         cdef char* c_str = C.pkgcraft_atom_slot(self._atom)
-        if c_str:
+        if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
             return s
@@ -131,7 +131,7 @@ cdef class Atom(Cpv):
         True
         """
         cdef char* c_str = C.pkgcraft_atom_subslot(self._atom)
-        if c_str:
+        if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
             return s
@@ -150,7 +150,7 @@ cdef class Atom(Cpv):
         True
         """
         cdef char* c_str = C.pkgcraft_atom_slot_op(self._atom)
-        if c_str:
+        if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
             return s
@@ -173,7 +173,7 @@ cdef class Atom(Cpv):
 
         if self._use is SENTINEL:
             array = C.pkgcraft_atom_use_deps(self._atom, &length)
-            if array:
+            if array is not NULL:
                 self._use = tuple(array[i].decode() for i in range(length))
                 C.pkgcraft_str_array_free(array, length)
             else:
@@ -193,7 +193,7 @@ cdef class Atom(Cpv):
         True
         """
         cdef char* c_str = C.pkgcraft_atom_repo(self._atom)
-        if c_str:
+        if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
             return s
