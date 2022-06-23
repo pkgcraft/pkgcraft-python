@@ -43,8 +43,9 @@ cdef class Cpv:
             raise PkgcraftError
 
     @staticmethod
-    cdef Cpv ref(const C.Atom *atom):
-        # create instance without calling __init__()
+    cdef Cpv from_ptr(const C.Atom *atom):
+        """Create instance from a pointer."""
+        # skip calling __init__()
         obj = <Cpv>Cpv.__new__(Cpv)
         obj._atom = <C.Atom *>atom
         obj._ref = True
@@ -95,7 +96,7 @@ cdef class Cpv:
 
         if self._version is SENTINEL:
             ver = C.pkgcraft_atom_version(self._atom)
-            self._version = Version.ref(ver) if ver else None
+            self._version = Version.from_ptr(ver) if ver else None
         return self._version
 
     @property

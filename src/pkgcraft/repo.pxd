@@ -8,4 +8,4 @@ cdef class Repo:
     cdef C.PkgIter *_repo_iter
 
     @staticmethod
-    cdef Repo ref(const C.Repo *)
+    cdef Repo from_ptr(const C.Repo *)
