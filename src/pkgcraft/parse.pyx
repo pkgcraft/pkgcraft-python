@@ -4,7 +4,7 @@
 from . cimport pkgcraft_c as C
 from .error import PkgcraftError
 
-cpdef bint atom(str atom_str, str eapi_str=None) except -1:
+def atom(str atom not None, str eapi=None):
     """Parse an atom string.
 
     valid
@@ -22,19 +22,19 @@ cpdef bint atom(str atom_str, str eapi_str=None) except -1:
       |        ^ Expected: EOF
       |
     """
-    atom_bytes = atom_str.encode()
-    cdef char* atom = atom_bytes
+    atom_bytes = atom.encode()
+    cdef char* atom_p = atom_bytes
 
-    cdef char* eapi = NULL
-    if eapi_str:
-        eapi_bytes = eapi_str.encode()
-        eapi = eapi_bytes
+    cdef char* eapi_p = NULL
+    if eapi is not None:
+        eapi_bytes = eapi.encode()
+        eapi_p = eapi_bytes
 
-    if not C.pkgcraft_parse_atom(atom, eapi):
+    if C.pkgcraft_parse_atom(atom_p, eapi_p) is NULL:
         raise PkgcraftError
     return True
 
-cpdef bint category(str s) except -1:
+def category(str s not None):
     """Parse an atom category string.
 
     valid
@@ -56,7 +56,7 @@ cpdef bint category(str s) except -1:
         raise PkgcraftError
     return True
 
-cpdef bint package(str s) except -1:
+def package(str s not None):
     """Parse an atom package string.
 
     valid
@@ -78,7 +78,7 @@ cpdef bint package(str s) except -1:
         raise PkgcraftError
     return True
 
-cpdef bint version(str s) except -1:
+def version(str s not None):
     """Parse an atom version string.
 
     valid
@@ -100,7 +100,7 @@ cpdef bint version(str s) except -1:
         raise PkgcraftError
     return True
 
-cpdef bint repo(str s) except -1:
+def repo(str s not None):
     """Parse an atom repo string.
 
     valid
@@ -122,7 +122,7 @@ cpdef bint repo(str s) except -1:
         raise PkgcraftError
     return True
 
-cpdef bint cpv(str s) except -1:
+def cpv(str s not None):
     """Parse an atom cpv string.
 
     valid
