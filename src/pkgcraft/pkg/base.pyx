@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: MIT
 # cython: language_level=3
 
-from . cimport pkgcraft_c as C
-from .atom cimport Cpv
-from .error import PkgcraftError
+from .. cimport pkgcraft_c as C
+from ..atom cimport Cpv
+from ..error import PkgcraftError
 
 
 cdef class Pkg:
