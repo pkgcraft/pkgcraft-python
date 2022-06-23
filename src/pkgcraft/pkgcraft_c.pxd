@@ -261,11 +261,24 @@ cdef extern from "pkgcraft.h":
     # The ptr argument should be a non-null Pkg pointer.
     const Atom *pkgcraft_pkg_atom(Pkg *ptr);
 
+    # Compare two packages returning -1, 0, or 1 if the first package is less than, equal to, or
+    # greater than the second package, respectively.
+    #
+    # # Safety
+    # The ptr arguments should be non-null Pkg pointers.
+    int pkgcraft_pkg_cmp(Pkg *ptr1, Pkg *ptr2);
+
     # Free an package.
     #
     # # Safety
     # The ptr argument should be a non-null Pkg pointer.
     void pkgcraft_pkg_free(Pkg *ptr);
+
+    # Return the hash value for a given package.
+    #
+    # # Safety
+    # The ptr argument should be a non-null Pkg pointer.
+    uint64_t pkgcraft_pkg_hash(Pkg *ptr);
 
     # Compare two repos returning -1, 0, or 1 if the first repo is less than, equal to, or greater
     # than the second repo, respectively.
