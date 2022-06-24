@@ -104,3 +104,7 @@ class TestAtom:
                 ):
             s = {Atom(f'=cat/pkg-{x}') for x in unequal_versions}
             assert len(s) == len(unequal_versions)
+
+    def test_cached(self):
+        l = [Atom.cached('cat/pkg') for _ in range(1000)]
+        assert len(l) == 1000
