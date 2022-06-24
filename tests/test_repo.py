@@ -1,8 +1,16 @@
+import pytest
+
 from pkgcraft.atom import Cpv
 from pkgcraft.config import Config
+from pkgcraft.error import PkgcraftError
+from pkgcraft.repo import Repo
 
 
 class TestRepo:
+
+    def test_init(self):
+        with pytest.raises(PkgcraftError, match=f"doesn't support regular creation"):
+            Repo()
 
     def test_attrs(self, repo):
         path = repo.path
@@ -52,6 +60,10 @@ class TestRepo:
         path = repo.path
         config = Config()
         r = config.add_repo(path)
+
+        # iterating on a raw repo object fails
+        with pytest.raises(TypeError, match=f"object is not an iterator"):
+            next(r)
 
         # empty repo
         assert not list(iter(r))
