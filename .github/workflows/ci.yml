@@ -93,13 +93,10 @@ jobs:
         echo "DYLD_LIBRARY_PATH=${PWD}/pkgcraft/lib" >> $GITHUB_ENV
 
     - name: Install dependencies
-      run: pip install tox coverage cython
+      run: pip install tox
 
     - name: Run tests via tox
-      run: |
-        tox -e python
-        # generate coverage file for codecov
-        coverage xml
+      run: tox -e python
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
