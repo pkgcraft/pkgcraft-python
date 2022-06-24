@@ -8,6 +8,7 @@ __pycache__
 
 # unit testing / coverage
 .coverage
+.coverage.*
 /htmlcov
 .tox
 
