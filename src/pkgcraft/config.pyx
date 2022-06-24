@@ -35,7 +35,7 @@ cdef class Config:
         cdef char *path_p = path_bytes
         cdef char *id_p = id_bytes
 
-        cdef const C.Repo* repo = C.pkgcraft_config_add_repo(self._config, id_p, priority, path_p)
+        cdef C.Repo* repo = C.pkgcraft_config_add_repo(self._config, id_p, priority, path_p)
         if repo is NULL:
             raise PkgcraftError
 

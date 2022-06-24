@@ -9,4 +9,4 @@ cdef class Repo:
     @staticmethod
     cdef Repo from_ptr(C.Repo *)
     @staticmethod
-    cdef Repo from_ref(C.Repo *)
+    cdef Repo from_ref(const C.Repo *)

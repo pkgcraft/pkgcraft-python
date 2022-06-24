@@ -18,7 +18,7 @@ cdef class Repo:
         return obj
 
     @staticmethod
-    cdef Repo from_ref(C.Repo *repo):
+    cdef Repo from_ref(const C.Repo *repo):
         """Create instance from a borrowed pointer."""
         # skip calling __init__()
         obj = <Repo>Repo.__new__(Repo)
