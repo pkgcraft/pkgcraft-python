@@ -1,19 +1,10 @@
-import operator
-
 import pytest
 import re
 
-from pkgcraft.atom import Atom, Blocker, Cpv, Version, VersionWithOp
+from pkgcraft.atom import Atom, Blocker, Version, VersionWithOp
 from pkgcraft.error import PkgcraftError
 
-OperatorMap = {
-    '<': operator.lt,
-    '>': operator.gt,
-    '==': operator.eq,
-    '!=': operator.ne,
-    '>=': operator.ge,
-    '<=': operator.le,
-}
+from ..misc import OperatorMap
 
 
 class TestAtom:
@@ -113,21 +104,3 @@ class TestAtom:
                 ):
             s = {Atom(f'=cat/pkg-{x}') for x in unequal_versions}
             assert len(s) == len(unequal_versions)
-
-
-class TestCpv:
-
-    def test_new(self):
-        a = Cpv('cat/pkg-1-r2')
-        assert a.category == 'cat'
-        assert a.package == 'pkg'
-        assert a.version == Version('1-r2')
-        assert a.revision == '2'
-        assert a.key == 'cat/pkg'
-        assert str(a) == 'cat/pkg-1-r2'
-        assert repr(a).startswith("<Cpv 'cat/pkg-1-r2' at 0x")
-
-    def test_invalid(self):
-        for s in ('invalid', 'cat-1', 'cat/pkg', '=cat/pkg-1'):
-            with pytest.raises(PkgcraftError, match=f'invalid cpv: "{s}"'):
-                Cpv(s)
