@@ -1,0 +1,5 @@
+--suppressions=.valgrind-python.supp
+--memcheck:leak-check=full
+--memcheck:show-leak-kinds=definite
+--memcheck:errors-for-leak-kinds=definite
+--error-exitcode=1
