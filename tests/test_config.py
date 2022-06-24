@@ -1,4 +1,7 @@
+import pytest
+
 from pkgcraft.config import Config
+from pkgcraft.error import PkgcraftError
 
 
 class TestConfig:
@@ -21,3 +24,7 @@ class TestConfig:
         # custom
         r = config.add_repo(path, "fake")
         assert r == config.repos["fake"]
+
+        # existing
+        with pytest.raises(PkgcraftError, match=f'existing repo: fake'):
+            config.add_repo(path, "fake")
