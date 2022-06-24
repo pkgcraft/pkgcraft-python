@@ -25,4 +25,6 @@ cd pkgcraft-python
 tox -e python
 # benchmark
 tox -e bench
+# test under valgrind
+tox -e valgrind
 ```
