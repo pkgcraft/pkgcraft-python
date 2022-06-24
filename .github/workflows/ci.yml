@@ -100,3 +100,6 @@ jobs:
 
     - name: Run benchmarks via tox
       run: tox -e bench
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
