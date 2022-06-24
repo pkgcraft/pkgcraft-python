@@ -2,12 +2,23 @@ import os
 import subprocess
 import sys
 
+from Cython.Build import cythonize
+from Cython.Distutils import build_ext as cython_build_ext
 from setuptools import setup
 from setuptools.command import sdist as dst_sdist
 from setuptools.extension import Extension
 
 MODULEDIR = 'src/pkgcraft'
 PACKAGEDIR = os.path.dirname(MODULEDIR)
+
+compiler_directives = {'language_level': 3}
+define_macros = []
+
+# optionally enable coverage support for cython modules
+if 'CYTHON_COVERAGE' in os.environ:
+    compiler_directives['linetrace'] = True
+    define_macros.extend([('CYTHON_TRACE', '1'), ('CYTHON_TRACE_NOGIL', '1')])
+
 
 def pkg_config(*packages, **kw):
     """Translate pkg-config data to compatible Extension parameters.
@@ -73,7 +84,12 @@ def extensions(**build_opts):
         module = ext_path.rpartition(PACKAGEDIR)[-1].lstrip(os.path.sep)
         # strip file extension and translate to module namespace
         module = os.path.splitext(module)[0].replace(os.path.sep, '.')
-        exts.append(Extension(module, [ext_path], **build_opts))
+        exts.append(Extension(
+            name=module,
+            sources=[ext_path],
+            define_macros=define_macros,
+            **build_opts,
+        ))
 
     return exts
 
@@ -84,15 +100,33 @@ class sdist(dst_sdist.sdist):
     def run(self):
         # generate cython extensions
         if CYTHON_EXTS:
-            from Cython.Build import cythonize
             cythonize(CYTHON_EXTS)
 
         super().run()
+
+
+class build_ext(cython_build_ext):
+    """Build cython extensions for coverage support."""
+
+    def finalize_options(self):
+        self.distribution.ext_modules[:] = cythonize(
+            self.distribution.ext_modules,
+            compiler_directives=compiler_directives,
+            annotate=False,
+        )
+        if not self.include_dirs:
+            self.include_dirs = []
+        elif isinstance(self.include_dirs, str):
+            self.include_dirs = [self.include_dirs]
+        super().finalize_options()
 
 
 CYTHON_EXTS = list(cython_pyx(MODULEDIR))
 
 setup(
     ext_modules=extensions(**pkg_config('pkgcraft')),
-    cmdclass={'sdist': sdist},
+    cmdclass={
+        'build_ext': build_ext,
+        'sdist': sdist,
+    },
 )

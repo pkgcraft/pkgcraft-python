@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: MIT
-# cython: language_level=3
-
 from .cpv cimport Cpv
 
 include "../pkgcraft.pxi"
