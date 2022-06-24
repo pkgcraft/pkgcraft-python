@@ -4,6 +4,15 @@ from pkgcraft import parse
 from pkgcraft.error import PkgcraftError
 
 
+def test_atom():
+    assert parse.atom('cat/pkg')
+    assert parse.atom('=cat/pkg-1-r2:3/4[a,b,c]', '8')
+
+    # invalid
+    for s in ('cat', '=cat/pkg'):
+        with pytest.raises(PkgcraftError, match=f'invalid atom: "{s}"'):
+            parse.atom(s)
+
 def test_category():
     assert parse.category('cat')
 
