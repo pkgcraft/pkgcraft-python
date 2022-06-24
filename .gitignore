@@ -15,4 +15,4 @@ __pycache__
 MANIFEST
 
 # setuptools-scm
-src/pkgcraft/_version.py
+src/pkgcraft/__version__.py
