@@ -30,7 +30,7 @@ def test(atoms):
             proc = psutil.Process()
             size = humanize.naturalsize(proc.memory_info().rss)
             print(f"{impl}: {size} ({total:.{2}f}s)")
-            sys.exit()
+            os._exit(0)
 
 
 if __name__ == '__main__':
