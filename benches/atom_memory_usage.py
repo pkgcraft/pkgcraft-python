@@ -20,8 +20,7 @@ atom_funcs = [
 
 def test(atoms):
     for (impl, func) in atom_funcs:
-        pid = os.fork()
-        if pid:
+        if pid := os.fork():
             os.wait()
         else:
             start = time.time()
