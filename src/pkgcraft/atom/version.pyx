@@ -63,11 +63,9 @@ cdef class Version:
         '0'
         """
         cdef char* c_str = C.pkgcraft_version_revision(self._version)
-        if c_str:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
 
     def __lt__(self, Version other):
         return C.pkgcraft_version_cmp(self._version, other._version) == -1
