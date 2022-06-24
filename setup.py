@@ -100,7 +100,11 @@ class sdist(dst_sdist.sdist):
     def run(self):
         # generate cython extensions
         if CYTHON_EXTS:
-            cythonize(CYTHON_EXTS)
+            cythonize(
+                CYTHON_EXTS,
+                compiler_directives=compiler_directives,
+                annotate=False,
+            )
 
         super().run()
 
