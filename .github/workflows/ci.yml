@@ -93,7 +93,7 @@ jobs:
         echo "DYLD_LIBRARY_PATH=${PWD}/pkgcraft/lib" >> $GITHUB_ENV
 
     - name: Install dependencies
-      run: pip install tox coverage
+      run: pip install tox coverage cython
 
     - name: Run tests via tox
       run: |
