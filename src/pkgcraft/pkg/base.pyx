@@ -20,7 +20,7 @@ cdef class Pkg:
     def atom(self):
         """Get a package's atom."""
         cdef const C.Atom *cpv = C.pkgcraft_pkg_atom(self._pkg)
-        return Cpv.from_ptr(cpv)
+        return Cpv.from_ref(cpv)
 
     def __lt__(self, Pkg other):
         return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) == -1

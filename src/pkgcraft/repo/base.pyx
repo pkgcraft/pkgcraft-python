@@ -10,12 +10,20 @@ cdef class Repo:
         raise PkgcraftError(f"{self.__class__} doesn't support regular creation")
 
     @staticmethod
-    cdef Repo from_ptr(const C.Repo *repo, bint ref):
-        """Create instance from a pointer."""
+    cdef Repo from_ptr(C.Repo *repo):
+        """Create instance from an owned pointer."""
         # skip calling __init__()
         obj = <Repo>Repo.__new__(Repo)
         obj._repo = <C.Repo *>repo
-        obj._ref = ref
+        return obj
+
+    @staticmethod
+    cdef Repo from_ref(C.Repo *repo):
+        """Create instance from a borrowed pointer."""
+        # skip calling __init__()
+        obj = <Repo>Repo.__new__(Repo)
+        obj._repo = <C.Repo *>repo
+        obj._ref = True
         return obj
 
     @property

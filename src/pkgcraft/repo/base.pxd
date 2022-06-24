@@ -7,4 +7,6 @@ cdef class Repo:
     cdef C.PkgIter *_repo_iter
 
     @staticmethod
-    cdef Repo from_ptr(const C.Repo *, bint ref)
+    cdef Repo from_ptr(C.Repo *)
+    @staticmethod
+    cdef Repo from_ref(C.Repo *)
