@@ -24,7 +24,7 @@ cdef class Config:
             d = {}
             for i in range(length):
                 r = repos[i]
-                d[r.id.decode()] = Repo.from_ptr(r.repo)
+                d[r.id.decode()] = Repo.from_ptr(r.repo, True)
             C.pkgcraft_repos_free(repos, length)
             self._repos = ImmutableDict(d)
         return self._repos
@@ -41,7 +41,7 @@ cdef class Config:
 
         # reset cached repos
         self._repos = None
-        return Repo.from_ptr(repo)
+        return Repo.from_ptr(repo, False)
 
     def __dealloc__(self):
         C.pkgcraft_config_free(self._config)

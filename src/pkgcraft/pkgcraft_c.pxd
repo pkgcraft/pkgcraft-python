@@ -174,7 +174,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The path argument should be a valid path on the system.
-    const Repo *pkgcraft_config_add_repo(Config *config, const char *id, int priority, char *path);
+    Repo *pkgcraft_config_add_repo(Config *config, const char *id, int priority, char *path);
 
     # Free a config.
     #
@@ -284,6 +284,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The arguments must be non-null Repo pointers.
     int pkgcraft_repo_cmp(Repo *r1, Repo *r2);
+
+    # Free a repo.
+    #
+    # # Safety
+    # The argument must be a Repo pointer or NULL.
+    void pkgcraft_repo_free(Repo *r);
 
     # Return the hash value for a given repo.
     #
