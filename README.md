@@ -1,4 +1,5 @@
 [![CI](https://github.com/pkgcraft/pkgcraft-python/workflows/CI/badge.svg)](https://github.com/pkgcraft/pkgcraft-python/actions/workflows/ci.yml)
+[![coverage](https://codecov.io/gh/pkgcraft/pkgcraft-python/branch/main/graph/badge.svg)](https://codecov.io/gh/pkgcraft/pkgcraft-python)
 
 # pkgcraft-python
 
