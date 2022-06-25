@@ -14,12 +14,6 @@ PACKAGEDIR = os.path.dirname(MODULEDIR)
 GIT = os.path.exists(os.path.join(os.path.dirname(__file__), '.git'))
 
 compiler_directives = {'language_level': 3}
-define_macros = []
-
-# optionally enable coverage support for cython modules
-if 'CYTHON_COVERAGE' in os.environ:
-    compiler_directives['linetrace'] = True
-    define_macros.extend([('CYTHON_TRACE', '1'), ('CYTHON_TRACE_NOGIL', '1')])
 
 
 def pkg_config(*packages, **kw):
@@ -87,12 +81,7 @@ def extensions(**build_opts):
         module = ext_path.rpartition(PACKAGEDIR)[-1].lstrip(os.path.sep)
         # strip file extension and translate to module namespace
         module = os.path.splitext(module)[0].replace(os.path.sep, '.')
-        exts.append(Extension(
-            name=module,
-            sources=[ext_path],
-            define_macros=define_macros,
-            **build_opts,
-        ))
+        exts.append(Extension(name=module, sources=[ext_path], **build_opts))
 
     return exts
 
@@ -113,11 +102,28 @@ class sdist(dst_sdist.sdist):
 
 
 class build_ext(cython_build_ext):
-    """Build cython extensions for coverage support."""
+    """Enable building cython extensions for coverage support."""
+
+    user_options = cython_build_ext.user_options + [
+        ("cython-coverage", None, "enable cython coverage support")]
+
+    def initialize_options(self):
+        super().initialize_options()
+        self.cython_coverage = False
 
     def finalize_options(self):
+        self.cython_coverage = bool(self.cython_coverage)
+        ext_modules = self.distribution.ext_modules[:]
+
+        # optionally enable coverage support for cython modules
+        if self.cython_coverage:
+            compiler_directives['linetrace'] = True
+            trace_macros = [('CYTHON_TRACE', '1'), ('CYTHON_TRACE_NOGIL', '1')]
+            for ext in ext_modules:
+                ext.define_macros.extend(trace_macros)
+
         self.distribution.ext_modules[:] = cythonize(
-            self.distribution.ext_modules,
+            ext_modules,
             compiler_directives=compiler_directives,
             annotate=False,
         )
