@@ -10,6 +10,8 @@ from setuptools.extension import Extension
 
 MODULEDIR = 'src/pkgcraft'
 PACKAGEDIR = os.path.dirname(MODULEDIR)
+# running against git repo
+GIT = os.path.exists(os.path.join(os.path.dirname(__file__), '.git'))
 
 compiler_directives = {'language_level': 3}
 define_macros = []
@@ -75,7 +77,8 @@ def extensions(**build_opts):
 
     for ext in CYTHON_EXTS:
         cythonized = os.path.splitext(ext)[0] + '.c'
-        if os.path.exists(cythonized):
+        # use pre-generated modules for releases
+        if not GIT and os.path.exists(cythonized):
             ext_path = cythonized
         else:
             ext_path = ext
