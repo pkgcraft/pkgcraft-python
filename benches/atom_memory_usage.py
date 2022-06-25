@@ -4,6 +4,7 @@
 import os
 import sys
 import time
+from random import randrange
 
 import humanize
 from pkgcraft.atom import Atom as pkgcraft_atom
@@ -40,3 +41,6 @@ if __name__ == '__main__':
 
     print(f"\nDynamic atoms ({num_atoms})\n=======================")
     test((f'=cat/pkg-{x}-r1:2/3[a,b,c]' for x in range(num_atoms)))
+
+    print(f"\nRandom atoms ({num_atoms})\n=======================")
+    test((f'=cat/pkg-{randrange(9999)}-r1:2/3[a,b,c]' for _ in range(num_atoms)))
