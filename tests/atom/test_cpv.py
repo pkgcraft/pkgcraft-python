@@ -1,3 +1,5 @@
+import pickle
+
 import pytest
 
 from pkgcraft.atom import Cpv, Version
@@ -20,3 +22,8 @@ class TestCpv:
         for s in ('invalid', 'cat-1', 'cat/pkg', '=cat/pkg-1'):
             with pytest.raises(PkgcraftError, match=f'invalid cpv: "{s}"'):
                 Cpv(s)
+
+    def test_pickle(self):
+        a = Cpv('cat/pkg-1-r2')
+        b = pickle.loads(pickle.dumps(a))
+        assert a == b

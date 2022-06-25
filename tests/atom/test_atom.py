@@ -1,8 +1,9 @@
-import pytest
+import pickle
 import re
 
 from pkgcraft.atom import Atom, Blocker, Version, VersionWithOp
 from pkgcraft.error import PkgcraftError
+import pytest
 
 from ..misc import OperatorMap
 
@@ -108,3 +109,8 @@ class TestAtom:
     def test_cached(self):
         l = [Atom.cached('cat/pkg') for _ in range(1000)]
         assert len(l) == 1000
+
+    def test_pickle(self):
+        a = Atom('=cat/pkg-1-r2:0/2=[a,b,c]')
+        b = pickle.loads(pickle.dumps(a))
+        assert a == b

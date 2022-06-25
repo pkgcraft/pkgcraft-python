@@ -162,19 +162,11 @@ cdef class Cpv:
         return C.pkgcraft_atom_hash(self._atom)
 
     def __reduce__(self):
-        """Support pickling Cpv objects.
-
-        >>> import pickle
-        >>> from pkgcraft.atom import Cpv
-        >>> a = Cpv('cat/pkg-1-r2')
-        >>> b = pickle.loads(pickle.dumps(a))
-        >>> a == b
-        True
-        """
+        """Support pickling Cpv objects."""
         cdef char* c_str = C.pkgcraft_atom_str(self._atom)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
-        return (Cpv, (s,))
+        return (self.__class__, (s,))
 
     # TODO: move to __del__() when migrating to >=cython-3 since it's not
     # supported in <cython-3 for cdef classes:

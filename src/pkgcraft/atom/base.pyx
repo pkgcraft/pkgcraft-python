@@ -65,7 +65,6 @@ cdef class Atom(Cpv):
             eapi_bytes = eapi.encode()
             eapi_p = eapi_bytes
 
-        self._eapi = eapi
         self._atom = C.pkgcraft_atom(atom_p, eapi_p)
 
         if self._atom is NULL:
@@ -209,18 +208,3 @@ cdef class Atom(Cpv):
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
-
-    def __reduce__(self):
-        """Support pickling Atom objects.
-
-        >>> import pickle
-        >>> from pkgcraft.atom import Atom
-        >>> a = Atom('=cat/pkg-1-r2:0/2=[a,b,c]')
-        >>> b = pickle.loads(pickle.dumps(a))
-        >>> a == b
-        True
-        """
-        cdef char* c_str = C.pkgcraft_atom_str(self._atom)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return (Atom, (s, self._eapi))
