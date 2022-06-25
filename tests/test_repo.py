@@ -5,6 +5,8 @@ from pkgcraft.config import Config
 from pkgcraft.error import PkgcraftError
 from pkgcraft.repo import Repo
 
+from .misc import OperatorMap
+
 
 class TestRepo:
 
@@ -27,6 +29,23 @@ class TestRepo:
         assert r.id == "fake"
         assert str(r) == "fake"
         assert repr(r).startswith(f"<Repo 'fake' at 0x")
+
+    def test_cmp(self, repo):
+        path = repo.path
+        config = Config()
+        r = config.add_repo(path)
+        assert r == r
+
+        for (r1, op, r2) in (
+                (['a'], '<', ['b']),
+                (['b', 1], '<=', ['a', 2]),
+                (['a'], '!=', ['b']),
+                (['a', 2], '>=', ['b', 1]),
+                (['b'], '>', ['a']),
+                ):
+            config = Config()
+            op_func = OperatorMap[op]
+            assert op_func(config.add_repo(path, *r1), config.add_repo(path, *r2))
 
     def test_hash(self, repo):
         path = repo.path
