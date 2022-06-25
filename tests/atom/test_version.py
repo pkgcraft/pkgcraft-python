@@ -1,9 +1,10 @@
 import operator
+import pickle
 
 import pytest
 
 from pkgcraft.error import PkgcraftError
-from pkgcraft.atom import Version
+from pkgcraft.atom import Version, VersionWithOp
 
 OperatorMap = {
     '<': operator.lt,
@@ -83,3 +84,16 @@ class TestVersion:
                 ):
             s = {Version(x) for x in unequal_versions}
             assert len(s) == len(unequal_versions)
+
+    def test_pickle(self):
+        a = Version('1-r1')
+        b = pickle.loads(pickle.dumps(a))
+        assert a == b
+
+
+class TestVersionWithOp:
+
+    def test_pickle(self):
+        a = VersionWithOp('>=1-r1')
+        with pytest.raises(NotImplementedError):
+            pickle.dumps(a)
