@@ -2,9 +2,8 @@ import os
 import subprocess
 import sys
 
-from Cython.Build import cythonize
-from Cython.Distutils import build_ext as cython_build_ext
 from setuptools import setup
+from setuptools.command import build_ext as dst_build_ext
 from setuptools.command import sdist as dst_sdist
 from setuptools.extension import Extension
 
@@ -92,6 +91,7 @@ class sdist(dst_sdist.sdist):
     def run(self):
         # generate cython extensions
         if CYTHON_EXTS:
+            from Cython.Build import cythonize
             cythonize(
                 CYTHON_EXTS,
                 compiler_directives=compiler_directives,
@@ -101,10 +101,10 @@ class sdist(dst_sdist.sdist):
         super().run()
 
 
-class build_ext(cython_build_ext):
+class build_ext(dst_build_ext.build_ext):
     """Enable building cython extensions with coverage support."""
 
-    user_options = cython_build_ext.user_options + [
+    user_options = dst_build_ext.build_ext.user_options + [
         ("cython-coverage", None, "enable cython coverage support")]
 
     def initialize_options(self):
@@ -113,24 +113,24 @@ class build_ext(cython_build_ext):
 
     def finalize_options(self):
         self.cython_coverage = bool(self.cython_coverage)
-        ext_modules = self.distribution.ext_modules[:]
 
-        # optionally enable coverage support for cython modules
-        if self.cython_coverage:
-            compiler_directives['linetrace'] = True
-            trace_macros = [('CYTHON_TRACE', '1'), ('CYTHON_TRACE_NOGIL', '1')]
-            for ext in ext_modules:
-                ext.define_macros.extend(trace_macros)
+        if GIT:
+            ext_modules = self.distribution.ext_modules[:]
 
-        self.distribution.ext_modules[:] = cythonize(
-            ext_modules,
-            compiler_directives=compiler_directives,
-            annotate=False,
-        )
-        if not self.include_dirs:
-            self.include_dirs = []
-        elif isinstance(self.include_dirs, str):
-            self.include_dirs = [self.include_dirs]
+            # optionally enable coverage support for cython modules
+            if self.cython_coverage:
+                compiler_directives['linetrace'] = True
+                trace_macros = [('CYTHON_TRACE', '1'), ('CYTHON_TRACE_NOGIL', '1')]
+                for ext in ext_modules:
+                    ext.define_macros.extend(trace_macros)
+
+            from Cython.Build import cythonize
+            self.distribution.ext_modules[:] = cythonize(
+                ext_modules,
+                compiler_directives=compiler_directives,
+                annotate=False,
+            )
+
         super().finalize_options()
 
 
