@@ -81,7 +81,7 @@ jobs:
       run: pip install tox
 
     - name: Run tests via tox
-      working-directory: pkgcraft-python
+      working-directory: ${{ github.event.repository.name }}
       run: tox -e coverage
 
     - name: Upload coverage to Codecov
@@ -90,5 +90,5 @@ jobs:
         files: pkgcraft-python/coverage.xml
 
     - name: Run benchmarks via tox
-      working-directory: pkgcraft-python
+      working-directory: ${{ github.event.repository.name }}
       run: tox -e bench
