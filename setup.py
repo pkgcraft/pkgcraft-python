@@ -102,7 +102,7 @@ class sdist(dst_sdist.sdist):
 
 
 class build_ext(cython_build_ext):
-    """Enable building cython extensions for coverage support."""
+    """Enable building cython extensions with coverage support."""
 
     user_options = cython_build_ext.user_options + [
         ("cython-coverage", None, "enable cython coverage support")]
