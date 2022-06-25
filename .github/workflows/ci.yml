@@ -15,39 +15,24 @@ jobs:
         python-version: ['3.9', '3.10']
 
     steps:
-    - name: Checkout scallop
+    - name: Checkout workspace
       uses: actions/checkout@v3
       with:
-        repository: pkgcraft/scallop
-        path: scallop
-        submodules: true
+        repository: pkgcraft/pkgcraft-workspace
+        submodules: recursive
 
-    - name: Move scallop into expected location
-      run: mv scallop ../
+    - name: Pull submodule updates
+      run: git submodule update --recursive --remote
 
-    - name: Checkout pkgcraft
-      uses: actions/checkout@v3
-      with:
-        repository: pkgcraft/pkgcraft
-        path: pkgcraft
-
-    - name: Move pkgcraft into expected location
-      run: mv pkgcraft ../
-
-    - name: Checkout pkgcraft-c
-      uses: actions/checkout@v3
-      with:
-        repository: pkgcraft/pkgcraft-c
-        path: pkgcraft-c
-
-    - name: Move pkgcraft-c into expected location
-      run: mv pkgcraft-c ../
+    - name: Remove current repo from workspace
+      run: rm -rfv ${{ github.event.repository.name }}
 
     - name: Checkout code
       uses: actions/checkout@v3
       with:
         # checkout full history for setuptools-scm
         fetch-depth: 0
+        path: ${{ github.event.repository.name }}
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
@@ -74,11 +59,11 @@ jobs:
           ~/.cache/pip
           .tox
           target
-        key: v5-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}
-        restore-keys: v5-${{ github.job }}-${{ runner.os }}-rust-
+        key: v6-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}
+        restore-keys: v6-${{ github.job }}-${{ runner.os }}-rust-
 
     - name: Update deps
-      run: cargo update --manifest-path=../pkgcraft-c/Cargo.toml
+      run: cargo update -p pkgcraft-c
 
     - name: Install cargo-c
       run: |
@@ -87,7 +72,7 @@ jobs:
 
     - name: Build and install C library
       run: |
-        cargo cinstall --manifest-path=../pkgcraft-c/Cargo.toml --prefix="${PWD}/pkgcraft" --pkgconfigdir="${PWD}/pkgcraft" --target-dir target
+        cargo cinstall -p pkgcraft-c --prefix="${PWD}/pkgcraft" --pkgconfigdir="${PWD}/pkgcraft"
         echo "PKG_CONFIG_PATH=${PWD}/pkgcraft" >> $GITHUB_ENV
         echo "LD_LIBRARY_PATH=${PWD}/pkgcraft/lib" >> $GITHUB_ENV
         echo "DYLD_LIBRARY_PATH=${PWD}/pkgcraft/lib" >> $GITHUB_ENV
@@ -96,12 +81,14 @@ jobs:
       run: pip install tox
 
     - name: Run tests via tox
+      working-directory: pkgcraft-python
       run: tox -e coverage
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
-        files: ./coverage.xml
+        files: pkgcraft-python/coverage.xml
 
     - name: Run benchmarks via tox
+      working-directory: pkgcraft-python
       run: tox -e bench
