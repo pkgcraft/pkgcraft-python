@@ -9,13 +9,6 @@ cdef class Pkg:
     def __init__(self):
         raise PkgcraftError(f"{self.__class__} doesn't support regular creation")
 
-    @staticmethod
-    cdef Pkg create(C.Pkg *pkg):
-        # create instance without calling __init__()
-        obj = <Pkg>Pkg.__new__(Pkg)
-        obj._pkg = <C.Pkg *>pkg
-        return obj
-
     @property
     def atom(self):
         """Get a package's atom."""

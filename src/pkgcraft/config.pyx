@@ -1,5 +1,5 @@
 from . cimport pkgcraft_c as C
-from .repo cimport Repo
+from .repo cimport EbuildRepo, Repo
 from ._misc import ImmutableDict
 from .error import PkgcraftError
 
@@ -35,13 +35,20 @@ cdef class Config:
         cdef char *path_p = path_bytes
         cdef char *id_p = id_bytes
 
-        cdef C.Repo* repo = C.pkgcraft_config_add_repo(self._config, id_p, priority, path_p)
-        if repo is NULL:
+        cdef C.RepoConfig *repo_conf = C.pkgcraft_config_add_repo(self._config, id_p, priority, path_p)
+        if repo_conf is NULL:
             raise PkgcraftError
 
         # reset cached repos
         self._repos = None
-        return Repo.from_ptr(repo)
+
+        if repo_conf.format is C.RepoFormat.Ebuild:
+            r = EbuildRepo.from_ptr(repo_conf.repo)
+        else:
+            r = Repo.from_ptr(repo_conf.repo)
+
+        C.pkgcraft_repo_config_free(repo_conf)
+        return r
 
     def __dealloc__(self):
         C.pkgcraft_config_free(self._config)

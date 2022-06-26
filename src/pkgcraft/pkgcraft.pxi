@@ -5,3 +5,11 @@ cdef extern from "pkgcraft.h":
         NONE,
         Strong,
         Weak,
+
+    # Opaque wrapper for EbuildRepo objects.
+    cdef struct EbuildRepo:
+        pass
+
+    # Opaque wrapper for EbuildPkg objects.
+    cdef struct EbuildPkg:
+        pass

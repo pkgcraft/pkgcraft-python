@@ -10,7 +10,7 @@ cdef class Repo:
         raise PkgcraftError(f"{self.__class__} doesn't support regular creation")
 
     @staticmethod
-    cdef Repo from_ptr(C.Repo *repo):
+    cdef Repo from_ptr(const C.Repo *repo):
         """Create instance from an owned pointer."""
         # skip calling __init__()
         obj = <Repo>Repo.__new__(Repo)
@@ -20,10 +20,14 @@ cdef class Repo:
     @staticmethod
     cdef Repo from_ref(const C.Repo *repo):
         """Create instance from a borrowed pointer."""
-        # skip calling __init__()
-        obj = <Repo>Repo.__new__(Repo)
-        obj._repo = <C.Repo *>repo
+        cdef Repo obj = Repo.from_ptr(repo)
         obj._ref = True
+        return obj
+
+    cdef Pkg create_pkg(self, C.Pkg *pkg):
+        # create instance without calling __init__()
+        obj = <Pkg>Pkg.__new__(Pkg)
+        obj._pkg = <C.Pkg *>pkg
         return obj
 
     @property
@@ -50,7 +54,7 @@ cdef class Repo:
 
         cdef C.Pkg *pkg = C.pkgcraft_repo_iter_next(self._repo_iter)
         if pkg is not NULL:
-            return Pkg.create(pkg)
+            return self.create_pkg(pkg)
         raise StopIteration
 
     def __lt__(self, Repo other):

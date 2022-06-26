@@ -10,6 +10,11 @@ include "pkgcraft.pxi"
 
 cdef extern from "pkgcraft.h":
 
+    cdef enum RepoFormat:
+        Ebuild,
+        Fake,
+        Empty,
+
     # Opaque wrapper for Atom objects.
     cdef struct Atom:
         pass
@@ -37,6 +42,7 @@ cdef extern from "pkgcraft.h":
     # Wrapper for configured repos.
     cdef struct RepoConfig:
         char *id;
+        RepoFormat format;
         const Repo *repo;
 
     # Parse a string into an atom using a specific EAPI. Pass NULL for the eapi argument in
@@ -174,7 +180,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The path argument should be a valid path on the system.
-    Repo *pkgcraft_config_add_repo(Config *config, const char *id, int priority, char *path);
+    RepoConfig *pkgcraft_config_add_repo(Config *config, const char *id, int priority, char *path);
 
     # Free a config.
     #
@@ -195,6 +201,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument should be a UTF-8 string.
     Atom *pkgcraft_cpv(char *s);
+
+    # Return a given ebuild repos's category dirs.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildRepo pointer.
+    char **pkgcraft_ebuild_repo_category_dirs(EbuildRepo *r, uintptr_t *len);
 
     # Get the most recent error message.
     #
@@ -253,6 +265,14 @@ cdef extern from "pkgcraft.h":
     # The argument should point to a UTF-8 string.
     const char *pkgcraft_parse_version(const char *s);
 
+    # Convert a Pkg into an EbuildPkg.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    const EbuildPkg *pkgcraft_pkg_as_ebuild(Pkg *p);
+
     # Return a given package's atom.
     #
     # # Safety
@@ -278,12 +298,26 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer.
     uint64_t pkgcraft_pkg_hash(Pkg *p);
 
+    # Convert a Repo into an EbuildRepo.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    const EbuildRepo *pkgcraft_repo_as_ebuild(Repo *r);
+
     # Compare two repos returning -1, 0, or 1 if the first repo is less than, equal to, or greater
     # than the second repo, respectively.
     #
     # # Safety
     # The arguments must be non-null Repo pointers.
     int pkgcraft_repo_cmp(Repo *r1, Repo *r2);
+
+    # Free a repo config.
+    #
+    # # Safety
+    # The argument must be a RepoConfig pointer or NULL.
+    void pkgcraft_repo_config_free(RepoConfig *r);
 
     # Free a repo.
     #
