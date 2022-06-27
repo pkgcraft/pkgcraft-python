@@ -35,7 +35,7 @@ cdef class Version:
       | ^ Expected: ['0' ..= '9']
       |
     """
-    def __init__(self, str version):
+    def __init__(self, str version not None):
         version_bytes = version.encode()
         self._version = C.pkgcraft_version(version_bytes)
         if not self._version:
@@ -131,7 +131,7 @@ cdef class VersionWithOp(Version):
       | ^ Expected: one of "<", "=", ">", "~"
       |
     """
-    def __init__(self, str version):
+    def __init__(self, str version not None):
         version_bytes = version.encode()
         self._version = C.pkgcraft_version_with_op(version_bytes)
         if not self._version:
