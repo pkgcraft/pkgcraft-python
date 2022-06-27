@@ -24,7 +24,11 @@ cdef class Config:
             d = {}
             for i in range(length):
                 r = repos[i]
-                d[r.id.decode()] = Repo.from_ref(r.repo)
+                if r.format is C.RepoFormat.Ebuild:
+                    repo = EbuildRepo.from_ref(r.repo)
+                else:
+                    repo = Repo.from_ref(r.repo)
+                d[r.id.decode()] = repo
             C.pkgcraft_repos_free(repos, length)
             self._repos = ImmutableDict(d)
         return self._repos
