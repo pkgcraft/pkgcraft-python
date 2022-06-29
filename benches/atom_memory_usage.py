@@ -24,12 +24,13 @@ def test(atoms):
         if pid := os.fork():
             os.wait()
         else:
+            proc = psutil.Process()
+            base = proc.memory_info().rss
             start = time.time()
             l = [func(x) for x in atoms]
-            total = time.time() - start
-            proc = psutil.Process()
-            size = humanize.naturalsize(proc.memory_info().rss)
-            print(f"{impl}: {size} ({total:.{2}f}s)")
+            elapsed = time.time() - start
+            size = humanize.naturalsize(proc.memory_info().rss - base)
+            print(f"{impl}: {size} ({elapsed:.{2}f}s)")
             os._exit(0)
 
 
