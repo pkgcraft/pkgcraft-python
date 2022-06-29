@@ -11,7 +11,7 @@ cdef class EbuildPkg(Pkg):
         """Get an ebuild's description."""
         cdef char *c_str
         if self._description is None:
-            c_str = C.pkgcraft_ebuild_pkg_description(<C.EbuildPkg *>self._ebuild_pkg)
+            c_str = C.pkgcraft_ebuild_pkg_description(self._ebuild_pkg)
             self._description = c_str.decode()
             C.pkgcraft_str_free(c_str)
         return self._description
@@ -21,7 +21,7 @@ cdef class EbuildPkg(Pkg):
         """Get an ebuild's slot."""
         cdef char *c_str
         if self._slot is None:
-            c_str = C.pkgcraft_ebuild_pkg_slot(<C.EbuildPkg *>self._ebuild_pkg)
+            c_str = C.pkgcraft_ebuild_pkg_slot(self._ebuild_pkg)
             self._slot = c_str.decode()
             C.pkgcraft_str_free(c_str)
         return self._slot

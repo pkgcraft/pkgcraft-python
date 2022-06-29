@@ -29,7 +29,7 @@ cdef class EbuildRepo(Repo):
         # create instance without calling __init__()
         obj = <EbuildPkg>EbuildPkg.__new__(EbuildPkg)
         obj._pkg = <C.Pkg *>pkg
-        obj._ebuild_pkg = C.pkgcraft_pkg_as_ebuild(pkg)
+        obj._ebuild_pkg = <C.EbuildPkg *>C.pkgcraft_pkg_as_ebuild(pkg)
         if obj._ebuild_pkg is NULL:
             raise PkgcraftError
         return obj
