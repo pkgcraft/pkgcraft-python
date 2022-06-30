@@ -3,7 +3,7 @@ from ..pkg cimport EbuildPkg
 from .base cimport Repo
 
 cdef class EbuildRepo(Repo):
-    cdef const C.EbuildRepo *_ebuild_repo
+    cdef C.EbuildRepo *_ebuild_repo
 
     @staticmethod
     cdef EbuildRepo from_ptr(const C.Repo *)

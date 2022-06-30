@@ -13,7 +13,7 @@ cdef class EbuildRepo(Repo):
         # skip calling __init__()
         obj = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
         obj._repo = <C.Repo *>repo
-        obj._ebuild_repo = C.pkgcraft_repo_as_ebuild(obj._repo)
+        obj._ebuild_repo = <C.EbuildRepo *>C.pkgcraft_repo_as_ebuild(obj._repo)
         if obj._ebuild_repo is NULL:
             raise PkgcraftError
         return obj
@@ -40,7 +40,7 @@ cdef class EbuildRepo(Repo):
         cdef char **array
         cdef size_t length
 
-        array = C.pkgcraft_ebuild_repo_category_dirs(<C.EbuildRepo *>self._ebuild_repo, &length)
+        array = C.pkgcraft_ebuild_repo_category_dirs(self._ebuild_repo, &length)
         dirs = tuple(array[i].decode() for i in range(length))
         C.pkgcraft_str_array_free(array, length)
         return dirs
