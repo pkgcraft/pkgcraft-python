@@ -20,9 +20,9 @@ atom_funcs = [
 ]
 
 def test(atoms):
-    print('----------------------------------------------')
-    print('{:<20} {:<10} (elapsed)'.format("implementation", "memory"))
-    print('----------------------------------------------')
+    print('---------------------------------------')
+    print('{:<20} {:<10} time'.format("implementation", "memory"))
+    print('---------------------------------------')
     for (impl, func) in atom_funcs:
         if pid := os.fork():
             os.wait()
@@ -33,7 +33,7 @@ def test(atoms):
             l = [func(x) for x in atoms]
             elapsed = time.time() - start
             size = humanize.naturalsize(proc.memory_info().rss - base)
-            print(f"{impl:<20} {size:<10} ({elapsed:.{2}f}s)")
+            print(f"{impl:<20} {size:<10} {elapsed:.{2}f}s")
             os._exit(0)
 
 
