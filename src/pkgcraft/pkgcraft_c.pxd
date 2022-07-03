@@ -220,6 +220,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null EbuildRepo pointer.
     char **pkgcraft_ebuild_repo_category_dirs(EbuildRepo *r, uintptr_t *len);
 
+    # Return a given ebuild repos's masters.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildRepo pointer.
+    Repo **pkgcraft_ebuild_repo_masters(EbuildRepo *r, uintptr_t *len);
+
     # Get the most recent error message.
     #
     # Returns NULL on nonexistence.

@@ -44,3 +44,14 @@ cdef class EbuildRepo(Repo):
         dirs = tuple(array[i].decode() for i in range(length))
         C.pkgcraft_str_array_free(array, length)
         return dirs
+
+    @property
+    def masters(self):
+        """Get an ebuild repo's masters."""
+        cdef C.Repo **array
+        cdef size_t length
+
+        if self._masters is None:
+            array = C.pkgcraft_ebuild_repo_masters(self._ebuild_repo, &length)
+            self._masters = tuple(EbuildRepo.from_ptr(array[i]) for i in range(length))
+        return self._masters

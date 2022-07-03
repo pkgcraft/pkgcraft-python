@@ -4,6 +4,8 @@ from .base cimport Repo
 
 cdef class EbuildRepo(Repo):
     cdef C.EbuildRepo *_ebuild_repo
+    # cached fields
+    cdef tuple _masters
 
     @staticmethod
     cdef EbuildRepo from_ptr(const C.Repo *)

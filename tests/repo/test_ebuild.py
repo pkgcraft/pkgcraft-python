@@ -34,3 +34,15 @@ class TestEbuildRepo:
         # create new pkg in new category
         repo.create_ebuild("cat2/pkga-1")
         assert r.category_dirs == ('cat1', 'cat2')
+
+    def test_masters(self, make_repo):
+        # empty masters
+        repo = make_repo()
+        config = Config()
+        r = config.add_repo(repo.path)
+        assert r.masters == ()
+
+        # non-empty masters
+        overlay = make_repo(masters=[repo.path])
+        o = config.add_repo(overlay.path)
+        assert o.masters == (r,)
