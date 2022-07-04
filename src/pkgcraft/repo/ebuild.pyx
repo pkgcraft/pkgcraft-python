@@ -13,7 +13,7 @@ cdef class EbuildRepo(Repo):
         # skip calling __init__()
         obj = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
         obj._repo = <C.Repo *>repo
-        obj._ebuild_repo = <C.EbuildRepo *>C.pkgcraft_repo_as_ebuild(obj._repo)
+        obj._ebuild_repo = C.pkgcraft_repo_as_ebuild(obj._repo)
         if obj._ebuild_repo is NULL:
             raise PkgcraftError
         return obj
