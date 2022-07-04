@@ -53,7 +53,7 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The atom argument should be a UTF-8 string while eapi can be a string or may be
     # NULL to use the default EAPI.
-    Atom *pkgcraft_atom(char *atom, const char *eapi);
+    Atom *pkgcraft_atom(const char *atom, const char *eapi);
 
     # Return a given atom's blocker status, e.g. the atom "!cat/pkg" has a weak blocker.
     #
@@ -180,7 +180,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The path argument should be a valid path on the system.
-    RepoConfig *pkgcraft_config_add_repo(Config *config, const char *id, int priority, char *path);
+    RepoConfig *pkgcraft_config_add_repo(Config *config, const char *id, int priority, const char *path);
 
     # Free a config.
     #
@@ -200,7 +200,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument should be a UTF-8 string.
-    Atom *pkgcraft_cpv(char *s);
+    Atom *pkgcraft_cpv(const char *s);
 
     # Return a given ebuild's DESCRIPTION.
     #
@@ -218,13 +218,13 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null EbuildRepo pointer.
-    char **pkgcraft_ebuild_repo_category_dirs(EbuildRepo *r, uintptr_t *len);
+    char **pkgcraft_ebuild_repo_category_dirs(const EbuildRepo *r, uintptr_t *len);
 
     # Return a given ebuild repos's masters.
     #
     # # Safety
     # The argument must be a non-null EbuildRepo pointer.
-    Repo **pkgcraft_ebuild_repo_masters(EbuildRepo *r, uintptr_t *len);
+    Repo **pkgcraft_ebuild_repo_masters(const EbuildRepo *r, uintptr_t *len);
 
     # Get the most recent error message.
     #
@@ -241,7 +241,7 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The atom argument should be a UTF-8 string while eapi can be a string or may be
     # NULL to use the default EAPI.
-    char *pkgcraft_parse_atom(char *atom, const char *eapi);
+    const char *pkgcraft_parse_atom(const char *atom, const char *eapi);
 
     # Parse an atom category string.
     #
