@@ -33,13 +33,14 @@ cdef class Config:
             self._repos = ImmutableDict(d)
         return self._repos
 
-    def add_repo(self, str path not None, str id=None, int priority=0):
+    def add_repo_path(self, str path not None, str id=None, int priority=0):
+        cdef C.RepoConfig *repo_conf
         path_bytes = path.encode()
         id_bytes = id.encode() if id is not None else path_bytes
         cdef char *path_p = path_bytes
         cdef char *id_p = id_bytes
 
-        cdef C.RepoConfig *repo_conf = C.pkgcraft_config_add_repo(self._config, id_p, priority, path_p)
+        repo_conf = C.pkgcraft_config_add_repo_path(self._config, id_p, priority, path_p)
         if repo_conf is NULL:
             raise PkgcraftError
 

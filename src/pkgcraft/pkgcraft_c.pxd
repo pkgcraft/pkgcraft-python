@@ -174,13 +174,13 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on error.
     Config *pkgcraft_config();
 
-    # Add an external repo to a config.
+    # Add local repo from filesystem path.
     #
     # Returns NULL on error.
     #
     # # Safety
     # The path argument should be a valid path on the system.
-    RepoConfig *pkgcraft_config_add_repo(Config *config, const char *id, int priority, const char *path);
+    RepoConfig *pkgcraft_config_add_repo_path(Config *config, const char *id, int priority, const char *path);
 
     # Free a config.
     #

@@ -12,17 +12,15 @@ class TestEbuildPkg:
             EbuildPkg()
 
     def test_description(self, repo):
-        path = repo.path
-        config = Config()
-        r = config.add_repo(path)
         repo.create_ebuild("cat/pkg-1", description="desc")
+        config = Config()
+        r = config.add_repo_path(repo.path)
         pkg = next(iter(r))
         assert pkg.description == "desc"
 
     def test_slot(self, repo):
-        path = repo.path
-        config = Config()
-        r = config.add_repo(path)
         repo.create_ebuild("cat/pkg-1", slot="1")
+        config = Config()
+        r = config.add_repo_path(repo.path)
         pkg = next(iter(r))
         assert pkg.slot == "1"

@@ -10,21 +10,21 @@ class TestConfig:
         path = repo.path
         config = Config()
         assert not config.repos
-        r = config.add_repo(path)
+        r = config.add_repo_path(path)
         assert r == config.repos[path]
 
-    def test_add_repo(self, repo):
+    def test_add_repo_path(self, repo):
         path = repo.path
         config = Config()
 
         # default
-        r = config.add_repo(path)
+        r = config.add_repo_path(path)
         assert r == config.repos[path]
 
         # custom
-        r = config.add_repo(path, "fake")
+        r = config.add_repo_path(path, "fake")
         assert r == config.repos["fake"]
 
         # existing
         with pytest.raises(PkgcraftError, match=f'existing repo: fake'):
-            config.add_repo(path, "fake")
+            config.add_repo_path(path, "fake")

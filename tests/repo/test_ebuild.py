@@ -14,7 +14,7 @@ class TestEbuildRepo:
     def test_category_dirs(self, repo):
         path = repo.path
         config = Config()
-        r = config.add_repo(path)
+        r = config.add_repo_path(path)
 
         # empty repo
         assert r.category_dirs == ()
@@ -39,10 +39,10 @@ class TestEbuildRepo:
         # empty masters
         repo = make_repo()
         config = Config()
-        r = config.add_repo(repo.path)
+        r = config.add_repo_path(repo.path)
         assert r.masters == ()
 
         # non-empty masters
         overlay = make_repo(masters=[repo.path])
-        o = config.add_repo(overlay.path)
+        o = config.add_repo_path(overlay.path)
         assert o.masters == (r,)
