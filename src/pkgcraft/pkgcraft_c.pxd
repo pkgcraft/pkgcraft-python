@@ -202,13 +202,21 @@ cdef extern from "pkgcraft.h":
     # The argument should be a UTF-8 string.
     Atom *pkgcraft_cpv(const char *s);
 
-    # Return a given ebuild's DESCRIPTION.
+    # Return a package's description.
     #
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
     char *pkgcraft_ebuild_pkg_description(EbuildPkg *p);
 
-    # Return a given ebuild's slot.
+    # Return a package's ebuild file content.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    char *pkgcraft_ebuild_pkg_ebuild(EbuildPkg *p);
+
+    # Return a package's slot.
     #
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
