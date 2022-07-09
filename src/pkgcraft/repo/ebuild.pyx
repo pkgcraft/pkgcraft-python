@@ -1,7 +1,7 @@
 from .. cimport pkgcraft_c as C
 from ..pkg cimport EbuildPkg
+from .base cimport Repo
 from ..error import PkgcraftError
-from .base import Repo
 
 
 cdef class EbuildRepo(Repo):
