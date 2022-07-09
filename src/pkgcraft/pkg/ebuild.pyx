@@ -1,5 +1,4 @@
 from .. cimport pkgcraft_c as C
-from ..atom cimport Cpv
 from ..error import PkgcraftError
 
 
@@ -11,6 +10,8 @@ cdef class EbuildPkg(Pkg):
         """Get a package's ebuild file content."""
         cdef char *c_str
         c_str = C.pkgcraft_ebuild_pkg_ebuild(self._ebuild_pkg)
+        if c_str is NULL:
+            raise PkgcraftError
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
