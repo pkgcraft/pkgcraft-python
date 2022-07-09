@@ -38,7 +38,7 @@ class TestVersion:
         assert repr(v).startswith("<Version '1-r0' at 0x")
 
     def test_invalid(self):
-        for s in ('-1', '1a1'):
+        for s in ('-1', '1a1', 'a', '>1-r2'):
             with pytest.raises(PkgcraftError, match=f'invalid version: "{s}"'):
                 Version(s)
 
@@ -92,6 +92,11 @@ class TestVersion:
 
 
 class TestVersionWithOp:
+
+    def test_invalid(self):
+        for s in ('1-r2',):
+            with pytest.raises(PkgcraftError, match=f'invalid version: "{s}"'):
+                VersionWithOp(s)
 
     def test_pickle(self):
         a = VersionWithOp('>=1-r1')

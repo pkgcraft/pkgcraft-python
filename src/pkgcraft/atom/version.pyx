@@ -16,24 +16,6 @@ cdef class Version:
     >>> v = Version("1-r2")
     >>> v.revision
     '2'
-
-    Invalid versions
-    >>> v = Version("a")
-    Traceback (most recent call last):
-        ...
-    pkgcraft.error.PkgcraftError: parsing failure: invalid version: "a"
-      |
-    1 | a
-      | ^ Expected: ['0' ..= '9']
-      |
-    >>> v = Version(">1-r2")
-    Traceback (most recent call last):
-        ...
-    pkgcraft.error.PkgcraftError: parsing failure: invalid version: ">1-r2"
-      |
-    1 | >1-r2
-      | ^ Expected: ['0' ..= '9']
-      |
     """
     def __init__(self, str version not None):
         version_bytes = version.encode()
@@ -120,16 +102,6 @@ cdef class VersionWithOp(Version):
     >>> v = VersionWithOp("=1")
     >>> v.revision
     '0'
-
-    Invalid version
-    >>> v = VersionWithOp("1-r2")
-    Traceback (most recent call last):
-        ...
-    pkgcraft.error.PkgcraftError: parsing failure: invalid version: "1-r2"
-      |
-    1 | 1-r2
-      | ^ Expected: one of "<", "=", ">", "~"
-      |
     """
     def __init__(self, str version not None):
         version_bytes = version.encode()
