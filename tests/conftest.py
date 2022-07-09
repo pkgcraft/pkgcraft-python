@@ -104,7 +104,7 @@ class EbuildRepo:
         os.makedirs(ebuild_dir, exist_ok=True)
 
         # use defaults for some ebuild metadata if unset
-        eapi = kwargs.pop('eapi', '7')
+        eapi = kwargs.pop('eapi', '8')
         slot = kwargs.pop('slot', '0')
         desc = kwargs.pop('description', 'stub package description')
         homepage = kwargs.pop('homepage', 'https://github.com/pkgcore/pkgcheck')
