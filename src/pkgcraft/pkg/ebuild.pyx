@@ -8,8 +8,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def ebuild(self):
         """Get a package's ebuild file content."""
-        cdef char *c_str
-        c_str = C.pkgcraft_ebuild_pkg_ebuild(self._ebuild_pkg)
+        cdef char *c_str = C.pkgcraft_ebuild_pkg_ebuild(self._ebuild_pkg)
         if c_str is NULL:
             raise PkgcraftError
         s = c_str.decode()
