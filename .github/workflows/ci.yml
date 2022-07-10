@@ -73,7 +73,7 @@ jobs:
       if: ${{ matrix.os == 'macos-latest' }}
       run: |
         curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-macos.zip > cargo-c.zip
-        unzip cargo-c.zip -d ~/.cargo/bin
+        unzip -o cargo-c.zip -d ~/.cargo/bin
         rm cargo-c.zip
 
     - name: Build and install C library
