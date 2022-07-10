@@ -3,6 +3,7 @@ import pytest
 from pkgcraft.config import Config
 from pkgcraft.error import PkgcraftError
 from pkgcraft.pkg import EbuildPkg
+from pkgcraft.atom import Cpv
 
 
 class TestEbuildPkg:
@@ -10,6 +11,22 @@ class TestEbuildPkg:
     def test_init(self):
         with pytest.raises(PkgcraftError, match=f"doesn't support regular creation"):
             EbuildPkg()
+
+    def test_atom(self, repo):
+        repo.create_ebuild("cat/pkg-1")
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        pkg = next(iter(r))
+        assert pkg.atom == Cpv("cat/pkg-1")
+
+    def test_repo(self, repo):
+        repo.create_ebuild("cat/pkg-1")
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        pkg = next(iter(r))
+        assert pkg.repo == r
+        # repo attribute allows recursion
+        assert pkg == next(iter(pkg.repo))
 
     def test_ebuild(self, repo):
         repo.create_ebuild("cat/pkg-1")

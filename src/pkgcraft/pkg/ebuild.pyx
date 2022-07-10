@@ -1,10 +1,17 @@
 from .. cimport pkgcraft_c as C
 from .base cimport Pkg
 from ..error import PkgcraftError
+from ..repo cimport EbuildRepo
 
 
 cdef class EbuildPkg(Pkg):
     """Generic ebuild package."""
+
+    @property
+    def repo(self):
+        """Get a package's repo."""
+        cdef const C.Repo *repo = C.pkgcraft_pkg_repo(self._pkg)
+        return EbuildRepo.from_ref(repo)
 
     @property
     def ebuild(self):

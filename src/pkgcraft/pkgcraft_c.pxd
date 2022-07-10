@@ -324,6 +324,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer.
     uint64_t pkgcraft_pkg_hash(Pkg *p);
 
+    # Return a given package's repo.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    const Repo *pkgcraft_pkg_repo(Pkg *p);
+
     # Convert a Repo into an EbuildRepo.
     #
     # Returns NULL on error.

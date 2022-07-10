@@ -1,4 +1,5 @@
 from .. cimport pkgcraft_c as C
+from ..repo cimport Repo
 from ..atom cimport Cpv
 from ..error import PkgcraftError
 
@@ -14,6 +15,12 @@ cdef class Pkg:
         """Get a package's atom."""
         cdef const C.Atom *cpv = C.pkgcraft_pkg_atom(self._pkg)
         return Cpv.from_ref(cpv)
+
+    @property
+    def repo(self):
+        """Get a package's repo."""
+        cdef const C.Repo *repo = C.pkgcraft_pkg_repo(self._pkg)
+        return Repo.from_ref(repo)
 
     def __lt__(self, Pkg other):
         return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) == -1
