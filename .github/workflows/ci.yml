@@ -59,16 +59,22 @@ jobs:
           ~/.cache/pip
           .tox
           target
-        key: v6-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}
-        restore-keys: v6-${{ github.job }}-${{ runner.os }}-rust-
+        key: v1-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}
+        restore-keys: v1-${{ github.job }}-${{ runner.os }}-rust-
 
     - name: Update deps
       run: cargo update -p pkgcraft-c
 
-    - name: Install cargo-c
+    - name: Install cargo-c via binary package on Linux
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      run: curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-linux.tar.gz | tar xvzf - -C ~/.cargo/bin
+
+    - name: Install cargo-c via binary package on MacOS
+      if: ${{ matrix.os == 'macos-latest' }}
       run: |
-        # ignore return value since `cargo install` errors out when already installed
-        cargo install cargo-c || true
+        curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-macos.zip > cargo-c.zip
+        unzip cargo-c.zip -d ~/.cargo/bin
+        rm cargo-c.zip
 
     - name: Build and install C library
       run: |
