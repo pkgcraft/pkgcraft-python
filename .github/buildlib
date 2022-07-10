@@ -1,7 +1,8 @@
 #!/bin/sh
-# Build pkgcraft-c library in manylinux container based on AlmaLinux.
+# Build pkgcraft-c library in manylinux_2_28 container based on AlmaLinux.
 
 set -e
+env
 
 doecho() {
 	echo "\$ $*"
@@ -12,7 +13,7 @@ doecho() {
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 doecho source $HOME/.cargo/env
 
-# install required libs
+# install required libs for manylinux
 doecho dnf makecache --refresh
 doecho dnf -y install clang
 

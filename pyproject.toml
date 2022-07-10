@@ -18,4 +18,4 @@ test-requires = "pytest"
 test-command = "pytest {package}/tests"
 
 [tool.cibuildwheel.linux]
-before-all = "sh {package}/.github/buildlib"
+before-all = "{package}/.github/buildlib"
