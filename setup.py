@@ -108,8 +108,8 @@ class build_ext(dst_build_ext.build_ext):
         ("cython-coverage", None, "enable cython coverage support")]
 
     def initialize_options(self):
-        super().initialize_options()
         self.cython_coverage = False
+        super().initialize_options()
 
     def finalize_options(self):
         self.cython_coverage = bool(self.cython_coverage)
@@ -133,11 +133,20 @@ class build_ext(dst_build_ext.build_ext):
 
         super().finalize_options()
 
+    def run(self):
+        # delay pkg-config to avoid requiring library during sdist
+        pkgcraft_opts = pkg_config('pkgcraft')
+        for ext in self.extensions:
+            for attr, data in pkgcraft_opts.items():
+                getattr(ext, attr).extend(data)
+
+        super().run()
+
 
 CYTHON_EXTS = list(cython_pyx(MODULEDIR))
 
 setup(
-    ext_modules=extensions(**pkg_config('pkgcraft')),
+    ext_modules=extensions(),
     cmdclass={
         'build_ext': build_ext,
         'sdist': sdist,
