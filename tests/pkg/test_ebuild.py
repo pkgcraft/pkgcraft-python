@@ -28,6 +28,15 @@ class TestEbuildPkg:
         # repo attribute allows recursion
         assert pkg == next(iter(pkg.repo))
 
+    def test_repo(self, repo):
+        repo.create_ebuild("cat/pkg-1", eapi="7")
+        repo.create_ebuild("cat/pkg-2", eapi="8")
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        pkgs = iter(r)
+        assert next(pkgs).eapi == "7"
+        assert next(pkgs).eapi == "8"
+
     def test_ebuild(self, repo):
         repo.create_ebuild("cat/pkg-1")
         config = Config()

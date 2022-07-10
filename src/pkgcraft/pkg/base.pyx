@@ -22,6 +22,14 @@ cdef class Pkg:
         cdef const C.Repo *repo = C.pkgcraft_pkg_repo(self._pkg)
         return Repo.from_ref(repo)
 
+    @property
+    def eapi(self):
+        """Get a package's EAPI."""
+        cdef char *c_str = C.pkgcraft_pkg_eapi(self._pkg)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
+
     def __lt__(self, Pkg other):
         return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) == -1
 

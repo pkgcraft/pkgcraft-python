@@ -312,6 +312,12 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null Pkg pointers.
     int pkgcraft_pkg_cmp(Pkg *p1, Pkg *p2);
 
+    # Return a given package's EAPI.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char *pkgcraft_pkg_eapi(Pkg *p);
+
     # Free an package.
     #
     # # Safety
