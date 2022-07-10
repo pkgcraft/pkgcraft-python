@@ -1,6 +1,6 @@
 from .. cimport pkgcraft_c as C
 from ..repo cimport Repo
-from ..atom cimport Cpv
+from ..atom cimport Cpv, Version
 from ..error import PkgcraftError
 
 
@@ -29,6 +29,12 @@ cdef class Pkg:
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
+
+    @property
+    def version(self):
+        """Get a package's version."""
+        cdef C.Version *version = C.pkgcraft_pkg_version(self._pkg)
+        return Version.from_ref(version)
 
     def __lt__(self, Pkg other):
         return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) == -1

@@ -336,6 +336,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer.
     const Repo *pkgcraft_pkg_repo(Pkg *p);
 
+    # Return a given package's version.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    const Version *pkgcraft_pkg_version(Pkg *p);
+
     # Convert a Repo into an EbuildRepo.
     #
     # Returns NULL on error.
