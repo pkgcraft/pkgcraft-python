@@ -33,7 +33,7 @@ cdef class Pkg:
     @property
     def version(self):
         """Get a package's version."""
-        cdef C.Version *version = C.pkgcraft_pkg_version(self._pkg)
+        cdef const C.Version *version = C.pkgcraft_pkg_version(self._pkg)
         return Version.from_ref(version)
 
     def __lt__(self, Pkg other):
