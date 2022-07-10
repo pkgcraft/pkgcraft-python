@@ -1,0 +1,23 @@
+#!/bin/sh
+# Build pkgcraft-c library in manylinux container based on AlmaLinux.
+
+set -e
+
+doecho() {
+	echo "\$ $*"
+	"$@"
+}
+
+# install rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+doecho source $HOME/.cargo/env
+
+# install required libs
+doecho dnf makecache --refresh
+doecho dnf -y install clang
+
+# install cargo-c via binary package
+curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-linux.tar.gz | tar xvzf - -C $HOME/.cargo/bin
+
+# build and install C library
+doecho cargo cinstall -p pkgcraft-c
