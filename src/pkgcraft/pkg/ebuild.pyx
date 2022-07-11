@@ -1,5 +1,5 @@
 from .. cimport pkgcraft_c as C
-from .base cimport Pkg
+from . cimport Pkg
 from ..error import PkgcraftError
 from ..repo cimport EbuildRepo
 

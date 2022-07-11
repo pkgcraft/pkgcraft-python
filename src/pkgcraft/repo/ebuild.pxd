@@ -1,6 +1,6 @@
 from .. cimport pkgcraft_c as C
 from ..pkg cimport EbuildPkg
-from .base cimport Repo
+from . cimport Repo
 
 cdef class EbuildRepo(Repo):
     cdef const C.EbuildRepo *_ebuild_repo
