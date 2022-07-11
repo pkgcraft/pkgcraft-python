@@ -9,26 +9,8 @@ cdef class Repo:
     def __init__(self):
         raise PkgcraftError(f"{self.__class__} doesn't support regular creation")
 
-    @staticmethod
-    cdef Repo from_ptr(const C.Repo *repo):
-        """Create instance from an owned pointer."""
-        # skip calling __init__()
-        obj = <Repo>Repo.__new__(Repo)
-        obj._repo = <C.Repo *>repo
-        return obj
-
-    @staticmethod
-    cdef Repo from_ref(const C.Repo *repo):
-        """Create instance from a borrowed pointer."""
-        cdef Repo obj = Repo.from_ptr(repo)
-        obj._ref = True
-        return obj
-
     cdef Pkg create_pkg(self, C.Pkg *pkg):
-        # create instance without calling __init__()
-        obj = <Pkg>Pkg.__new__(Pkg)
-        obj._pkg = <C.Pkg *>pkg
-        return obj
+        raise PkgcraftError(f"{self.__class__} doesn't support package creation")
 
     @property
     def id(self):
