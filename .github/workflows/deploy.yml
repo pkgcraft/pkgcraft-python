@@ -21,7 +21,12 @@ jobs:
         submodules: recursive
 
     - name: Pull submodule updates
+      if: startsWith(github.ref, 'refs/tags/') != true
       run: git submodule update --recursive --remote
+
+    - name: Update submodules to the latest tag
+      if: startsWith(github.ref, 'refs/tags/')
+      run: git submodule foreach 'git fetch origin; git checkout $(git describe --tags `git rev-list --tags --max-count=1`);'
 
     - name: Remove current repo from workspace
       run: rm -rfv ${{ github.event.repository.name }}
