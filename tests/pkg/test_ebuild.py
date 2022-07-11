@@ -12,6 +12,13 @@ class TestEbuildPkg:
         with pytest.raises(PkgcraftError, match=f"doesn't support regular creation"):
             EbuildPkg()
 
+    def test_repr(self, repo):
+        repo.create_ebuild("cat/pkg-1")
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        pkg = next(iter(r))
+        assert repr(pkg).startswith(f"<EbuildPkg 'cat/pkg-1' at 0x")
+
     def test_atom(self, repo):
         repo.create_ebuild("cat/pkg-1")
         config = Config()

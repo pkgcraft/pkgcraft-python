@@ -53,8 +53,7 @@ class TestRepo:
         config = Config()
         r1 = config.add_repo_path(path)
         r2 = config.add_repo_path(path, "fake")
-        s = {r1, r2}
-        assert len(s) == 2
+        assert len({r1, r2}) == 2
 
     def test_len(self, repo):
         path = repo.path
