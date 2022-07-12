@@ -216,6 +216,24 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null EbuildPkg pointer.
     char *pkgcraft_ebuild_pkg_ebuild(EbuildPkg *p);
 
+    # Return a package's homepage.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    char **pkgcraft_ebuild_pkg_homepage(EbuildPkg *p, uintptr_t *len);
+
+    # Return a package's iuse.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    char **pkgcraft_ebuild_pkg_iuse(EbuildPkg *p, uintptr_t *len);
+
+    # Return a package's keywords.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    char **pkgcraft_ebuild_pkg_keywords(EbuildPkg *p, uintptr_t *len);
+
     # Return a package's slot.
     #
     # # Safety

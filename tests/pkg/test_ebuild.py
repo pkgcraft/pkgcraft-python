@@ -73,3 +73,45 @@ class TestEbuildPkg:
         r = config.add_repo_path(repo.path)
         pkg = next(iter(r))
         assert pkg.slot == "1"
+
+    def test_homepage(self, repo):
+        config = Config()
+        r = config.add_repo_path(repo.path)
+
+        # single
+        repo.create_ebuild("cat/pkg-1")
+        pkg = next(iter(r))
+        assert len(pkg.homepage) == 1
+
+        # multiple
+        repo.create_ebuild("cat/pkg-1", homepage="https://a.com https://b.com")
+        pkg = next(iter(r))
+        assert pkg.homepage == ("https://a.com", "https://b.com")
+
+    def test_keywords(self, repo):
+        config = Config()
+        r = config.add_repo_path(repo.path)
+
+        # empty
+        repo.create_ebuild("cat/pkg-1")
+        pkg = next(iter(r))
+        assert pkg.keywords == ()
+
+        # multiple
+        repo.create_ebuild("cat/pkg-1", keywords="amd64 ~arm64")
+        pkg = next(iter(r))
+        assert pkg.keywords == ("amd64", "~arm64")
+
+    def test_iuse(self, repo):
+        config = Config()
+        r = config.add_repo_path(repo.path)
+
+        # empty
+        repo.create_ebuild("cat/pkg-1")
+        pkg = next(iter(r))
+        assert pkg.iuse == ()
+
+        # multiple
+        repo.create_ebuild("cat/pkg-1", iuse="a b c")
+        pkg = next(iter(r))
+        assert pkg.iuse == ("a", "b", "c")

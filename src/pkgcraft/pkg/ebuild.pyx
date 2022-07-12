@@ -42,3 +42,39 @@ cdef class EbuildPkg(Pkg):
             self._slot = c_str.decode()
             C.pkgcraft_str_free(c_str)
         return self._slot
+
+    @property
+    def homepage(self):
+        """Get a package's homepage."""
+        cdef char **uris
+        cdef size_t length
+
+        if self._homepage is None:
+            uris = C.pkgcraft_ebuild_pkg_homepage(self._ebuild_pkg, &length)
+            self._homepage = tuple(uris[i].decode() for i in range(length))
+            C.pkgcraft_str_array_free(uris, length)
+        return self._homepage
+
+    @property
+    def keywords(self):
+        """Get a package's keywords."""
+        cdef char **keywords
+        cdef size_t length
+
+        if self._keywords is None:
+            keywords = C.pkgcraft_ebuild_pkg_keywords(self._ebuild_pkg, &length)
+            self._keywords = tuple(keywords[i].decode() for i in range(length))
+            C.pkgcraft_str_array_free(keywords, length)
+        return self._keywords
+
+    @property
+    def iuse(self):
+        """Get a package's USE flags."""
+        cdef char **iuse
+        cdef size_t length
+
+        if self._iuse is None:
+            iuse = C.pkgcraft_ebuild_pkg_iuse(self._ebuild_pkg, &length)
+            self._iuse = tuple(iuse[i].decode() for i in range(length))
+            C.pkgcraft_str_array_free(iuse, length)
+        return self._iuse
