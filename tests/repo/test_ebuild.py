@@ -9,7 +9,7 @@ from pkgcraft.repo import EbuildRepo
 class TestEbuildRepo:
 
     def test_init(self):
-        with pytest.raises(PkgcraftError, match=f"doesn't support regular creation"):
+        with pytest.raises(PkgcraftError, match="doesn't support regular creation"):
             EbuildRepo()
 
     def test_category_dirs(self, repo):
@@ -54,7 +54,7 @@ class TestEbuildRepo:
         r = config.add_repo_path(path)
 
         # iterating on a raw repo object fails
-        with pytest.raises(TypeError, match=f"object is not an iterator"):
+        with pytest.raises(TypeError, match="object is not an iterator"):
             next(r)
 
         # empty repo

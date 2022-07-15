@@ -26,5 +26,5 @@ class TestConfig:
         assert r == config.repos["fake"]
 
         # existing
-        with pytest.raises(PkgcraftError, match=f'existing repo: fake'):
+        with pytest.raises(PkgcraftError, match='existing repo: fake'):
             config.add_repo_path(path, "fake")

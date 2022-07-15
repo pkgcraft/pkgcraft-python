@@ -8,7 +8,7 @@ from pkgcraft.pkg import Pkg
 class TestPkg:
 
     def test_init(self):
-        with pytest.raises(PkgcraftError, match=f"doesn't support regular creation"):
+        with pytest.raises(PkgcraftError, match="doesn't support regular creation"):
             Pkg()
 
     def test_cmp(self, repo):

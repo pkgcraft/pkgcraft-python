@@ -9,7 +9,7 @@ from pkgcraft.atom import Cpv, Version
 class TestEbuildPkg:
 
     def test_init(self):
-        with pytest.raises(PkgcraftError, match=f"doesn't support regular creation"):
+        with pytest.raises(PkgcraftError, match="doesn't support regular creation"):
             EbuildPkg()
 
     def test_repr(self, repo):

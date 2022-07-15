@@ -10,7 +10,7 @@ from ..misc import OperatorMap
 class TestRepo:
 
     def test_init(self):
-        with pytest.raises(PkgcraftError, match=f"doesn't support regular creation"):
+        with pytest.raises(PkgcraftError, match="doesn't support regular creation"):
             Repo()
 
     def test_attrs(self, repo):
