@@ -10,9 +10,6 @@ cdef class _RestrictIter:
     cdef _RestrictIter create(Repo repo, object obj):
         cdef C.Restrict *restrict
 
-        # create instance without calling __init__()
-        o = <_RestrictIter>_RestrictIter.__new__(_RestrictIter)
-
         if isinstance(obj, Cpv):
             restrict = C.pkgcraft_atom_restrict((<Cpv>obj)._atom)
         elif isinstance(obj, Pkg):
@@ -25,6 +22,8 @@ cdef class _RestrictIter:
         if restrict is NULL:
             raise PkgcraftError
 
+        # create instance without calling __init__()
+        o = <_RestrictIter>_RestrictIter.__new__(_RestrictIter)
         o._repo = repo
         o._iter = C.pkgcraft_repo_restrict_iter(repo._repo, restrict)
         C.pkgcraft_restrict_free(restrict)
