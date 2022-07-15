@@ -1,6 +1,50 @@
 from .. cimport pkgcraft_c as C
 from ..pkg cimport Pkg
+from ..atom cimport Cpv
 from ..error import PkgcraftError
+
+
+cdef class _RestrictIter:
+
+    @staticmethod
+    cdef _RestrictIter create(Repo repo, object obj):
+        cdef C.Restrict *restrict
+
+        # create instance without calling __init__()
+        o = <_RestrictIter>_RestrictIter.__new__(_RestrictIter)
+
+        if isinstance(obj, Cpv):
+            restrict = C.pkgcraft_atom_restrict((<Cpv>obj)._atom)
+        elif isinstance(obj, Pkg):
+            restrict = C.pkgcraft_pkg_restrict((<Pkg>obj)._pkg)
+        elif isinstance(obj, str):
+            restrict = C.pkgcraft_restrict_parse(obj.encode())
+        else:
+            raise TypeError(f"{obj.__class__.__name__!r} unsupported restriction type")
+
+        if restrict is NULL:
+            raise PkgcraftError
+
+        o._repo = repo
+        o._iter = C.pkgcraft_repo_restrict_iter(repo._repo, restrict)
+        C.pkgcraft_restrict_free(restrict)
+        return o
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        # verify __iter__() was called since cython's generated next() method doesn't check
+        if self._iter is NULL:
+            raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
+
+        cdef C.Pkg *pkg = C.pkgcraft_repo_restrict_iter_next(self._iter)
+        if pkg is not NULL:
+            return self._repo.create_pkg(pkg)
+        raise StopIteration
+
+    def __dealloc__(self):
+        C.pkgcraft_repo_restrict_iter_free(self._iter)
 
 
 cdef class Repo:
@@ -38,6 +82,9 @@ cdef class Repo:
         if pkg is not NULL:
             return self.create_pkg(pkg)
         raise StopIteration
+
+    def iter_restrict(self, obj):
+        yield from _RestrictIter.create(self, obj)
 
     def __lt__(self, Repo other):
         return C.pkgcraft_repo_cmp(self._repo, other._repo) == -1

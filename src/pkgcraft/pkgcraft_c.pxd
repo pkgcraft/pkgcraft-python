@@ -35,6 +35,14 @@ cdef extern from "pkgcraft.h":
     cdef struct Repo:
         pass
 
+    # Opaque wrapper for Restrict objects.
+    cdef struct Restrict:
+        pass
+
+    # Opaque wrapper for RestrictPkgIter objects.
+    cdef struct RestrictPkgIter:
+        pass
+
     # Opaque wrapper for Version objects.
     cdef struct Version:
         pass
@@ -111,6 +119,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_repo(Atom *atom);
+
+    # Return the restriction for a given atom.
+    #
+    # # Safety
+    # The argument must be a non-null Atom pointer.
+    Restrict *pkgcraft_atom_restrict(Atom *atom);
 
     # Return a given atom's revision, e.g. the atom "=cat/pkg-1-r2" has a revision of "2".
     #
@@ -354,6 +368,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer.
     const Repo *pkgcraft_pkg_repo(Pkg *p);
 
+    # Return the restriction for a given package.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    Restrict *pkgcraft_pkg_restrict(Pkg *p);
+
     # Return a given package's version.
     #
     # # Safety
@@ -425,12 +445,47 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Repo pointer.
     uintptr_t pkgcraft_repo_len(Repo *r);
 
+    # Return a restriction package iterator for a given repo.
+    #
+    # # Safety
+    # The repo argument must be a non-null Repo pointer and the restrict argument must be a non-null
+    # Restrict pointer.
+    RestrictPkgIter *pkgcraft_repo_restrict_iter(Repo *repo, Restrict *restrict);
+
+    # Free a repo iterator.
+    #
+    # # Safety
+    # The argument must be a non-null RestrictPkgIter pointer or NULL.
+    void pkgcraft_repo_restrict_iter_free(RestrictPkgIter *i);
+
+    # Return the next package from a given restriction package iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a non-null RestrictPkgIter pointer.
+    Pkg *pkgcraft_repo_restrict_iter_next(RestrictPkgIter *i);
+
     # Free an array of configured repos.
     #
     # # Safety
     # The argument must be the value received from pkgcraft_config_repos() or NULL along with the
     # length of the array.
     void pkgcraft_repos_free(RepoConfig **repos, uintptr_t len);
+
+    # Free a restriction.
+    #
+    # # Safety
+    # The argument must be a Restrict pointer or NULL.
+    void pkgcraft_restrict_free(Restrict *r);
+
+    # Parse a restriction string.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null restriction string.
+    Restrict *pkgcraft_restrict_parse(const char *s);
 
     # Free an array of strings.
     #

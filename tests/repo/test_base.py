@@ -1,6 +1,5 @@
 import pytest
 
-from pkgcraft.atom import Cpv
 from pkgcraft.config import Config
 from pkgcraft.error import PkgcraftError
 from pkgcraft.repo import Repo
@@ -74,21 +73,3 @@ class TestRepo:
         # create new ebuild version
         repo.create_ebuild("cat/pkg-2")
         assert len(r) == 2
-
-    def test_iter(self, repo):
-        path = repo.path
-        config = Config()
-        r = config.add_repo_path(path)
-
-        # iterating on a raw repo object fails
-        with pytest.raises(TypeError, match=f"object is not an iterator"):
-            next(r)
-
-        # empty repo
-        assert not list(iter(r))
-
-        # create ebuild
-        repo.create_ebuild("cat/pkg-1")
-        pkgs = list(iter(r))
-        assert len(pkgs) == 1
-        assert pkgs[0].atom == Cpv('cat/pkg-1')
