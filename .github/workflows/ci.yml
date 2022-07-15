@@ -94,7 +94,3 @@ jobs:
       uses: codecov/codecov-action@v3
       with:
         files: pkgcraft-python/coverage.xml
-
-    - name: Run benchmarks via tox
-      working-directory: ${{ github.event.repository.name }}
-      run: tox -e bench
