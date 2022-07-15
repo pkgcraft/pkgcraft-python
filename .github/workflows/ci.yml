@@ -62,9 +62,6 @@ jobs:
         key: v1-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}
         restore-keys: v1-${{ github.job }}-${{ runner.os }}-rust-
 
-    - name: Update deps
-      run: cargo update -p pkgcraft-c
-
     - name: Install cargo-c via binary package on Linux
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-linux.tar.gz | tar xvzf - -C ~/.cargo/bin
