@@ -5,6 +5,10 @@ from ..error import PkgcraftError
 
 
 cdef class _RestrictIter:
+    """Iterator that applies a restriction over a repo iterator."""
+
+    def __init__(self):
+        raise RuntimeError(f"{self.__class__.__name__} class doesn't support manual construction")
 
     @staticmethod
     cdef _RestrictIter create(Repo repo, object obj):
@@ -82,8 +86,9 @@ cdef class Repo:
             return self.create_pkg(pkg)
         raise StopIteration
 
-    def iter_restrict(self, obj not None):
-        yield from _RestrictIter.create(self, obj)
+    def iter_restrict(self, restrict not None):
+        """Iterate over a repo's packages while applying a restriction."""
+        yield from _RestrictIter.create(self, restrict)
 
     def __lt__(self, Repo other):
         return C.pkgcraft_repo_cmp(self._repo, other._repo) == -1
