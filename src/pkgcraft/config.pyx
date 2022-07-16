@@ -1,6 +1,7 @@
+from types import MappingProxyType
+
 from . cimport pkgcraft_c as C
 from .repo cimport EbuildRepo, Repo
-from ._misc import ImmutableDict
 from .error import PkgcraftError
 
 
@@ -30,7 +31,7 @@ cdef class Config:
                     raise PkgcraftError('unsupported repo format')
                 d[r.id.decode()] = repo
             C.pkgcraft_repos_free(repos, length)
-            self._repos = ImmutableDict(d)
+            self._repos = MappingProxyType(d)
         return self._repos
 
     def add_repo_path(self, str path not None, str id=None, int priority=0):
