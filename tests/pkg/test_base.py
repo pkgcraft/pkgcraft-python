@@ -1,14 +1,13 @@
 import pytest
 
 from pkgcraft.config import Config
-from pkgcraft.error import PkgcraftError
 from pkgcraft.pkg import Pkg
 
 
 class TestPkg:
 
     def test_init(self):
-        with pytest.raises(PkgcraftError, match="doesn't support regular creation"):
+        with pytest.raises(RuntimeError, match="doesn't support manual construction"):
             Pkg()
 
     def test_cmp(self, repo):

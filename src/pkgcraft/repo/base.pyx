@@ -50,10 +50,10 @@ cdef class Repo:
     """Package repo."""
 
     def __init__(self):
-        raise PkgcraftError(f"{self.__class__} doesn't support regular creation")
+        raise RuntimeError(f"{self.__class__.__name__} class doesn't support manual construction")
 
     cdef Pkg create_pkg(self, C.Pkg *pkg):
-        raise PkgcraftError(f"{self.__class__} doesn't support package creation")
+        raise RuntimeError(f"{self.__class__.__name__} class doesn't support package creation")
 
     @property
     def id(self):

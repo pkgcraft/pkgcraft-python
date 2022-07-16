@@ -1,7 +1,6 @@
 import pytest
 
 from pkgcraft.config import Config
-from pkgcraft.error import PkgcraftError
 from pkgcraft.pkg import EbuildPkg
 from pkgcraft.atom import Cpv, Version
 
@@ -9,7 +8,7 @@ from pkgcraft.atom import Cpv, Version
 class TestEbuildPkg:
 
     def test_init(self):
-        with pytest.raises(PkgcraftError, match="doesn't support regular creation"):
+        with pytest.raises(RuntimeError, match="doesn't support manual construction"):
             EbuildPkg()
 
     def test_repr(self, repo):

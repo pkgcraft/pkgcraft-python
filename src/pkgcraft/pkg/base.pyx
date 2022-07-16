@@ -8,7 +8,7 @@ cdef class Pkg:
     """Generic package."""
 
     def __init__(self):
-        raise PkgcraftError(f"{self.__class__} doesn't support regular creation")
+        raise RuntimeError(f"{self.__class__.__name__} class doesn't support manual construction")
 
     @property
     def atom(self):

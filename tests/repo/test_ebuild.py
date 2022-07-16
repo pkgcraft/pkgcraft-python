@@ -9,7 +9,7 @@ from pkgcraft.repo import EbuildRepo
 class TestEbuildRepo:
 
     def test_init(self):
-        with pytest.raises(PkgcraftError, match="doesn't support regular creation"):
+        with pytest.raises(RuntimeError, match="doesn't support manual construction"):
             EbuildRepo()
 
     def test_category_dirs(self, repo):
