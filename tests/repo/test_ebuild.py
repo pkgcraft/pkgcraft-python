@@ -75,8 +75,12 @@ class TestEbuildRepo:
         config = Config()
         r = config.add_repo_path(path)
 
+        # non-None argument required
+        with pytest.raises(TypeError, match='must not be None'):
+            r.iter_restrict(None)
+
         # unsupported object type
-        with pytest.raises(TypeError, match="unsupported restriction type"):
+        with pytest.raises(TypeError, match='unsupported restriction type'):
             list(r.iter_restrict(r))
 
         cpv = Cpv('cat/pkg-1')

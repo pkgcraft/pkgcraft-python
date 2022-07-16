@@ -82,7 +82,7 @@ cdef class Repo:
             return self.create_pkg(pkg)
         raise StopIteration
 
-    def iter_restrict(self, obj):
+    def iter_restrict(self, obj not None):
         yield from _RestrictIter.create(self, obj)
 
     def __lt__(self, Repo other):
