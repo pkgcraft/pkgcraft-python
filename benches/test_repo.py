@@ -4,9 +4,32 @@ pytest_plugins = ['pkgcraft']
 from pkgcraft.atom import Atom as pkgcraft_atom
 from pkgcore.ebuild.atom import atom as pkgcore_atom
 
-# TODO: generate repo metadata before running benchmark
 @pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_atom), ('pkgcore', pkgcore_atom)))
-def test_bench_iter_restrict(benchmark, lib, func, repo):
+def test_bench_repo_iter(benchmark, lib, func, repo):
+    # create ebuilds
+    for i in range(100):
+        repo.create_ebuild(f'cat/pkg-{i}')
+
+    if lib == 'pkgcore':
+        from pkgcore.ebuild import repo_objs, repository
+        repo_config = repo_objs.RepoConfig(location=repo.path, disable_inst_caching=True)
+        r = repository.UnconfiguredTree(repo.path, repo_config=repo_config)
+    else:
+        from pkgcraft.config import Config
+        c = Config()
+        r = c.add_repo_path(repo.path)
+
+    def foo(i):
+        pkgs = 0
+        for x in i:
+            pkgs += 1
+        return pkgs
+
+    pkgs = benchmark(lambda x: foo(iter(x)), r)
+    assert pkgs == 100
+
+@pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_atom), ('pkgcore', pkgcore_atom)))
+def test_bench_repo_iter_restrict(benchmark, lib, func, repo):
     # create ebuilds
     for i in range(100):
         repo.create_ebuild(f'cat/pkg-{i}')
