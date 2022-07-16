@@ -14,7 +14,7 @@ cdef class EbuildRepo(Repo):
         obj = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
         obj._repo = <C.Repo *>repo
         obj._ebuild_repo = C.pkgcraft_repo_as_ebuild(obj._repo)
-        if obj._ebuild_repo is NULL:
+        if obj._ebuild_repo is NULL:  # pragma: no cover
             raise PkgcraftError
         return obj
 
@@ -30,7 +30,7 @@ cdef class EbuildRepo(Repo):
         obj = <EbuildPkg>EbuildPkg.__new__(EbuildPkg)
         obj._pkg = <C.Pkg *>pkg
         obj._ebuild_pkg = <C.EbuildPkg *>C.pkgcraft_pkg_as_ebuild(pkg)
-        if obj._ebuild_pkg is NULL:
+        if obj._ebuild_pkg is NULL:  # pragma: no cover
             raise PkgcraftError
         return obj
 

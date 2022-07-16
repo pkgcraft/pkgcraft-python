@@ -7,7 +7,7 @@ from ..error import PkgcraftError
 cdef class _RestrictIter:
     """Iterator that applies a restriction over a repo iterator."""
 
-    def __init__(self):
+    def __init__(self):  # pragma: no cover
         raise RuntimeError(f"{self.__class__.__name__} class doesn't support manual construction")
 
     @staticmethod
@@ -38,7 +38,7 @@ cdef class _RestrictIter:
 
     def __next__(self):
         # verify __iter__() was called since cython's generated next() method doesn't check
-        if self._iter is NULL:
+        if self._iter is NULL:  # pragma: no cover
             raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
 
         cdef C.Pkg *pkg = C.pkgcraft_repo_restrict_iter_next(self._iter)
@@ -56,7 +56,7 @@ cdef class Repo:
     def __init__(self):
         raise RuntimeError(f"{self.__class__.__name__} class doesn't support manual construction")
 
-    cdef Pkg create_pkg(self, C.Pkg *pkg):
+    cdef Pkg create_pkg(self, C.Pkg *pkg):  # pragma: no cover
         raise RuntimeError(f"{self.__class__.__name__} class doesn't support package creation")
 
     @property
