@@ -4,7 +4,7 @@ plugins = Cython.Coverage
 concurrency = multiprocessing,thread
 parallel = True
 branch = True
-omit = src/pkgcraft/__version__.py, tests/*
+omit = src/pkgcraft/__version__.py, src/pkgcraft/_pytest.py, tests/*
 
 [report]
 show_missing = True
