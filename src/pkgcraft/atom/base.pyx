@@ -154,14 +154,14 @@ cdef class Atom(Cpv):
         >>> a.use is None
         True
         """
-        cdef char **array
+        cdef char **use
         cdef size_t length
 
         if self._use is SENTINEL:
-            array = C.pkgcraft_atom_use_deps(self._atom, &length)
-            if array is not NULL:
-                self._use = tuple(array[i].decode() for i in range(length))
-                C.pkgcraft_str_array_free(array, length)
+            use = C.pkgcraft_atom_use_deps(self._atom, &length)
+            if use is not NULL:
+                self._use = tuple(use[i].decode() for i in range(length))
+                C.pkgcraft_str_array_free(use, length)
             else:
                 self._use = None
         return self._use

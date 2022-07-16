@@ -37,21 +37,21 @@ cdef class EbuildRepo(Repo):
     @property
     def category_dirs(self):
         """Get an ebuild repo's category dirs."""
-        cdef char **array
+        cdef char **dirs
         cdef size_t length
 
-        array = C.pkgcraft_ebuild_repo_category_dirs(self._ebuild_repo, &length)
-        dirs = tuple(array[i].decode() for i in range(length))
-        C.pkgcraft_str_array_free(array, length)
-        return dirs
+        dirs = C.pkgcraft_ebuild_repo_category_dirs(self._ebuild_repo, &length)
+        categories = tuple(dirs[i].decode() for i in range(length))
+        C.pkgcraft_str_array_free(dirs, length)
+        return categories
 
     @property
     def masters(self):
         """Get an ebuild repo's masters."""
-        cdef C.Repo **array
+        cdef C.Repo **repos
         cdef size_t length
 
         if self._masters is None:
-            array = C.pkgcraft_ebuild_repo_masters(self._ebuild_repo, &length)
-            self._masters = tuple(EbuildRepo.from_ptr(array[i]) for i in range(length))
+            repos = C.pkgcraft_ebuild_repo_masters(self._ebuild_repo, &length)
+            self._masters = tuple(EbuildRepo.from_ptr(repos[i]) for i in range(length))
         return self._masters
