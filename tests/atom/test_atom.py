@@ -1,7 +1,7 @@
 import pickle
 import re
 
-from pkgcraft.atom import Atom, Blocker, Version, VersionWithOp
+from pkgcraft.atom import Atom, Blocker, SlotOperator, Version, VersionWithOp
 from pkgcraft.error import PkgcraftError
 import pytest
 
@@ -35,7 +35,7 @@ class TestAtom:
         assert a.blocker is Blocker.Strong
         assert a.slot == '0'
         assert a.subslot == '2'
-        assert a.slot_op == '='
+        assert a.slot_op == SlotOperator.Equal
         assert a.use == ('a', 'b', 'c')
         assert a.repo == 'repo'
         assert a.version == VersionWithOp('=1-r2')

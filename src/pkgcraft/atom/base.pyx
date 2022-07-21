@@ -1,4 +1,5 @@
 import functools
+from enum import Enum
 
 from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
@@ -11,6 +12,10 @@ from ..error import PkgcraftError
 def _cached_atom(cls, atom, eapi=None):
     return cls(atom, eapi)
 
+
+class SlotOperator(Enum):
+    Equal = 0
+    Star = 1
 
 cdef class Atom(Cpv):
     """Package atom parsing.
@@ -129,17 +134,15 @@ cdef class Atom(Cpv):
 
         >>> from pkgcraft.atom import Atom
         >>> a = Atom("=cat/pkg-1-r2:=")
-        >>> a.slot_op
-        '='
+        >>> a.slot_op is SlotOperator.Equal
+        True
         >>> a = Atom("=cat/pkg-1-r2")
         >>> a.slot_op is None
         True
         """
-        cdef char* c_str = C.pkgcraft_atom_slot_op(self._atom)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
+        cdef int slot_op = C.pkgcraft_atom_slot_op(self._atom)
+        if slot_op >= 0:
+            return SlotOperator(slot_op)
         return None
 
     @property

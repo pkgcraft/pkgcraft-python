@@ -142,14 +142,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_slot(Atom *atom);
 
-    # Return a given atom's slot operator, e.g. the atom "=cat/pkg-1-r2:0=" has a slot operator of
-    # "=".
+    # Return a given atom's slot operator, e.g. the atom "=cat/pkg-1-r2:0=" has an equal slot
+    # operator.
     #
-    # Returns NULL on nonexistence.
+    # Returns -1 on nonexistence.
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
-    char *pkgcraft_atom_slot_op(Atom *atom);
+    int pkgcraft_atom_slot_op(Atom *atom);
 
     # Return the string for a given atom.
     #
