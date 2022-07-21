@@ -12,6 +12,9 @@ from ..error import PkgcraftError
 def _cached_atom(cls, atom, eapi=None):
     return cls(atom, eapi)
 
+class Blocker(Enum):
+    Strong = 0
+    Weak = 1
 
 class SlotOperator(Enum):
     Equal = 0
@@ -86,7 +89,7 @@ cdef class Atom(Cpv):
         True
         """
         cdef int blocker = C.pkgcraft_atom_blocker(self._atom)
-        if blocker > 0:
+        if blocker >= 0:
             return Blocker(blocker)
         return None
 

@@ -65,9 +65,11 @@ cdef extern from "pkgcraft.h":
 
     # Return a given atom's blocker status, e.g. the atom "!cat/pkg" has a weak blocker.
     #
+    # Returns -1 on nonexistence.
+    #
     # # Safety
     # The argument must be a non-null Atom pointer.
-    Blocker pkgcraft_atom_blocker(Atom *atom);
+    int pkgcraft_atom_blocker(Atom *atom);
 
     # Return a given atom's category, e.g. the atom "=cat/pkg-1-r2" has a category of "cat".
     #
