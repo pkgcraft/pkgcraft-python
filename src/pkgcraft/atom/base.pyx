@@ -136,11 +136,17 @@ cdef class Atom(Cpv):
         """Get an atom's slot operator.
 
         >>> from pkgcraft.atom import Atom
+        >>> a = Atom("=cat/pkg-1-r2")
+        >>> a.slot_op is None
+        True
         >>> a = Atom("=cat/pkg-1-r2:=")
         >>> a.slot_op is SlotOperator.Equal
         True
-        >>> a = Atom("=cat/pkg-1-r2")
-        >>> a.slot_op is None
+        >>> a = Atom("=cat/pkg-1-r2:0=")
+        >>> a.slot_op is SlotOperator.Equal
+        True
+        >>> a = Atom("=cat/pkg-1-r2:*")
+        >>> a.slot_op is SlotOperator.Star
         True
         """
         cdef int slot_op = C.pkgcraft_atom_slot_op(self._atom)

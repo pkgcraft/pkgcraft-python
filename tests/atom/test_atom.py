@@ -35,7 +35,7 @@ class TestAtom:
         assert a.blocker is Blocker.Strong
         assert a.slot == '0'
         assert a.subslot == '2'
-        assert a.slot_op == SlotOperator.Equal
+        assert a.slot_op is SlotOperator.Equal
         assert a.use == ('a', 'b', 'c')
         assert a.repo == 'repo'
         assert a.version == VersionWithOp('=1-r2')
