@@ -8,4 +8,4 @@ cdef class EbuildPkg(Pkg):
     cdef str _slot
     cdef tuple _homepage
     cdef tuple _keywords
-    cdef tuple _iuse
+    cdef frozenset _iuse

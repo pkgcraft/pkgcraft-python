@@ -113,4 +113,4 @@ class TestEbuildPkg:
         # multiple
         repo.create_ebuild("cat/pkg-1", iuse="a b c")
         pkg = next(iter(r))
-        assert pkg.iuse == ("a", "b", "c")
+        assert pkg.iuse == frozenset(["a", "b", "c"])

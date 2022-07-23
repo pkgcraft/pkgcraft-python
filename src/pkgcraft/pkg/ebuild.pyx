@@ -75,6 +75,6 @@ cdef class EbuildPkg(Pkg):
 
         if self._iuse is None:
             iuse = C.pkgcraft_ebuild_pkg_iuse(self._ebuild_pkg, &length)
-            self._iuse = tuple(iuse[i].decode() for i in range(length))
+            self._iuse = frozenset(iuse[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(iuse, length)
         return self._iuse
