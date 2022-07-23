@@ -11,7 +11,7 @@ class TestConfig:
         config = Config()
         assert not config.repos
         r = config.add_repo_path(path)
-        assert r == config.repos[path]
+        assert r == config.repos[str(path)]
 
     def test_add_repo_path(self, repo):
         path = repo.path
@@ -19,7 +19,7 @@ class TestConfig:
 
         # default
         r = config.add_repo_path(path)
-        assert r == config.repos[path]
+        assert r == config.repos[str(path)]
 
         # custom
         r = config.add_repo_path(path, "fake")

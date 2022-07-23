@@ -8,7 +8,6 @@ import pytest
 
 from pkgcraft.atom import Cpv
 
-pjoin = os.path.join
 
 class _FileSet(MutableSet):
     """Set object that maps to file content updates for a given path."""
@@ -59,49 +58,49 @@ class EbuildRepo:
     """Class for creating/manipulating ebuild repos."""
 
     def __init__(self, path, repo_id='fake', eapi='8', masters=(), arches=()):
-        self.path = path
+        self.path = Path(path)
         self.repo_id = repo_id
-        self.arches = _FileSet(pjoin(self.path, 'profiles', 'arch.list'))
+        self.arches = _FileSet(self.path / 'profiles' / 'arch.list')
         self._today = datetime.today()
         try:
-            os.makedirs(pjoin(path, 'profiles'))
-            with open(pjoin(path, 'profiles', 'repo_name'), 'w') as f:
+            os.makedirs(self.path / 'profiles')
+            with open(self.path / 'profiles' / 'repo_name', 'w') as f:
                 f.write(f'{repo_id}\n')
-            with open(pjoin(path, 'profiles', 'eapi'), 'w') as f:
+            with open(self.path / 'profiles' / 'eapi', 'w') as f:
                 f.write(f'{eapi}\n')
-            os.makedirs(pjoin(path, 'metadata'))
-            with open(pjoin(path, 'metadata', 'layout.conf'), 'w') as f:
+            os.makedirs(self.path / 'metadata')
+            with open(self.path / 'metadata' / 'layout.conf', 'w') as f:
                 f.write(textwrap.dedent(f"""\
-                    masters = {' '.join(masters)}
+                    masters = {' '.join(map(str, masters))}
                     cache-formats =
                     thin-manifests = true
                 """))
             if arches:
                 self.arches.update(arches)
-            os.makedirs(pjoin(path, 'eclass'))
+            os.makedirs(self.path / 'eclass')
         except FileExistsError:
             pass
 
     def create_profiles(self, profiles):
         for p in profiles:
-            os.makedirs(pjoin(self.path, 'profiles', p.path), exist_ok=True)
-            with open(pjoin(self.path, 'profiles', 'profiles.desc'), 'a+') as f:
+            os.makedirs(self.path / 'profiles' / p.path, exist_ok=True)
+            with open(self.path / 'profiles' / 'profiles.desc', 'a+') as f:
                 f.write(f'{p.arch} {p.path} {p.status}\n')
             if p.deprecated:
-                with open(pjoin(self.path, 'profiles', p.path, 'deprecated'), 'w') as f:
+                with open(self.path / 'profiles' / p.path / 'deprecated', 'w') as f:
                     f.write("# deprecated\ndeprecation reason\n")
-            with open(pjoin(self.path, 'profiles', p.path, 'make.defaults'), 'w') as f:
+            with open(self.path / 'profiles' / p.path / 'make.defaults', 'w') as f:
                 if p.defaults is not None:
                     f.write('\n'.join(p.defaults))
                 else:
                     f.write(f'ARCH={p.arch}\n')
             if p.eapi:
-                with open(pjoin(self.path, 'profiles', p.path, 'eapi'), 'w') as f:
+                with open(self.path / 'profiles' / p.path / 'eapi', 'w') as f:
                     f.write(f'{p.eapi}\n')
 
     def create_ebuild(self, cpvstr, data=None, **kwargs):
         cpv = Cpv(cpvstr)
-        ebuild_dir = pjoin(self.path, cpv.category, cpv.package)
+        ebuild_dir = self.path / cpv.category / cpv.package
         os.makedirs(ebuild_dir, exist_ok=True)
 
         # use defaults for some ebuild metadata if unset
@@ -111,7 +110,7 @@ class EbuildRepo:
         homepage = kwargs.pop('homepage', 'https://github.com/pkgcore/pkgcheck')
         license = kwargs.pop('license', 'blank')
 
-        ebuild_path = pjoin(ebuild_dir, f'{cpv.package}-{cpv.version}.ebuild')
+        ebuild_path = ebuild_dir / f'{cpv.package}-{cpv.version}.ebuild'
         with open(ebuild_path, 'w') as f:
             if self.repo_id == 'gentoo':
                 f.write(textwrap.dedent(f"""\
@@ -126,8 +125,8 @@ class EbuildRepo:
             if license:
                 f.write(f'LICENSE="{license}"\n')
                 # create a fake license
-                os.makedirs(pjoin(self.path, 'licenses'), exist_ok=True)
-                open(pjoin(self.path, 'licenses', license), mode='w').close()
+                os.makedirs(self.path / 'licenses', exist_ok=True)
+                open(self.path / 'licenses' / license, mode='w').close()
 
             for k, v in kwargs.items():
                 # handle sequences such as KEYWORDS and IUSE
@@ -137,7 +136,7 @@ class EbuildRepo:
             if data:
                 f.write(data.strip() + '\n')
 
-        return Path(ebuild_path)
+        return ebuild_path
 
 
 @pytest.fixture
