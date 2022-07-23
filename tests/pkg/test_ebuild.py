@@ -94,7 +94,7 @@ class TestEbuildPkg:
         # empty
         repo.create_ebuild("cat/pkg-1")
         pkg = next(iter(r))
-        assert pkg.keywords == ()
+        assert not pkg.keywords
 
         # multiple
         repo.create_ebuild("cat/pkg-1", keywords="amd64 ~arm64")
@@ -108,7 +108,7 @@ class TestEbuildPkg:
         # empty
         repo.create_ebuild("cat/pkg-1")
         pkg = next(iter(r))
-        assert pkg.iuse == ()
+        assert not pkg.iuse
 
         # multiple
         repo.create_ebuild("cat/pkg-1", iuse="a b c")

@@ -18,7 +18,7 @@ class TestEbuildRepo:
         r = config.add_repo_path(path)
 
         # empty repo
-        assert r.category_dirs == ()
+        assert not r.category_dirs
 
         # create ebuild
         repo.create_ebuild("cat1/pkga-1")
@@ -41,7 +41,7 @@ class TestEbuildRepo:
         repo = make_repo()
         config = Config()
         r = config.add_repo_path(repo.path)
-        assert r.masters == ()
+        assert not r.masters
 
         # non-empty masters
         overlay = make_repo(masters=[repo.path])
