@@ -78,3 +78,15 @@ cdef class EbuildPkg(Pkg):
             self._iuse = frozenset(iuse[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(iuse, length)
         return self._iuse
+
+    @property
+    def long_description(self):
+        """Get a package's long description."""
+        cdef char *c_str
+        c_str = C.pkgcraft_ebuild_pkg_long_description(self._ebuild_pkg)
+        if c_str is NULL:
+            return None
+        else:
+            long_desc = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+            return long_desc

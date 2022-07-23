@@ -1,3 +1,5 @@
+import textwrap
+
 import pytest
 
 from pkgcraft.config import Config
@@ -114,3 +116,26 @@ class TestEbuildPkg:
         repo.create_ebuild("cat/pkg-1", iuse="a b c")
         pkg = next(iter(r))
         assert pkg.iuse == frozenset(["a", "b", "c"])
+
+    def test_long_description(self, repo):
+        # none
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        repo.create_ebuild("cat/pkg-1")
+        pkg = next(iter(r))
+        assert pkg.long_description is None
+
+        # exists
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        path = repo.create_ebuild("cat/pkg-1")
+        with open(path.parent / "metadata.xml", "w") as f:
+            f.write(textwrap.dedent("""
+                <pkgmetadata>
+                    <longdescription>
+                        long description
+                    </longdescription>
+                </pkgmetadata>
+            """))
+        pkg = next(iter(r))
+        assert pkg.long_description == "long description"

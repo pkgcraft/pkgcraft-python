@@ -250,6 +250,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null EbuildPkg pointer.
     char **pkgcraft_ebuild_pkg_keywords(EbuildPkg *p, uintptr_t *len);
 
+    # Return a package's long description.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    char *pkgcraft_ebuild_pkg_long_description(EbuildPkg *p);
+
     # Return a package's slot.
     #
     # # Safety
