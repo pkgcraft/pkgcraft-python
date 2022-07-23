@@ -2,6 +2,7 @@ import os
 import textwrap
 from datetime import datetime
 from collections.abc import MutableSet
+from pathlib import Path
 
 import pytest
 
@@ -136,7 +137,7 @@ class EbuildRepo:
             if data:
                 f.write(data.strip() + '\n')
 
-        return ebuild_path
+        return Path(ebuild_path)
 
 
 @pytest.fixture
