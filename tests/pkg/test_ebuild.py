@@ -125,6 +125,35 @@ class TestEbuildPkg:
         pkg = next(iter(r))
         assert pkg.long_description is None
 
+        # invalid
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        path = repo.create_ebuild("cat/pkg-1")
+        with open(path.parent / "metadata.xml", "w") as f:
+            f.write(textwrap.dedent("""
+                <pkgmetadata>
+                    <longdescription>
+                        long description
+                    </longdescription>
+                </pkg>
+            """))
+        pkg = next(iter(r))
+        assert pkg.long_description is None
+
+        # empty
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        path = repo.create_ebuild("cat/pkg-1")
+        with open(path.parent / "metadata.xml", "w") as f:
+            f.write(textwrap.dedent("""
+                <pkgmetadata>
+                    <longdescription>
+                    </longdescription>
+                </pkgmetadata>
+            """))
+        pkg = next(iter(r))
+        assert pkg.long_description == ""
+
         # exists
         config = Config()
         r = config.add_repo_path(repo.path)
