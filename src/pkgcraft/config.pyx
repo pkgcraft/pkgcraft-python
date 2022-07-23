@@ -34,9 +34,9 @@ cdef class Config:
             self._repos = MappingProxyType(d)
         return self._repos
 
-    def add_repo_path(self, str path not None, str id=None, int priority=0):
+    def add_repo_path(self, path not None, str id=None, int priority=0):
         cdef C.RepoConfig *repo_conf
-        path_bytes = path.encode()
+        path_bytes = str(path).encode()
         id_bytes = id.encode() if id is not None else path_bytes
         cdef char *path_p = path_bytes
         cdef char *id_p = id_bytes
