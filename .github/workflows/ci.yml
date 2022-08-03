@@ -59,8 +59,8 @@ jobs:
           ~/.cache/pip
           .tox
           target
-        key: v1-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}
-        restore-keys: v1-${{ github.job }}-${{ runner.os }}-rust-
+        key: v2-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}-cargo-${{ hashFiles('Cargo.lock') }}
+        restore-keys: v2-${{ github.job }}-${{ runner.os }}-rust-${{ steps.rust.outputs.rustc_hash }}-cargo-
 
     - name: Install cargo-c via binary package on Linux
       if: ${{ matrix.os == 'ubuntu-latest' }}
