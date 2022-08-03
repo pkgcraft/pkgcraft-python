@@ -75,10 +75,10 @@ jobs:
 
     - name: Build and install C library
       run: |
-        cargo cinstall -p pkgcraft-c --prefix="${PWD}/pkgcraft" --pkgconfigdir="${PWD}/pkgcraft"
-        echo "PKG_CONFIG_PATH=${PWD}/pkgcraft" >> $GITHUB_ENV
-        echo "LD_LIBRARY_PATH=${PWD}/pkgcraft/lib" >> $GITHUB_ENV
-        echo "DYLD_LIBRARY_PATH=${PWD}/pkgcraft/lib" >> $GITHUB_ENV
+        cargo cinstall -p pkgcraft-c --prefix="${PWD}/target/pkgcraft" --pkgconfigdir="${PWD}/target/pkgcraft"
+        echo "PKG_CONFIG_PATH=${PWD}/target/pkgcraft" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=${PWD}/target/pkgcraft/lib" >> $GITHUB_ENV
+        echo "DYLD_LIBRARY_PATH=${PWD}/target/pkgcraft/lib" >> $GITHUB_ENV
 
     - name: Install dependencies
       run: pip install tox
