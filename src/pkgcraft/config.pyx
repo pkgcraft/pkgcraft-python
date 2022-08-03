@@ -35,6 +35,7 @@ cdef class Config:
         return self._repos
 
     def add_repo_path(self, path not None, str id=None, int priority=0):
+        """Add an external repo via its file path."""
         cdef C.RepoConfig *repo_conf
         path_bytes = str(path).encode()
         id_bytes = id.encode() if id is not None else path_bytes
