@@ -7,8 +7,8 @@ Python bindings for pkgcraft.
 
 ## Development
 
-Requirements: >=python-3.9, [tox](https://pypi.org/project/tox/), and
-everything required to build
+Requirements: >=python-3.9, [tox](https://pypi.org/project/tox/),
+[valgrind](https://valgrind.org/), and everything required to build
 [pkgcraft-c](https://github.com/pkgcraft/pkgcraft-c)
 
 Use the following commands to set up a dev environment:
