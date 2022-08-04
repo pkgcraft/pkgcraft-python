@@ -4,7 +4,7 @@ from .pkg cimport Pkg
 from .error import PkgcraftError
 
 
-cdef int obj_to_restrict(object obj, C.Restrict **restrict) except -1:
+cdef C.Restrict *obj_to_restrict(object obj) except NULL:
     """Convert an object to a restriction pointer."""
     cdef C.Restrict *r
 
@@ -20,20 +20,19 @@ cdef int obj_to_restrict(object obj, C.Restrict **restrict) except -1:
     if r is NULL:
         raise PkgcraftError
 
-    restrict[0] = r
-    return 0
+    return r
 
 
 cdef class Restrict:
     """Generic restriction."""
 
     def __init__(self, obj not None):
-        obj_to_restrict(obj, &self._restrict)
+        self._restrict = obj_to_restrict(obj)
 
     @staticmethod
     cdef Restrict create(object obj):
         r = <Restrict>Restrict.__new__(Restrict)
-        obj_to_restrict(obj, &r._restrict)
+        r._restrict = obj_to_restrict(obj)
         return r
 
     def __dealloc__(self):

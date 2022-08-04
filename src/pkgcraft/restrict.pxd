@@ -1,6 +1,6 @@
 from . cimport pkgcraft_c as C
 
-cdef int obj_to_restrict(object obj, C.Restrict **restrict) except -1
+cdef C.Restrict *obj_to_restrict(object obj) except NULL
 
 cdef class Restrict:
     cdef C.Restrict *_restrict
