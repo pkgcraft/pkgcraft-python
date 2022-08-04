@@ -1,7 +1,6 @@
 from .. cimport pkgcraft_c as C
 from ..pkg cimport Pkg
-from ..atom cimport Cpv
-from ..error import PkgcraftError
+from ..restrict cimport Restrict
 
 
 cdef class Repo:
@@ -87,25 +86,17 @@ cdef class _RestrictIter:
 
     @staticmethod
     cdef _RestrictIter create(Repo repo, object obj):
-        cdef C.Restrict *restrict
+        cdef Restrict r
 
-        if isinstance(obj, Cpv):
-            restrict = C.pkgcraft_atom_restrict((<Cpv>obj)._atom)
-        elif isinstance(obj, Pkg):
-            restrict = C.pkgcraft_pkg_restrict((<Pkg>obj)._pkg)
-        elif isinstance(obj, str):
-            restrict = C.pkgcraft_restrict_parse(obj.encode())
+        if isinstance(obj, Restrict):
+            r = obj
         else:
-            raise TypeError(f"{obj.__class__.__name__!r} unsupported restriction type")
-
-        if restrict is NULL:
-            raise PkgcraftError
+            r = Restrict.create(obj)
 
         # create instance without calling __init__()
         o = <_RestrictIter>_RestrictIter.__new__(_RestrictIter)
         o._repo = repo
-        o._iter = C.pkgcraft_repo_restrict_iter(repo._repo, restrict)
-        C.pkgcraft_restrict_free(restrict)
+        o._iter = C.pkgcraft_repo_restrict_iter(repo._repo, r._restrict)
         return o
 
     def __iter__(self):
