@@ -13,7 +13,7 @@ cdef C.Restrict *obj_to_restrict(object obj) except NULL:
     elif isinstance(obj, Pkg):
         r = C.pkgcraft_pkg_restrict((<Pkg>obj)._pkg)
     elif isinstance(obj, str):
-        r = C.pkgcraft_restrict_parse(obj.encode())
+        r = C.pkgcraft_restrict_parse_dep(obj.encode())
     else:
         raise TypeError(f"{obj.__class__.__name__!r} unsupported restriction type")
 

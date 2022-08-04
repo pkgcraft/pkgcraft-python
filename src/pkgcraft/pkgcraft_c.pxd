@@ -495,7 +495,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null restriction string.
-    Restrict *pkgcraft_restrict_parse(const char *s);
+    Restrict *pkgcraft_restrict_parse_dep(const char *s);
 
     # Free an array of strings.
     #
