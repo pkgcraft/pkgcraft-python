@@ -204,6 +204,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a Config pointer or NULL.
     void pkgcraft_config_free(Config *config);
 
+    # Load repos from a given path to a portage-compatible repos.conf directory or file.
+    #
+    # Returns 0 on success and -1 on error.
+    #
+    # # Safety
+    # The path argument should be a valid path on the system.
+    int pkgcraft_config_load_repos_conf(Config *config, const char *path);
+
     # Return the repos for a config.
     #
     # # Safety

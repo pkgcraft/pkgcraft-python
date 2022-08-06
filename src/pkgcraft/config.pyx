@@ -57,5 +57,16 @@ cdef class Config:
         C.pkgcraft_repo_config_free(repo_conf)
         return r
 
+    def load_repos_conf(self, path not None):
+        """Load repos from a given path to a portage-compatible repos.conf directory or file."""
+        path_bytes = str(path).encode()
+        cdef char *path_p = path_bytes
+
+        if C.pkgcraft_config_load_repos_conf(self._config, path_p):
+            raise PkgcraftError
+
+        # reset cached repos
+        self._repos = None
+
     def __dealloc__(self):
         C.pkgcraft_config_free(self._config)
