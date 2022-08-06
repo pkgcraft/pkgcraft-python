@@ -206,11 +206,11 @@ cdef extern from "pkgcraft.h":
 
     # Load repos from a given path to a portage-compatible repos.conf directory or file.
     #
-    # Returns 0 on success and -1 on error.
+    # Returns NULL on error.
     #
     # # Safety
     # The path argument should be a valid path on the system.
-    int pkgcraft_config_load_repos_conf(Config *config, const char *path);
+    RepoConfig **pkgcraft_config_load_repos_conf(Config *config, const char *path, uintptr_t *len);
 
     # Return the repos for a config.
     #
@@ -414,6 +414,9 @@ cdef extern from "pkgcraft.h":
     int pkgcraft_repo_cmp(Repo *r1, Repo *r2);
 
     # Free a repo config.
+    #
+    # Note that repo pointers aren't explicitly freed since different calls return borrowed or owned
+    # pointers so external users should handle freeing them if necessary via [`pkgcraft_repo_free`].
     #
     # # Safety
     # The argument must be a RepoConfig pointer or NULL.

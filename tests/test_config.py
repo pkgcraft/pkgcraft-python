@@ -40,22 +40,28 @@ class TestConfig:
         config = Config()
 
         # nonexistent
-        f = '/path/to/nonexistent/file'
-        with pytest.raises(PkgcraftError, match=f'config error: .* "{f}": No such file or directory'):
-            config.load_repos_conf(f)
+        path = '/path/to/nonexistent/file'
+        with pytest.raises(PkgcraftError, match=f'config error: .* "{path}": No such file or directory'):
+            config.load_repos_conf(path)
+
+        # empty file
+        f = tmp_path / "file"
+        f.touch()
+        config.load_repos_conf(f)
+        assert not config.repos
 
         # file path
-        file = tmp_path / "file"
-        file.write_text(textwrap.dedent(f"""
+        f = tmp_path / "file"
+        f.write_text(textwrap.dedent(f"""
             [test]
             location = {repo_path}
         """))
-        config.load_repos_conf(file)
+        config.load_repos_conf(f)
         assert set(config.repos) == {'test'}
 
         # reloading causes an existence error
         with pytest.raises(PkgcraftError, match='config error: existing repo: test'):
-            config.load_repos_conf(file)
+            config.load_repos_conf(f)
 
         # dir path
         dir_path = tmp_path / "dir"
