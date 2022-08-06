@@ -25,8 +25,10 @@ source ./build pkgcraft-c
 cd pkgcraft-python
 # build and test
 tox -e python
-# benchmark
-tox -e bench
 # test under valgrind
 tox -e valgrind
+# run benchmarks
+tox -e bench
+# run memory usage benchmarks
+tox -e membench
 ```
