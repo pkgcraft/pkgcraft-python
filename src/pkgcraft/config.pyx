@@ -1,7 +1,7 @@
 from types import MappingProxyType
 
 from . cimport pkgcraft_c as C
-from .repo cimport EbuildRepo, Repo
+from .repo cimport EbuildRepo
 from .error import PkgcraftError
 
 
