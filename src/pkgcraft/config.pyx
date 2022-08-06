@@ -57,7 +57,8 @@ cdef class Config:
         C.pkgcraft_repo_config_free(repo_conf)
         return r
 
-    def load_repos_conf(self, path not None):
+    # TODO: determine default fs path based off install prefix?
+    def load_repos_conf(self, path='/etc/portage/repos.conf'):
         """Load repos from a given path to a portage-compatible repos.conf directory or file."""
         path_bytes = str(path).encode()
         cdef char *path_p = path_bytes
