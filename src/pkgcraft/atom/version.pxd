@@ -6,7 +6,7 @@ cdef class Version:
     cdef bint _ref
 
     @staticmethod
-    cdef Version from_ref(const C.Version *)
+    cdef Version from_ptr(const C.Version *)
 
 
 cdef class VersionWithOp(Version):

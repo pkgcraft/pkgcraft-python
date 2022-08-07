@@ -14,7 +14,7 @@ cdef class Pkg:
     def atom(self):
         """Get a package's atom."""
         cdef const C.Atom *cpv = C.pkgcraft_pkg_atom(self._pkg)
-        return Cpv.from_ref(cpv)
+        return Cpv.from_ptr(cpv)
 
     @property
     def eapi(self):
@@ -28,7 +28,7 @@ cdef class Pkg:
     def version(self):
         """Get a package's version."""
         cdef const C.Version *version = C.pkgcraft_pkg_version(self._pkg)
-        return Version.from_ref(version)
+        return Version.from_ptr(version)
 
     def __lt__(self, Pkg other):
         return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) == -1

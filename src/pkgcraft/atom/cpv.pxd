@@ -11,4 +11,4 @@ cdef class Cpv:
     cdef object _version
 
     @staticmethod
-    cdef Cpv from_ref(const C.Atom *)
+    cdef Cpv from_ptr(const C.Atom *)

@@ -30,7 +30,7 @@ cdef class Cpv:
             raise PkgcraftError
 
     @staticmethod
-    cdef Cpv from_ref(const C.Atom *atom):
+    cdef Cpv from_ptr(const C.Atom *atom):
         """Create instance from a borrowed pointer."""
         # skip calling __init__()
         obj = <Cpv>Cpv.__new__(Cpv)
@@ -83,7 +83,7 @@ cdef class Cpv:
 
         if self._version is SENTINEL:
             ver = C.pkgcraft_atom_version(self._atom)
-            self._version = Version.from_ref(ver) if ver is not NULL else None
+            self._version = Version.from_ptr(ver) if ver is not NULL else None
         return self._version
 
     @property
