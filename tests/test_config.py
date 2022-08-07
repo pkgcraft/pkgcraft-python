@@ -40,9 +40,9 @@ class TestConfig:
         config = Config()
 
         # nonexistent
-        path = '/path/to/nonexistent/file'
-        with pytest.raises(PkgcraftError, match=f'config error: .* "{path}": No such file or directory'):
-            config.load_repos_conf(path)
+        f = '/path/to/nonexistent/file'
+        with pytest.raises(PkgcraftError, match=f'config error: .* "{f}": No such file or directory'):
+            config.load_repos_conf(f)
 
         # empty file
         f = tmp_path / "file"
@@ -50,8 +50,22 @@ class TestConfig:
         config.load_repos_conf(f)
         assert not config.repos
 
+        # no sections
+        f.write_text(textwrap.dedent(f"""
+            location = {repo_path}
+        """))
+        config.load_repos_conf(f)
+        assert not config.repos
+
+        # bad ini format
+        f.write_text(textwrap.dedent(f"""
+            [test
+            location = {repo_path}
+        """))
+        with pytest.raises(PkgcraftError, match=f'config error: invalid repos.conf file: "{f}"'):
+            config.load_repos_conf(f)
+
         # file path
-        f = tmp_path / "file"
         f.write_text(textwrap.dedent(f"""
             [test]
             location = {repo_path}
