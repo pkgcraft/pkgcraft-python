@@ -29,11 +29,5 @@ cdef class Restrict:
     def __init__(self, obj not None):
         self._restrict = obj_to_restrict(obj)
 
-    @staticmethod
-    cdef Restrict create(object obj):
-        r = <Restrict>Restrict.__new__(Restrict)
-        r._restrict = obj_to_restrict(obj)
-        return r
-
     def __dealloc__(self):
         C.pkgcraft_restrict_free(self._restrict)

@@ -86,7 +86,7 @@ cdef class _RestrictIter:
 
     @staticmethod
     cdef _RestrictIter create(Repo repo, object obj):
-        cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict.create(obj)
+        cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
         o = <_RestrictIter>_RestrictIter.__new__(_RestrictIter)
         o._repo = repo
         o._iter = C.pkgcraft_repo_restrict_iter(repo._repo, r._restrict)
