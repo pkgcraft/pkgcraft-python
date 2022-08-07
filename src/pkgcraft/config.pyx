@@ -26,7 +26,7 @@ cdef class Config:
             for i in range(length):
                 r = repos[i]
                 if r.format is C.RepoFormat.Ebuild:
-                    repo = EbuildRepo.from_ref(r.repo)
+                    repo = EbuildRepo.from_ptr(r.repo, True)
                 else:
                     raise PkgcraftError('unsupported repo format')
                 d[r.id.decode()] = repo
@@ -50,7 +50,7 @@ cdef class Config:
         self._repos = None
 
         if repo_conf.format is C.RepoFormat.Ebuild:
-            r = EbuildRepo.from_ptr(repo_conf.repo)
+            r = EbuildRepo.from_ptr(repo_conf.repo, False)
         else:
             raise PkgcraftError('unsupported repo format')
 
@@ -78,7 +78,7 @@ cdef class Config:
         for i in range(length):
             r = repos[i]
             if r.format is C.RepoFormat.Ebuild:
-                repo = EbuildRepo.from_ptr(r.repo)
+                repo = EbuildRepo.from_ptr(r.repo, False)
             else:
                 raise PkgcraftError('unsupported repo format')
             d[r.id.decode()] = repo

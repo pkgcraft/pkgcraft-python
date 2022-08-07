@@ -8,21 +8,15 @@ cdef class EbuildRepo(Repo):
     """Ebuild package repo."""
 
     @staticmethod
-    cdef EbuildRepo from_ptr(const C.Repo *repo):
-        """Create instance from an owned pointer."""
+    cdef EbuildRepo from_ptr(const C.Repo *repo, bint ref):
+        """Create an instance from a repo pointer."""
         # skip calling __init__()
         obj = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
         obj._repo = <C.Repo *>repo
         obj._ebuild_repo = C.pkgcraft_repo_as_ebuild(obj._repo)
         if obj._ebuild_repo is NULL:  # pragma: no cover
             raise PkgcraftError
-        return obj
-
-    @staticmethod
-    cdef EbuildRepo from_ref(const C.Repo *repo):
-        """Create instance from a borrowed pointer."""
-        cdef EbuildRepo obj = EbuildRepo.from_ptr(repo)
-        obj._ref = True
+        obj._ref = ref
         return obj
 
     cdef EbuildPkg create_pkg(self, C.Pkg *pkg):
@@ -53,5 +47,5 @@ cdef class EbuildRepo(Repo):
 
         if self._masters is None:
             repos = C.pkgcraft_ebuild_repo_masters(self._ebuild_repo, &length)
-            self._masters = tuple(EbuildRepo.from_ptr(repos[i]) for i in range(length))
+            self._masters = tuple(EbuildRepo.from_ptr(repos[i], False) for i in range(length))
         return self._masters

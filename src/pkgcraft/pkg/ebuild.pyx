@@ -11,7 +11,7 @@ cdef class EbuildPkg(Pkg):
     def repo(self):
         """Get a package's repo."""
         cdef const C.Repo *repo = C.pkgcraft_pkg_repo(self._pkg)
-        return EbuildRepo.from_ref(repo)
+        return EbuildRepo.from_ptr(repo, True)
 
     @property
     def ebuild(self):

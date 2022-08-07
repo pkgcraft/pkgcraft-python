@@ -8,8 +8,6 @@ cdef class EbuildRepo(Repo):
     cdef tuple _masters
 
     @staticmethod
-    cdef EbuildRepo from_ptr(const C.Repo *)
-    @staticmethod
-    cdef EbuildRepo from_ref(const C.Repo *)
+    cdef EbuildRepo from_ptr(const C.Repo *, bint)
 
     cdef EbuildPkg create_pkg(self, C.Pkg *)
