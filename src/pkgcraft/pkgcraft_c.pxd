@@ -242,6 +242,25 @@ cdef extern from "pkgcraft.h":
     # The arguments must be a non-null Eapi pointer and non-null string.
     bool pkgcraft_eapi_has(const Eapi *eapi, const char *s);
 
+    # Get all known EAPIS.
+    #
+    # # Safety
+    # The returned array must be freed via pkgcraft_eapis_free().
+    const Eapi **pkgcraft_eapis(uintptr_t *len);
+
+    # Free an array of borrowed Eapi pointers.
+    #
+    # # Safety
+    # The argument must be the value received from pkgcraft_eapis(), pkgcraft_eapis_official(), or
+    # NULL along with the length of the array.
+    void pkgcraft_eapis_free(const Eapi **eapis, uintptr_t len);
+
+    # Get all official EAPIS.
+    #
+    # # Safety
+    # The returned array must be freed via pkgcraft_eapis_free().
+    const Eapi **pkgcraft_eapis_official(uintptr_t *len);
+
     # Return a package's description.
     #
     # # Safety

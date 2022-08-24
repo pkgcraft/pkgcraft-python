@@ -1,17 +1,57 @@
+from types import MappingProxyType
+
 from . cimport pkgcraft_c as C
 from .error import PkgcraftError
+
+EAPIS = get_eapis()
+EAPIS_OFFICIAL = get_official_eapis()
+
+
+cdef object get_eapis():
+    cdef const C.Eapi **eapis
+    cdef size_t length
+    cdef dict d = {}
+
+    eapis = C.pkgcraft_eapis(&length)
+    for i in range(length):
+        eapi = eapis[i]
+        c_str = C.pkgcraft_eapi_as_str(eapi)
+        id = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        d[id] = Eapi.from_ptr(eapi)
+
+    C.pkgcraft_eapis_free(eapis, length)
+    return MappingProxyType(d)
+
+cdef object get_official_eapis():
+    cdef const C.Eapi **eapis
+    cdef size_t length
+    cdef dict d = {}
+
+    eapis = C.pkgcraft_eapis_official(&length)
+    for i in range(length):
+        eapi = eapis[i]
+        c_str = C.pkgcraft_eapi_as_str(eapi)
+        id = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        d[id] = Eapi.from_ptr(eapi)
+
+    C.pkgcraft_eapis_free(eapis, length)
+    return MappingProxyType(d)
+
+
+def get_eapi(str eapi not None):
+    """Get an EAPI given its identifier."""
+    try:
+        return EAPIS[eapi]
+    except KeyError:
+        raise PkgcraftError(f'unknown or invalid EAPI: {eapi}')
 
 
 cdef class Eapi:
 
-    def __init__(self, str eapi not None):
-        eapi_bytes = eapi.encode()
-        cdef char* eapi_p = eapi_bytes
-
-        self._eapi = C.pkgcraft_get_eapi(eapi_p)
-
-        if self._eapi is NULL:
-            raise PkgcraftError
+    def __init__(self):
+        raise RuntimeError(f"{self.__class__.__name__} class doesn't support manual construction")
 
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *eapi):
