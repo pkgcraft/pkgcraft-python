@@ -56,9 +56,9 @@ cdef class Atom(Cpv):
 
     def __init__(self, str atom not None, str eapi=None):
         atom_bytes = atom.encode()
-        cdef char* atom_p = atom_bytes
+        cdef char *atom_p = atom_bytes
 
-        cdef char* eapi_p = NULL
+        cdef char *eapi_p = NULL
         if eapi is not None:
             eapi_bytes = eapi.encode()
             eapi_p = eapi_bytes
@@ -105,7 +105,7 @@ cdef class Atom(Cpv):
         >>> a.slot is None
         True
         """
-        cdef char* c_str = C.pkgcraft_atom_slot(self._atom)
+        cdef char *c_str = C.pkgcraft_atom_slot(self._atom)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -124,7 +124,7 @@ cdef class Atom(Cpv):
         >>> a.subslot is None
         True
         """
-        cdef char* c_str = C.pkgcraft_atom_subslot(self._atom)
+        cdef char *c_str = C.pkgcraft_atom_subslot(self._atom)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -190,7 +190,7 @@ cdef class Atom(Cpv):
         >>> a.repo is None
         True
         """
-        cdef char* c_str = C.pkgcraft_atom_repo(self._atom)
+        cdef char *c_str = C.pkgcraft_atom_repo(self._atom)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -206,7 +206,7 @@ cdef class Atom(Cpv):
         >>> a.cpv
         'cat/pkg-1-r2'
         """
-        cdef char* c_str = C.pkgcraft_atom_cpv(self._atom)
+        cdef char *c_str = C.pkgcraft_atom_cpv(self._atom)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s

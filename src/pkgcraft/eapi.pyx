@@ -66,7 +66,7 @@ cdef class Eapi:
     def has(self, str feature not None):
         """Check if an EAPI has a given feature."""
         feature_bytes = feature.encode()
-        cdef char* feature_p = feature_bytes
+        cdef char *feature_p = feature_bytes
         return C.pkgcraft_eapi_has(self._eapi, feature_p)
 
     def __str__(self):

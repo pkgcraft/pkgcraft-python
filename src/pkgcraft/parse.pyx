@@ -9,9 +9,9 @@ def atom(str atom not None, str eapi=None):
     True
     """
     atom_bytes = atom.encode()
-    cdef char* atom_p = atom_bytes
+    cdef char *atom_p = atom_bytes
 
-    cdef char* eapi_p = NULL
+    cdef char *eapi_p = NULL
     if eapi is not None:
         eapi_bytes = eapi.encode()
         eapi_p = eapi_bytes

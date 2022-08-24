@@ -23,7 +23,7 @@ cdef class Cpv:
 
     def __init__(self, str atom not None):
         atom_bytes = atom.encode()
-        cdef char* atom_p = atom_bytes
+        cdef char *atom_p = atom_bytes
 
         self._atom = C.pkgcraft_cpv(atom_p)
         if self._atom is NULL:
@@ -47,7 +47,7 @@ cdef class Cpv:
         >>> a.category
         'cat'
         """
-        cdef char* c_str
+        cdef char *c_str
         if self._category is None:
             c_str = C.pkgcraft_atom_category(self._atom)
             self._category = c_str.decode()
@@ -63,7 +63,7 @@ cdef class Cpv:
         >>> a.package
         'pkg'
         """
-        cdef char* c_str
+        cdef char *c_str
         if self._package is None:
             c_str = C.pkgcraft_atom_package(self._atom)
             self._package = c_str.decode()
@@ -98,7 +98,7 @@ cdef class Cpv:
         >>> a.revision
         '0'
         """
-        cdef char* c_str = C.pkgcraft_atom_revision(self._atom)
+        cdef char *c_str = C.pkgcraft_atom_revision(self._atom)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -114,7 +114,7 @@ cdef class Cpv:
         >>> a.key
         'cat/pkg'
         """
-        cdef char* c_str = C.pkgcraft_atom_key(self._atom)
+        cdef char *c_str = C.pkgcraft_atom_key(self._atom)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
@@ -138,7 +138,7 @@ cdef class Cpv:
         return C.pkgcraft_atom_cmp(self._atom, other._atom) >= 0
 
     def __str__(self):
-        cdef char* c_str = C.pkgcraft_atom_str(self._atom)
+        cdef char *c_str = C.pkgcraft_atom_str(self._atom)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
@@ -153,7 +153,7 @@ cdef class Cpv:
 
     def __reduce__(self):
         """Support pickling Cpv objects."""
-        cdef char* c_str = C.pkgcraft_atom_str(self._atom)
+        cdef char *c_str = C.pkgcraft_atom_str(self._atom)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return (self.__class__, (s,))

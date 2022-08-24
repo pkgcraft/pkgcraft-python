@@ -44,7 +44,7 @@ cdef class Version:
         >>> v.revision
         '0'
         """
-        cdef char* c_str = C.pkgcraft_version_revision(self._version)
+        cdef char *c_str = C.pkgcraft_version_revision(self._version)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
@@ -68,7 +68,7 @@ cdef class Version:
         return C.pkgcraft_version_cmp(self._version, other._version) >= 0
 
     def __str__(self):
-        cdef char* c_str = C.pkgcraft_version_str(self._version)
+        cdef char *c_str = C.pkgcraft_version_str(self._version)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
@@ -81,7 +81,7 @@ cdef class Version:
         return C.pkgcraft_version_hash(self._version)
 
     def __reduce__(self):
-        cdef char* c_str = C.pkgcraft_version_str(self._version)
+        cdef char *c_str = C.pkgcraft_version_str(self._version)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return (self.__class__, (s,))
