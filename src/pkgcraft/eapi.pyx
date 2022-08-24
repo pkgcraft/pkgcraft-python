@@ -69,6 +69,24 @@ cdef class Eapi:
         cdef char *feature_p = feature_bytes
         return C.pkgcraft_eapi_has(self._eapi, feature_p)
 
+    def __lt__(self, Eapi other):
+        return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) == -1
+
+    def __le__(self, Eapi other):
+        return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) <= 0
+
+    def __eq__(self, Eapi other):
+        return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) == 0
+
+    def __ne__(self, Eapi other):
+        return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) != 0
+
+    def __gt__(self, Eapi other):
+        return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) == 1
+
+    def __ge__(self, Eapi other):
+        return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) >= 0
+
     def __str__(self):
         return self._id
 

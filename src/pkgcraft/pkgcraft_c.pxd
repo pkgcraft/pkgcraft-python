@@ -236,6 +236,13 @@ cdef extern from "pkgcraft.h":
     # The arguments must be a non-null Eapi pointer.
     char *pkgcraft_eapi_as_str(const Eapi *eapi);
 
+    # Compare two Eapi objects chronologically returning -1, 0, or 1 if the first is less than, equal
+    # to, or greater than the second, respectively.
+    #
+    # # Safety
+    # The arguments must be non-null Eapi pointers.
+    int pkgcraft_eapi_cmp(const Eapi *e1, const Eapi *e2);
+
     # Check if an EAPI has a given feature.
     #
     # # Safety

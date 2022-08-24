@@ -33,6 +33,18 @@ class TestEapi:
         assert not eapi.has('nonexistent_feature')
         assert eapi.has('slot_deps')
 
+    def test_cmp(self):
+        EAPI0 = EAPIS['0']
+        EAPI1 = EAPIS['1']
+        assert EAPI0 < EAPI1
+        assert EAPI0 <= EAPI1
+        assert EAPI1 <= EAPI1
+        assert EAPI1 == EAPI1
+        assert EAPI0 != EAPI1
+        assert EAPI1 >= EAPI1
+        assert EAPI1 >= EAPI0
+        assert EAPI1 > EAPI0
+
     def test_hash(self):
         s = {get_eapi('0'), get_eapi('1')}
         assert len(s) == 2
