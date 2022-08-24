@@ -1,6 +1,6 @@
 import pytest
 
-from pkgcraft.eapi import get_eapi, EAPIS, EAPIS_OFFICIAL
+from pkgcraft.eapi import get_eapi, Eapi, EAPIS, EAPIS_OFFICIAL
 from pkgcraft.error import PkgcraftError
 
 
@@ -9,6 +9,10 @@ def test_globals():
 
 
 class TestEapi:
+
+    def test_init(self):
+        with pytest.raises(RuntimeError, match="doesn't support manual construction"):
+            Eapi()
 
     def test_valid(self):
         eapi = get_eapi('0')
