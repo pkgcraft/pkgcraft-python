@@ -1,4 +1,5 @@
 from .. cimport pkgcraft_c as C
+from ..eapi cimport Eapi
 from ..repo cimport Repo
 from ..atom cimport Cpv, Version
 from ..error import PkgcraftError
@@ -19,10 +20,8 @@ cdef class Pkg:
     @property
     def eapi(self):
         """Get a package's EAPI."""
-        cdef char *c_str = C.pkgcraft_pkg_eapi(self._pkg)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        cdef const C.Eapi *eapi = C.pkgcraft_pkg_eapi(self._pkg)
+        return Eapi.from_ptr(eapi)
 
     @property
     def version(self):

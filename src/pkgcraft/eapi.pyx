@@ -13,7 +13,13 @@ cdef class Eapi:
         if self._eapi is NULL:
             raise PkgcraftError
 
-        self.id = eapi
+    @staticmethod
+    cdef Eapi from_ptr(const C.Eapi *eapi):
+        """Create instance from a borrowed pointer."""
+        # skip calling __init__()
+        obj = <Eapi>Eapi.__new__(Eapi)
+        obj._eapi = eapi
+        return obj
 
     def has(self, str feature not None):
         """Check if an EAPI has a given feature."""
@@ -22,4 +28,9 @@ cdef class Eapi:
         return C.pkgcraft_eapi_has(self._eapi, feature_p)
 
     def __str__(self):
-        return self.id
+        cdef char* c_str
+        if self._id is None:
+            c_str = C.pkgcraft_eapi_as_str(self._eapi)
+            self._id = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+        return self._id

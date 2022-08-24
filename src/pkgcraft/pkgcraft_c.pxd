@@ -230,6 +230,12 @@ cdef extern from "pkgcraft.h":
     # The argument should be a UTF-8 string.
     Atom *pkgcraft_cpv(const char *s);
 
+    # Return an EAPI's identifier.
+    #
+    # # Safety
+    # The arguments must be a non-null Eapi pointer.
+    char *pkgcraft_eapi_as_str(const Eapi *eapi);
+
     # Check if an EAPI has a given feature.
     #
     # # Safety
@@ -384,7 +390,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    char *pkgcraft_pkg_eapi(Pkg *p);
+    const Eapi *pkgcraft_pkg_eapi(Pkg *p);
 
     # Free an package.
     #

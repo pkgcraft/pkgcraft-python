@@ -42,8 +42,8 @@ class TestEbuildPkg:
         config = Config()
         r = config.add_repo_path(repo.path)
         pkgs = iter(r)
-        assert next(pkgs).eapi == "7"
-        assert next(pkgs).eapi == "8"
+        assert str(next(pkgs).eapi) == "7"
+        assert str(next(pkgs).eapi) == "8"
 
     def test_version(self, repo):
         repo.create_ebuild("cat/pkg-1")
