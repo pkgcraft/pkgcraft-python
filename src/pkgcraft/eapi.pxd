@@ -6,4 +6,4 @@ cdef class Eapi:
     cdef str _id
 
     @staticmethod
-    cdef Eapi from_ptr(const C.Eapi *)
+    cdef Eapi from_ptr(const C.Eapi *, str)

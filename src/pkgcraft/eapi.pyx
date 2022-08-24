@@ -18,7 +18,7 @@ cdef object get_eapis():
         c_str = C.pkgcraft_eapi_as_str(eapi)
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
-        d[id] = Eapi.from_ptr(eapi)
+        d[id] = Eapi.from_ptr(eapi, id)
 
     C.pkgcraft_eapis_free(eapis, length)
     return MappingProxyType(d)
@@ -34,7 +34,7 @@ cdef object get_official_eapis():
         c_str = C.pkgcraft_eapi_as_str(eapi)
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
-        d[id] = Eapi.from_ptr(eapi)
+        d[id] = Eapi.from_ptr(eapi, id)
 
     C.pkgcraft_eapis_free(eapis, length)
     return MappingProxyType(d)
@@ -54,11 +54,12 @@ cdef class Eapi:
         raise RuntimeError(f"{self.__class__.__name__} class doesn't support manual construction")
 
     @staticmethod
-    cdef Eapi from_ptr(const C.Eapi *eapi):
+    cdef Eapi from_ptr(const C.Eapi *eapi, str id):
         """Create instance from a borrowed pointer."""
         # skip calling __init__()
         obj = <Eapi>Eapi.__new__(Eapi)
         obj._eapi = eapi
+        obj._id = id
         return obj
 
     def has(self, str feature not None):
@@ -68,9 +69,4 @@ cdef class Eapi:
         return C.pkgcraft_eapi_has(self._eapi, feature_p)
 
     def __str__(self):
-        cdef char* c_str
-        if self._id is None:
-            c_str = C.pkgcraft_eapi_as_str(self._eapi)
-            self._id = c_str.decode()
-            C.pkgcraft_str_free(c_str)
         return self._id
