@@ -23,6 +23,10 @@ cdef extern from "pkgcraft.h":
     cdef struct Config:
         pass
 
+    # Opaque wrapper for Eapi objects.
+    cdef struct Eapi:
+        pass
+
     # Opaque wrapper for Pkg objects.
     cdef struct Pkg:
         pass
@@ -226,6 +230,12 @@ cdef extern from "pkgcraft.h":
     # The argument should be a UTF-8 string.
     Atom *pkgcraft_cpv(const char *s);
 
+    # Check if an EAPI has a given feature.
+    #
+    # # Safety
+    # The arguments must be a non-null Eapi pointer and non-null string.
+    bool pkgcraft_eapi_has(const Eapi *eapi, const char *s);
+
     # Return a package's description.
     #
     # # Safety
@@ -283,6 +293,14 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null EbuildRepo pointer.
     Repo **pkgcraft_ebuild_repo_masters(const EbuildRepo *r, uintptr_t *len);
+
+    # Get an EAPI given its identifier.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null string.
+    const Eapi *pkgcraft_get_eapi(const char *s);
 
     # Get the most recent error message.
     #
