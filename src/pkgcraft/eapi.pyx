@@ -30,13 +30,12 @@ cdef object get_eapis():
     cdef dict d = EAPIS_OFFICIAL.copy()
 
     eapis = C.pkgcraft_eapis(&length)
-    for i in range(length):
+    for i in range(len(d) - 1, length):
         eapi = eapis[i]
         c_str = C.pkgcraft_eapi_as_str(eapi)
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
-        if id not in d:
-            d[id] = Eapi.from_ptr(eapi, id)
+        d[id] = Eapi.from_ptr(eapi, id)
 
     C.pkgcraft_eapis_free(eapis, length)
     return MappingProxyType(d)
