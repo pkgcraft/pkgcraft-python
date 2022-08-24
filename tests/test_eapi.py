@@ -18,6 +18,7 @@ class TestEapi:
     def test_valid(self):
         eapi = get_eapi('0')
         assert str(eapi) == '0'
+        assert repr(eapi).startswith(f"<Eapi '0' at 0x")
 
     def test_unknown(self):
         with pytest.raises(PkgcraftError, match='unknown or invalid EAPI: unknown'):

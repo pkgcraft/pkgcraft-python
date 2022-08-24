@@ -71,3 +71,11 @@ cdef class Eapi:
 
     def __str__(self):
         return self._id
+
+    def __repr__(self):
+        cdef size_t addr = <size_t>&self._eapi
+        name = self.__class__.__name__
+        return f"<{name} '{self}' at 0x{addr:0x}>"
+
+    def __hash__(self):
+        return C.pkgcraft_eapi_hash(self._eapi)
