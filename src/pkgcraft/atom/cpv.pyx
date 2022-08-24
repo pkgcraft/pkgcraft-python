@@ -32,7 +32,6 @@ cdef class Cpv:
     @staticmethod
     cdef Cpv from_ptr(const C.Atom *atom):
         """Create instance from a borrowed pointer."""
-        # skip calling __init__()
         obj = <Cpv>Cpv.__new__(Cpv)
         obj._atom = <C.Atom *>atom
         obj._ref = True

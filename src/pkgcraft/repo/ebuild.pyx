@@ -10,7 +10,6 @@ cdef class EbuildRepo(Repo):
     @staticmethod
     cdef EbuildRepo from_ptr(const C.Repo *repo, bint ref):
         """Create an instance from a repo pointer."""
-        # skip calling __init__()
         obj = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
         obj._repo = <C.Repo *>repo
         obj._ebuild_repo = C.pkgcraft_repo_as_ebuild(obj._repo)

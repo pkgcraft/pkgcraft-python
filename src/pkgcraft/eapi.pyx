@@ -57,7 +57,6 @@ cdef class Eapi:
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *eapi, str id):
         """Create instance from a borrowed pointer."""
-        # skip calling __init__()
         obj = <Eapi>Eapi.__new__(Eapi)
         obj._eapi = eapi
         obj._id = id
