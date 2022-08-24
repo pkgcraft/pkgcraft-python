@@ -81,11 +81,10 @@ cdef class Version:
         return C.pkgcraft_version_hash(self._version)
 
     def __reduce__(self):
-        """Support pickling Version objects."""
         cdef char* c_str = C.pkgcraft_version_str(self._version)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
-        return (Version, (s,))
+        return (self.__class__, (s,))
 
     # TODO: move to __del__() when migrating to >=cython-3 since it's not
     # supported in <cython-3 for cdef classes:
@@ -108,7 +107,3 @@ cdef class VersionWithOp(Version):
         self._version = C.pkgcraft_version_with_op(version_bytes)
         if not self._version:
             raise PkgcraftError
-
-    def __reduce__(self):
-        # pkgcraft doesn't support returning the full version with an operator
-        raise NotImplementedError

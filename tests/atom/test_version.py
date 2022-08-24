@@ -100,5 +100,5 @@ class TestVersionWithOp:
 
     def test_pickle(self):
         a = VersionWithOp('>=1-r1')
-        with pytest.raises(NotImplementedError):
-            pickle.dumps(a)
+        b = pickle.loads(pickle.dumps(a))
+        assert a == b
