@@ -6,6 +6,7 @@ cdef class EbuildPkg(Pkg):
     # cached fields
     cdef str _description
     cdef str _slot
+    cdef str _subslot
     cdef tuple _homepage
     cdef tuple _keywords
     cdef frozenset _iuse

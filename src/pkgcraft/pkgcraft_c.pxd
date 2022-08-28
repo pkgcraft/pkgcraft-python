@@ -320,6 +320,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null EbuildPkg pointer.
     char *pkgcraft_ebuild_pkg_slot(EbuildPkg *p);
 
+    # Return a package's subslot.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    char *pkgcraft_ebuild_pkg_subslot(EbuildPkg *p);
+
     # Return a given ebuild repos's category dirs.
     #
     # # Safety

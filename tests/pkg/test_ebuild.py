@@ -69,11 +69,18 @@ class TestEbuildPkg:
         assert pkg.description == "desc"
 
     def test_slot(self, repo):
-        repo.create_ebuild("cat/pkg-1", slot="1")
+        repo.create_ebuild("cat/pkg-1", slot="1/2")
         config = Config()
         r = config.add_repo_path(repo.path)
         pkg = next(iter(r))
         assert pkg.slot == "1"
+
+    def test_subslot(self, repo):
+        repo.create_ebuild("cat/pkg-1", slot="1/2")
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        pkg = next(iter(r))
+        assert pkg.subslot == "2"
 
     def test_homepage(self, repo):
         config = Config()

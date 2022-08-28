@@ -44,6 +44,16 @@ cdef class EbuildPkg(Pkg):
         return self._slot
 
     @property
+    def subslot(self):
+        """Get a package's subslot."""
+        cdef char *c_str
+        if self._subslot is None:
+            c_str = C.pkgcraft_ebuild_pkg_subslot(self._ebuild_pkg)
+            self._subslot = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+        return self._subslot
+
+    @property
     def homepage(self):
         """Get a package's homepage."""
         cdef char **uris
