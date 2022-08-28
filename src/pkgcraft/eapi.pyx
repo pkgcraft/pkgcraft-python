@@ -4,6 +4,7 @@ from . cimport pkgcraft_c as C
 from .error import PkgcraftError
 
 EAPIS_OFFICIAL = get_official_eapis()
+EAPI_LATEST = next(reversed(EAPIS_OFFICIAL.values()))
 EAPIS = get_eapis()
 
 

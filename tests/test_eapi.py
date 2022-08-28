@@ -1,12 +1,13 @@
 import pytest
 
-from pkgcraft.eapi import get_eapi, Eapi, EAPIS, EAPIS_OFFICIAL
+from pkgcraft.eapi import get_eapi, Eapi, EAPIS, EAPI_LATEST, EAPIS_OFFICIAL
 from pkgcraft.error import PkgcraftError
 
 
 def test_globals():
     assert EAPIS['1'] is EAPIS_OFFICIAL['1']
     assert len(EAPIS) > len(EAPIS_OFFICIAL)
+    assert EAPI_LATEST in EAPIS.values()
 
 
 class TestEapi:

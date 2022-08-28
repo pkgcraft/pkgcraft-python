@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from pkgcraft.atom import Cpv
+from pkgcraft.eapi import EAPI_LATEST
 
 
 class _FileSet(MutableSet):
@@ -57,7 +58,7 @@ class _FileSet(MutableSet):
 class EbuildRepo:
     """Class for creating/manipulating ebuild repos."""
 
-    def __init__(self, path, repo_id='fake', eapi='8', masters=(), arches=()):
+    def __init__(self, path, repo_id='fake', eapi=EAPI_LATEST, masters=(), arches=()):
         self.path = Path(path)
         self.repo_id = repo_id
         self.arches = _FileSet(self.path / 'profiles' / 'arch.list')
@@ -104,7 +105,7 @@ class EbuildRepo:
         os.makedirs(ebuild_dir, exist_ok=True)
 
         # use defaults for some ebuild metadata if unset
-        eapi = kwargs.pop('eapi', '8')
+        eapi = kwargs.pop('eapi', EAPI_LATEST)
         slot = kwargs.pop('slot', '0')
         desc = kwargs.pop('description', 'stub package description')
         homepage = kwargs.pop('homepage', 'https://github.com/pkgcore/pkgcheck')
