@@ -54,6 +54,13 @@ class TestEbuildPkg:
         assert next(pkgs).version == Version('1')
         assert next(pkgs).version == Version('2')
 
+    def test_path(self, repo):
+        path = repo.create_ebuild("cat/pkg-1")
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        pkg = next(iter(r))
+        assert pkg.path == str(path)
+
     def test_ebuild(self, repo):
         repo.create_ebuild("cat/pkg-1")
         config = Config()

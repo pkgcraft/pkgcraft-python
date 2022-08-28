@@ -14,6 +14,14 @@ cdef class EbuildPkg(Pkg):
         return EbuildRepo.from_ptr(repo, True)
 
     @property
+    def path(self):
+        """Get a package's path."""
+        cdef char *c_str = C.pkgcraft_ebuild_pkg_path(self._ebuild_pkg)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
+
+    @property
     def ebuild(self):
         """Get a package's ebuild file content."""
         cdef char *c_str = C.pkgcraft_ebuild_pkg_ebuild(self._ebuild_pkg)

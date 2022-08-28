@@ -314,6 +314,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null EbuildPkg pointer.
     char *pkgcraft_ebuild_pkg_long_description(EbuildPkg *p);
 
+    # Return a package's path.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    char *pkgcraft_ebuild_pkg_path(EbuildPkg *p);
+
     # Return a package's slot.
     #
     # # Safety
