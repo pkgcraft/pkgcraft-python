@@ -227,10 +227,13 @@ class TestEbuildPkg:
         pkg = next(iter(r))
         assert len(pkg.maintainers) == 3
         assert str(pkg.maintainers[0]) == "A Person <a.person@email.com>"
+        assert repr(pkg.maintainers[0]) == "<Maintainer 'a.person@email.com'>"
         assert pkg.maintainers[0].maint_type == "person"
         assert str(pkg.maintainers[1]) == "a.project@email.com"
+        assert repr(pkg.maintainers[1]) == "<Maintainer 'a.project@email.com'>"
         assert pkg.maintainers[1].maint_type == "project"
         assert pkg.maintainers[1].proxied == "proxy"
         assert str(pkg.maintainers[2]) == "B Person <b.person@email.com> (Another Person)"
+        assert repr(pkg.maintainers[2]) == "<Maintainer 'b.person@email.com'>"
         assert pkg.maintainers[2].maint_type == "person"
         assert pkg.maintainers[2].proxied == "yes"

@@ -144,3 +144,7 @@ cdef class Maintainer:
         if self.description is not None:
             return f'{s} ({self.description})'
         return s
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        return f"<{name} '{self.email}'>"
