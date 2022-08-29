@@ -148,3 +148,6 @@ cdef class Maintainer:
     def __repr__(self):
         name = self.__class__.__name__
         return f"<{name} '{self.email}'>"
+
+    def __hash__(self):
+        return hash((self.email, self.name))

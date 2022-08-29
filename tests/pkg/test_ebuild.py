@@ -203,7 +203,7 @@ class TestEbuildPkg:
         pkg = next(iter(r))
         assert not pkg.maintainers
 
-        # single
+        # multiple
         config = Config()
         r = config.add_repo_path(repo.path)
         path = repo.create_ebuild("cat/pkg-1")
@@ -237,3 +237,6 @@ class TestEbuildPkg:
         assert repr(pkg.maintainers[2]) == "<Maintainer 'b.person@email.com'>"
         assert pkg.maintainers[2].maint_type == "person"
         assert pkg.maintainers[2].proxied == "yes"
+
+        # maintainers are hashed by email address and name
+        assert len(set(pkg.maintainers)) == 3
