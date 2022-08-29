@@ -214,8 +214,23 @@ class TestEbuildPkg:
                         <email>a.person@email.com</email>
                         <name>A Person</name>
                     </maintainer>
+                    <maintainer type="project" proxied="proxy">
+                        <email>a.project@email.com</email>
+                    </maintainer>
+                    <maintainer type="person" proxied="yes">
+                        <email>b.person@email.com</email>
+                        <name>B Person</name>
+                        <description>Another Person</description>
+                    </maintainer>
                 </pkgmetadata>
             """))
         pkg = next(iter(r))
-        assert len(pkg.maintainers) == 1
+        assert len(pkg.maintainers) == 3
         assert str(pkg.maintainers[0]) == "A Person <a.person@email.com>"
+        assert pkg.maintainers[0].maint_type == "person"
+        assert str(pkg.maintainers[1]) == "a.project@email.com"
+        assert pkg.maintainers[1].maint_type == "project"
+        assert pkg.maintainers[1].proxied == "proxy"
+        assert str(pkg.maintainers[2]) == "B Person <b.person@email.com> (Another Person)"
+        assert pkg.maintainers[2].maint_type == "person"
+        assert pkg.maintainers[2].proxied == "yes"
