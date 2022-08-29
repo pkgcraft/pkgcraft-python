@@ -108,3 +108,39 @@ cdef class EbuildPkg(Pkg):
             long_desc = c_str.decode()
             C.pkgcraft_str_free(c_str)
             return long_desc
+
+    @property
+    def maintainers(self):
+        """Get a package's maintainers."""
+        cdef C.Maintainer **maintainers
+        cdef size_t length
+
+        if self._maintainers is None:
+            maintainers = C.pkgcraft_ebuild_pkg_maintainers(self._ebuild_pkg, &length)
+            self._maintainers = tuple(Maintainer.create(maintainers[i][0]) for i in range(length))
+            C.pkgcraft_ebuild_pkg_maintainers_free(maintainers, length)
+        return self._maintainers
+
+
+cdef class Maintainer:
+    """Ebuild package maintainer."""
+
+    @staticmethod
+    cdef Maintainer create(C.Maintainer m):
+        obj = <Maintainer>Maintainer.__new__(Maintainer)
+        obj.email = m.email.decode()
+        obj.name = m.name.decode() if m.name is not NULL else None
+        obj.description = m.description.decode() if m.description is not NULL else None
+        obj.maint_type = m.maint_type.decode() if m.maint_type is not NULL else None
+        obj.proxied = m.proxied.decode() if m.proxied is not NULL else None
+        return obj
+
+    def __str__(self):
+        if self.name is not None:
+            s = f'{self.name} <{self.email}>'
+        else:
+            s = self.email
+
+        if self.description is not None:
+            return f'{s} ({self.description})'
+        return s

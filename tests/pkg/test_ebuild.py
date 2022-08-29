@@ -182,3 +182,40 @@ class TestEbuildPkg:
             """))
         pkg = next(iter(r))
         assert pkg.long_description == "long description"
+
+    def test_maintainers(self, repo):
+        # none
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        repo.create_ebuild("cat/pkg-1")
+        pkg = next(iter(r))
+        assert not pkg.maintainers
+
+        # invalid
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        path = repo.create_ebuild("cat/pkg-1")
+        with open(path.parent / "metadata.xml", "w") as f:
+            f.write(textwrap.dedent("""
+                <pkgmetadata>
+                </pkg>
+            """))
+        pkg = next(iter(r))
+        assert not pkg.maintainers
+
+        # single
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        path = repo.create_ebuild("cat/pkg-1")
+        with open(path.parent / "metadata.xml", "w") as f:
+            f.write(textwrap.dedent("""
+                <pkgmetadata>
+                    <maintainer type="person">
+                        <email>a.person@email.com</email>
+                        <name>A Person</name>
+                    </maintainer>
+                </pkgmetadata>
+            """))
+        pkg = next(iter(r))
+        assert len(pkg.maintainers) == 1
+        assert str(pkg.maintainers[0]) == "A Person <a.person@email.com>"

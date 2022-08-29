@@ -57,6 +57,14 @@ cdef extern from "pkgcraft.h":
         RepoFormat format;
         const Repo *repo;
 
+    # Wrapper for package maintainers.
+    cdef struct Maintainer:
+        char *email;
+        char *name;
+        char *description;
+        char *maint_type;
+        char *proxied;
+
     # Parse a string into an atom using a specific EAPI. Pass NULL for the eapi argument in
     # order to parse using the latest EAPI with extensions (e.g. support for repo deps).
     #
@@ -313,6 +321,19 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
     char *pkgcraft_ebuild_pkg_long_description(EbuildPkg *p);
+
+    # Return a package's maintainers.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    Maintainer **pkgcraft_ebuild_pkg_maintainers(EbuildPkg *p, uintptr_t *len);
+
+    # Free an array of Maintainer pointers.
+    #
+    # # Safety
+    # The argument must be the value received from pkgcraft_ebuild_pkg_maintainers() or NULL along
+    # with the length of the array.
+    void pkgcraft_ebuild_pkg_maintainers_free(Maintainer **maintainers, uintptr_t len);
 
     # Return a package's path.
     #

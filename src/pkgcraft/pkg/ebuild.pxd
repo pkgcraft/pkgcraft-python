@@ -9,4 +9,16 @@ cdef class EbuildPkg(Pkg):
     cdef str _subslot
     cdef tuple _homepage
     cdef tuple _keywords
+    cdef tuple _maintainers
     cdef frozenset _iuse
+
+
+cdef class Maintainer:
+    cdef readonly str email
+    cdef readonly str name
+    cdef readonly str description
+    cdef readonly str maint_type
+    cdef readonly str proxied
+
+    @staticmethod
+    cdef Maintainer create(C.Maintainer)
