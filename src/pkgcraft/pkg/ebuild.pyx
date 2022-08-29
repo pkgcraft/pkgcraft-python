@@ -121,6 +121,18 @@ cdef class EbuildPkg(Pkg):
             C.pkgcraft_ebuild_pkg_maintainers_free(maintainers, length)
         return self._maintainers
 
+    @property
+    def upstreams(self):
+        """Get a package's upstreams."""
+        cdef C.Upstream **upstreams
+        cdef size_t length
+
+        if self._upstreams is None:
+            upstreams = C.pkgcraft_ebuild_pkg_upstreams(self._ebuild_pkg, &length)
+            self._upstreams = tuple(Upstream.create(upstreams[i][0]) for i in range(length))
+            C.pkgcraft_ebuild_pkg_upstreams_free(upstreams, length)
+        return self._upstreams
+
 
 cdef class Maintainer:
     """Ebuild package maintainer."""
@@ -151,3 +163,24 @@ cdef class Maintainer:
 
     def __hash__(self):
         return hash((self.email, self.name))
+
+
+cdef class Upstream:
+    """Ebuild package upstream."""
+
+    @staticmethod
+    cdef Upstream create(C.Upstream u):
+        obj = <Upstream>Upstream.__new__(Upstream)
+        obj.site = u.site.decode()
+        obj.name = u.name.decode()
+        return obj
+
+    def __str__(self):
+        return f'{self.site}: {self.name}'
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        return f"<{name} '{self}'>"
+
+    def __hash__(self):
+        return hash((self.site, self.name))

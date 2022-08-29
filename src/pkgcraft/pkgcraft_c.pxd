@@ -65,6 +65,11 @@ cdef extern from "pkgcraft.h":
         char *maint_type;
         char *proxied;
 
+    # Wrapper for package upstreams.
+    cdef struct Upstream:
+        char *site;
+        char *name;
+
     # Parse a string into an atom using a specific EAPI. Pass NULL for the eapi argument in
     # order to parse using the latest EAPI with extensions (e.g. support for repo deps).
     #
@@ -352,6 +357,19 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
     char *pkgcraft_ebuild_pkg_subslot(EbuildPkg *p);
+
+    # Return a package's upstreams.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    Upstream **pkgcraft_ebuild_pkg_upstreams(EbuildPkg *p, uintptr_t *len);
+
+    # Free an array of Upstream pointers.
+    #
+    # # Safety
+    # The argument must be the value received from pkgcraft_ebuild_pkg_upstreams() or NULL along
+    # with the length of the array.
+    void pkgcraft_ebuild_pkg_upstreams_free(Upstream **upstreams, uintptr_t len);
 
     # Return a given ebuild repos's category dirs.
     #

@@ -238,5 +238,48 @@ class TestEbuildPkg:
         assert pkg.maintainers[2].maint_type == "person"
         assert pkg.maintainers[2].proxied == "yes"
 
-        # maintainers are hashed by email address and name
+        # verify hashing support
         assert len(set(pkg.maintainers)) == 3
+
+    def test_upstreams(self, repo):
+        # none
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        repo.create_ebuild("cat/pkg-1")
+        pkg = next(iter(r))
+        assert not pkg.upstreams
+
+        # invalid
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        path = repo.create_ebuild("cat/pkg-1")
+        with open(path.parent / "metadata.xml", "w") as f:
+            f.write(textwrap.dedent("""
+                <pkgmetadata>
+                </pkg>
+            """))
+        pkg = next(iter(r))
+        assert not pkg.upstreams
+
+        # multiple
+        config = Config()
+        r = config.add_repo_path(repo.path)
+        path = repo.create_ebuild("cat/pkg-1")
+        with open(path.parent / "metadata.xml", "w") as f:
+            f.write(textwrap.dedent("""
+                <pkgmetadata>
+                    <upstream>
+                        <remote-id type="github">pkgcraft/pkgcraft</remote-id>
+                        <remote-id type="pypi">pkgcraft</remote-id>
+                    </upstream>
+                </pkgmetadata>
+            """))
+        pkg = next(iter(r))
+        assert len(pkg.upstreams) == 2
+        assert str(pkg.upstreams[0]) == "github: pkgcraft/pkgcraft"
+        assert repr(pkg.upstreams[0]) == "<Upstream 'github: pkgcraft/pkgcraft'>"
+        assert str(pkg.upstreams[1]) == "pypi: pkgcraft"
+        assert repr(pkg.upstreams[1]) == "<Upstream 'pypi: pkgcraft'>"
+
+        # verify hashing support
+        assert len(set(pkg.upstreams)) == 2

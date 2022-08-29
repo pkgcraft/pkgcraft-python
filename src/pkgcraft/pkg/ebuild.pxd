@@ -10,6 +10,7 @@ cdef class EbuildPkg(Pkg):
     cdef tuple _homepage
     cdef tuple _keywords
     cdef tuple _maintainers
+    cdef tuple _upstreams
     cdef frozenset _iuse
 
 
@@ -22,3 +23,11 @@ cdef class Maintainer:
 
     @staticmethod
     cdef Maintainer create(C.Maintainer)
+
+
+cdef class Upstream:
+    cdef readonly str site
+    cdef readonly str name
+
+    @staticmethod
+    cdef Upstream create(C.Upstream)
