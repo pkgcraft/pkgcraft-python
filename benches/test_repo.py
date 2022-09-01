@@ -12,8 +12,8 @@ def test_bench_repo_iter(benchmark, lib, func, repo):
 
     if lib == 'pkgcore':
         from pkgcore.ebuild import repo_objs, repository
-        repo_config = repo_objs.RepoConfig(location=repo.path, disable_inst_caching=True)
-        r = repository.UnconfiguredTree(repo.path, repo_config=repo_config)
+        repo_config = repo_objs.RepoConfig(location=str(repo.path), disable_inst_caching=True)
+        r = repository.UnconfiguredTree(str(repo.path), repo_config=repo_config)
     else:
         from pkgcraft.config import Config
         c = Config()
@@ -39,8 +39,8 @@ def test_bench_repo_iter_restrict(benchmark, lib, func, repo):
 
     if lib == 'pkgcore':
         from pkgcore.ebuild import repo_objs, repository
-        repo_config = repo_objs.RepoConfig(location=repo.path, disable_inst_caching=True)
-        r = repository.UnconfiguredTree(repo.path, repo_config=repo_config)
+        repo_config = repo_objs.RepoConfig(location=str(repo.path), disable_inst_caching=True)
+        r = repository.UnconfiguredTree(str(repo.path), repo_config=repo_config)
         pkgs = benchmark(lambda x: list(r.itermatch(x)), atom)
     else:
         from pkgcraft.config import Config
