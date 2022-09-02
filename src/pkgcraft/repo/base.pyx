@@ -15,10 +15,22 @@ cdef class Repo:
     @property
     def id(self):
         """Get a repo's id."""
-        cdef char *c_str = C.pkgcraft_repo_id(self._repo)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        cdef char *c_str
+        if self._id is None:
+            c_str = C.pkgcraft_repo_id(self._repo)
+            self._id = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+        return self._id
+
+    @property
+    def path(self):
+        """Get a repo's path."""
+        cdef char *c_str
+        if self._path is None:
+            c_str = C.pkgcraft_repo_path(self._repo)
+            self._path = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+        return self._path
 
     def __len__(self):
         return C.pkgcraft_repo_len(self._repo)

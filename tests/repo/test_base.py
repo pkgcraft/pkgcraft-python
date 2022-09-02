@@ -19,12 +19,14 @@ class TestRepo:
         # default
         r = config.add_repo_path(path)
         assert r.id == str(path)
+        assert r.path == str(path)
         assert str(r) == str(path)
         assert repr(r).startswith(f"<EbuildRepo '{path}' at 0x")
 
         # custom
         r = config.add_repo_path(path, "fake")
         assert r.id == "fake"
+        assert r.path == str(path)
         assert str(r) == "fake"
         assert repr(r).startswith(f"<EbuildRepo 'fake' at 0x")
 

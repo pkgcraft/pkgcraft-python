@@ -15,4 +15,8 @@ cdef class Repo:
     cdef bint _ref
     cdef C.PkgIter *_repo_iter
 
+    # cached fields
+    cdef str _id
+    cdef str _path
+
     cdef Pkg create_pkg(self, C.Pkg *)

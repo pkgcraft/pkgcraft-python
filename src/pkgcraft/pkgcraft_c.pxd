@@ -581,6 +581,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Repo pointer.
     uintptr_t pkgcraft_repo_len(Repo *r);
 
+    # Return a given repo's path.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    char *pkgcraft_repo_path(Repo *r);
+
     # Return a restriction package iterator for a given repo.
     #
     # # Safety
