@@ -78,22 +78,16 @@ class TestAtom:
                         Atom(s, eapi)
 
     def test_invalid(self):
-        for s in ('invalid', 'cat-1', 'cat/pkg-1'):
-            with pytest.raises(InvalidAtom, match=f'invalid atom: "{s}"'):
-                Atom(s)
-
-        # EAPI invalid
-        for (s, eapi) in (
-                ('cat/pkg:0', '0'), # slot deps in EAPI >= 1
-                ('!cat/pkg', '1'), # blockers in EAPI >= 2
-                ('cat/pkg[use]', '1'), # use deps in EAPI >= 2
-                ('cat/pkg[use(+)]', '3'), # use dep defaults in EAPI >= 4
-                ('cat/pkg:0/1', '4'), # subslot deps in EAPI >= 5
-                ('cat/pkg:0=', '4'), # slot operators in EAPI >= 5
-                ('cat/pkg::repo', '8'), # repo deps in no official EAPI
-                ):
-            with pytest.raises(InvalidAtom, match=f'invalid atom: "{re.escape(s)}"'):
-                Atom(s, eapi)
+        with open(TOMLDIR / 'atoms.toml', 'rb') as f:
+            d = tomli.load(f)
+        for (s, eapi_range) in d['invalid']:
+            failing_eapis = Eapi.range(eapi_range).keys()
+            for eapi in EAPIS:
+                if eapi in failing_eapis:
+                    with pytest.raises(InvalidAtom, match=f'invalid atom: "{re.escape(s)}"'):
+                        Atom(s, eapi)
+                else:
+                    assert Atom(s, eapi)
 
     def test_cmp(self):
         for s in (
