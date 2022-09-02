@@ -9,7 +9,7 @@ import pytest
 import tomli
 
 from .. import TOMLDIR
-from ..misc import OperatorMap
+from ..misc import OperatorIterMap
 
 
 class TestAtom:
@@ -90,19 +90,14 @@ class TestAtom:
                     assert Atom(s, eapi)
 
     def test_cmp(self):
-        for s in (
-                '=cat/pkg-0 < =cat/pkg-1',
-                '=cat/pkg-0 <= =cat/pkg-1',
-                '=cat/pkg-1 <= =cat/pkg-1-r0',
-                '=cat/pkg-1 == =cat/pkg-1-r0',
-                '=cat/pkg-1 >= =cat/pkg-1-r0',
-                '=cat/pkg-1.0 >= =cat/pkg-1',
-                '=cat/pkg-1.0 > =cat/pkg-1',
-                '=cat/pkg-1.0 != =cat/pkg-1',
-                ):
-            a, op, b = s.split()
-            op_func = OperatorMap[op]
-            assert op_func(Atom(a), Atom(b)), f'failed comparison: {s}'
+        with open(TOMLDIR / 'versions.toml', 'rb') as f:
+            d = tomli.load(f)
+        for s in d['compares']:
+            v1, op, v2 = s.split()
+            a1 = Atom(f'=cat/pkg-{v1}')
+            a2 = Atom(f'=cat/pkg-{v2}')
+            for op_func in OperatorIterMap[op]:
+                assert op_func(a1, a2), f'failed comparison: {s}'
 
     def test_sort(self):
         with open(TOMLDIR / 'atoms.toml', 'rb') as f:

@@ -8,15 +8,7 @@ from pkgcraft.error import PkgcraftError
 from pkgcraft.atom import Version, VersionWithOp
 
 from .. import TOMLDIR
-
-OperatorMap = {
-    '<': operator.lt,
-    '>': operator.gt,
-    '==': operator.eq,
-    '!=': operator.ne,
-    '>=': operator.ge,
-    '<=': operator.le,
-}
+from ..misc import OperatorIterMap
 
 
 class TestVersion:
@@ -50,8 +42,10 @@ class TestVersion:
             d = tomli.load(f)
         for s in d['compares']:
             a, op, b = s.split()
-            op_func = OperatorMap[op]
-            assert op_func(Version(a), Version(b)), f'failed comparison: {s}'
+            v1 = Version(a)
+            v2 = Version(b)
+            for op_func in OperatorIterMap[op]:
+                assert op_func(v1, v2), f'failed comparison: {s}'
 
     def test_sort(self):
         with open(TOMLDIR / 'versions.toml', 'rb') as f:
