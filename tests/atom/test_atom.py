@@ -4,7 +4,7 @@ import re
 
 from pkgcraft.atom import Atom, Blocker, SlotOperator, Version, VersionWithOp
 from pkgcraft.eapi import Eapi, EAPIS
-from pkgcraft.error import PkgcraftError
+from pkgcraft.error import InvalidAtom
 import pytest
 import tomli
 
@@ -74,12 +74,12 @@ class TestAtom:
                     assert str(a) == s
                     assert repr(a).startswith(f"<Atom {s!r} at 0x")
                 else:
-                    with pytest.raises(PkgcraftError, match=f'invalid atom: '):
+                    with pytest.raises(InvalidAtom, match=f'invalid atom: "{re.escape(s)}"'):
                         Atom(s, eapi)
 
     def test_invalid(self):
         for s in ('invalid', 'cat-1', 'cat/pkg-1'):
-            with pytest.raises(PkgcraftError, match=f'invalid atom: "{s}"'):
+            with pytest.raises(InvalidAtom, match=f'invalid atom: "{s}"'):
                 Atom(s)
 
         # EAPI invalid
@@ -92,7 +92,7 @@ class TestAtom:
                 ('cat/pkg:0=', '4'), # slot operators in EAPI >= 5
                 ('cat/pkg::repo', '8'), # repo deps in no official EAPI
                 ):
-            with pytest.raises(PkgcraftError, match=f'invalid atom: "{re.escape(s)}"'):
+            with pytest.raises(InvalidAtom, match=f'invalid atom: "{re.escape(s)}"'):
                 Atom(s, eapi)
 
     def test_cmp(self):

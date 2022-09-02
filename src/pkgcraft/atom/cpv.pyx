@@ -1,7 +1,7 @@
 from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
 from .version cimport Version
-from ..error import PkgcraftError
+from ..error import InvalidCpv
 
 
 cdef class Cpv:
@@ -27,7 +27,7 @@ cdef class Cpv:
 
         self._atom = C.pkgcraft_cpv(atom_p)
         if self._atom is NULL:
-            raise PkgcraftError
+            raise InvalidCpv
 
     @staticmethod
     cdef Cpv from_ptr(const C.Atom *atom):

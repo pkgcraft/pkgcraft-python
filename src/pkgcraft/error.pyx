@@ -15,3 +15,11 @@ cdef class PkgcraftError(Exception):
             super().__init__(error)
         else:
             raise RuntimeError("no error message passed and no C error occurred")
+
+
+cdef class InvalidCpv(PkgcraftError):
+    """Package CPV doesn't meet required specifications."""
+
+
+cdef class InvalidAtom(PkgcraftError):
+    """Package atom doesn't meet required specifications."""

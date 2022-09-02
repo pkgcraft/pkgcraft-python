@@ -4,7 +4,7 @@ from enum import Enum
 from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
 from .cpv cimport Cpv
-from ..error import PkgcraftError
+from ..error import InvalidAtom
 
 # TODO: merge with Atom.cached function when cython bug is fixed
 # https://github.com/cython/cython/issues/1434
@@ -66,7 +66,7 @@ cdef class Atom(Cpv):
         self._atom = C.pkgcraft_atom(atom_p, eapi_p)
 
         if self._atom is NULL:
-            raise PkgcraftError
+            raise InvalidAtom
 
     @classmethod
     def cached(cls, str atom not None, str eapi=None):

@@ -3,7 +3,7 @@ import pickle
 import pytest
 
 from pkgcraft.atom import Cpv, Version
-from pkgcraft.error import PkgcraftError
+from pkgcraft.error import InvalidCpv
 
 
 class TestCpv:
@@ -20,7 +20,7 @@ class TestCpv:
 
     def test_invalid(self):
         for s in ('invalid', 'cat-1', 'cat/pkg', '=cat/pkg-1'):
-            with pytest.raises(PkgcraftError, match=f'invalid cpv: "{s}"'):
+            with pytest.raises(InvalidCpv, match=f'invalid cpv: "{s}"'):
                 Cpv(s)
 
     def test_pickle(self):
