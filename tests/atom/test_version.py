@@ -2,9 +2,12 @@ import operator
 import pickle
 
 import pytest
+import tomli
 
 from pkgcraft.error import PkgcraftError
 from pkgcraft.atom import Version, VersionWithOp
+
+from .. import TOMLDIR
 
 OperatorMap = {
     '<': operator.lt,
@@ -57,33 +60,19 @@ class TestVersion:
             op_func = OperatorMap[op]
             assert op_func(Version(a), Version(b)), f'failed comparison: {s}'
 
-        for (unsorted, expected) in (
-                (("1_p2", "1_p1", "1_p0"), ("1_p0", "1_p1", "1_p2")),
-                (("1-r2", "1-r1", "1-r0"), ("1-r0", "1-r1", "1-r2")),
-                ):
+    def test_sort(self):
+        with open(TOMLDIR / 'versions.toml', 'rb') as f:
+            d = tomli.load(f)
+        for (unsorted, expected) in d['sorting']:
             versions = sorted(Version(s) for s in unsorted)
-            assert tuple(map(str, versions)) == expected
+            assert list(map(str, versions)) == expected
 
     def test_hash(self):
-        for equal_versions in (
-                ('0', '0-r0', '0-r00'),
-                ('1', '01', '001'),
-                ('1.0', '1.00'),
-                ('0001.1', '1.1'),
-                ('0_beta1', '0_beta01', '0_beta001'),
-                ('1.0.2', '1.0.2-r0', '1.000.2', '1.00.2-r0'),
-                ):
-            s = {Version(x) for x in equal_versions}
-            assert len(s) == 1
-
-        for unequal_versions in (
-                ('0', '1'),
-                ('1.01.2', '1.010.02'),
-                ('1.0', '1'),
-                ('0.1', '0.01', '0.001'),
-                ):
-            s = {Version(x) for x in unequal_versions}
-            assert len(s) == len(unequal_versions)
+        with open(TOMLDIR / 'versions.toml', 'rb') as f:
+            d = tomli.load(f)
+        for (versions, size) in d['hashing']:
+            s = {Version(x) for x in versions}
+            assert len(s) == size
 
     def test_pickle(self):
         a = Version('1-r1')
