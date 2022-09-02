@@ -23,7 +23,7 @@ cdef extern from "pkgcraft.h":
     cdef struct Config:
         pass
 
-    # Opaque wrapper for Eapi objects.
+    # EAPI object.
     cdef struct Eapi:
         pass
 
@@ -256,6 +256,14 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null Eapi pointers.
     int pkgcraft_eapi_cmp(const Eapi *e1, const Eapi *e2);
 
+    # Get an EAPI given its identifier.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null string.
+    const Eapi *pkgcraft_eapi_from_str(const char *s);
+
     # Check if an EAPI has a given feature.
     #
     # # Safety
@@ -390,14 +398,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null EbuildRepo pointer.
     Repo **pkgcraft_ebuild_repo_masters(const EbuildRepo *r, uintptr_t *len);
-
-    # Get an EAPI given its identifier.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The argument must be a non-null string.
-    const Eapi *pkgcraft_get_eapi(const char *s);
 
     # Get the most recent error message.
     #
