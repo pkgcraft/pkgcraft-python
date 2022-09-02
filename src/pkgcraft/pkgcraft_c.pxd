@@ -323,6 +323,18 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null EbuildPkg pointer.
     char **pkgcraft_ebuild_pkg_homepage(EbuildPkg *p, uintptr_t *len);
 
+    # Return a package's directly inherited eclasses.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    char **pkgcraft_ebuild_pkg_inherit(EbuildPkg *p, uintptr_t *len);
+
+    # Return a package's inherited eclasses.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    char **pkgcraft_ebuild_pkg_inherited(EbuildPkg *p, uintptr_t *len);
+
     # Return a package's iuse.
     #
     # # Safety

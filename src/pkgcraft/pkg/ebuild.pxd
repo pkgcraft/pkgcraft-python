@@ -9,6 +9,8 @@ cdef class EbuildPkg(Pkg):
     cdef str _subslot
     cdef tuple _homepage
     cdef tuple _keywords
+    cdef tuple _inherit
+    cdef tuple _inherited
     cdef tuple _maintainers
     cdef tuple _upstreams
     cdef frozenset _iuse

@@ -132,6 +132,16 @@ class TestEbuildPkg:
         pkg = next(iter(r))
         assert pkg.iuse == frozenset(["a", "b", "c"])
 
+    def test_inherits(self, repo):
+        config = Config()
+        r = config.add_repo_path(repo.path)
+
+        # empty
+        repo.create_ebuild("cat/pkg-1")
+        pkg = next(iter(r))
+        assert pkg.inherit == ()
+        assert pkg.inherited == ()
+
     def test_long_description(self, repo):
         # none
         config = Config()

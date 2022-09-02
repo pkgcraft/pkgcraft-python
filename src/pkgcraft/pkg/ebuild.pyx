@@ -98,6 +98,30 @@ cdef class EbuildPkg(Pkg):
         return self._iuse
 
     @property
+    def inherit(self):
+        """Get a package's ordered set of directly inherited eclasses."""
+        cdef char **eclasses
+        cdef size_t length
+
+        if self._inherit is None:
+            eclasses = C.pkgcraft_ebuild_pkg_inherit(self._ebuild_pkg, &length)
+            self._inherit = tuple(eclasses[i].decode() for i in range(length))
+            C.pkgcraft_str_array_free(eclasses, length)
+        return self._inherit
+
+    @property
+    def inherited(self):
+        """Get a package's ordered set of inherited eclasses."""
+        cdef char **eclasses
+        cdef size_t length
+
+        if self._inherited is None:
+            eclasses = C.pkgcraft_ebuild_pkg_inherited(self._ebuild_pkg, &length)
+            self._inherited = tuple(eclasses[i].decode() for i in range(length))
+            C.pkgcraft_str_array_free(eclasses, length)
+        return self._inherited
+
+    @property
     def long_description(self):
         """Get a package's long description."""
         cdef char *c_str
