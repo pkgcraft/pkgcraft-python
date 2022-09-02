@@ -1,6 +1,6 @@
 import pytest
 
-from pkgcraft.eapi import get_eapi, Eapi, EAPIS, EAPI_LATEST, EAPIS_OFFICIAL
+from pkgcraft.eapi import Eapi, EAPIS, EAPI_LATEST, EAPIS_OFFICIAL
 from pkgcraft.error import PkgcraftError
 
 
@@ -17,20 +17,20 @@ class TestEapi:
             Eapi()
 
     def test_valid(self):
-        eapi = get_eapi('0')
+        eapi = Eapi.get('0')
         assert str(eapi) == '0'
         assert repr(eapi).startswith(f"<Eapi '0' at 0x")
 
     def test_unknown(self):
         with pytest.raises(PkgcraftError, match='unknown or invalid EAPI: unknown'):
-            get_eapi('unknown')
+            Eapi.get('unknown')
 
     def test_invalid(self):
         with pytest.raises(PkgcraftError, match='unknown or invalid EAPI: +'):
-            get_eapi('+')
+            Eapi.get('+')
 
     def test_has(self):
-        eapi = get_eapi('1')
+        eapi = Eapi.get('1')
         assert not eapi.has('nonexistent_feature')
         assert eapi.has('slot_deps')
 
@@ -47,7 +47,7 @@ class TestEapi:
         assert EAPI1 > EAPI0
 
     def test_hash(self):
-        s = {get_eapi('0'), get_eapi('1')}
+        s = {Eapi.get('0'), Eapi.get('1')}
         assert len(s) == 2
-        s = {get_eapi('0'), get_eapi('0')}
+        s = {Eapi.get('0'), Eapi.get('0')}
         assert len(s) == 1

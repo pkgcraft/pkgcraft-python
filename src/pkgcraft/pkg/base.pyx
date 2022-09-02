@@ -1,7 +1,7 @@
 from .. cimport pkgcraft_c as C
 from ..repo cimport Repo
 from ..atom cimport Cpv, Version
-from ..eapi import get_eapi
+from ..eapi import Eapi
 from ..error import PkgcraftError
 
 
@@ -24,7 +24,7 @@ cdef class Pkg:
         cdef char *c_str = C.pkgcraft_eapi_as_str(eapi)
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
-        return get_eapi(id)
+        return Eapi.get(id)
 
     @property
     def version(self):

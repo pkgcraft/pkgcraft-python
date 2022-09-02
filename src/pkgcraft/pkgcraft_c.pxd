@@ -274,7 +274,7 @@ cdef extern from "pkgcraft.h":
     # The returned array must be freed via pkgcraft_eapis_free().
     const Eapi **pkgcraft_eapis(uintptr_t *len);
 
-    # Free an array of borrowed Eapi pointers.
+    # Free an array of borrowed Eapi objects.
     #
     # # Safety
     # The argument must be the value received from pkgcraft_eapis(), pkgcraft_eapis_official(), or
@@ -286,6 +286,14 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The returned array must be freed via pkgcraft_eapis_free().
     const Eapi **pkgcraft_eapis_official(uintptr_t *len);
+
+    # Convert EAPI range into an array of Eapi objects.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null string.
+    const Eapi **pkgcraft_eapis_range(const char *s, uintptr_t *len);
 
     # Return a package's description.
     #

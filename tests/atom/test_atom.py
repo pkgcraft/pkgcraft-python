@@ -1,10 +1,14 @@
+import inspect
 import pickle
 import re
 
 from pkgcraft.atom import Atom, Blocker, SlotOperator, Version, VersionWithOp
+from pkgcraft.eapi import Eapi, EAPIS
 from pkgcraft.error import PkgcraftError
 import pytest
+import tomli
 
+from .. import TOMLDIR
 from ..misc import OperatorMap
 
 
@@ -44,6 +48,34 @@ class TestAtom:
         assert a.cpv == 'cat/pkg-1-r2'
         assert str(a) == '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo'
         assert repr(a).startswith("<Atom '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
+
+    def test_valid(self):
+        atom_attrs = []
+        for (attr, val) in inspect.getmembers(Atom):
+            if inspect.isgetsetdescriptor(val):
+                atom_attrs.append(attr)
+
+        with open(TOMLDIR / 'atoms.toml', 'rb') as f:
+            d = tomli.load(f)
+        for entry in d['valid']:
+            s = entry['atom']
+            passing_eapis = Eapi.range(entry['eapis']).keys()
+            for eapi in EAPIS:
+                if eapi in passing_eapis:
+                    a = Atom(s, eapi)
+                    assert a.category == entry.get('category')
+                    assert a.package == entry.get('package')
+                    assert a.slot == entry.get('slot')
+                    assert a.subslot == entry.get('subslot')
+                    if version := entry.get('version'):
+                        assert a.version == VersionWithOp(version)
+                    else:
+                        assert a.version is None
+                    assert str(a) == s
+                    assert repr(a).startswith(f"<Atom {s!r} at 0x")
+                else:
+                    with pytest.raises(PkgcraftError, match=f'invalid atom: '):
+                        Atom(s, eapi)
 
     def test_invalid(self):
         for s in ('invalid', 'cat-1', 'cat/pkg-1'):

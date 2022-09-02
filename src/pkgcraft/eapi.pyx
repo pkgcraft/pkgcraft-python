@@ -9,45 +9,33 @@ EAPIS = get_eapis()
 
 
 cdef object get_official_eapis():
-    cdef const C.Eapi **eapis
     cdef size_t length
+    cdef const C.Eapi **eapis = C.pkgcraft_eapis_official(&length)
     cdef dict d = {}
 
-    eapis = C.pkgcraft_eapis_official(&length)
     for i in range(length):
-        eapi = eapis[i]
-        c_str = C.pkgcraft_eapi_as_str(eapi)
+        c_str = C.pkgcraft_eapi_as_str(eapis[i])
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
-        d[id] = Eapi.from_ptr(eapi, id)
+        d[id] = Eapi.from_ptr(eapis[i], id)
 
     C.pkgcraft_eapis_free(eapis, length)
     return MappingProxyType(d)
 
 
 cdef object get_eapis():
-    cdef const C.Eapi **eapis
     cdef size_t length
+    cdef const C.Eapi **eapis = C.pkgcraft_eapis(&length)
     cdef dict d = EAPIS_OFFICIAL.copy()
 
-    eapis = C.pkgcraft_eapis(&length)
     for i in range(len(d) - 1, length):
-        eapi = eapis[i]
-        c_str = C.pkgcraft_eapi_as_str(eapi)
+        c_str = C.pkgcraft_eapi_as_str(eapis[i])
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
-        d[id] = Eapi.from_ptr(eapi, id)
+        d[id] = Eapi.from_ptr(eapis[i], id)
 
     C.pkgcraft_eapis_free(eapis, length)
     return MappingProxyType(d)
-
-
-def get_eapi(str eapi not None):
-    """Get an EAPI given its identifier."""
-    try:
-        return EAPIS[eapi]
-    except KeyError:
-        raise PkgcraftError(f'unknown or invalid EAPI: {eapi}')
 
 
 cdef class Eapi:
@@ -62,6 +50,34 @@ cdef class Eapi:
         obj._eapi = eapi
         obj._id = id
         return obj
+
+    @staticmethod
+    def range(str s not None):
+        """Convert EAPI range into the corresponding list of Eapi objects."""
+        cdef size_t length
+        cdef const C.Eapi **eapis
+        cdef dict d = {}
+
+        eapi_range_bytes = s.encode()
+        cdef char *eapi_range_p = eapi_range_bytes
+        eapis = C.pkgcraft_eapis_range(eapi_range_p, &length)
+
+        for i in range(length):
+            c_str = C.pkgcraft_eapi_as_str(eapis[i])
+            id = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+            d[id] = Eapi.from_ptr(eapis[i], id)
+
+        C.pkgcraft_eapis_free(eapis, length)
+        return MappingProxyType(d)
+
+    @staticmethod
+    def get(str id not None):
+        """Get an EAPI given its identifier."""
+        try:
+            return EAPIS[id]
+        except KeyError:
+            raise PkgcraftError(f'unknown or invalid EAPI: {id}')
 
     def has(self, str feature not None):
         """Check if an EAPI has a given feature."""
