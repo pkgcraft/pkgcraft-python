@@ -3,6 +3,7 @@ import textwrap
 import pytest
 
 from pkgcraft.config import Config
+from pkgcraft.eapi import EAPIS
 from pkgcraft.pkg import EbuildPkg
 from pkgcraft.atom import Cpv, Version
 
@@ -42,8 +43,8 @@ class TestEbuildPkg:
         config = Config()
         r = config.add_repo_path(repo.path)
         pkgs = iter(r)
-        assert str(next(pkgs).eapi) == "7"
-        assert str(next(pkgs).eapi) == "8"
+        assert next(pkgs).eapi is EAPIS['7']
+        assert next(pkgs).eapi is EAPIS['8']
 
     def test_version(self, repo):
         repo.create_ebuild("cat/pkg-1")
