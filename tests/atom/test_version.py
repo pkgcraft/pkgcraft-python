@@ -46,16 +46,9 @@ class TestVersion:
                 Version(s)
 
     def test_cmp(self):
-        for s in (
-                '0 < 1',
-                '0 <= 1',
-                '1 <= 1-r0',
-                '1 == 1-r0',
-                '1 >= 1-r0',
-                '1.0 >= 1',
-                '1.0 > 1',
-                '1.0 != 1',
-                ):
+        with open(TOMLDIR / 'versions.toml', 'rb') as f:
+            d = tomli.load(f)
+        for s in d['compares']:
             a, op, b = s.split()
             op_func = OperatorMap[op]
             assert op_func(Version(a), Version(b)), f'failed comparison: {s}'
