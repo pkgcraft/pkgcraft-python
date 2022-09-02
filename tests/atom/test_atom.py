@@ -104,12 +104,12 @@ class TestAtom:
             op_func = OperatorMap[op]
             assert op_func(Atom(a), Atom(b)), f'failed comparison: {s}'
 
-        for (unsorted, expected) in (
-                (("=a/b-1_p2", "=a/b-1_p1", "=a/b-1_p0"), ("=a/b-1_p0", "=a/b-1_p1", "=a/b-1_p2")),
-                (("=a/b-1-r2", "=a/b-1-r1", "=a/b-1-r0"), ("=a/b-1-r0", "=a/b-1-r1", "=a/b-1-r2")),
-                ):
+    def test_sort(self):
+        with open(TOMLDIR / 'atoms.toml', 'rb') as f:
+            d = tomli.load(f)
+        for (unsorted, expected) in d['sorting']:
             atoms = sorted(Atom(s) for s in unsorted)
-            assert tuple(map(str, atoms)) == expected
+            assert list(map(str, atoms)) == expected
 
     def test_hash(self):
         for equal_versions in (
