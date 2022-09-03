@@ -633,13 +633,21 @@ cdef extern from "pkgcraft.h":
     # The argument must be a Restrict pointer or NULL.
     void pkgcraft_restrict_free(Restrict *r);
 
-    # Parse a restriction string.
+    # Parse a restriction dependency.
     #
     # Returns NULL on error.
     #
     # # Safety
-    # The argument must be a non-null restriction string.
+    # The argument must be a non-null string.
     Restrict *pkgcraft_restrict_parse_dep(const char *s);
+
+    # Parse a package query restriction.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null string.
+    Restrict *pkgcraft_restrict_parse_pkg(const char *s);
 
     # Free an array of strings.
     #
