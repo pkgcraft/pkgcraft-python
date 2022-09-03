@@ -2,11 +2,12 @@ import inspect
 import pickle
 import re
 
+import pytest
+import tomli
+
 from pkgcraft.atom import Atom, Blocker, SlotOperator, Version, VersionWithOp
 from pkgcraft.eapi import Eapi, EAPIS
 from pkgcraft.error import InvalidAtom
-import pytest
-import tomli
 
 from .. import TOMLDIR
 from ..misc import OperatorIterMap
