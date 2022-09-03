@@ -108,5 +108,5 @@ class TestEbuildRepo:
         assert [str(x.atom) for x in pkgs] == ['cat/pkg-1', 'cat/pkg-2']
 
         # invalid restriction string
-        with pytest.raises(PkgcraftError, match='invalid dep restriction'):
+        with pytest.raises(PkgcraftError, match='invalid package query'):
             list(r.iter_restrict('-'))
