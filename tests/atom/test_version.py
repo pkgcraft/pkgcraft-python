@@ -2,7 +2,11 @@ import operator
 import pickle
 
 import pytest
-import tomli
+# TODO: drop tomli usage when only supporting >=python-3.11
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 from pkgcraft.error import PkgcraftError
 from pkgcraft.atom import Version, VersionWithOp
@@ -39,7 +43,7 @@ class TestVersion:
 
     def test_cmp(self):
         with open(TOMLDIR / 'versions.toml', 'rb') as f:
-            d = tomli.load(f)
+            d = tomllib.load(f)
         for s in d['compares']:
             a, op, b = s.split()
             v1 = Version(a)
@@ -49,14 +53,14 @@ class TestVersion:
 
     def test_sort(self):
         with open(TOMLDIR / 'versions.toml', 'rb') as f:
-            d = tomli.load(f)
+            d = tomllib.load(f)
         for (unsorted, expected) in d['sorting']:
             versions = sorted(Version(s) for s in unsorted)
             assert list(map(str, versions)) == expected
 
     def test_hash(self):
         with open(TOMLDIR / 'versions.toml', 'rb') as f:
-            d = tomli.load(f)
+            d = tomllib.load(f)
         for (versions, size) in d['hashing']:
             s = {Version(x) for x in versions}
             assert len(s) == size

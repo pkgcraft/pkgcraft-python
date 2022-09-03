@@ -3,7 +3,11 @@ import pickle
 import re
 
 import pytest
-import tomli
+# TODO: drop tomli usage when only supporting >=python-3.11
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib
 
 from pkgcraft.atom import Atom, Blocker, SlotOperator, Version, VersionWithOp
 from pkgcraft.eapi import Eapi, EAPIS
@@ -57,7 +61,7 @@ class TestAtom:
                 atom_attrs.append(attr)
 
         with open(TOMLDIR / 'atoms.toml', 'rb') as f:
-            d = tomli.load(f)
+            d = tomllib.load(f)
         for entry in d['valid']:
             s = entry['atom']
             passing_eapis = Eapi.range(entry['eapis']).keys()
@@ -80,7 +84,7 @@ class TestAtom:
 
     def test_invalid(self):
         with open(TOMLDIR / 'atoms.toml', 'rb') as f:
-            d = tomli.load(f)
+            d = tomllib.load(f)
         for (s, eapi_range) in d['invalid']:
             failing_eapis = Eapi.range(eapi_range).keys()
             for eapi in EAPIS:
@@ -92,7 +96,7 @@ class TestAtom:
 
     def test_cmp(self):
         with open(TOMLDIR / 'versions.toml', 'rb') as f:
-            d = tomli.load(f)
+            d = tomllib.load(f)
         for s in d['compares']:
             v1, op, v2 = s.split()
             a1 = Atom(f'=cat/pkg-{v1}')
@@ -102,14 +106,14 @@ class TestAtom:
 
     def test_sort(self):
         with open(TOMLDIR / 'atoms.toml', 'rb') as f:
-            d = tomli.load(f)
+            d = tomllib.load(f)
         for (unsorted, expected) in d['sorting']:
             atoms = sorted(Atom(s) for s in unsorted)
             assert list(map(str, atoms)) == expected
 
     def test_hash(self):
         with open(TOMLDIR / 'versions.toml', 'rb') as f:
-            d = tomli.load(f)
+            d = tomllib.load(f)
         for (versions, size) in d['hashing']:
             s = {Atom(f'=cat/pkg-{x}') for x in versions}
             assert len(s) == size
