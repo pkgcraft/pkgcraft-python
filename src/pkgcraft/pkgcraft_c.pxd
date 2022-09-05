@@ -6,8 +6,6 @@ cdef extern from *:
     ctypedef bint bool
     ctypedef struct va_list
 
-include "pkgcraft.pxi"
-
 cdef extern from "pkgcraft.h":
 
     cdef enum RepoFormat:
@@ -25,6 +23,14 @@ cdef extern from "pkgcraft.h":
 
     # EAPI object.
     cdef struct Eapi:
+        pass
+
+    # Opaque wrapper for EbuildPkg objects.
+    cdef struct EbuildPkg:
+        pass
+
+    # Opaque wrapper for EbuildRepo objects.
+    cdef struct EbuildRepo:
         pass
 
     # Opaque wrapper for Pkg objects.
@@ -633,7 +639,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a Restrict pointer or NULL.
     void pkgcraft_restrict_free(Restrict *r);
 
-    # Parse a restriction dependency.
+    # Parse a dependency restriction.
     #
     # Returns NULL on error.
     #
