@@ -32,5 +32,20 @@ cdef class Restrict:
     def __init__(self, obj not None):
         self._restrict = obj_to_restrict(obj)
 
+    def __and__(Restrict self, Restrict other):
+        obj = <Restrict>Restrict.__new__(Restrict)
+        obj._restrict = C.pkgcraft_restrict_and(self._restrict, other._restrict)
+        return obj
+
+    def __or__(Restrict self, Restrict other):
+        obj = <Restrict>Restrict.__new__(Restrict)
+        obj._restrict = C.pkgcraft_restrict_or(self._restrict, other._restrict)
+        return obj
+
+    def __xor__(Restrict self, Restrict other):
+        obj = <Restrict>Restrict.__new__(Restrict)
+        obj._restrict = C.pkgcraft_restrict_xor(self._restrict, other._restrict)
+        return obj
+
     def __dealloc__(self):
         C.pkgcraft_restrict_free(self._restrict)

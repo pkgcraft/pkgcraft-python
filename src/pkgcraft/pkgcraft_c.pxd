@@ -633,11 +633,23 @@ cdef extern from "pkgcraft.h":
     # length of the array.
     void pkgcraft_repos_free(RepoConfig **repos, uintptr_t len);
 
+    # Combine two restrictions via logical AND.
+    #
+    # # Safety
+    # The arguments must be a Restrict pointers.
+    Restrict *pkgcraft_restrict_and(Restrict *r1, Restrict *r2);
+
     # Free a restriction.
     #
     # # Safety
     # The argument must be a Restrict pointer or NULL.
     void pkgcraft_restrict_free(Restrict *r);
+
+    # Combine two restrictions via logical OR.
+    #
+    # # Safety
+    # The arguments must be a Restrict pointers.
+    Restrict *pkgcraft_restrict_or(Restrict *r1, Restrict *r2);
 
     # Parse a dependency restriction.
     #
@@ -654,6 +666,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null string.
     Restrict *pkgcraft_restrict_parse_pkg(const char *s);
+
+    # Combine two restrictions via logical XOR.
+    #
+    # # Safety
+    # The arguments must be a Restrict pointers.
+    Restrict *pkgcraft_restrict_xor(Restrict *r1, Restrict *r2);
 
     # Free an array of strings.
     #
