@@ -636,7 +636,7 @@ cdef extern from "pkgcraft.h":
     # Combine two restrictions via logical AND.
     #
     # # Safety
-    # The arguments must be a Restrict pointers.
+    # The arguments must be Restrict pointers.
     Restrict *pkgcraft_restrict_and(Restrict *r1, Restrict *r2);
 
     # Free a restriction.
@@ -645,10 +645,16 @@ cdef extern from "pkgcraft.h":
     # The argument must be a Restrict pointer or NULL.
     void pkgcraft_restrict_free(Restrict *r);
 
+    # Invert a restriction via logical NOT.
+    #
+    # # Safety
+    # The arguments must be a Restrict pointer.
+    Restrict *pkgcraft_restrict_not(Restrict *r);
+
     # Combine two restrictions via logical OR.
     #
     # # Safety
-    # The arguments must be a Restrict pointers.
+    # The arguments must be Restrict pointers.
     Restrict *pkgcraft_restrict_or(Restrict *r1, Restrict *r2);
 
     # Parse a dependency restriction.
@@ -670,7 +676,7 @@ cdef extern from "pkgcraft.h":
     # Combine two restrictions via logical XOR.
     #
     # # Safety
-    # The arguments must be a Restrict pointers.
+    # The arguments must be Restrict pointers.
     Restrict *pkgcraft_restrict_xor(Restrict *r1, Restrict *r2);
 
     # Free an array of strings.

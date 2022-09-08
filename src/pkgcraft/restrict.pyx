@@ -47,5 +47,10 @@ cdef class Restrict:
         obj._restrict = C.pkgcraft_restrict_xor(self._restrict, other._restrict)
         return obj
 
+    def __invert__(Restrict self):
+        obj = <Restrict>Restrict.__new__(Restrict)
+        obj._restrict = C.pkgcraft_restrict_not(self._restrict)
+        return obj
+
     def __dealloc__(self):
         C.pkgcraft_restrict_free(self._restrict)
