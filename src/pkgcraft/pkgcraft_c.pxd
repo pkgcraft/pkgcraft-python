@@ -86,7 +86,7 @@ cdef extern from "pkgcraft.h":
     # NULL to use the default EAPI.
     Atom *pkgcraft_atom(const char *atom, const char *eapi);
 
-    # Return a given atom's blocker status, e.g. the atom "!cat/pkg" has a weak blocker.
+    # Return an atom's blocker status, e.g. the atom "!cat/pkg" has a weak blocker.
     #
     # Returns -1 on nonexistence.
     #
@@ -94,7 +94,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Atom pointer.
     int pkgcraft_atom_blocker(Atom *atom);
 
-    # Return a given atom's category, e.g. the atom "=cat/pkg-1-r2" has a category of "cat".
+    # Return an atom's category, e.g. the atom "=cat/pkg-1-r2" has a category of "cat".
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
@@ -107,7 +107,7 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null Atom pointers.
     int pkgcraft_atom_cmp(Atom *a1, Atom *a2);
 
-    # Return a given atom's cpv, e.g. the atom "=cat/pkg-1-r2" has a cpv of "cat/pkg-1-r2".
+    # Return an atom's cpv, e.g. the atom "=cat/pkg-1-r2" has a cpv of "cat/pkg-1-r2".
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
@@ -119,25 +119,25 @@ cdef extern from "pkgcraft.h":
     # The argument must be a Atom pointer or NULL.
     void pkgcraft_atom_free(Atom *atom);
 
-    # Return the hash value for a given atom.
+    # Return the hash value for an atom.
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
     uint64_t pkgcraft_atom_hash(Atom *atom);
 
-    # Return a given atom's key, e.g. the atom "=cat/pkg-1-r2" has a key of "cat/pkg".
+    # Return an atom's key, e.g. the atom "=cat/pkg-1-r2" has a key of "cat/pkg".
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_key(Atom *atom);
 
-    # Return a given atom's package, e.g. the atom "=cat/pkg-1-r2" has a package of "pkg".
+    # Return an atom's package, e.g. the atom "=cat/pkg-1-r2" has a package of "pkg".
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_package(Atom *atom);
 
-    # Return a given atom's repo, e.g. the atom "=cat/pkg-1-r2:3/4::repo" has a repo of "repo".
+    # Return an atom's repo, e.g. the atom "=cat/pkg-1-r2:3/4::repo" has a repo of "repo".
     #
     # Returns NULL on nonexistence.
     #
@@ -145,13 +145,13 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_repo(Atom *atom);
 
-    # Return the restriction for a given atom.
+    # Return the restriction for an atom.
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
     Restrict *pkgcraft_atom_restrict(Atom *atom);
 
-    # Return a given atom's revision, e.g. the atom "=cat/pkg-1-r2" has a revision of "2".
+    # Return an atom's revision, e.g. the atom "=cat/pkg-1-r2" has a revision of "2".
     #
     # Returns NULL on nonexistence.
     #
@@ -159,7 +159,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_revision(Atom *atom);
 
-    # Return a given atom's slot, e.g. the atom "=cat/pkg-1-r2:3" has a slot of "3".
+    # Return an atom's slot, e.g. the atom "=cat/pkg-1-r2:3" has a slot of "3".
     #
     # Returns NULL on nonexistence.
     #
@@ -167,7 +167,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_slot(Atom *atom);
 
-    # Return a given atom's slot operator, e.g. the atom "=cat/pkg-1-r2:0=" has an equal slot
+    # Return an atom's slot operator, e.g. the atom "=cat/pkg-1-r2:0=" has an equal slot
     # operator.
     #
     # Returns -1 on nonexistence.
@@ -176,13 +176,13 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Atom pointer.
     int pkgcraft_atom_slot_op(Atom *atom);
 
-    # Return the string for a given atom.
+    # Return the string for an atom.
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_str(Atom *atom);
 
-    # Return a given atom's subslot, e.g. the atom "=cat/pkg-1-r2:3/4" has a subslot of "4".
+    # Return an atom's subslot, e.g. the atom "=cat/pkg-1-r2:3/4" has a subslot of "4".
     #
     # Returns NULL on nonexistence.
     #
@@ -190,7 +190,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_subslot(Atom *atom);
 
-    # Return a given atom's USE dependencies, e.g. the atom "=cat/pkg-1-r2[a,b,c]" has USE
+    # Return an atom's USE dependencies, e.g. the atom "=cat/pkg-1-r2[a,b,c]" has USE
     # dependencies of "a, b, c".
     #
     # Returns NULL on nonexistence.
@@ -199,7 +199,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Atom pointer.
     char **pkgcraft_atom_use_deps(Atom *atom, uintptr_t *len);
 
-    # Return a given atom's version, e.g. the atom "=cat/pkg-1-r2" has a version of "1-r2".
+    # Return an atom's version, e.g. the atom "=cat/pkg-1-r2" has a version of "1-r2".
     #
     # Returns NULL on nonexistence.
     #
@@ -227,7 +227,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a Config pointer or NULL.
     void pkgcraft_config_free(Config *config);
 
-    # Load repos from a given path to a portage-compatible repos.conf directory or file.
+    # Load repos from a path to a portage-compatible repos.conf directory or file.
     #
     # Returns NULL on error.
     #
@@ -262,7 +262,7 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null Eapi pointers.
     int pkgcraft_eapi_cmp(const Eapi *e1, const Eapi *e2);
 
-    # Get an EAPI given its identifier.
+    # Get an EAPI from its identifier.
     #
     # Returns NULL on error.
     #
@@ -270,13 +270,13 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null string.
     const Eapi *pkgcraft_eapi_from_str(const char *s);
 
-    # Check if an EAPI has a given feature.
+    # Check if an EAPI has a feature.
     #
     # # Safety
     # The arguments must be a non-null Eapi pointer and non-null string.
     bool pkgcraft_eapi_has(const Eapi *eapi, const char *s);
 
-    # Return the hash value for a given Eapi.
+    # Return the hash value for a Eapi.
     #
     # # Safety
     # The argument must be a non-null Eapi pointer.
@@ -405,7 +405,7 @@ cdef extern from "pkgcraft.h":
     # with the length of the array.
     void pkgcraft_ebuild_pkg_upstreams_free(Upstream **upstreams, uintptr_t len);
 
-    # Return a given ebuild repo's masters.
+    # Return an ebuild repo's masters.
     #
     # # Safety
     # The argument must be a non-null EbuildRepo pointer.
@@ -476,7 +476,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer.
     const EbuildPkg *pkgcraft_pkg_as_ebuild(Pkg *p);
 
-    # Return a given package's atom.
+    # Return a package's atom.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
@@ -489,7 +489,7 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null Pkg pointers.
     int pkgcraft_pkg_cmp(Pkg *p1, Pkg *p2);
 
-    # Return a given package's EAPI.
+    # Return a package's EAPI.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
@@ -501,25 +501,25 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer or NULL.
     void pkgcraft_pkg_free(Pkg *p);
 
-    # Return the hash value for a given package.
+    # Return the hash value for a package.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
     uint64_t pkgcraft_pkg_hash(Pkg *p);
 
-    # Return a given package's repo.
+    # Return a package's repo.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
     const Repo *pkgcraft_pkg_repo(Pkg *p);
 
-    # Return the restriction for a given package.
+    # Return the restriction for a package.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
     Restrict *pkgcraft_pkg_restrict(Pkg *p);
 
-    # Return a given package's version.
+    # Return a package's version.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
@@ -533,7 +533,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Repo pointer.
     const EbuildRepo *pkgcraft_repo_as_ebuild(Repo *r);
 
-    # Return a given repo's categories.
+    # Return a repo's categories.
     #
     # # Safety
     # The argument must be a non-null Repo pointer.
@@ -561,19 +561,19 @@ cdef extern from "pkgcraft.h":
     # The argument must be a Repo pointer or NULL.
     void pkgcraft_repo_free(Repo *r);
 
-    # Return the hash value for a given repo.
+    # Return the hash value for a repo.
     #
     # # Safety
     # The argument must be a non-null Repo pointer.
     uint64_t pkgcraft_repo_hash(Repo *r);
 
-    # Return a given repo's id.
+    # Return a repo's id.
     #
     # # Safety
     # The argument must be a non-null Repo pointer.
     char *pkgcraft_repo_id(Repo *r);
 
-    # Return a package iterator for a given repo.
+    # Return a package iterator for a repo.
     #
     # # Safety
     # The argument must be a non-null Repo pointer.
@@ -585,7 +585,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null PkgIter pointer or NULL.
     void pkgcraft_repo_iter_free(PkgIter *i);
 
-    # Return the next package from a given package iterator.
+    # Return the next package from a package iterator.
     #
     # Returns NULL when the iterator is empty.
     #
@@ -593,19 +593,27 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null PkgIter pointer.
     Pkg *pkgcraft_repo_iter_next(PkgIter *i);
 
-    # Return a given repo's length.
+    # Return a repo's length.
     #
     # # Safety
     # The argument must be a non-null Repo pointer.
     uintptr_t pkgcraft_repo_len(Repo *r);
 
-    # Return a given repo's path.
+    # Return a repo's packages for a category.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer and category.
+    char **pkgcraft_repo_packages(Repo *r, const char *cat, uintptr_t *len);
+
+    # Return a repo's path.
     #
     # # Safety
     # The argument must be a non-null Repo pointer.
     char *pkgcraft_repo_path(Repo *r);
 
-    # Return a restriction package iterator for a given repo.
+    # Return a restriction package iterator for a repo.
     #
     # # Safety
     # The repo argument must be a non-null Repo pointer and the restrict argument must be a non-null
@@ -618,13 +626,21 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null RestrictPkgIter pointer or NULL.
     void pkgcraft_repo_restrict_iter_free(RestrictPkgIter *i);
 
-    # Return the next package from a given restriction package iterator.
+    # Return the next package from a restriction package iterator.
     #
     # Returns NULL when the iterator is empty.
     #
     # # Safety
     # The argument must be a non-null RestrictPkgIter pointer.
     Pkg *pkgcraft_repo_restrict_iter_next(RestrictPkgIter *i);
+
+    # Return a repo's versions for a package.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer, category, and package.
+    char **pkgcraft_repo_versions(Repo *r, const char *cat, const char *pkg, uintptr_t *len);
 
     # Free an array of configured repos.
     #
@@ -712,19 +728,19 @@ cdef extern from "pkgcraft.h":
     # The version argument should be a non-null Version pointer received from pkgcraft_version().
     void pkgcraft_version_free(Version *version);
 
-    # Return the hash value for a given version.
+    # Return the hash value for a version.
     #
     # # Safety
     # The version argument should be a non-null Version pointer received from pkgcraft_version().
     uint64_t pkgcraft_version_hash(Version *version);
 
-    # Return a given version's revision, e.g. the version "1-r2" has a revision of "2".
+    # Return a version's revision, e.g. the version "1-r2" has a revision of "2".
     #
     # # Safety
     # The version argument should be a non-null Version pointer received from pkgcraft_version().
     char *pkgcraft_version_revision(Version *version);
 
-    # Return the string for a given version.
+    # Return the string for a version.
     #
     # # Safety
     # The version argument should be a non-null Version pointer received from pkgcraft_version().

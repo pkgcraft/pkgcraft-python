@@ -30,29 +30,37 @@ class TestRepo:
         assert str(r) == "fake"
         assert repr(r).startswith(f"<EbuildRepo 'fake' at 0x")
 
-    def test_categories(self, repo):
+    def test_pkg_methods(self, repo):
         path = repo.path
         config = Config()
         r = config.add_repo_path(path)
 
         # empty repo
         assert not r.categories
+        assert not r.packages('cat')
+        assert not r.versions('cat', 'pkg')
 
         # create ebuild
-        repo.create_ebuild("cat1/pkga-1")
+        repo.create_ebuild('cat1/pkga-1')
         assert r.categories == ('cat1',)
+        assert r.packages('cat1') == ('pkga',)
+        assert r.versions('cat1', 'pkga') == ('1',)
 
         # create new ebuild version
         repo.create_ebuild("cat1/pkga-2")
         assert r.categories == ('cat1',)
+        assert r.packages('cat1') == ('pkga',)
+        assert r.versions('cat1', 'pkga') == ('1', '2')
 
         # create new pkg
         repo.create_ebuild("cat1/pkgb-1")
         assert r.categories == ('cat1',)
+        assert r.packages('cat1') == ('pkga', 'pkgb')
 
         # create new pkg in new category
         repo.create_ebuild("cat2/pkga-1")
         assert r.categories == ('cat1', 'cat2')
+        assert r.packages('cat2') == ('pkga',)
 
     def test_cmp(self, repo):
         path = repo.path

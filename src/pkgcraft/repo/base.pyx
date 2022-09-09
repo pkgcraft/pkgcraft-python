@@ -43,6 +43,32 @@ cdef class Repo:
         C.pkgcraft_str_array_free(cats, length)
         return categories
 
+    def packages(self, str cat not None):
+        """Get a repo's packages for a category."""
+        cdef char **pkgs
+        cdef size_t length
+        cat_bytes = cat.encode()
+        cdef char *cat_p = cat_bytes
+
+        pkgs = C.pkgcraft_repo_packages(self._repo, cat_p, &length)
+        packages = tuple(pkgs[i].decode() for i in range(length))
+        C.pkgcraft_str_array_free(pkgs, length)
+        return packages
+
+    def versions(self, str cat not None, str pkg not None):
+        """Get a repo's versions for a package."""
+        cdef char **vers
+        cdef size_t length
+        cat_bytes = cat.encode()
+        cdef char *cat_p = cat_bytes
+        pkg_bytes = pkg.encode()
+        cdef char *pkg_p = pkg_bytes
+
+        vers = C.pkgcraft_repo_versions(self._repo, cat_p, pkg_p, &length)
+        versions = tuple(vers[i].decode() for i in range(length))
+        C.pkgcraft_str_array_free(vers, length)
+        return versions
+
     def __len__(self):
         return C.pkgcraft_repo_len(self._repo)
 
