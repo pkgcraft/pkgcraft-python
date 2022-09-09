@@ -1,6 +1,7 @@
 from .. cimport pkgcraft_c as C
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
+from .. import parse
 
 
 cdef class Repo:
@@ -47,13 +48,16 @@ cdef class Repo:
         """Get a repo's packages for a category."""
         cdef char **pkgs
         cdef size_t length
-        cat_bytes = cat.encode()
-        cdef char *cat_p = cat_bytes
+        cdef char *cat_p
 
-        pkgs = C.pkgcraft_repo_packages(self._repo, cat_p, &length)
-        packages = tuple(pkgs[i].decode() for i in range(length))
-        C.pkgcraft_str_array_free(pkgs, length)
-        return packages
+        if parse.category(cat):
+            cat_bytes = cat.encode()
+            cat_p = cat_bytes
+
+            pkgs = C.pkgcraft_repo_packages(self._repo, cat_p, &length)
+            packages = tuple(pkgs[i].decode() for i in range(length))
+            C.pkgcraft_str_array_free(pkgs, length)
+            return packages
 
     def versions(self, str cat not None, str pkg not None):
         """Get a repo's versions for a package."""
