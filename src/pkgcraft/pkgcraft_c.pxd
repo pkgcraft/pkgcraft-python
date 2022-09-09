@@ -405,13 +405,7 @@ cdef extern from "pkgcraft.h":
     # with the length of the array.
     void pkgcraft_ebuild_pkg_upstreams_free(Upstream **upstreams, uintptr_t len);
 
-    # Return a given ebuild repos's category dirs.
-    #
-    # # Safety
-    # The argument must be a non-null EbuildRepo pointer.
-    char **pkgcraft_ebuild_repo_category_dirs(const EbuildRepo *r, uintptr_t *len);
-
-    # Return a given ebuild repos's masters.
+    # Return a given ebuild repo's masters.
     #
     # # Safety
     # The argument must be a non-null EbuildRepo pointer.
@@ -538,6 +532,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Repo pointer.
     const EbuildRepo *pkgcraft_repo_as_ebuild(Repo *r);
+
+    # Return a given repo's categories.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    char **pkgcraft_repo_categories(Repo *r, uintptr_t *len);
 
     # Compare two repos returning -1, 0, or 1 if the first repo is less than, equal to, or greater
     # than the second repo, respectively.

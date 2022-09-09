@@ -28,17 +28,6 @@ cdef class EbuildRepo(Repo):
         return obj
 
     @property
-    def category_dirs(self):
-        """Get an ebuild repo's category dirs."""
-        cdef char **dirs
-        cdef size_t length
-
-        dirs = C.pkgcraft_ebuild_repo_category_dirs(self._ebuild_repo, &length)
-        categories = tuple(dirs[i].decode() for i in range(length))
-        C.pkgcraft_str_array_free(dirs, length)
-        return categories
-
-    @property
     def masters(self):
         """Get an ebuild repo's masters."""
         cdef C.Repo **repos

@@ -12,30 +12,6 @@ class TestEbuildRepo:
         with pytest.raises(RuntimeError, match="doesn't support manual construction"):
             EbuildRepo()
 
-    def test_category_dirs(self, repo):
-        path = repo.path
-        config = Config()
-        r = config.add_repo_path(path)
-
-        # empty repo
-        assert not r.category_dirs
-
-        # create ebuild
-        repo.create_ebuild("cat1/pkga-1")
-        assert r.category_dirs == ('cat1',)
-
-        # create new ebuild version
-        repo.create_ebuild("cat1/pkga-2")
-        assert r.category_dirs == ('cat1',)
-
-        # create new pkg
-        repo.create_ebuild("cat1/pkgb-1")
-        assert r.category_dirs == ('cat1',)
-
-        # create new pkg in new category
-        repo.create_ebuild("cat2/pkga-1")
-        assert r.category_dirs == ('cat1', 'cat2')
-
     def test_masters(self, make_repo):
         # empty masters
         repo = make_repo()

@@ -32,6 +32,17 @@ cdef class Repo:
             C.pkgcraft_str_free(c_str)
         return self._path
 
+    @property
+    def categories(self):
+        """Get a repo's categories."""
+        cdef char **cats
+        cdef size_t length
+
+        cats = C.pkgcraft_repo_categories(self._repo, &length)
+        categories = tuple(cats[i].decode() for i in range(length))
+        C.pkgcraft_str_array_free(cats, length)
+        return categories
+
     def __len__(self):
         return C.pkgcraft_repo_len(self._repo)
 
