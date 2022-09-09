@@ -63,15 +63,19 @@ cdef class Repo:
         """Get a repo's versions for a package."""
         cdef char **vers
         cdef size_t length
-        cat_bytes = cat.encode()
-        cdef char *cat_p = cat_bytes
-        pkg_bytes = pkg.encode()
-        cdef char *pkg_p = pkg_bytes
+        cdef char *cat_p
+        cdef char *pkg_p
 
-        vers = C.pkgcraft_repo_versions(self._repo, cat_p, pkg_p, &length)
-        versions = tuple(vers[i].decode() for i in range(length))
-        C.pkgcraft_str_array_free(vers, length)
-        return versions
+        if parse.category(cat) and parse.package(pkg):
+            cat_bytes = cat.encode()
+            cat_p = cat_bytes
+            pkg_bytes = pkg.encode()
+            pkg_p = pkg_bytes
+
+            vers = C.pkgcraft_repo_versions(self._repo, cat_p, pkg_p, &length)
+            versions = tuple(vers[i].decode() for i in range(length))
+            C.pkgcraft_str_array_free(vers, length)
+            return versions
 
     def __len__(self):
         return C.pkgcraft_repo_len(self._repo)
