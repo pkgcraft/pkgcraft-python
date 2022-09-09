@@ -1,5 +1,3 @@
-from types import MappingProxyType
-
 from . cimport pkgcraft_c as C
 from .repo cimport EbuildRepo
 from .error import PkgcraftError
@@ -16,22 +14,8 @@ cdef class Config:
     @property
     def repos(self):
         """Return the config's repo mapping."""
-        cdef C.RepoConfig **repos
-        cdef size_t length
-        cdef dict d
-
         if self._repos is None:
-            repos = C.pkgcraft_config_repos(self._config, &length)
-            d = {}
-            for i in range(length):
-                r = repos[i]
-                if r.format is C.RepoFormat.Ebuild:
-                    repo = EbuildRepo.from_ptr(r.repo, True)
-                else:
-                    raise PkgcraftError('unsupported repo format')
-                d[r.id.decode()] = repo
-            C.pkgcraft_repos_free(repos, length)
-            self._repos = MappingProxyType(d)
+            self._repos = Repos.from_config(self._config)
         return self._repos
 
     def add_repo_path(self, path not None, str id=None, int priority=0):
@@ -46,7 +30,7 @@ cdef class Config:
         if repo_conf is NULL:
             raise PkgcraftError
 
-        # reset cached repos
+        # force repos attr refresh to get correct dict ordering by repo priority
         self._repos = None
 
         if repo_conf.format is C.RepoFormat.Ebuild:
@@ -71,7 +55,7 @@ cdef class Config:
         if repos is NULL:
             raise PkgcraftError
 
-        # reset cached repos
+        # force repos attr refresh to get correct dict ordering by repo priority
         self._repos = None
 
         d = {}
@@ -88,3 +72,43 @@ cdef class Config:
 
     def __dealloc__(self):
         C.pkgcraft_config_free(self._config)
+
+
+cdef class Repos:
+    """Available repos for the system."""
+
+    @staticmethod
+    cdef Repos from_config(C.Config *config):
+        cdef size_t length
+        cdef C.RepoConfig **repos = C.pkgcraft_config_repos(config, &length)
+        obj = <Repos>Repos.__new__(Repos)
+        obj._repos = {}
+
+        for i in range(length):
+            r = repos[i]
+            if r.format is C.RepoFormat.Ebuild:
+                repo = EbuildRepo.from_ptr(r.repo, True)
+            else:
+                raise PkgcraftError('unsupported repo format')
+            obj._repos[r.id.decode()] = repo
+
+        C.pkgcraft_repos_free(repos, length)
+        return obj
+
+    def __getitem__(self, key):
+        return self._repos[key]
+
+    def __str__(self):
+        return str(self._repos)
+
+    def __repr__(self):
+        return repr(self._repos)
+
+    def __bool__(self):
+        return bool(self._repos)
+
+    def __iter__(self):
+        return iter(self._repos)
+
+    def __len__(self):
+        return len(self._repos)
