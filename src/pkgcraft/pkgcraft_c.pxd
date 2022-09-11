@@ -21,6 +21,18 @@ cdef extern from "pkgcraft.h":
     cdef struct Config:
         pass
 
+    # Opaque wrapper for DepSetAtom objects.
+    cdef struct DepSetAtom:
+        pass
+
+    # Opaque wrapper for DepSetString objects.
+    cdef struct DepSetString:
+        pass
+
+    # Opaque wrapper for DepSetUri objects.
+    cdef struct DepSetUri:
+        pass
+
     # EAPI object.
     cdef struct Eapi:
         pass
@@ -249,6 +261,24 @@ cdef extern from "pkgcraft.h":
     # The argument should be a UTF-8 string.
     Atom *pkgcraft_cpv(const char *s);
 
+    # Return the formatted string for a DepSetAtom object.
+    #
+    # # Safety
+    # The argument must be a non-null DepSetAtom pointer.
+    char *pkgcraft_depset_atom_str(const DepSetAtom *dep);
+
+    # Return the formatted string for a DepSetString object.
+    #
+    # # Safety
+    # The argument must be a non-null DepSetString pointer.
+    char *pkgcraft_depset_string_str(const DepSetString *dep);
+
+    # Return the formatted string for a DepSetUri object.
+    #
+    # # Safety
+    # The argument must be a non-null DepSetUri pointer.
+    char *pkgcraft_depset_uri_str(const DepSetUri *dep);
+
     # Return an EAPI's identifier.
     #
     # # Safety
@@ -309,6 +339,22 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null string.
     const Eapi **pkgcraft_eapis_range(const char *s, uintptr_t *len);
 
+    # Return a package's BDEPEND.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    const DepSetAtom *pkgcraft_ebuild_pkg_bdepend(EbuildPkg *p);
+
+    # Return a package's DEPEND.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    const DepSetAtom *pkgcraft_ebuild_pkg_depend(EbuildPkg *p);
+
     # Return a package's description.
     #
     # # Safety
@@ -328,6 +374,14 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
     char **pkgcraft_ebuild_pkg_homepage(EbuildPkg *p, uintptr_t *len);
+
+    # Return a package's IDEPEND.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    const DepSetAtom *pkgcraft_ebuild_pkg_idepend(EbuildPkg *p);
 
     # Return a package's directly inherited eclasses.
     #
@@ -352,6 +406,14 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
     char **pkgcraft_ebuild_pkg_keywords(EbuildPkg *p, uintptr_t *len);
+
+    # Return a package's LICENSE.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    const DepSetString *pkgcraft_ebuild_pkg_license(EbuildPkg *p);
 
     # Return a package's long description.
     #
@@ -380,11 +442,43 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null EbuildPkg pointer.
     char *pkgcraft_ebuild_pkg_path(EbuildPkg *p);
 
+    # Return a package's PDEPEND.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    const DepSetAtom *pkgcraft_ebuild_pkg_pdepend(EbuildPkg *p);
+
+    # Return a package's RDEPEND.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    const DepSetAtom *pkgcraft_ebuild_pkg_rdepend(EbuildPkg *p);
+
+    # Return a package's REQUIRED_USE.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    const DepSetString *pkgcraft_ebuild_pkg_required_use(EbuildPkg *p);
+
     # Return a package's slot.
     #
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
     char *pkgcraft_ebuild_pkg_slot(EbuildPkg *p);
+
+    # Return a package's SRC_URI.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    const DepSetUri *pkgcraft_ebuild_pkg_src_uri(EbuildPkg *p);
 
     # Return a package's subslot.
     #

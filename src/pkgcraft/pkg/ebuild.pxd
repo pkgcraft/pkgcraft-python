@@ -7,6 +7,14 @@ cdef class EbuildPkg(Pkg):
     cdef str _description
     cdef str _slot
     cdef str _subslot
+    cdef object _depend
+    cdef object _bdepend
+    cdef object _idepend
+    cdef object _pdepend
+    cdef object _rdepend
+    cdef object _license
+    cdef object _required_use
+    cdef object _src_uri
     cdef tuple _homepage
     cdef tuple _keywords
     cdef tuple _inherit
