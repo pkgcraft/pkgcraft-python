@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 
 from pkgcraft.atom import Cpv
+from pkgcraft.config import Config
 from pkgcraft.eapi import EAPI_LATEST
 
 
@@ -58,7 +59,7 @@ class _FileSet(MutableSet):
 class EbuildRepo:
     """Class for creating/manipulating ebuild repos."""
 
-    def __init__(self, path, repo_id='fake', eapi=EAPI_LATEST, masters=(), arches=()):
+    def __init__(self, path, repo_id='fake', eapi=EAPI_LATEST, masters=(), arches=(), config=None):
         self.path = Path(path)
         self.repo_id = repo_id
         self.arches = _FileSet(self.path / 'profiles' / 'arch.list')
@@ -82,6 +83,9 @@ class EbuildRepo:
         except FileExistsError:
             pass
 
+        if config:
+            self._repo = config.add_repo_path(path)
+
     def create_profiles(self, profiles):
         for p in profiles:
             os.makedirs(self.path / 'profiles' / p.path, exist_ok=True)
@@ -99,7 +103,7 @@ class EbuildRepo:
                 with open(self.path / 'profiles' / p.path / 'eapi', 'w') as f:
                     f.write(f'{p.eapi}\n')
 
-    def create_ebuild(self, cpvstr, data=None, **kwargs):
+    def create_ebuild(self, cpvstr='cat/pkg-1', data=None, **kwargs):
         cpv = Cpv(cpvstr)
         ebuild_dir = self.path / cpv.category / cpv.package
         os.makedirs(ebuild_dir, exist_ok=True)
@@ -139,11 +143,15 @@ class EbuildRepo:
 
         return ebuild_path
 
+    def create_pkg(self, cpvstr='cat/pkg-1', *args, **kwargs):
+        self.create_ebuild(cpvstr, *args, **kwargs)
+        return next(iter(self._repo.iter_restrict(cpvstr)))
+
 
 @pytest.fixture
 def repo(tmp_path_factory):
     """Create a generic ebuild repository."""
-    return EbuildRepo(str(tmp_path_factory.mktemp('repo')))
+    return EbuildRepo(str(tmp_path_factory.mktemp('repo')), config=Config())
 
 
 @pytest.fixture
