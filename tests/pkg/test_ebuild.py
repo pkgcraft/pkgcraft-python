@@ -68,6 +68,38 @@ class TestEbuildPkg:
         pkg = repo.create_pkg(slot='1/2')
         assert pkg.subslot == '2'
 
+    def test_depend(self, repo):
+        pkg = repo.create_pkg()
+        assert not pkg.depend
+
+    def test_bdepend(self, repo):
+        pkg = repo.create_pkg()
+        assert not pkg.bdepend
+
+    def test_idepend(self, repo):
+        pkg = repo.create_pkg()
+        assert not pkg.idepend
+
+    def test_pdepend(self, repo):
+        pkg = repo.create_pkg()
+        assert not pkg.pdepend
+
+    def test_rdepend(self, repo):
+        pkg = repo.create_pkg()
+        assert not pkg.rdepend
+
+    def test_license(self, repo):
+        pkg = repo.create_pkg()
+        assert not pkg.license
+
+    def test_required_use(self, repo):
+        pkg = repo.create_pkg()
+        assert not pkg.required_use
+
+    def test_src_uri(self, repo):
+        pkg = repo.create_pkg()
+        assert not pkg.src_uri
+
     def test_homepage(self, repo):
         # none
         pkg = repo.create_pkg()
