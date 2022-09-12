@@ -15,21 +15,15 @@ class TestEbuildPkg:
             EbuildPkg()
 
     def test_repr(self, repo):
-        repo.create_ebuild("cat/pkg-1")
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        pkg = next(iter(r))
+        pkg = repo.create_pkg('cat/pkg-1')
         assert repr(pkg).startswith(f"<EbuildPkg 'cat/pkg-1' at 0x")
 
     def test_atom(self, repo):
-        repo.create_ebuild("cat/pkg-1")
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        pkg = next(iter(r))
-        assert pkg.atom == Cpv("cat/pkg-1")
+        pkg = repo.create_pkg('cat/pkg-1')
+        assert pkg.atom == Cpv('cat/pkg-1')
 
     def test_repo(self, repo):
-        repo.create_ebuild("cat/pkg-1")
+        repo.create_ebuild('cat/pkg-1')
         config = Config()
         r = config.add_repo_path(repo.path)
         pkg = next(iter(r))
@@ -38,119 +32,82 @@ class TestEbuildPkg:
         assert pkg == next(iter(pkg.repo))
 
     def test_eapi(self, repo):
-        repo.create_ebuild("cat/pkg-1", eapi="7")
-        repo.create_ebuild("cat/pkg-2", eapi="8")
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        pkgs = iter(r)
-        assert next(pkgs).eapi is EAPIS['7']
-        assert next(pkgs).eapi is EAPIS['8']
+        pkg1 = repo.create_pkg('cat/pkg-1', eapi='7')
+        pkg2 = repo.create_pkg('cat/pkg-1', eapi='8')
+        assert pkg1.eapi is EAPIS['7']
+        assert pkg2.eapi is EAPIS['8']
 
     def test_version(self, repo):
-        repo.create_ebuild("cat/pkg-1")
-        repo.create_ebuild("cat/pkg-2")
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        pkgs = iter(r)
-        assert next(pkgs).version == Version('1')
-        assert next(pkgs).version == Version('2')
+        pkg1 = repo.create_pkg('cat/pkg-1')
+        pkg2 = repo.create_pkg('cat/pkg-2')
+        assert pkg1.version == Version('1')
+        assert pkg2.version == Version('2')
 
     def test_path(self, repo):
-        path = repo.create_ebuild("cat/pkg-1")
+        path = repo.create_ebuild()
         config = Config()
         r = config.add_repo_path(repo.path)
         pkg = next(iter(r))
         assert pkg.path == str(path)
 
     def test_ebuild(self, repo):
-        repo.create_ebuild("cat/pkg-1")
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        pkg = next(iter(r))
+        pkg = repo.create_pkg()
         assert pkg.ebuild
 
     def test_description(self, repo):
-        repo.create_ebuild("cat/pkg-1", description="desc")
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        pkg = next(iter(r))
+        pkg = repo.create_pkg(description="desc")
         assert pkg.description == "desc"
 
     def test_slot(self, repo):
-        repo.create_ebuild("cat/pkg-1", slot="1/2")
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        pkg = next(iter(r))
+        pkg = repo.create_pkg(slot='1/2')
         assert pkg.slot == "1"
 
     def test_subslot(self, repo):
-        repo.create_ebuild("cat/pkg-1")
-        repo.create_ebuild("cat/pkg-2", slot="1/2")
-        config = Config()
-        pkgs = iter(config.add_repo_path(repo.path))
-        pkg = next(pkgs)
-        assert pkg.subslot == "0"
-        pkg = next(pkgs)
-        assert pkg.subslot == "2"
+        pkg = repo.create_pkg()
+        assert pkg.subslot == '0'
+        pkg = repo.create_pkg(slot='1/2')
+        assert pkg.subslot == '2'
 
     def test_homepage(self, repo):
-        config = Config()
-        r = config.add_repo_path(repo.path)
+        # none
+        pkg = repo.create_pkg()
+        assert not pkg.homepage
 
         # single
-        repo.create_ebuild("cat/pkg-1")
-        pkg = next(iter(r))
+        pkg = repo.create_pkg(homepage='https://a.com')
         assert len(pkg.homepage) == 1
 
         # multiple
-        repo.create_ebuild("cat/pkg-1", homepage="https://a.com https://b.com")
-        pkg = next(iter(r))
-        assert pkg.homepage == ("https://a.com", "https://b.com")
+        pkg = repo.create_pkg(homepage='https://a.com https://b.com')
+        assert pkg.homepage == ('https://a.com', 'https://b.com')
 
     def test_keywords(self, repo):
-        config = Config()
-        r = config.add_repo_path(repo.path)
-
         # empty
-        repo.create_ebuild("cat/pkg-1")
-        pkg = next(iter(r))
+        pkg = repo.create_pkg()
         assert not pkg.keywords
 
         # multiple
-        repo.create_ebuild("cat/pkg-1", keywords="amd64 ~arm64")
-        pkg = next(iter(r))
-        assert pkg.keywords == ("amd64", "~arm64")
+        pkg = repo.create_pkg(keywords='amd64 ~arm64')
+        assert pkg.keywords == ('amd64', '~arm64')
 
     def test_iuse(self, repo):
-        config = Config()
-        r = config.add_repo_path(repo.path)
-
         # empty
-        repo.create_ebuild("cat/pkg-1")
-        pkg = next(iter(r))
+        pkg = repo.create_pkg()
         assert not pkg.iuse
 
         # multiple
-        repo.create_ebuild("cat/pkg-1", iuse="a b c")
-        pkg = next(iter(r))
-        assert pkg.iuse == frozenset(["a", "b", "c"])
+        pkg = repo.create_pkg(iuse='a b c')
+        assert pkg.iuse == frozenset(['a', 'b', 'c'])
 
     def test_inherits(self, repo):
-        config = Config()
-        r = config.add_repo_path(repo.path)
-
         # empty
-        repo.create_ebuild("cat/pkg-1")
-        pkg = next(iter(r))
-        assert pkg.inherit == ()
-        assert pkg.inherited == ()
+        pkg = repo.create_pkg()
+        assert not pkg.inherit
+        assert not pkg.inherited
 
     def test_long_description(self, repo):
         # none
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        repo.create_ebuild("cat/pkg-1")
-        pkg = next(iter(r))
+        pkg = repo.create_pkg()
         assert pkg.long_description is None
 
         # invalid
@@ -199,10 +156,7 @@ class TestEbuildPkg:
 
     def test_maintainers(self, repo):
         # none
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        repo.create_ebuild("cat/pkg-1")
-        pkg = next(iter(r))
+        pkg = repo.create_pkg()
         assert not pkg.maintainers
 
         # invalid
@@ -257,10 +211,7 @@ class TestEbuildPkg:
 
     def test_upstreams(self, repo):
         # none
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        repo.create_ebuild("cat/pkg-1")
-        pkg = next(iter(r))
+        pkg = repo.create_pkg()
         assert not pkg.upstreams
 
         # invalid
