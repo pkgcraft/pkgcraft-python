@@ -9,14 +9,12 @@ cdef C.Restrict *str_to_restrict(str s) except NULL:
     cdef C.Restrict *r
 
     try:
-        cpv = Cpv(s)
-        return C.pkgcraft_atom_restrict(cpv._atom)
+        return C.pkgcraft_atom_restrict(Cpv(s)._atom)
     except InvalidCpv:
         pass
 
     try:
-        atom = Atom(s)
-        return C.pkgcraft_atom_restrict(cpv._atom)
+        return C.pkgcraft_atom_restrict(Atom(s)._atom)
     except InvalidAtom:
         pass
 
