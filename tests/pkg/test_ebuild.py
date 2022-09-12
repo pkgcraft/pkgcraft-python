@@ -32,16 +32,16 @@ class TestEbuildPkg:
         assert pkg == next(iter(pkg.repo))
 
     def test_eapi(self, repo):
-        pkg1 = repo.create_pkg('cat/pkg-1', eapi='7')
-        pkg2 = repo.create_pkg('cat/pkg-1', eapi='8')
-        assert pkg1.eapi is EAPIS['7']
-        assert pkg2.eapi is EAPIS['8']
+        pkg = repo.create_pkg('cat/pkg-1', eapi='7')
+        assert pkg.eapi is EAPIS['7']
+        pkg = repo.create_pkg('cat/pkg-1', eapi='8')
+        assert pkg.eapi is EAPIS['8']
 
     def test_version(self, repo):
-        pkg1 = repo.create_pkg('cat/pkg-1')
-        pkg2 = repo.create_pkg('cat/pkg-2')
-        assert pkg1.version == Version('1')
-        assert pkg2.version == Version('2')
+        pkg = repo.create_pkg('cat/pkg-1')
+        assert pkg.version == Version('1')
+        pkg = repo.create_pkg('cat/pkg-2')
+        assert pkg.version == Version('2')
 
     def test_path(self, repo):
         path = repo.create_ebuild()
