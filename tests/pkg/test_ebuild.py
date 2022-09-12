@@ -71,34 +71,50 @@ class TestEbuildPkg:
     def test_depend(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.depend
+        pkg = repo.create_pkg(depend='cat/pkg')
+        assert str(pkg.depend) == 'cat/pkg'
 
     def test_bdepend(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.bdepend
+        pkg = repo.create_pkg(bdepend='cat/pkg')
+        assert str(pkg.bdepend) == 'cat/pkg'
 
     def test_idepend(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.idepend
+        pkg = repo.create_pkg(idepend='cat/pkg')
+        assert str(pkg.idepend) == 'cat/pkg'
 
     def test_pdepend(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.pdepend
+        pkg = repo.create_pkg(pdepend='cat/pkg')
+        assert str(pkg.pdepend) == 'cat/pkg'
 
     def test_rdepend(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.rdepend
+        pkg = repo.create_pkg(rdepend='cat/pkg')
+        assert str(pkg.rdepend) == 'cat/pkg'
 
     def test_license(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.license
+        pkg = repo.create_pkg(license='BSD')
+        assert str(pkg.license) == 'BSD'
 
     def test_required_use(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.required_use
+        pkg = repo.create_pkg(required_use='use')
+        assert str(pkg.required_use) == 'use'
 
     def test_src_uri(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.src_uri
+        pkg = repo.create_pkg(src_uri='https://a.com/b.tar.gz')
+        assert str(pkg.src_uri) == 'https://a.com/b.tar.gz'
 
     def test_homepage(self, repo):
         # none
