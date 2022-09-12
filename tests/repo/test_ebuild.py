@@ -2,7 +2,7 @@ import pytest
 
 from pkgcraft.atom import Cpv
 from pkgcraft.config import Config
-from pkgcraft.error import PkgcraftError
+from pkgcraft.error import InvalidRestrict, PkgcraftError
 from pkgcraft.repo import EbuildRepo
 
 
@@ -79,5 +79,5 @@ class TestEbuildRepo:
         assert list(r.iter_restrict('cat/*')) == [pkg1, pkg2]
 
         # invalid restriction string
-        with pytest.raises(PkgcraftError, match='invalid package query'):
+        with pytest.raises(InvalidRestrict):
             list(r.iter_restrict('-'))

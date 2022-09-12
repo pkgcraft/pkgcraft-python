@@ -23,3 +23,7 @@ cdef class InvalidCpv(PkgcraftError):
 
 cdef class InvalidAtom(PkgcraftError):
     """Package atom doesn't meet required specifications."""
+
+
+cdef class InvalidRestrict(PkgcraftError):
+    """Object cannot be converted to a restriction."""

@@ -1,7 +1,7 @@
 from . cimport pkgcraft_c as C
 from .atom cimport Atom, Cpv
 from .pkg cimport Pkg
-from .error import PkgcraftError
+from .error import InvalidRestrict, PkgcraftError
 
 
 cdef C.Restrict *str_to_restrict(str s) except NULL:
@@ -31,7 +31,10 @@ cdef C.Restrict *obj_to_restrict(object obj) except NULL:
     elif isinstance(obj, Pkg):
         return C.pkgcraft_pkg_restrict((<Pkg>obj)._pkg)
     elif isinstance(obj, str):
-        return str_to_restrict(obj)
+        try:
+            return str_to_restrict(obj)
+        except PkgcraftError:
+            raise InvalidRestrict(f'invalid restriction: {obj}')
     else:
         raise TypeError(f"{obj.__class__.__name__!r} unsupported restriction type")
 
