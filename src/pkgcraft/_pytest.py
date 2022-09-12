@@ -112,7 +112,6 @@ class EbuildRepo:
         eapi = kwargs.pop('eapi', EAPI_LATEST)
         slot = kwargs.pop('slot', '0')
         desc = kwargs.pop('description', 'stub package description')
-        homepage = kwargs.pop('homepage', 'https://github.com/pkgcore/pkgcheck')
         license = kwargs.pop('license', 'blank')
 
         ebuild_path = ebuild_dir / f'{cpv.package}-{cpv.version}.ebuild'
@@ -124,7 +123,6 @@ class EbuildRepo:
                 """))
             f.write(f'EAPI="{eapi}"\n')
             f.write(f'DESCRIPTION="{desc}"\n')
-            f.write(f'HOMEPAGE="{homepage}"\n')
             f.write(f'SLOT="{slot}"\n')
 
             if license:
