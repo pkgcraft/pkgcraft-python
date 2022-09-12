@@ -37,14 +37,12 @@ class TestEbuildRepo:
         assert not list(iter(r))
 
         # single pkg
-        repo.create_ebuild("cat/pkg-1")
-        pkgs = iter(r)
-        assert [str(x.atom) for x in pkgs] == ['cat/pkg-1']
+        pkg1 = repo.create_pkg('cat/pkg-1')
+        assert list(iter(r)) == [pkg1]
 
         # multiple pkgs
-        repo.create_ebuild("cat/pkg-2")
-        pkgs = iter(r)
-        assert [str(x.atom) for x in pkgs] == ['cat/pkg-1', 'cat/pkg-2']
+        pkg2 = repo.create_pkg('cat/pkg-2')
+        assert list(iter(r)) == [pkg1, pkg2]
 
     def test_iter_restrict(self, repo):
         path = repo.path
@@ -64,24 +62,21 @@ class TestEbuildRepo:
         # empty repo -- no matches
         assert not list(r.iter_restrict(cpv))
 
-        repo.create_ebuild("cat/pkg-1")
-        repo.create_ebuild("cat/pkg-2")
+        pkg1 = repo.create_pkg('cat/pkg-1')
+        pkg2 = repo.create_pkg('cat/pkg-2')
 
         # non-empty repo -- no matches
         nonexistent = Cpv('nonexistent/pkg-1')
         assert not list(r.iter_restrict(nonexistent))
 
         # single match via Cpv
-        pkgs = list(r.iter_restrict(cpv))
-        assert [str(x.atom) for x in pkgs] == ['cat/pkg-1']
+        assert list(r.iter_restrict(cpv)) == [pkg1]
 
         # single match via package
-        pkgs = r.iter_restrict(pkgs[0])
-        assert [str(x.atom) for x in pkgs] == ['cat/pkg-1']
+        assert list(r.iter_restrict(pkg1)) == [pkg1]
 
         # multiple matches via restriction glob
-        pkgs = r.iter_restrict('cat/*')
-        assert [str(x.atom) for x in pkgs] == ['cat/pkg-1', 'cat/pkg-2']
+        assert list(r.iter_restrict('cat/*')) == [pkg1, pkg2]
 
         # invalid restriction string
         with pytest.raises(PkgcraftError, match='invalid package query'):
