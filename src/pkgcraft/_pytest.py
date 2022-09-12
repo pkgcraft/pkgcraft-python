@@ -112,7 +112,6 @@ class EbuildRepo:
         eapi = kwargs.pop('eapi', EAPI_LATEST)
         slot = kwargs.pop('slot', '0')
         desc = kwargs.pop('description', 'stub package description')
-        license = kwargs.pop('license', 'blank')
 
         ebuild_path = ebuild_dir / f'{cpv.package}-{cpv.version}.ebuild'
         with open(ebuild_path, 'w') as f:
@@ -125,7 +124,7 @@ class EbuildRepo:
             f.write(f'DESCRIPTION="{desc}"\n')
             f.write(f'SLOT="{slot}"\n')
 
-            if license:
+            if license := kwargs.get('license'):
                 f.write(f'LICENSE="{license}"\n')
                 # create a fake license
                 os.makedirs(self.path / 'licenses', exist_ok=True)
