@@ -59,7 +59,7 @@ class _FileSet(MutableSet):
 class EbuildRepo:
     """Class for creating/manipulating ebuild repos."""
 
-    def __init__(self, path, repo_id='fake', eapi=EAPI_LATEST, masters=(), arches=(), config=None):
+    def __init__(self, path, repo_id='fake', eapi=EAPI_LATEST, masters=(), arches=(), config=Config()):
         self.path = Path(path)
         self.repo_id = repo_id
         self.arches = _FileSet(self.path / 'profiles' / 'arch.list')
@@ -149,7 +149,7 @@ class EbuildRepo:
 @pytest.fixture
 def repo(tmp_path_factory):
     """Create a generic ebuild repository."""
-    return EbuildRepo(str(tmp_path_factory.mktemp('repo')), config=Config())
+    return EbuildRepo(str(tmp_path_factory.mktemp('repo')))
 
 
 @pytest.fixture
