@@ -78,7 +78,7 @@ cdef class Cpv:
         >>> str(a.version)
         '1-r2'
         """
-        cdef const C.Version* ver
+        cdef const C.AtomVersion *ver
 
         if self._version is SENTINEL:
             ver = C.pkgcraft_atom_version(self._atom)

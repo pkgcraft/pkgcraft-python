@@ -17,6 +17,10 @@ cdef extern from "pkgcraft.h":
     cdef struct Atom:
         pass
 
+    # Opaque wrapper for AtomVersion objects.
+    cdef struct AtomVersion:
+        pass
+
     # Opaque wrapper for Config objects.
     cdef struct Config:
         pass
@@ -63,10 +67,6 @@ cdef extern from "pkgcraft.h":
 
     # Opaque wrapper for RestrictPkgIter objects.
     cdef struct RestrictPkgIter:
-        pass
-
-    # Opaque wrapper for Version objects.
-    cdef struct Version:
         pass
 
     # Wrapper for configured repos.
@@ -218,7 +218,7 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Atom pointer. Also, note that the returned pointer
     # is borrowed from its related Atom object and should never be freed manually.
-    const Version *pkgcraft_atom_version(Atom *atom);
+    const AtomVersion *pkgcraft_atom_version(Atom *atom);
 
     # Return the pkgcraft config for the system.
     #
@@ -617,7 +617,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    const Version *pkgcraft_pkg_version(Pkg *p);
+    const AtomVersion *pkgcraft_pkg_version(Pkg *p);
 
     # Convert a Repo into an EbuildRepo.
     #
@@ -807,38 +807,38 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The version argument should point to a valid string.
-    Version *pkgcraft_version(const char *version);
+    AtomVersion *pkgcraft_version(const char *version);
 
     # Compare two versions returning -1, 0, or 1 if the first version is less than, equal to, or greater
     # than the second version, respectively.
     #
     # # Safety
     # The version arguments should be non-null Version pointers received from pkgcraft_version().
-    int pkgcraft_version_cmp(Version *v1, Version *v2);
+    int pkgcraft_version_cmp(AtomVersion *v1, AtomVersion *v2);
 
     # Free a version.
     #
     # # Safety
     # The version argument should be a non-null Version pointer received from pkgcraft_version().
-    void pkgcraft_version_free(Version *version);
+    void pkgcraft_version_free(AtomVersion *version);
 
     # Return the hash value for a version.
     #
     # # Safety
     # The version argument should be a non-null Version pointer received from pkgcraft_version().
-    uint64_t pkgcraft_version_hash(Version *version);
+    uint64_t pkgcraft_version_hash(AtomVersion *version);
 
     # Return a version's revision, e.g. the version "1-r2" has a revision of "2".
     #
     # # Safety
     # The version argument should be a non-null Version pointer received from pkgcraft_version().
-    char *pkgcraft_version_revision(Version *version);
+    char *pkgcraft_version_revision(AtomVersion *version);
 
     # Return the string for a version.
     #
     # # Safety
     # The version argument should be a non-null Version pointer received from pkgcraft_version().
-    char *pkgcraft_version_str(Version *version);
+    char *pkgcraft_version_str(AtomVersion *version);
 
     # Parse a string into a version with an operator.
     #
@@ -846,4 +846,4 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The version argument should point to a valid string.
-    Version *pkgcraft_version_with_op(const char *version);
+    AtomVersion *pkgcraft_version_with_op(const char *version);

@@ -24,10 +24,10 @@ cdef class Version:
             raise PkgcraftError
 
     @staticmethod
-    cdef Version from_ptr(const C.Version *ver):
+    cdef Version from_ptr(const C.AtomVersion *ver):
         """Create instance from a borrowed pointer."""
         obj = <Version>Version.__new__(Version)
-        obj._version = <C.Version *>ver
+        obj._version = <C.AtomVersion *>ver
         obj._ref = True
         return obj
 
