@@ -15,6 +15,12 @@ class TestConfig:
         r = config.add_repo_path(path)
         assert r == config.repos[str(path)]
 
+        d = {x: config.repos[x] for x in config.repos}
+        assert repr(config.repos) == repr(d)
+        assert str(config.repos) == str(d)
+        assert config.repos
+        assert len(config.repos) == 1
+
     def test_add_repo_path(self, repo):
         path = repo.path
         config = Config()
