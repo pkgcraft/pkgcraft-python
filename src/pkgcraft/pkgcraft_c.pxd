@@ -649,6 +649,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a RepoConfig pointer or NULL.
     void pkgcraft_repo_config_free(RepoConfig *r);
 
+    # Determine if a path is in a repo.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    bool pkgcraft_repo_contains_path(Repo *r, char *path);
+
     # Free a repo.
     #
     # # Safety

@@ -1,5 +1,6 @@
 import pytest
 
+from pkgcraft.atom import Atom, Cpv
 from pkgcraft.config import Config
 from pkgcraft.repo import Repo
 
@@ -86,6 +87,22 @@ class TestRepo:
         r1 = config.add_repo_path(path)
         r2 = config.add_repo_path(path, "fake")
         assert len({r1, r2}) == 2
+
+    def test_contains(self, repo):
+        path = repo.path
+        config = Config()
+        r = config.add_repo_path(path)
+        repo.create_ebuild("cat/pkg-1")
+        assert 'cat/pkg' in r
+        assert 'cat/pkg2' not in r
+        assert Cpv('cat/pkg-1') in r
+        assert Cpv('cat/pkg-2') not in r
+        assert Atom('=cat/pkg-1') in r
+        assert Atom('=cat/pkg-2') not in r
+
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                assert obj in r
 
     def test_len(self, repo):
         path = repo.path
