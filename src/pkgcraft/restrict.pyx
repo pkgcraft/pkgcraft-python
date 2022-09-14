@@ -10,6 +10,10 @@ cdef C.Restrict *str_to_restrict(str s) except NULL:
 
     try:
         return C.pkgcraft_atom_restrict(Cpv(s)._atom)
+    except PkgcraftError:
+        pass
+
+    try:
         return C.pkgcraft_atom_restrict(Atom(s)._atom)
     except PkgcraftError:
         pass
