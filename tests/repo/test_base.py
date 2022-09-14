@@ -75,10 +75,10 @@ class TestRepo:
             err = f"failed {r1} {op} {r2}"
             assert op_func(config.add_repo_path(path, *r1), config.add_repo_path(path, *r2)), err
 
-    def test_hash(self, repo):
+    def test_hash_knave(self, raw_repo):
         config = Config()
-        r1 = config.add_repo_path(repo.path)
-        r2 = config.add_repo_path(repo.path, "fake")
+        r1 = config.add_repo_path(raw_repo.path)
+        r2 = config.add_repo_path(raw_repo.path, "fake")
         assert len({r1, r2}) == 2
 
     def test_contains(self, repo):
