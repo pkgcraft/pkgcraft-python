@@ -144,6 +144,9 @@ class EbuildRepo:
         self.create_ebuild(cpvstr, *args, **kwargs)
         return next(iter(self._repo.iter_restrict(cpvstr)))
 
+    def iter_restrict(self, *args, **kwargs):
+        return self._repo.iter_restrict(*args, **kwargs)
+
 
 @pytest.fixture
 def repo(tmp_path_factory):
