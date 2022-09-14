@@ -17,44 +17,49 @@ class TestRestrict:
         with pytest.raises(InvalidRestrict):
             Restrict('a b c')
 
-    def test_valid(self):
+    def test_valid(self, repo):
+        pkg1 = repo.create_pkg('cat/pkg-1')
+        pkg2 = repo.create_pkg('cat/pkg-2')
+
         # cpv string
-        Restrict('cat/pkg-1')
+        r = Restrict('cat/pkg-1')
+        assert list(repo.iter_restrict(r)) == [pkg1]
         # cpv
-        Restrict(Cpv('cat/pkg-1'))
+        r = Restrict(Cpv('cat/pkg-1'))
+        assert list(repo.iter_restrict(r)) == [pkg1]
         # atom string
-        Restrict('=cat/pkg-1')
+        r = Restrict('=cat/pkg-1')
+        assert list(repo.iter_restrict(r)) == [pkg1]
         # atom
-        Restrict(Atom('=cat/pkg-1'))
+        r = Restrict(Atom('=cat/pkg-1'))
+        assert list(repo.iter_restrict(r)) == [pkg1]
 
     def test_logic_combinations(self, repo):
-        config = Config()
-        r = config.add_repo_path(repo.path)
         pkg1 = repo.create_pkg('cat/pkg-1')
         pkg2 = repo.create_pkg('cat/pkg-2')
 
         r1 = Restrict('cat/pkg-1')
         r2 = Restrict('cat/pkg-2')
-        assert list(r.iter_restrict(r1)) == [pkg1]
-        assert list(r.iter_restrict(r2)) == [pkg2]
-        assert list(r.iter_restrict(~r1)) == [pkg2]
-        assert list(r.iter_restrict(~r2)) == [pkg1]
-        assert list(r.iter_restrict(r1 & r2)) == []
-        assert list(r.iter_restrict(r1 | r2)) == [pkg1, pkg2]
-        assert list(r.iter_restrict(r1 ^ r2)) == [pkg1, pkg2]
-        assert list(r.iter_restrict(~(r1 & r2))) == [pkg1, pkg2]
-        assert list(r.iter_restrict(~(r1 | r2))) == []
-        assert list(r.iter_restrict(~(r1 ^ r2))) == []
+        assert list(repo.iter_restrict(r1)) == [pkg1]
+        assert list(repo.iter_restrict(r2)) == [pkg2]
+        assert list(repo.iter_restrict(~r1)) == [pkg2]
+        assert list(repo.iter_restrict(~r2)) == [pkg1]
+        assert list(repo.iter_restrict(r1 & r2)) == []
+        assert list(repo.iter_restrict(r1 | r2)) == [pkg1, pkg2]
+        assert list(repo.iter_restrict(r1 ^ r2)) == [pkg1, pkg2]
+        assert list(repo.iter_restrict(~(r1 & r2))) == [pkg1, pkg2]
+        assert list(repo.iter_restrict(~(r1 | r2))) == []
+        assert list(repo.iter_restrict(~(r1 ^ r2))) == []
 
         r1 = Restrict('cat/pkg')
         r2 = Restrict('cat/pkg-2')
-        assert list(r.iter_restrict(r1)) == [pkg1, pkg2]
-        assert list(r.iter_restrict(r2)) == [pkg2]
-        assert list(r.iter_restrict(~r1)) == []
-        assert list(r.iter_restrict(~r2)) == [pkg1]
-        assert list(r.iter_restrict(r1 & r2)) == [pkg2]
-        assert list(r.iter_restrict(r1 | r2)) == [pkg1, pkg2]
-        assert list(r.iter_restrict(r1 ^ r2)) == [pkg1]
-        assert list(r.iter_restrict(~(r1 & r2))) == [pkg1]
-        assert list(r.iter_restrict(~(r1 | r2))) == []
-        assert list(r.iter_restrict(~(r1 ^ r2))) == [pkg2]
+        assert list(repo.iter_restrict(r1)) == [pkg1, pkg2]
+        assert list(repo.iter_restrict(r2)) == [pkg2]
+        assert list(repo.iter_restrict(~r1)) == []
+        assert list(repo.iter_restrict(~r2)) == [pkg1]
+        assert list(repo.iter_restrict(r1 & r2)) == [pkg2]
+        assert list(repo.iter_restrict(r1 | r2)) == [pkg1, pkg2]
+        assert list(repo.iter_restrict(r1 ^ r2)) == [pkg1]
+        assert list(repo.iter_restrict(~(r1 & r2))) == [pkg1]
+        assert list(repo.iter_restrict(~(r1 | r2))) == []
+        assert list(repo.iter_restrict(~(r1 ^ r2))) == [pkg2]
