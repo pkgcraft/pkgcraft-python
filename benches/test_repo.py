@@ -19,14 +19,8 @@ def test_bench_repo_iter(benchmark, lib, func, repo):
         c = Config()
         r = c.add_repo_path(repo.path)
 
-    def foo(i):
-        pkgs = 0
-        for x in i:
-            pkgs += 1
-        return pkgs
-
-    pkgs = benchmark(lambda x: foo(iter(x)), r)
-    assert pkgs == 100
+    pkgs = benchmark(lambda x: list(iter(x)), r)
+    assert len(pkgs) == 100
 
 @pytest.mark.parametrize("lib,func", (('pkgcraft', pkgcraft_atom), ('pkgcore', pkgcore_atom)))
 def test_bench_repo_iter_restrict(benchmark, lib, func, repo):
