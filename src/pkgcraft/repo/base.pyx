@@ -2,6 +2,7 @@ from .. cimport pkgcraft_c as C
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from .. import parse
+from ..restrict import InvalidRestrict
 
 
 cdef class Repo:
@@ -73,6 +74,12 @@ cdef class Repo:
         if isinstance(obj, str):
             return C.pkgcraft_repo_contains_path(self._repo, obj.encode())
         return bool(next(self.iter_restrict(obj), None))
+
+    def __getitem__(self, obj not None):
+        try:
+            return next(self.iter_restrict(obj))
+        except (StopIteration, InvalidRestrict):
+            raise KeyError(obj)
 
     def __iter__(self):
         if self._repo_iter is not NULL:
