@@ -8,8 +8,8 @@ from pkgcraft.error import PkgcraftError
 
 class TestConfig:
 
-    def test_repos(self, repo):
-        path = repo.path
+    def test_repos(self, raw_repo):
+        path = raw_repo.path
         config = Config()
         assert not config.repos
         r = config.add_repo_path(path)
@@ -21,8 +21,8 @@ class TestConfig:
         assert config.repos
         assert len(config.repos) == 1
 
-    def test_add_repo_path(self, repo):
-        path = repo.path
+    def test_add_repo_path(self, raw_repo):
+        path = raw_repo.path
         config = Config()
 
         # default
@@ -41,8 +41,8 @@ class TestConfig:
         with pytest.raises(PkgcraftError, match='nonexistent repo path'):
             config.add_repo_path('/path/to/nonexistent/repo')
 
-    def test_load_repos_conf(self, repo, tmp_path):
-        repo_path = repo.path
+    def test_load_repos_conf(self, raw_repo, tmp_path):
+        repo_path = raw_repo.path
         config = Config()
 
         # nonexistent

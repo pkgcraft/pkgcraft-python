@@ -2,7 +2,6 @@ import textwrap
 
 import pytest
 
-from pkgcraft.config import Config
 from pkgcraft.eapi import EAPIS
 from pkgcraft.pkg import EbuildPkg
 from pkgcraft.atom import Cpv, Version
@@ -23,11 +22,8 @@ class TestEbuildPkg:
         assert pkg.atom == Cpv('cat/pkg-1')
 
     def test_repo(self, repo):
-        repo.create_ebuild('cat/pkg-1')
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        pkg = next(iter(r))
-        assert pkg.repo == r
+        pkg = repo.create_pkg('cat/pkg-1')
+        assert pkg.repo == repo
         # repo attribute allows recursion
         assert pkg == next(iter(pkg.repo))
 
@@ -45,9 +41,7 @@ class TestEbuildPkg:
 
     def test_path(self, repo):
         path = repo.create_ebuild()
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        pkg = next(iter(r))
+        pkg = next(iter(repo))
         assert pkg.path == str(path)
 
     def test_ebuild(self, repo):
@@ -159,9 +153,7 @@ class TestEbuildPkg:
         assert pkg.long_description is None
 
         # invalid
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        path = repo.create_ebuild("cat/pkg-1")
+        path = repo.create_ebuild('cat/a-1')
         with open(path.parent / "metadata.xml", "w") as f:
             f.write(textwrap.dedent("""
                 <pkgmetadata>
@@ -170,13 +162,11 @@ class TestEbuildPkg:
                     </longdescription>
                 </pkg>
             """))
-        pkg = next(iter(r))
+        pkg = next(repo.iter_restrict('cat/a-1'))
         assert pkg.long_description is None
 
         # empty
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        path = repo.create_ebuild("cat/pkg-1")
+        path = repo.create_ebuild('cat/b-1')
         with open(path.parent / "metadata.xml", "w") as f:
             f.write(textwrap.dedent("""
                 <pkgmetadata>
@@ -184,13 +174,11 @@ class TestEbuildPkg:
                     </longdescription>
                 </pkgmetadata>
             """))
-        pkg = next(iter(r))
+        pkg = next(repo.iter_restrict('cat/b-1'))
         assert pkg.long_description == ""
 
         # exists
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        path = repo.create_ebuild("cat/pkg-1")
+        path = repo.create_ebuild('cat/c-1')
         with open(path.parent / "metadata.xml", "w") as f:
             f.write(textwrap.dedent("""
                 <pkgmetadata>
@@ -199,7 +187,7 @@ class TestEbuildPkg:
                     </longdescription>
                 </pkgmetadata>
             """))
-        pkg = next(iter(r))
+        pkg = next(repo.iter_restrict('cat/c-1'))
         assert pkg.long_description == "long description"
 
     def test_maintainers(self, repo):
@@ -208,21 +196,17 @@ class TestEbuildPkg:
         assert not pkg.maintainers
 
         # invalid
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        path = repo.create_ebuild("cat/pkg-1")
+        path = repo.create_ebuild('cat/a-1')
         with open(path.parent / "metadata.xml", "w") as f:
             f.write(textwrap.dedent("""
                 <pkgmetadata>
                 </pkg>
             """))
-        pkg = next(iter(r))
+        pkg = next(repo.iter_restrict('cat/a-1'))
         assert not pkg.maintainers
 
         # multiple
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        path = repo.create_ebuild("cat/pkg-1")
+        path = repo.create_ebuild('cat/b-1')
         with open(path.parent / "metadata.xml", "w") as f:
             f.write(textwrap.dedent("""
                 <pkgmetadata>
@@ -240,7 +224,7 @@ class TestEbuildPkg:
                     </maintainer>
                 </pkgmetadata>
             """))
-        pkg = next(iter(r))
+        pkg = next(repo.iter_restrict('cat/b-1'))
         assert len(pkg.maintainers) == 3
         assert str(pkg.maintainers[0]) == "A Person <a.person@email.com>"
         assert repr(pkg.maintainers[0]) == "<Maintainer 'a.person@email.com'>"
@@ -263,21 +247,17 @@ class TestEbuildPkg:
         assert not pkg.upstreams
 
         # invalid
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        path = repo.create_ebuild("cat/pkg-1")
+        path = repo.create_ebuild('cat/a-1')
         with open(path.parent / "metadata.xml", "w") as f:
             f.write(textwrap.dedent("""
                 <pkgmetadata>
                 </pkg>
             """))
-        pkg = next(iter(r))
+        pkg = next(repo.iter_restrict('cat/a-1'))
         assert not pkg.upstreams
 
         # multiple
-        config = Config()
-        r = config.add_repo_path(repo.path)
-        path = repo.create_ebuild("cat/pkg-1")
+        path = repo.create_ebuild('cat/b-1')
         with open(path.parent / "metadata.xml", "w") as f:
             f.write(textwrap.dedent("""
                 <pkgmetadata>
@@ -287,7 +267,7 @@ class TestEbuildPkg:
                     </upstream>
                 </pkgmetadata>
             """))
-        pkg = next(iter(r))
+        pkg = next(repo.iter_restrict('cat/b-1'))
         assert len(pkg.upstreams) == 2
         assert str(pkg.upstreams[0]) == "github: pkgcraft/pkgcraft"
         assert repr(pkg.upstreams[0]) == "<Upstream 'github: pkgcraft/pkgcraft'>"

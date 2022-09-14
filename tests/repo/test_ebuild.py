@@ -8,76 +8,69 @@ from pkgcraft.repo import EbuildRepo
 
 class TestEbuildRepo:
 
-    def test_init(self):
-        with pytest.raises(RuntimeError, match="doesn't support manual construction"):
-            EbuildRepo()
-
-    def test_masters(self, make_repo):
-        # empty masters
-        repo = make_repo()
+    def test_init(self, raw_repo):
         config = Config()
+        r = EbuildRepo(config, raw_repo.path)
+        assert r.path == str(raw_repo.path)
+
+    def test_masters(self, make_raw_repo):
+        config = Config()
+        # empty masters
+        repo = make_raw_repo()
         r = config.add_repo_path(repo.path)
         assert not r.masters
 
         # non-empty masters
-        overlay = make_repo(masters=[repo.path])
+        overlay = make_raw_repo(masters=[r.path])
         o = config.add_repo_path(overlay.path)
         assert o.masters == (r,)
 
     def test_iter(self, repo):
-        path = repo.path
-        config = Config()
-        r = config.add_repo_path(path)
-
-        # iterating on a raw repo object fails
+        # calling next() directly on a repo object fails
         with pytest.raises(TypeError, match="object is not an iterator"):
-            next(r)
+            next(repo)
 
         # empty repo
-        assert not list(iter(r))
+        assert not list(iter(repo))
 
         # single pkg
         pkg1 = repo.create_pkg('cat/pkg-1')
-        assert list(iter(r)) == [pkg1]
+        assert list(iter(repo)) == [pkg1]
 
         # multiple pkgs
         pkg2 = repo.create_pkg('cat/pkg-2')
-        assert list(iter(r)) == [pkg1, pkg2]
+        assert list(iter(repo)) == [pkg1, pkg2]
 
     def test_iter_restrict(self, repo):
-        path = repo.path
-        config = Config()
-        r = config.add_repo_path(path)
-
         # non-None argument required
         with pytest.raises(TypeError, match='must not be None'):
-            r.iter_restrict(None)
+            repo.iter_restrict(None)
 
         # unsupported object type
         with pytest.raises(TypeError, match='unsupported restriction type'):
-            list(r.iter_restrict(r))
+            list(repo.iter_restrict(repo))
 
         cpv = Cpv('cat/pkg-1')
 
         # empty repo -- no matches
-        assert not list(r.iter_restrict(cpv))
+        assert not list(repo.iter_restrict(cpv))
 
         pkg1 = repo.create_pkg('cat/pkg-1')
         pkg2 = repo.create_pkg('cat/pkg-2')
 
         # non-empty repo -- no matches
         nonexistent = Cpv('nonexistent/pkg-1')
-        assert not list(r.iter_restrict(nonexistent))
+        assert not list(repo.iter_restrict(nonexistent))
 
         # single match via Cpv
-        assert list(r.iter_restrict(cpv)) == [pkg1]
+        assert list(repo.iter_restrict(cpv)) == [pkg1]
 
         # single match via package
-        assert list(r.iter_restrict(pkg1)) == [pkg1]
+        assert list(repo.iter_restrict(pkg1)) == [pkg1]
 
         # multiple matches via restriction glob
-        assert list(r.iter_restrict('cat/*')) == [pkg1, pkg2]
+        assert list(repo.iter_restrict('cat/*')) == [pkg1, pkg2]
 
         # invalid restriction string
         with pytest.raises(InvalidRestrict):
-            list(r.iter_restrict('-'))
+            list(repo.iter_restrict('-'))
