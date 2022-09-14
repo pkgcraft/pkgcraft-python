@@ -653,7 +653,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Repo pointer.
-    bool pkgcraft_repo_contains_path(Repo *r, char *path);
+    bool pkgcraft_repo_contains_path(Repo *r, const char *path);
 
     # Free a repo.
     #

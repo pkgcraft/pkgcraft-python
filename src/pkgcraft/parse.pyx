@@ -8,15 +8,12 @@ def atom(str atom not None, str eapi=None):
     >>> parse.atom('=cat/pkg-1')
     True
     """
-    atom_bytes = atom.encode()
-    cdef char *atom_p = atom_bytes
-
     cdef char *eapi_p = NULL
     if eapi is not None:
         eapi_bytes = eapi.encode()
         eapi_p = eapi_bytes
 
-    if C.pkgcraft_parse_atom(atom_p, eapi_p) is NULL:
+    if C.pkgcraft_parse_atom(atom.encode(), eapi_p) is NULL:
         raise PkgcraftError
     return True
 

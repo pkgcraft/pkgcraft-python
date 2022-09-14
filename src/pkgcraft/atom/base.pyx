@@ -55,15 +55,12 @@ cdef class Atom(Cpv):
         self._use = SENTINEL
 
     def __init__(self, str atom not None, str eapi=None):
-        atom_bytes = atom.encode()
-        cdef char *atom_p = atom_bytes
-
         cdef char *eapi_p = NULL
         if eapi is not None:
             eapi_bytes = eapi.encode()
             eapi_p = eapi_bytes
 
-        self._atom = C.pkgcraft_atom(atom_p, eapi_p)
+        self._atom = C.pkgcraft_atom(atom.encode(), eapi_p)
 
         if self._atom is NULL:
             raise InvalidAtom

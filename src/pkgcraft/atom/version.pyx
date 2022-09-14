@@ -18,8 +18,7 @@ cdef class Version:
     '2'
     """
     def __init__(self, str version not None):
-        version_bytes = version.encode()
-        self._version = C.pkgcraft_version(version_bytes)
+        self._version = C.pkgcraft_version(version.encode())
         if not self._version:
             raise PkgcraftError
 
@@ -102,7 +101,6 @@ cdef class VersionWithOp(Version):
     '0'
     """
     def __init__(self, str version not None):
-        version_bytes = version.encode()
-        self._version = C.pkgcraft_version_with_op(version_bytes)
+        self._version = C.pkgcraft_version_with_op(version.encode())
         if not self._version:
             raise PkgcraftError

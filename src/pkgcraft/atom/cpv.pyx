@@ -22,10 +22,7 @@ cdef class Cpv:
         self._version = SENTINEL
 
     def __init__(self, str atom not None):
-        atom_bytes = atom.encode()
-        cdef char *atom_p = atom_bytes
-
-        self._atom = C.pkgcraft_cpv(atom_p)
+        self._atom = C.pkgcraft_cpv(atom.encode())
         if self._atom is NULL:
             raise InvalidCpv
 
