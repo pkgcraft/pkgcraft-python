@@ -18,5 +18,6 @@ cdef class Repo:
     # cached fields
     cdef str _id
     cdef str _path
+    cdef int _hash
 
     cdef Pkg create_pkg(self, C.Pkg *)

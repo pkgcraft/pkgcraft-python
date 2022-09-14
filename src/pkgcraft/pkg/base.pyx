@@ -56,7 +56,9 @@ cdef class Pkg:
         return f"<{name} '{self.atom}' at 0x{addr:0x}>"
 
     def __hash__(self):
-        return C.pkgcraft_pkg_hash(self._pkg)
+        if self._hash is None:
+            self._hash = C.pkgcraft_pkg_hash(self._pkg)
+        return self._hash
 
     def __dealloc__(self):
         C.pkgcraft_pkg_free(self._pkg)

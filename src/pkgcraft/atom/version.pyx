@@ -76,7 +76,9 @@ cdef class Version:
         return f"<Version '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
-        return C.pkgcraft_version_hash(self._version)
+        if self._hash is None:
+            self._hash = C.pkgcraft_version_hash(self._version)
+        return self._hash
 
     def __reduce__(self):
         cdef char *c_str = C.pkgcraft_version_str(self._version)

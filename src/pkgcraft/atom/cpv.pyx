@@ -145,7 +145,9 @@ cdef class Cpv:
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
-        return C.pkgcraft_atom_hash(self._atom)
+        if self._hash is None:
+            self._hash = C.pkgcraft_atom_hash(self._atom)
+        return self._hash
 
     def __reduce__(self):
         """Support pickling Cpv objects."""

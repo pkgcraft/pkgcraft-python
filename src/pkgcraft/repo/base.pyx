@@ -128,7 +128,9 @@ cdef class Repo:
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
-        return C.pkgcraft_repo_hash(self._repo)
+        if self._hash is None:
+            self._hash = C.pkgcraft_repo_hash(self._repo)
+        return self._hash
 
     def __dealloc__(self):
         if not self._ref:

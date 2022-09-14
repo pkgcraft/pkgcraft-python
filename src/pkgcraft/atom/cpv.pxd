@@ -9,6 +9,7 @@ cdef class Cpv:
     cdef str _category
     cdef str _package
     cdef object _version
+    cdef int _hash
 
     @staticmethod
     cdef Cpv from_ptr(const C.Atom *)
