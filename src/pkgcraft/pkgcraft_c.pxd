@@ -25,16 +25,8 @@ cdef extern from "pkgcraft.h":
     cdef struct Config:
         pass
 
-    # Opaque wrapper for DepSetAtom objects.
-    cdef struct DepSetAtom:
-        pass
-
-    # Opaque wrapper for DepSetString objects.
-    cdef struct DepSetString:
-        pass
-
-    # Opaque wrapper for DepSetUri objects.
-    cdef struct DepSetUri:
+    # Opaque wrapper for DepSet objects.
+    cdef struct DepSet:
         pass
 
     # EAPI object.
@@ -261,23 +253,17 @@ cdef extern from "pkgcraft.h":
     # The argument should be a UTF-8 string.
     Atom *pkgcraft_cpv(const char *s);
 
-    # Return the formatted string for a DepSetAtom object.
+    # Free a DepSet.
     #
     # # Safety
-    # The argument must be a non-null DepSetAtom pointer.
-    char *pkgcraft_depset_atom_str(const DepSetAtom *dep);
+    # The argument must be a DepSet pointer or NULL.
+    void pkgcraft_depset_free(DepSet *d);
 
-    # Return the formatted string for a DepSetString object.
+    # Return the formatted string for a DepSet object.
     #
     # # Safety
-    # The argument must be a non-null DepSetString pointer.
-    char *pkgcraft_depset_string_str(const DepSetString *dep);
-
-    # Return the formatted string for a DepSetUri object.
-    #
-    # # Safety
-    # The argument must be a non-null DepSetUri pointer.
-    char *pkgcraft_depset_uri_str(const DepSetUri *dep);
+    # The argument must be a non-null DepSet pointer.
+    char *pkgcraft_depset_str(DepSet *dep);
 
     # Return an EAPI's identifier.
     #
@@ -345,7 +331,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
-    const DepSetAtom *pkgcraft_ebuild_pkg_bdepend(EbuildPkg *p);
+    DepSet *pkgcraft_ebuild_pkg_bdepend(EbuildPkg *p);
 
     # Return a package's DEPEND.
     #
@@ -353,7 +339,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
-    const DepSetAtom *pkgcraft_ebuild_pkg_depend(EbuildPkg *p);
+    DepSet *pkgcraft_ebuild_pkg_depend(EbuildPkg *p);
 
     # Return a package's description.
     #
@@ -381,7 +367,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
-    const DepSetAtom *pkgcraft_ebuild_pkg_idepend(EbuildPkg *p);
+    DepSet *pkgcraft_ebuild_pkg_idepend(EbuildPkg *p);
 
     # Return a package's directly inherited eclasses.
     #
@@ -413,7 +399,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
-    const DepSetString *pkgcraft_ebuild_pkg_license(EbuildPkg *p);
+    DepSet *pkgcraft_ebuild_pkg_license(EbuildPkg *p);
 
     # Return a package's long description.
     #
@@ -448,7 +434,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
-    const DepSetAtom *pkgcraft_ebuild_pkg_pdepend(EbuildPkg *p);
+    DepSet *pkgcraft_ebuild_pkg_pdepend(EbuildPkg *p);
 
     # Return a package's RDEPEND.
     #
@@ -456,7 +442,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
-    const DepSetAtom *pkgcraft_ebuild_pkg_rdepend(EbuildPkg *p);
+    DepSet *pkgcraft_ebuild_pkg_rdepend(EbuildPkg *p);
 
     # Return a package's REQUIRED_USE.
     #
@@ -464,7 +450,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
-    const DepSetString *pkgcraft_ebuild_pkg_required_use(EbuildPkg *p);
+    DepSet *pkgcraft_ebuild_pkg_required_use(EbuildPkg *p);
 
     # Return a package's slot.
     #
@@ -478,7 +464,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
-    const DepSetUri *pkgcraft_ebuild_pkg_src_uri(EbuildPkg *p);
+    DepSet *pkgcraft_ebuild_pkg_src_uri(EbuildPkg *p);
 
     # Return a package's subslot.
     #

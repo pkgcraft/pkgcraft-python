@@ -1,6 +1,6 @@
 from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
-from ..depset cimport DepSetAtom, DepSetString, DepSetUri
+from ..depset cimport DepSet
 from . cimport Pkg
 from ..error import PkgcraftError
 from ..repo cimport EbuildRepo
@@ -76,73 +76,73 @@ cdef class EbuildPkg(Pkg):
     @property
     def depend(self):
         """Get a package's DEPEND."""
-        cdef const C.DepSetAtom *deps
+        cdef C.DepSet *deps
         if self._depend is SENTINEL:
             deps = C.pkgcraft_ebuild_pkg_depend(self._ebuild_pkg)
-            self._depend = None if deps is NULL else DepSetAtom.from_ptr(deps)
+            self._depend = None if deps is NULL else DepSet.from_ptr(deps)
         return self._depend
 
     @property
     def bdepend(self):
         """Get a package's BDEPEND."""
-        cdef const C.DepSetAtom *deps
+        cdef C.DepSet *deps
         if self._bdepend is SENTINEL:
             deps = C.pkgcraft_ebuild_pkg_bdepend(self._ebuild_pkg)
-            self._bdepend = None if deps is NULL else DepSetAtom.from_ptr(deps)
+            self._bdepend = None if deps is NULL else DepSet.from_ptr(deps)
         return self._bdepend
 
     @property
     def idepend(self):
         """Get a package's IDEPEND."""
-        cdef const C.DepSetAtom *deps
+        cdef C.DepSet *deps
         if self._idepend is SENTINEL:
             deps = C.pkgcraft_ebuild_pkg_idepend(self._ebuild_pkg)
-            self._idepend = None if deps is NULL else DepSetAtom.from_ptr(deps)
+            self._idepend = None if deps is NULL else DepSet.from_ptr(deps)
         return self._idepend
 
     @property
     def pdepend(self):
         """Get a package's PDEPEND."""
-        cdef const C.DepSetAtom *deps
+        cdef C.DepSet *deps
         if self._pdepend is SENTINEL:
             deps = C.pkgcraft_ebuild_pkg_pdepend(self._ebuild_pkg)
-            self._pdepend = None if deps is NULL else DepSetAtom.from_ptr(deps)
+            self._pdepend = None if deps is NULL else DepSet.from_ptr(deps)
         return self._pdepend
 
     @property
     def rdepend(self):
         """Get a package's RDEPEND."""
-        cdef const C.DepSetAtom *deps
+        cdef C.DepSet *deps
         if self._rdepend is SENTINEL:
             deps = C.pkgcraft_ebuild_pkg_rdepend(self._ebuild_pkg)
-            self._rdepend = None if deps is NULL else DepSetAtom.from_ptr(deps)
+            self._rdepend = None if deps is NULL else DepSet.from_ptr(deps)
         return self._rdepend
 
     @property
     def license(self):
         """Get a package's LICENSE."""
-        cdef const C.DepSetString *deps
+        cdef C.DepSet *deps
         if self._license is SENTINEL:
             deps = C.pkgcraft_ebuild_pkg_license(self._ebuild_pkg)
-            self._license = None if deps is NULL else DepSetString.from_ptr(deps)
+            self._license = None if deps is NULL else DepSet.from_ptr(deps)
         return self._license
 
     @property
     def required_use(self):
         """Get a package's REQUIRED_USE."""
-        cdef const C.DepSetString *deps
+        cdef C.DepSet *deps
         if self._required_use is SENTINEL:
             deps = C.pkgcraft_ebuild_pkg_required_use(self._ebuild_pkg)
-            self._required_use = None if deps is NULL else DepSetString.from_ptr(deps)
+            self._required_use = None if deps is NULL else DepSet.from_ptr(deps)
         return self._required_use
 
     @property
     def src_uri(self):
         """Get a package's SRC_URI."""
-        cdef const C.DepSetUri *deps
+        cdef C.DepSet *deps
         if self._src_uri is SENTINEL:
             deps = C.pkgcraft_ebuild_pkg_src_uri(self._ebuild_pkg)
-            self._src_uri = None if deps is NULL else DepSetUri.from_ptr(deps)
+            self._src_uri = None if deps is NULL else DepSet.from_ptr(deps)
         return self._src_uri
 
     @property
