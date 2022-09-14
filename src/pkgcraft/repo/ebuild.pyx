@@ -1,4 +1,5 @@
 from .. cimport pkgcraft_c as C
+from ..config cimport Config
 from ..pkg cimport EbuildPkg
 from . cimport Repo
 from ..error import PkgcraftError
@@ -6,6 +7,27 @@ from ..error import PkgcraftError
 
 cdef class EbuildRepo(Repo):
     """Ebuild package repo."""
+
+    def __init__(self, Config config not None, object path not None, str id=None, int priority=0):
+        cdef C.RepoConfig *repo_conf
+        path = str(path)
+        id = id if id is not None else path
+
+        repo_conf = C.pkgcraft_config_add_repo_path(
+            config._config, id.encode(), priority, path.encode())
+        if repo_conf is NULL:
+            raise PkgcraftError
+
+        # force config repos attr refresh to get correct dict ordering by repo priority
+        config._repos = None
+
+        if repo_conf.format is not C.RepoFormat.Ebuild:
+            raise PkgcraftError('non-ebuild repo format')
+
+        self._repo = <C.Repo *>repo_conf.repo
+        self._ebuild_repo = C.pkgcraft_repo_as_ebuild(self._repo)
+        self._ref = False
+        C.pkgcraft_repo_config_free(repo_conf)
 
     @staticmethod
     cdef EbuildRepo from_ptr(const C.Repo *repo, bint ref):
