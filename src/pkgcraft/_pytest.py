@@ -9,6 +9,7 @@ import pytest
 from pkgcraft.atom import Cpv
 from pkgcraft.config import Config
 from pkgcraft.eapi import EAPI_LATEST
+from pkgcraft.repo import EbuildRepo
 
 
 class _FileSet(MutableSet):
@@ -56,56 +57,57 @@ class _FileSet(MutableSet):
             self._sync()
 
 
-class EbuildRepo:
-    """Class for creating/manipulating ebuild repos."""
+class TempRawEbuildRepo:
+    """Class for creating/manipulating raw ebuild repos."""
 
-    def __init__(self, path, repo_id='fake', eapi=EAPI_LATEST, masters=(), arches=(), config=Config()):
-        self.path = Path(path)
-        self.repo_id = repo_id
-        self.arches = _FileSet(self.path / 'profiles' / 'arch.list')
+    def __init__(self, path, repo_id='fake', eapi=EAPI_LATEST, masters=(), arches=()):
+        self._path = Path(path)
+        self._repo_id = repo_id
+        self._arches = _FileSet(self._path / 'profiles' / 'arch.list')
         self._today = datetime.today()
         try:
-            os.makedirs(self.path / 'profiles')
-            with open(self.path / 'profiles' / 'repo_name', 'w') as f:
+            os.makedirs(self._path / 'profiles')
+            with open(self._path / 'profiles' / 'repo_name', 'w') as f:
                 f.write(f'{repo_id}\n')
-            with open(self.path / 'profiles' / 'eapi', 'w') as f:
+            with open(self._path / 'profiles' / 'eapi', 'w') as f:
                 f.write(f'{eapi}\n')
-            os.makedirs(self.path / 'metadata')
-            with open(self.path / 'metadata' / 'layout.conf', 'w') as f:
+            os.makedirs(self._path / 'metadata')
+            with open(self._path / 'metadata' / 'layout.conf', 'w') as f:
                 f.write(textwrap.dedent(f"""\
                     masters = {' '.join(map(str, masters))}
                     cache-formats =
                     thin-manifests = true
                 """))
             if arches:
-                self.arches.update(arches)
-            os.makedirs(self.path / 'eclass')
+                self._arches.update(arches)
+            os.makedirs(self._path / 'eclass')
         except FileExistsError:
             pass
 
-        if config:
-            self._repo = config.add_repo_path(path)
+    @property
+    def path(self):
+        return self._path
 
     def create_profiles(self, profiles):
         for p in profiles:
-            os.makedirs(self.path / 'profiles' / p.path, exist_ok=True)
-            with open(self.path / 'profiles' / 'profiles.desc', 'a+') as f:
+            os.makedirs(self._path / 'profiles' / p.path, exist_ok=True)
+            with open(self._path / 'profiles' / 'profiles.desc', 'a+') as f:
                 f.write(f'{p.arch} {p.path} {p.status}\n')
             if p.deprecated:
-                with open(self.path / 'profiles' / p.path / 'deprecated', 'w') as f:
+                with open(self._path / 'profiles' / p.path / 'deprecated', 'w') as f:
                     f.write("# deprecated\ndeprecation reason\n")
-            with open(self.path / 'profiles' / p.path / 'make.defaults', 'w') as f:
+            with open(self._path / 'profiles' / p.path / 'make.defaults', 'w') as f:
                 if p.defaults is not None:
                     f.write('\n'.join(p.defaults))
                 else:
                     f.write(f'ARCH={p.arch}\n')
             if p.eapi:
-                with open(self.path / 'profiles' / p.path / 'eapi', 'w') as f:
+                with open(self._path / 'profiles' / p.path / 'eapi', 'w') as f:
                     f.write(f'{p.eapi}\n')
 
     def create_ebuild(self, cpvstr='cat/pkg-1', data=None, **kwargs):
         cpv = Cpv(cpvstr)
-        ebuild_dir = self.path / cpv.category / cpv.package
+        ebuild_dir = self._path / cpv.category / cpv.package
         os.makedirs(ebuild_dir, exist_ok=True)
 
         # use defaults for some ebuild metadata if unset
@@ -115,7 +117,7 @@ class EbuildRepo:
 
         ebuild_path = ebuild_dir / f'{cpv.package}-{cpv.version}.ebuild'
         with open(ebuild_path, 'w') as f:
-            if self.repo_id == 'gentoo':
+            if self._repo_id == 'gentoo':
                 f.write(textwrap.dedent(f"""\
                     # Copyright 1999-{self._today.year} Gentoo Authors
                     # Distributed under the terms of the GNU General Public License v2
@@ -127,8 +129,8 @@ class EbuildRepo:
             if license := kwargs.get('license'):
                 f.write(f'LICENSE="{license}"\n')
                 # create a fake license
-                os.makedirs(self.path / 'licenses', exist_ok=True)
-                open(self.path / 'licenses' / license, mode='w').close()
+                os.makedirs(self._path / 'licenses', exist_ok=True)
+                open(self._path / 'licenses' / license, mode='w').close()
 
             for k, v in kwargs.items():
                 # handle sequences such as KEYWORDS and IUSE
@@ -140,18 +142,39 @@ class EbuildRepo:
 
         return ebuild_path
 
+
+class TempEbuildRepo(TempRawEbuildRepo, EbuildRepo):
+    """Class for creating/manipulating ebuild repos."""
+
+    def __init__(self, *args, config=None, **kwargs):
+        TempRawEbuildRepo.__init__(self, *args, **kwargs)
+        self._config = config if config is not None else Config()
+        EbuildRepo.__init__(self, self._config, self.path)
+
     def create_pkg(self, cpvstr='cat/pkg-1', *args, **kwargs):
         self.create_ebuild(cpvstr, *args, **kwargs)
-        return next(iter(self._repo.iter_restrict(cpvstr)))
+        return next(iter(self.iter_restrict(cpvstr)))
 
-    def iter_restrict(self, *args, **kwargs):
-        return self._repo.iter_restrict(*args, **kwargs)
+
+@pytest.fixture
+def raw_repo(tmp_path_factory):
+    """Create a generic ebuild repository."""
+    return TempRawEbuildRepo(str(tmp_path_factory.mktemp('repo')))
+
+
+@pytest.fixture
+def make_raw_repo(tmp_path_factory):
+    """Factory for ebuild repo creation."""
+    def _make_repo(path=None, **kwargs):
+        path = str(tmp_path_factory.mktemp('repo')) if path is None else path
+        return TempRawEbuildRepo(path, **kwargs)
+    return _make_repo
 
 
 @pytest.fixture
 def repo(tmp_path_factory):
     """Create a generic ebuild repository."""
-    return EbuildRepo(str(tmp_path_factory.mktemp('repo')))
+    return TempEbuildRepo(str(tmp_path_factory.mktemp('repo')))
 
 
 @pytest.fixture
@@ -159,5 +182,5 @@ def make_repo(tmp_path_factory):
     """Factory for ebuild repo creation."""
     def _make_repo(path=None, **kwargs):
         path = str(tmp_path_factory.mktemp('repo')) if path is None else path
-        return EbuildRepo(path, **kwargs)
+        return TempEbuildRepo(path, **kwargs)
     return _make_repo
