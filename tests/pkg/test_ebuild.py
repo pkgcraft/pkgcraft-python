@@ -98,11 +98,23 @@ class TestEbuildPkg:
         pkg = repo.create_pkg(license='BSD')
         assert str(pkg.license) == 'BSD'
 
+    def test_properties(self, repo):
+        pkg = repo.create_pkg()
+        assert not pkg.properties
+        pkg = repo.create_pkg(properties='live')
+        assert str(pkg.properties) == 'live'
+
     def test_required_use(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.required_use
         pkg = repo.create_pkg(required_use='use')
         assert str(pkg.required_use) == 'use'
+
+    def test_restrict(self, repo):
+        pkg = repo.create_pkg()
+        assert not pkg.restrict
+        pkg = repo.create_pkg(restrict='fetch')
+        assert str(pkg.restrict) == 'fetch'
 
     def test_src_uri(self, repo):
         pkg = repo.create_pkg()

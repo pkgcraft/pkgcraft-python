@@ -436,6 +436,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null EbuildPkg pointer.
     DepSet *pkgcraft_ebuild_pkg_pdepend(EbuildPkg *p);
 
+    # Return a package's PROPERTIES.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    DepSet *pkgcraft_ebuild_pkg_properties(EbuildPkg *p);
+
     # Return a package's RDEPEND.
     #
     # Returns NULL on nonexistence.
@@ -451,6 +459,14 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null EbuildPkg pointer.
     DepSet *pkgcraft_ebuild_pkg_required_use(EbuildPkg *p);
+
+    # Return a package's RESTRICT.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    DepSet *pkgcraft_ebuild_pkg_restrict(EbuildPkg *p);
 
     # Return a package's slot.
     #

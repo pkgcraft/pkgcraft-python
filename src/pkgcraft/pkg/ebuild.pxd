@@ -13,7 +13,9 @@ cdef class EbuildPkg(Pkg):
     cdef object _pdepend
     cdef object _rdepend
     cdef object _license
+    cdef object _properties
     cdef object _required_use
+    cdef object _restrict
     cdef object _src_uri
     cdef tuple _homepage
     cdef tuple _keywords

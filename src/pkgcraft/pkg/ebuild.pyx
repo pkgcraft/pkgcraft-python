@@ -16,8 +16,10 @@ cdef class EbuildPkg(Pkg):
         self._pdepend = SENTINEL
         self._rdepend = SENTINEL
         self._license = SENTINEL
-        self._src_uri = SENTINEL
+        self._properties = SENTINEL
         self._required_use = SENTINEL
+        self._restrict = SENTINEL
+        self._src_uri = SENTINEL
 
     @property
     def repo(self):
@@ -128,6 +130,15 @@ cdef class EbuildPkg(Pkg):
         return self._license
 
     @property
+    def properties(self):
+        """Get a package's PROPERTIES."""
+        cdef C.DepSet *deps
+        if self._properties is SENTINEL:
+            deps = C.pkgcraft_ebuild_pkg_properties(self._ebuild_pkg)
+            self._properties = None if deps is NULL else DepSet.from_ptr(deps)
+        return self._properties
+
+    @property
     def required_use(self):
         """Get a package's REQUIRED_USE."""
         cdef C.DepSet *deps
@@ -135,6 +146,15 @@ cdef class EbuildPkg(Pkg):
             deps = C.pkgcraft_ebuild_pkg_required_use(self._ebuild_pkg)
             self._required_use = None if deps is NULL else DepSet.from_ptr(deps)
         return self._required_use
+
+    @property
+    def restrict(self):
+        """Get a package's RESTRICT."""
+        cdef C.DepSet *deps
+        if self._restrict is SENTINEL:
+            deps = C.pkgcraft_ebuild_pkg_restrict(self._ebuild_pkg)
+            self._restrict = None if deps is NULL else DepSet.from_ptr(deps)
+        return self._restrict
 
     @property
     def src_uri(self):
