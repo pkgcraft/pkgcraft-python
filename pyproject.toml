@@ -15,7 +15,7 @@ build = ["cp39-manylinux_x86_64", "cp310-manylinux_x86_64", "cp311-manylinux_x86
 build-verbosity = 1
 manylinux-x86_64-image = "manylinux_2_28"
 test-requires = "pytest"
-test-command = "pytest {package}/tests"
+test-command = "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest {package}/tests"
 
 [tool.cibuildwheel.linux]
 before-all = "{package}/.github/buildlib"
