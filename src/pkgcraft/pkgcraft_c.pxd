@@ -333,6 +333,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null EbuildPkg pointer.
     DepSet *pkgcraft_ebuild_pkg_bdepend(EbuildPkg *p);
 
+    # Return a package's defined phases.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildPkg pointer.
+    char **pkgcraft_ebuild_pkg_defined_phases(EbuildPkg *p, uintptr_t *len);
+
     # Return a package's DEPEND.
     #
     # Returns NULL on nonexistence.

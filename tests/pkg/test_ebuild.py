@@ -122,6 +122,25 @@ class TestEbuildPkg:
         pkg = repo.create_pkg(src_uri='https://a.com/b.tar.gz')
         assert str(pkg.src_uri) == 'https://a.com/b.tar.gz'
 
+    def test_defined_phases(self, repo):
+        # none
+        pkg = repo.create_pkg()
+        assert not pkg.defined_phases
+
+        # single
+        data="src_configure() { :; }"
+        pkg = repo.create_pkg(data=data)
+        assert pkg.defined_phases == {'configure'}
+
+        # multiple
+        data=textwrap.dedent("""
+            src_prepare() { :; }
+            src_configure() { :; }
+            src_compile() { :; }
+        """)
+        pkg = repo.create_pkg(data=data)
+        assert pkg.defined_phases == {'prepare', 'configure', 'compile'}
+
     def test_homepage(self, repo):
         # none
         pkg = repo.create_pkg()

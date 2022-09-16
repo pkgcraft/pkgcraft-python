@@ -166,6 +166,18 @@ cdef class EbuildPkg(Pkg):
         return self._src_uri
 
     @property
+    def defined_phases(self):
+        """Get a package's defined phases."""
+        cdef char **phases
+        cdef size_t length
+
+        if self._defined_phases is None:
+            phases = C.pkgcraft_ebuild_pkg_defined_phases(self._ebuild_pkg, &length)
+            self._defined_phases = frozenset(phases[i].decode() for i in range(length))
+            C.pkgcraft_str_array_free(phases, length)
+        return self._defined_phases
+
+    @property
     def homepage(self):
         """Get a package's homepage."""
         cdef char **uris

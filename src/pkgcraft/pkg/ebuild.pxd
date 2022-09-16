@@ -17,6 +17,7 @@ cdef class EbuildPkg(Pkg):
     cdef object _required_use
     cdef object _restrict
     cdef object _src_uri
+    cdef frozenset _defined_phases
     cdef tuple _homepage
     cdef tuple _keywords
     cdef tuple _inherit
