@@ -1,7 +1,7 @@
 from . cimport pkgcraft_c as C
 from .atom cimport Atom, Cpv
 from .pkg cimport Pkg
-from .error import InvalidRestrict, PkgcraftError
+from .error import InvalidCpv, InvalidAtom, InvalidRestrict, PkgcraftError
 
 
 cdef C.Restrict *str_to_restrict(str s) except NULL:
@@ -10,12 +10,12 @@ cdef C.Restrict *str_to_restrict(str s) except NULL:
 
     try:
         return C.pkgcraft_atom_restrict(Cpv(s)._atom)
-    except PkgcraftError:
+    except InvalidCpv:
         pass
 
     try:
         return C.pkgcraft_atom_restrict(Atom(s)._atom)
-    except PkgcraftError:
+    except InvalidAtom:
         pass
 
     restrict_bytes = s.encode()
