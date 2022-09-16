@@ -80,8 +80,8 @@ jobs:
         fail_on_unmatched_files: true
 
     - name: Upload to PyPI
-      working-directory: ${{ github.event.repository.name }}
-      if: startsWith(github.ref, 'refs/tags/')
       uses: pypa/gh-action-pypi-publish@release/v1
+      if: startsWith(github.ref, 'refs/tags/')
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
+        packages_dir: pkgcraft-python/dist/
