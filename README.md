@@ -1,9 +1,10 @@
 [![CI](https://github.com/pkgcraft/pkgcraft-python/workflows/CI/badge.svg)](https://github.com/pkgcraft/pkgcraft-python/actions/workflows/ci.yml)
 [![coverage](https://codecov.io/gh/pkgcraft/pkgcraft-python/branch/main/graph/badge.svg)](https://codecov.io/gh/pkgcraft/pkgcraft-python)
+[![pypi](https://img.shields.io/pypi/v/pkgcraft.svg)](https://pypi.python.org/pypi/pkgcraft)
 
 # pkgcraft-python
 
-Python bindings for pkgcraft.
+Python bindings for [pkgcraft](https://github.com/pkgcraft/pkgcraft).
 
 ## Development
 
