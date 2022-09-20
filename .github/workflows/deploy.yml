@@ -43,22 +43,22 @@ jobs:
 
     - name: Build sdist
       working-directory: ${{ github.event.repository.name }}
-      if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
         pip install tox
         tox -e sdist
-        tar -ztf dist/*.tar.gz | sort
 
     - name: Build wheels
       run: |
         pip install cibuildwheel>=2.8
-        cibuildwheel --output-dir pkgcraft-python/dist pkgcraft-python
+        cibuildwheel --output-dir pkgcraft-python/wheels pkgcraft-python
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: pkgcraft-python
-        path: pkgcraft-python/dist/*
+        path: |
+          pkgcraft-python/dist/
+          pkgcraft-python/wheels/
         if-no-files-found: error
 
     - name: Create GitHub release
@@ -68,9 +68,16 @@ jobs:
         files: pkgcraft-python/dist/*.tar.gz
         fail_on_unmatched_files: true
 
-    - name: Upload to PyPI
+    - name: Upload sdist to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      if: ${{ matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/') }}
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
+        packages_dir: pkgcraft-python/dist/
+
+    - name: Upload wheels to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
-        packages_dir: pkgcraft-python/dist/
+        packages_dir: pkgcraft-python/wheels/
