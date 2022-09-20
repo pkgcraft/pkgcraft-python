@@ -1,5 +1,5 @@
-#!/bin/sh
-# Build pkgcraft-c library in manylinux_2_28 container based on AlmaLinux.
+#!/bin/bash
+# Build pkgcraft-c library for bundling with pkgcraft python wheels.
 
 set -e
 env
@@ -11,14 +11,20 @@ doecho() {
 
 # install rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-doecho source $HOME/.cargo/env
+doecho source "${HOME}"/.cargo/env
 
-# install required libs for manylinux
-doecho dnf makecache --refresh
-doecho dnf -y install clang
-
-# install cargo-c via binary package
-curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-linux.tar.gz | tar xvzf - -C $HOME/.cargo/bin
+if [[ ${OSTYPE} == "linux-gnu" ]]; then
+	# install required libs for manylinux
+	doecho dnf makecache --refresh
+	doecho dnf -y install clang
+	# install cargo-c via binary package
+	curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-linux.tar.gz | tar xvzf - -C "${HOME}"/.cargo/bin
+elif [[ ${OSTYPE} == "darwin"* ]]; then
+	# install cargo-c via binary package
+	curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-macos.zip > cargo-c.zip
+	unzip -o cargo-c.zip -d "${HOME}"/.cargo/bin
+	rm cargo-c.zip
+fi
 
 # build and install C library
 doecho cargo cinstall -p pkgcraft-c
