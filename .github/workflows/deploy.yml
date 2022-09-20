@@ -28,6 +28,8 @@ jobs:
       with:
         repository: pkgcraft/pkgcraft-workspace
         submodules: recursive
+        # checkout full history to support tagged releases
+        fetch-depth: 0
 
     - name: Pull submodule updates and checkout the latest tags if they exist
       run: |
