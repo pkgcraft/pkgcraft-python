@@ -54,14 +54,6 @@ jobs:
         pip install cibuildwheel>=2.8
         cibuildwheel --output-dir pkgcraft-python/dist pkgcraft-python
 
-    - name: Install deps and check dist files
-      working-directory: ${{ github.event.repository.name }}
-      run: |
-        pip install twine wheel-inspect
-        sha512sum dist/*
-        twine check dist/*
-        for f in dist/*.whl; do unzip -l $f && wheel2json $f; done
-
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
