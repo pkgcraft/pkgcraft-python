@@ -82,17 +82,17 @@ cdef class Repo:
             raise KeyError(obj)
 
     def __iter__(self):
-        if self._repo_iter is not NULL:
-            C.pkgcraft_repo_iter_free(self._repo_iter)
-        self._repo_iter = C.pkgcraft_repo_iter(self._repo)
+        if self._iter is not NULL:
+            C.pkgcraft_repo_iter_free(self._iter)
+        self._iter = C.pkgcraft_repo_iter(self._repo)
         return self
 
     def __next__(self):
         # verify __iter__() was called since cython's generated next() method doesn't check
-        if self._repo_iter is NULL:
+        if self._iter is NULL:
             raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
 
-        cdef C.Pkg *pkg = C.pkgcraft_repo_iter_next(self._repo_iter)
+        cdef C.Pkg *pkg = C.pkgcraft_repo_iter_next(self._iter)
         if pkg is not NULL:
             return self.create_pkg(pkg)
         raise StopIteration
@@ -135,7 +135,7 @@ cdef class Repo:
     def __dealloc__(self):
         if not self._ref:
             C.pkgcraft_repo_free(self._repo)
-        C.pkgcraft_repo_iter_free(self._repo_iter)
+        C.pkgcraft_repo_iter_free(self._iter)
 
 
 cdef class _RestrictIter:
