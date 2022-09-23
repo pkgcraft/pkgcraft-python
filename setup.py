@@ -9,6 +9,11 @@ from setuptools.extension import Extension
 
 MODULEDIR = 'src/pkgcraft'
 PACKAGEDIR = os.path.dirname(MODULEDIR)
+
+# version requirements for pkgcraft C library
+MINVERSION = '0.0.2'
+MAXVERSION = '0.0.2'
+
 # running against git repo
 GIT = os.path.exists(os.path.join(os.path.dirname(__file__), '.git'))
 
@@ -136,6 +141,27 @@ class build_ext(dst_build_ext.build_ext):
     def run(self):
         # delay pkg-config to avoid requiring library during sdist
         pkgcraft_opts = pkg_config('pkgcraft')
+
+        try:
+            p = subprocess.run(
+                ['pkg-config', '--modversion', 'pkgcraft'], capture_output=True, text=True)
+            version = p.stdout.strip()
+        except subprocess.CalledProcessError:
+            sys.stderr.write(f'failed retrieving pkgcraft C library version\n')
+            sys.exit(1)
+
+        try:
+            subprocess.check_output(['pkg-config', '--atleast-version', MINVERSION, 'pkgcraft'])
+        except subprocess.CalledProcessError:
+            sys.stderr.write(f'pkgcraft C library {version} fails requirements >={MINVERSION}\n')
+            sys.exit(1)
+
+        try:
+            subprocess.check_output(['pkg-config', '--max-version', MAXVERSION, 'pkgcraft'])
+        except subprocess.CalledProcessError:
+            sys.stderr.write(f'pkgcraft C library {version} fails requirements <={MAXVERSION}\n')
+            sys.exit(1)
+
         for ext in self.extensions:
             for attr, data in pkgcraft_opts.items():
                 getattr(ext, attr).extend(data)
