@@ -1,6 +1,5 @@
 import os
 import subprocess
-import sys
 
 from setuptools import setup
 from setuptools.command import build_ext as dst_build_ext
@@ -47,8 +46,7 @@ def pkg_config(*packages, **kw):
         tokens = subprocess.check_output(
             ['pkg-config', '--libs', '--cflags'] + list(packages)).split()
     except OSError as e:
-        sys.stderr.write(f'running pkg-config failed: {e.strerror}\n')
-        sys.exit(1)
+        raise SystemExit(f'running pkg-config failed: {e.strerror}')
 
     for token in tokens:
         token = token.decode()
@@ -147,20 +145,17 @@ class build_ext(dst_build_ext.build_ext):
                 ['pkg-config', '--modversion', 'pkgcraft'], capture_output=True, text=True)
             version = p.stdout.strip()
         except subprocess.CalledProcessError:
-            sys.stderr.write(f'failed retrieving pkgcraft C library version\n')
-            sys.exit(1)
+            raise SystemExit('failed retrieving pkgcraft C library version')
 
         try:
             subprocess.check_output(['pkg-config', '--atleast-version', MINVERSION, 'pkgcraft'])
         except subprocess.CalledProcessError:
-            sys.stderr.write(f'pkgcraft C library {version} fails requirements >={MINVERSION}\n')
-            sys.exit(1)
+            raise SystemExit(f'pkgcraft C library {version} fails requirements >={MINVERSION}')
 
         try:
             subprocess.check_output(['pkg-config', '--max-version', MAXVERSION, 'pkgcraft'])
         except subprocess.CalledProcessError:
-            sys.stderr.write(f'pkgcraft C library {version} fails requirements <={MAXVERSION}\n')
-            sys.exit(1)
+            raise SystemExit(f'pkgcraft C library {version} fails requirements <={MAXVERSION}')
 
         for ext in self.extensions:
             for attr, data in pkgcraft_opts.items():
