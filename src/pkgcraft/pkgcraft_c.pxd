@@ -13,7 +13,7 @@ cdef extern from "pkgcraft.h":
         Fake,
         Empty,
 
-    # Opaque wrapper for Atom objects.
+    # Package atom
     cdef struct Atom:
         pass
 
@@ -21,7 +21,7 @@ cdef extern from "pkgcraft.h":
     cdef struct AtomVersion:
         pass
 
-    # Opaque wrapper for Config objects.
+    # System config
     cdef struct Config:
         pass
 
