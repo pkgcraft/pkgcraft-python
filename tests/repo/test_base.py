@@ -13,9 +13,8 @@ class TestRepo:
         with pytest.raises(RuntimeError, match="doesn't support manual construction"):
             Repo()
 
-    def test_attrs(self, raw_repo):
+    def test_attrs(self, config, raw_repo):
         path = raw_repo.path
-        config = Config()
         r = config.add_repo_path(path)
 
         # default
@@ -75,8 +74,7 @@ class TestRepo:
             err = f"failed {r1} {op} {r2}"
             assert op_func(config.add_repo_path(path, *r1), config.add_repo_path(path, *r2)), err
 
-    def test_hash_knave(self, raw_repo):
-        config = Config()
+    def test_hash_knave(self, config, raw_repo):
         r1 = config.add_repo_path(raw_repo.path)
         r2 = config.add_repo_path(raw_repo.path, "fake")
         assert len({r1, r2}) == 2

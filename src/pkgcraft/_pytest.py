@@ -156,6 +156,12 @@ class TempEbuildRepo(TempRawEbuildRepo, EbuildRepo):
         return next(iter(self.iter_restrict(cpvstr)))
 
 
+@pytest.fixture(scope="function")
+def config():
+    """Function-scoped config object."""
+    return Config()
+
+
 @pytest.fixture
 def raw_repo(tmp_path_factory):
     """Create a generic ebuild repository."""
@@ -178,9 +184,10 @@ def repo(tmp_path_factory):
 
 
 @pytest.fixture
-def make_repo(tmp_path_factory):
+def make_repo(tmp_path_factory, config):
     """Factory for ebuild repo creation."""
     def _make_repo(path=None, **kwargs):
         path = str(tmp_path_factory.mktemp('repo')) if path is None else path
+        kwargs.setdefault('config', config)
         return TempEbuildRepo(path, **kwargs)
     return _make_repo

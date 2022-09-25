@@ -1,7 +1,6 @@
 import pytest
 pytest_plugins = ('benchmark', 'pkgcraft')
 
-from pkgcraft.config import Config
 from pkgcraft.atom import Atom
 from pkgcraft.repo import RepoSet
 from pkgcore.ebuild.atom import atom as pkgcore_atom
@@ -25,9 +24,8 @@ def test_bench_repo_iter(benchmark, lib, func, repo):
 
 
 def test_bench_repo_set_iter(benchmark, make_repo):
-    config = Config()
-    repo1 = make_repo(config=config)
-    repo2 = make_repo(config=config)
+    repo1 = make_repo()
+    repo2 = make_repo()
     # create ebuilds
     for i in range(50):
         repo1.create_ebuild(f'cat/pkg-{i}')
@@ -61,9 +59,8 @@ def test_bench_repo_iter_restrict_atom(benchmark, lib, func, repo):
 
 
 def test_bench_repo_set_iter_restrict_atom(benchmark, make_repo):
-    config = Config()
-    repo1 = make_repo(config=config)
-    repo2 = make_repo(config=config)
+    repo1 = make_repo()
+    repo2 = make_repo()
     # create ebuilds
     for i in range(50):
         repo1.create_ebuild(f'cat/pkg-{i}')

@@ -1,20 +1,17 @@
 import pytest
 
 from pkgcraft.atom import Cpv
-from pkgcraft.config import Config
 from pkgcraft.error import InvalidRestrict, PkgcraftError
 from pkgcraft.repo import EbuildRepo
 
 
 class TestEbuildRepo:
 
-    def test_init(self, raw_repo):
-        config = Config()
+    def test_init(self, config, raw_repo):
         r = EbuildRepo(config, raw_repo.path)
         assert r.path == str(raw_repo.path)
 
-    def test_masters(self, make_raw_repo):
-        config = Config()
+    def test_masters(self, config, make_raw_repo):
         # empty masters
         repo = make_raw_repo()
         r = config.add_repo_path(repo.path)
