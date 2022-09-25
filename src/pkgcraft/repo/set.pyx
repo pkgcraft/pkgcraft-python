@@ -14,7 +14,6 @@ cdef class RepoSet:
     def __cinit__(self, repos not None):
         cdef size_t length = len(repos)
         cdef C.Repo **array = <C.Repo **> PyMem_Malloc(length * sizeof(C.Repo *))
-        cdef Repo repo
         if not array:
             raise MemoryError
         for (i, r) in enumerate(repos):
