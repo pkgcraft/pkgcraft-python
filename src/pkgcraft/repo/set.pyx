@@ -125,6 +125,10 @@ cdef class RepoSet:
         obj._repo_set = s
         return obj
 
+    def __dealloc__(self):
+        C.pkgcraft_repo_set_free(self._repo_set)
+        C.pkgcraft_repo_set_iter_free(self._iter)
+
 
 cdef class _RestrictIter:
     """Iterator that applies a restriction over a repo set iterator."""
