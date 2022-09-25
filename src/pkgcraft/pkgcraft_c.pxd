@@ -245,7 +245,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The config argument must be a non-null Config pointer.
-    Repo **pkgcraft_config_repos(Config *config, uintptr_t *len);
+    const Repo **pkgcraft_config_repos(Config *config, uintptr_t *len);
 
     # Parse a CPV string into an atom.
     #
@@ -762,6 +762,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null RepoSetPkgIter pointer.
     Pkg *pkgcraft_repo_set_iter_next(RepoSetPkgIter *i);
+
+    # Return the ordered array of repos for a repo set.
+    #
+    # # Safety
+    # The argument must be a non-null RepoSet pointer.
+    const Repo **pkgcraft_repo_set_repos(RepoSet *s, uintptr_t *len);
 
     # Return a restriction package iterator for a repo set.
     #

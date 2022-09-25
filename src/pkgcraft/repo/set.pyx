@@ -1,6 +1,7 @@
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 from .. cimport pkgcraft_c as C
+from ..config cimport repos_to_dict
 from ..pkg cimport EbuildPkg
 from ..restrict cimport Restrict
 from . cimport Repo
@@ -45,6 +46,24 @@ cdef class RepoSet:
     def iter_restrict(self, restrict not None):
         """Iterate over a repo set's packages while applying a restriction."""
         yield from _RestrictIter.create(self, restrict)
+
+    @property
+    def repos(self):
+        """Return the set's repos in order."""
+        cdef size_t length
+        repos = <C.Repo **>C.pkgcraft_repo_set_repos(self._repo_set, &length)
+        d = repos_to_dict(repos, length, True)
+        C.pkgcraft_repos_free(repos, length)
+        # TODO: replace with ordered, immutable set
+        return tuple(d.values())
+
+    def __str__(self):
+        return str(self.repos)
+
+    def __repr__(self):
+        cdef size_t addr = <size_t>&self._repo_set
+        name = self.__class__.__name__
+        return f"<{name} '{self}' at 0x{addr:0x}>"
 
 
 cdef class _RestrictIter:

@@ -3,6 +3,26 @@ from .repo cimport EbuildRepo
 from .error import PkgcraftError
 
 
+cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
+    """Convert an array of repos to an (id, Repo) mapping."""
+    cdef C.RepoFormat format
+    cdef char *id
+    d = {}
+
+    for i in range(length):
+        r = repos[i]
+        format = C.pkgcraft_repo_format(r)
+        if format is C.RepoFormat.EbuildRepo:
+            repo = EbuildRepo.from_ptr(r, ref)
+        else:
+            raise PkgcraftError('unsupported repo format')
+        id = C.pkgcraft_repo_id(r)
+        d[id.decode()] = repo
+        C.pkgcraft_str_free(id)
+
+    return d
+
+
 cdef class Config:
     """Config for the system."""
 
@@ -78,28 +98,13 @@ cdef class Config:
 
 
 cdef class Repos:
-    """Available repos for the system."""
 
     @staticmethod
     cdef Repos from_config(C.Config *config):
         cdef size_t length
-        cdef C.Repo **repos = C.pkgcraft_config_repos(config, &length)
-        cdef C.RepoFormat format
-        cdef char *id
+        repos = <C.Repo **>C.pkgcraft_config_repos(config, &length)
         obj = <Repos>Repos.__new__(Repos)
-        obj._repos = {}
-
-        for i in range(length):
-            r = repos[i]
-            format = C.pkgcraft_repo_format(r)
-            if format is C.RepoFormat.EbuildRepo:
-                repo = EbuildRepo.from_ptr(r, False)
-            else:
-                raise PkgcraftError('unsupported repo format')
-            id = C.pkgcraft_repo_id(r)
-            obj._repos[id.decode()] = repo
-            C.pkgcraft_str_free(id)
-
+        obj._repos = repos_to_dict(repos, length, True)
         C.pkgcraft_repos_free(repos, length)
         return obj
 
