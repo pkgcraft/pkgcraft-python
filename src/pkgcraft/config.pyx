@@ -20,30 +20,33 @@ cdef class Config:
 
     def add_repo_path(self, path not None, str id=None, int priority=0):
         """Add an external repo via its file path."""
-        cdef C.RepoConfig *repo_conf
+        cdef C.Repo *repo
+        cdef C.RepoFormat format
         path = str(path)
         id = id if id is not None else path
 
-        repo_conf = C.pkgcraft_config_add_repo_path(
+        repo = C.pkgcraft_config_add_repo_path(
             self._config, id.encode(), priority, path.encode())
-        if repo_conf is NULL:
+        if repo is NULL:
             raise PkgcraftError
 
         # force repos attr refresh to get correct dict ordering by repo priority
         self._repos = None
 
-        if repo_conf.format is C.RepoFormat.EbuildRepo:
-            r = EbuildRepo.from_ptr(repo_conf.repo, False)
+        format = C.pkgcraft_repo_format(repo)
+        if format is C.RepoFormat.EbuildRepo:
+            r = EbuildRepo.from_ptr(repo, False)
         else:
             raise PkgcraftError('unsupported repo format')
 
-        C.pkgcraft_repo_config_free(repo_conf)
         return r
 
     # TODO: determine default fs path based off install prefix?
     def load_repos_conf(self, path='/etc/portage/repos.conf'):
         """Load repos from a given path to a portage-compatible repos.conf directory or file."""
-        cdef C.RepoConfig **repos
+        cdef C.Repo **repos
+        cdef C.RepoFormat format
+        cdef char *id
         cdef size_t length
         cdef dict d
         path = str(path)
@@ -58,11 +61,14 @@ cdef class Config:
         d = {}
         for i in range(length):
             r = repos[i]
-            if r.format is C.RepoFormat.EbuildRepo:
-                repo = EbuildRepo.from_ptr(r.repo, False)
+            format = C.pkgcraft_repo_format(r)
+            if format is C.RepoFormat.EbuildRepo:
+                repo = EbuildRepo.from_ptr(r, False)
             else:
                 raise PkgcraftError('unsupported repo format')
-            d[r.id.decode()] = repo
+            id = C.pkgcraft_repo_id(r)
+            d[id.decode()] = repo
+            C.pkgcraft_str_free(id)
         C.pkgcraft_repos_free(repos, length)
 
         return d
@@ -77,17 +83,22 @@ cdef class Repos:
     @staticmethod
     cdef Repos from_config(C.Config *config):
         cdef size_t length
-        cdef C.RepoConfig **repos = C.pkgcraft_config_repos(config, &length)
+        cdef C.Repo **repos = C.pkgcraft_config_repos(config, &length)
+        cdef C.RepoFormat format
+        cdef char *id
         obj = <Repos>Repos.__new__(Repos)
         obj._repos = {}
 
         for i in range(length):
             r = repos[i]
-            if r.format is C.RepoFormat.EbuildRepo:
-                repo = EbuildRepo.from_ptr(r.repo, True)
+            format = C.pkgcraft_repo_format(r)
+            if format is C.RepoFormat.EbuildRepo:
+                repo = EbuildRepo.from_ptr(r, False)
             else:
                 raise PkgcraftError('unsupported repo format')
-            obj._repos[r.id.decode()] = repo
+            id = C.pkgcraft_repo_id(r)
+            obj._repos[id.decode()] = repo
+            C.pkgcraft_str_free(id)
 
         C.pkgcraft_repos_free(repos, length)
         return obj

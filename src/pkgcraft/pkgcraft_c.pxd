@@ -69,12 +69,6 @@ cdef extern from "pkgcraft.h":
     cdef struct Restrict:
         pass
 
-    # Wrapper for configured repos.
-    cdef struct RepoConfig:
-        char *id;
-        RepoFormat format;
-        const Repo *repo;
-
     # Wrapper for package maintainers.
     cdef struct Maintainer:
         char *email;
@@ -231,7 +225,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The path argument should be a valid path on the system.
-    RepoConfig *pkgcraft_config_add_repo_path(Config *config, const char *id, int priority, const char *path);
+    Repo *pkgcraft_config_add_repo_path(Config *config, const char *id, int priority, const char *path);
 
     # Free a config.
     #
@@ -245,13 +239,13 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The path argument should be a valid path on the system.
-    RepoConfig **pkgcraft_config_load_repos_conf(Config *config, const char *path, uintptr_t *len);
+    Repo **pkgcraft_config_load_repos_conf(Config *config, const char *path, uintptr_t *len);
 
     # Return the repos for a config.
     #
     # # Safety
     # The config argument must be a non-null Config pointer.
-    RepoConfig **pkgcraft_config_repos(Config *config, uintptr_t *len);
+    Repo **pkgcraft_config_repos(Config *config, uintptr_t *len);
 
     # Parse a CPV string into an atom.
     #
@@ -646,20 +640,17 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null Repo pointers.
     int pkgcraft_repo_cmp(Repo *r1, Repo *r2);
 
-    # Free a repo config.
-    #
-    # Note that repo pointers aren't explicitly freed since different calls return borrowed or owned
-    # pointers so external users should handle freeing them if necessary via [`pkgcraft_repo_free`].
-    #
-    # # Safety
-    # The argument must be a RepoConfig pointer or NULL.
-    void pkgcraft_repo_config_free(RepoConfig *r);
-
     # Determine if a path is in a repo.
     #
     # # Safety
     # The argument must be a non-null Repo pointer.
     bool pkgcraft_repo_contains_path(Repo *r, const char *path);
+
+    # Return a repos's format.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    RepoFormat pkgcraft_repo_format(Repo *r);
 
     # Free a repo.
     #
@@ -800,7 +791,7 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be the value received from pkgcraft_config_repos() or NULL along with the
     # length of the array.
-    void pkgcraft_repos_free(RepoConfig **repos, uintptr_t len);
+    void pkgcraft_repos_free(Repo **repos, uintptr_t len);
 
     # Combine two restrictions via logical AND.
     #
