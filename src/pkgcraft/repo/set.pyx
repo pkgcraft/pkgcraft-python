@@ -1,3 +1,5 @@
+from cpython.mem cimport PyMem_Malloc, PyMem_Free
+
 from .. cimport pkgcraft_c as C
 from ..pkg cimport EbuildPkg
 from ..restrict cimport Restrict
@@ -7,7 +9,18 @@ from ..restrict import InvalidRestrict
 
 
 cdef class RepoSet:
-    """Repo set."""
+    """Ordered repo set."""
+
+    def __cinit__(self, repos not None):
+        cdef size_t length = len(repos)
+        cdef C.Repo **array = <C.Repo **> PyMem_Malloc(length * sizeof(C.Repo *))
+        cdef Repo repo
+        if not array:
+            raise MemoryError
+        for (i, r) in enumerate(repos):
+            array[i] = (<Repo?>r)._repo
+        self._repo_set = C.pkgcraft_repo_set(array, length)
+        PyMem_Free(array)
 
     def __iter__(self):
         if self._iter is not NULL:

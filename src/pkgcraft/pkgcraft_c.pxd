@@ -731,6 +731,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null RepoRestrictPkgIter pointer.
     Pkg *pkgcraft_repo_restrict_iter_next(RepoRestrictPkgIter *i);
 
+    # Create a repo set.
+    #
+    # # Safety
+    # The argument must be an array of Repo pointers.
+    RepoSet *pkgcraft_repo_set(Repo **repos, uintptr_t len);
+
     # Free a repo set.
     #
     # # Safety
