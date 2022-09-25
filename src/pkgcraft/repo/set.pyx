@@ -66,53 +66,62 @@ cdef class RepoSet:
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __iand__(RepoSet self, other):
+        op = C.RepoSetOp.RepoSetAnd
+        s = self._repo_set
         if isinstance(other, RepoSet):
-            C.pkgcraft_repo_set_bitand_assign_repo_set(self._repo_set, (<RepoSet>other)._repo_set)
+            C.pkgcraft_repo_set_assign_op_set(op, s, (<RepoSet>other)._repo_set)
         else:
-            C.pkgcraft_repo_set_bitand_assign_repo(self._repo_set, (<Repo?>other)._repo)
+            C.pkgcraft_repo_set_assign_op_repo(op, s, (<Repo?>other)._repo)
         return self
 
     def __ior__(RepoSet self, other):
+        op = C.RepoSetOp.RepoSetOr
+        s = self._repo_set
         if isinstance(other, RepoSet):
-            C.pkgcraft_repo_set_bitor_assign_repo_set(self._repo_set, (<RepoSet>other)._repo_set)
+            C.pkgcraft_repo_set_assign_op_set(op, s, (<RepoSet>other)._repo_set)
         else:
-            C.pkgcraft_repo_set_bitor_assign_repo(self._repo_set, (<Repo?>other)._repo)
+            C.pkgcraft_repo_set_assign_op_repo(op, s, (<Repo?>other)._repo)
         return self
 
     def __isub(RepoSet self, other):
+        op = C.RepoSetOp.RepoSetSub
+        s = self._repo_set
         if isinstance(other, RepoSet):
-            C.pkgcraft_repo_set_sub_assign_repo_set(self._repo_set, (<RepoSet>other)._repo_set)
+            C.pkgcraft_repo_set_assign_op_set(op, s, (<RepoSet>other)._repo_set)
         else:
-            C.pkgcraft_repo_set_sub_assign_repo(self._repo_set, (<Repo?>other)._repo)
+            C.pkgcraft_repo_set_assign_op_repo(op, s, (<Repo?>other)._repo)
         return self
 
     def __and__(RepoSet self, other):
+        op = C.RepoSetOp.RepoSetAnd
         obj = <RepoSet>RepoSet.__new__(RepoSet)
-        cdef C.RepoSet *s
+        s = self._repo_set
         if isinstance(other, RepoSet):
-            s = C.pkgcraft_repo_set_bitand_repo_set(self._repo_set, (<RepoSet>other)._repo_set)
+            s = C.pkgcraft_repo_set_op_set(op, s, (<RepoSet>other)._repo_set)
         else:
-            s = C.pkgcraft_repo_set_bitand_repo(self._repo_set, (<Repo?>other)._repo)
+            s = C.pkgcraft_repo_set_op_repo(op, s, (<Repo?>other)._repo)
         obj._repo_set = s
         return obj
 
     def __or__(RepoSet self, other):
+        op = C.RepoSetOp.RepoSetOr
         obj = <RepoSet>RepoSet.__new__(RepoSet)
-        cdef C.RepoSet *s
+        s = self._repo_set
         if isinstance(other, RepoSet):
-            s = C.pkgcraft_repo_set_bitor_repo_set(self._repo_set, (<RepoSet>other)._repo_set)
+            s = C.pkgcraft_repo_set_op_set(op, s, (<RepoSet>other)._repo_set)
         else:
-            s = C.pkgcraft_repo_set_bitor_repo(self._repo_set, (<Repo?>other)._repo)
+            s = C.pkgcraft_repo_set_op_repo(op, s, (<Repo?>other)._repo)
         obj._repo_set = s
         return obj
 
     def __sub__(RepoSet self, other):
+        op = C.RepoSetOp.RepoSetSub
         obj = <RepoSet>RepoSet.__new__(RepoSet)
-        cdef C.RepoSet *s
+        s = self._repo_set
         if isinstance(other, RepoSet):
-            s = C.pkgcraft_repo_set_sub_repo_set(self._repo_set, (<RepoSet>other)._repo_set)
+            s = C.pkgcraft_repo_set_op_set(op, s, (<RepoSet>other)._repo_set)
         else:
-            s = C.pkgcraft_repo_set_sub_repo(self._repo_set, (<Repo?>other)._repo)
+            s = C.pkgcraft_repo_set_op_repo(op, s, (<Repo?>other)._repo)
         obj._repo_set = s
         return obj
 
