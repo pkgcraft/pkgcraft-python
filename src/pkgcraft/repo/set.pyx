@@ -12,7 +12,7 @@ from ..restrict import InvalidRestrict
 cdef class RepoSet:
     """Ordered repo set."""
 
-    def __cinit__(self, repos not None):
+    def __init__(self, repos not None):
         cdef size_t length = len(repos)
         cdef C.Repo **array = <C.Repo **> PyMem_Malloc(length * sizeof(C.Repo *))
         if not array:
