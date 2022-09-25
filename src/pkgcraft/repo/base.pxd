@@ -6,7 +6,7 @@ cdef class Repo:
     cdef C.Repo *_repo
     # flag denoting borrowed reference that must not be deallocated
     cdef bint _ref
-    cdef C.PkgIter *_iter
+    cdef C.RepoPkgIter *_iter
 
     # cached fields
     cdef str _id
@@ -18,7 +18,7 @@ cdef class Repo:
 
 cdef class _RestrictIter:
     cdef Repo _repo
-    cdef C.RestrictPkgIter *_iter
+    cdef C.RepoRestrictPkgIter *_iter
 
     @staticmethod
     cdef _RestrictIter create(Repo, object)

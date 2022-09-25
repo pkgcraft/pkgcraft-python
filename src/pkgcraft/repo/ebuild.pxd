@@ -3,7 +3,6 @@ from ..pkg cimport EbuildPkg
 from . cimport Repo
 
 cdef class EbuildRepo(Repo):
-    cdef const C.EbuildRepo *_ebuild_repo
     # cached fields
     cdef tuple _masters
 

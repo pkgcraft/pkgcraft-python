@@ -32,7 +32,7 @@ cdef class Config:
         # force repos attr refresh to get correct dict ordering by repo priority
         self._repos = None
 
-        if repo_conf.format is C.RepoFormat.Ebuild:
+        if repo_conf.format is C.RepoFormat.EbuildRepo:
             r = EbuildRepo.from_ptr(repo_conf.repo, False)
         else:
             raise PkgcraftError('unsupported repo format')
@@ -58,7 +58,7 @@ cdef class Config:
         d = {}
         for i in range(length):
             r = repos[i]
-            if r.format is C.RepoFormat.Ebuild:
+            if r.format is C.RepoFormat.EbuildRepo:
                 repo = EbuildRepo.from_ptr(r.repo, False)
             else:
                 raise PkgcraftError('unsupported repo format')
@@ -83,7 +83,7 @@ cdef class Repos:
 
         for i in range(length):
             r = repos[i]
-            if r.format is C.RepoFormat.Ebuild:
+            if r.format is C.RepoFormat.EbuildRepo:
                 repo = EbuildRepo.from_ptr(r.repo, True)
             else:
                 raise PkgcraftError('unsupported repo format')

@@ -2,7 +2,6 @@ from .. cimport pkgcraft_c as C
 from . cimport Pkg
 
 cdef class EbuildPkg(Pkg):
-    cdef C.EbuildPkg *_ebuild_pkg
     # cached fields
     cdef str _description
     cdef str _slot
@@ -25,6 +24,9 @@ cdef class EbuildPkg(Pkg):
     cdef tuple _maintainers
     cdef tuple _upstreams
     cdef frozenset _iuse
+
+    @staticmethod
+    cdef EbuildPkg from_ptr(C.Pkg *)
 
 
 cdef class Maintainer:

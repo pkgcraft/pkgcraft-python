@@ -21,11 +21,10 @@ cdef class EbuildRepo(Repo):
         # force config repos attr refresh to get correct dict ordering by repo priority
         config._repos = None
 
-        if repo_conf.format is not C.RepoFormat.Ebuild:
+        if repo_conf.format is not C.RepoFormat.EbuildRepo:
             raise PkgcraftError('non-ebuild repo format')
 
         self._repo = <C.Repo *>repo_conf.repo
-        self._ebuild_repo = C.pkgcraft_repo_as_ebuild(self._repo)
         self._ref = False
         C.pkgcraft_repo_config_free(repo_conf)
 
@@ -34,20 +33,11 @@ cdef class EbuildRepo(Repo):
         """Create an instance from a repo pointer."""
         obj = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
         obj._repo = <C.Repo *>repo
-        obj._ebuild_repo = C.pkgcraft_repo_as_ebuild(obj._repo)
-        if obj._ebuild_repo is NULL:  # pragma: no cover
-            raise PkgcraftError
         obj._ref = ref
         return obj
 
     cdef EbuildPkg create_pkg(self, C.Pkg *pkg):
-        # create instance without calling __init__()
-        obj = <EbuildPkg>EbuildPkg.__new__(EbuildPkg)
-        obj._pkg = <C.Pkg *>pkg
-        obj._ebuild_pkg = <C.EbuildPkg *>C.pkgcraft_pkg_as_ebuild(pkg)
-        if obj._ebuild_pkg is NULL:  # pragma: no cover
-            raise PkgcraftError
-        return obj
+        return EbuildPkg.from_ptr(pkg)
 
     @property
     def masters(self):
@@ -56,6 +46,6 @@ cdef class EbuildRepo(Repo):
         cdef size_t length
 
         if self._masters is None:
-            repos = C.pkgcraft_ebuild_repo_masters(self._ebuild_repo, &length)
+            repos = C.pkgcraft_ebuild_repo_masters(self._repo, &length)
             self._masters = tuple(EbuildRepo.from_ptr(repos[i], False) for i in range(length))
         return self._masters
