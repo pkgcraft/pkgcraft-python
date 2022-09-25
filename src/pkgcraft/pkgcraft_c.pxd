@@ -737,6 +737,54 @@ cdef extern from "pkgcraft.h":
     # The argument must be an array of Repo pointers.
     RepoSet *pkgcraft_repo_set(Repo **repos, uintptr_t len);
 
+    # Assign the intersection between a repo set and a repo to the set.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet and Repo pointers.
+    void pkgcraft_repo_set_bitand_assign_repo(RepoSet *s, Repo *r);
+
+    # Assign the intersection between two repo sets to the first set.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet pointers.
+    void pkgcraft_repo_set_bitand_assign_repo_set(RepoSet *s1, RepoSet *s2);
+
+    # Create a new repo set from the intersection between a repo set and a repo.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet and Repo pointers.
+    RepoSet *pkgcraft_repo_set_bitand_repo(RepoSet *s, Repo *r);
+
+    # Create a new repo set from the intersection between two repo sets.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet pointers.
+    RepoSet *pkgcraft_repo_set_bitand_repo_set(RepoSet *s1, RepoSet *s2);
+
+    # Assign the combination of a repo set and a repo to the set.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet and Repo pointers.
+    void pkgcraft_repo_set_bitor_assign_repo(RepoSet *s, Repo *r);
+
+    # Assign the combination of two repo sets to the first set.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet pointers.
+    void pkgcraft_repo_set_bitor_assign_repo_set(RepoSet *s1, RepoSet *s2);
+
+    # Create a new repo set from the combination of a repo set and a repo.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet and Repo pointers.
+    RepoSet *pkgcraft_repo_set_bitor_repo(RepoSet *s, Repo *r);
+
+    # Create a new repo set from the combination of two repo sets.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet pointers.
+    RepoSet *pkgcraft_repo_set_bitor_repo_set(RepoSet *s1, RepoSet *s2);
+
     # Free a repo set.
     #
     # # Safety
@@ -789,6 +837,30 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null RepoSetRestrictPkgIter pointer.
     Pkg *pkgcraft_repo_set_restrict_iter_next(RepoSetRestrictPkgIter *i);
+
+    # Assign the difference of a repo set and a repo to the set.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet and Repo pointers.
+    void pkgcraft_repo_set_sub_assign_repo(RepoSet *s, Repo *r);
+
+    # Assign the difference between two repo sets to the first.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet pointers.
+    void pkgcraft_repo_set_sub_assign_repo_set(RepoSet *s1, RepoSet *s2);
+
+    # Create a new repo set from the difference between a repo set and a repo.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet and Repo pointers.
+    RepoSet *pkgcraft_repo_set_sub_repo(RepoSet *s, Repo *r);
+
+    # Create a new repo set from the difference between two repo sets.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet pointers.
+    RepoSet *pkgcraft_repo_set_sub_repo_set(RepoSet *s1, RepoSet *s2);
 
     # Return a repo's versions for a package.
     #
