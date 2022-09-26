@@ -109,3 +109,59 @@ class TestRepoSet:
         # invalid restriction string
         with pytest.raises(InvalidRestrict):
             list(s.iter_restrict('-'))
+
+    def test_set_ops(self, make_repo):
+        r1 = make_repo()
+        r2 = make_repo()
+        r3 = make_repo()
+
+        # &= operator
+        s = RepoSet([r1, r2, r3])
+        s &= RepoSet([r1, r2])
+        assert s.repos == (r1, r2)
+        s &= r1
+        assert s.repos == (r1,)
+        s &= r3
+        assert s.repos == ()
+
+        # |= operator
+        s = RepoSet([])
+        s |= RepoSet([r1, r2])
+        assert s.repos == (r1, r2)
+        s |= r3
+        assert s.repos == (r1, r2, r3)
+
+        # ^= operator
+        s = RepoSet([r1, r2, r3])
+        s ^= RepoSet([r1, r2])
+        assert s.repos == (r3,)
+        s ^= r3
+        assert s.repos == ()
+
+        # -= operator
+        s = RepoSet([r1, r2, r3])
+        s -= RepoSet([r1, r2])
+        assert s.repos == (r3,)
+        s -= r3
+        assert s.repos == ()
+
+        # & operator
+        s = RepoSet([r1, r2, r3])
+        assert (s & RepoSet([r1, r2])).repos == (r1, r2)
+        assert (s & r3).repos == (r3,)
+
+        # | operator
+        s = RepoSet([r1])
+        assert (s | RepoSet([r2, r3])).repos == (r1, r2, r3)
+        assert (s | r2).repos == (r1, r2)
+
+        # ^ operator
+        s = RepoSet([r1, r2, r3])
+        assert (s ^ RepoSet([r2, r3])).repos == (r1,)
+        assert (s ^ r3).repos == (r1, r2)
+
+        # - operator
+        s = RepoSet([r1, r2])
+        assert (s - RepoSet([r1, r2])).repos == ()
+        assert (s - r3).repos == (r1, r2)
+        assert (s - r2).repos == (r1,)
