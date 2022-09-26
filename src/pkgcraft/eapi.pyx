@@ -53,7 +53,7 @@ cdef class Eapi:
 
     @staticmethod
     def range(str s not None):
-        """Convert EAPI range into the corresponding list of Eapi objects."""
+        """Convert EAPI range into an ordered mapping of Eapi objects."""
         cdef size_t length
         cdef const C.Eapi **eapis
         cdef dict d = {}
