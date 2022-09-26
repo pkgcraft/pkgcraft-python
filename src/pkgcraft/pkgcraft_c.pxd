@@ -755,11 +755,24 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null RepoSet pointers.
     void pkgcraft_repo_set_assign_op_set(RepoSetOp op, RepoSet *s1, RepoSet *s2);
 
+    # Compare two repo sets returning -1, 0, or 1 if the first set is less than, equal to, or greater
+    # than the second set, respectively.
+    #
+    # # Safety
+    # The arguments must be non-null RepoSet pointers.
+    int pkgcraft_repo_set_cmp(RepoSet *s1, RepoSet *s2);
+
     # Free a repo set.
     #
     # # Safety
     # The argument must be a RepoSet pointer or NULL.
     void pkgcraft_repo_set_free(RepoSet *r);
+
+    # Return the hash value for a repo set.
+    #
+    # # Safety
+    # The argument must be a non-null RepoSet pointer.
+    uint64_t pkgcraft_repo_set_hash(RepoSet *s);
 
     # Return a package iterator for a repo set.
     #

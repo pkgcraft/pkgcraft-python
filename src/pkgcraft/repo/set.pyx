@@ -57,6 +57,27 @@ cdef class RepoSet:
         # TODO: replace with ordered, immutable set
         return tuple(d.values())
 
+    def __lt__(self, RepoSet other):
+        return C.pkgcraft_repo_set_cmp(self._repo_set, other._repo_set) == -1
+
+    def __le__(self, RepoSet other):
+        return C.pkgcraft_repo_set_cmp(self._repo_set, other._repo_set) <= 0
+
+    def __eq__(self, RepoSet other):
+        return C.pkgcraft_repo_set_cmp(self._repo_set, other._repo_set) == 0
+
+    def __ne__(self, RepoSet other):
+        return C.pkgcraft_repo_set_cmp(self._repo_set, other._repo_set) != 0
+
+    def __gt__(self, RepoSet other):
+        return C.pkgcraft_repo_set_cmp(self._repo_set, other._repo_set) == 1
+
+    def __ge__(self, RepoSet other):
+        return C.pkgcraft_repo_set_cmp(self._repo_set, other._repo_set) >= 0
+
+    def __hash__(self):
+        return C.pkgcraft_repo_set_hash(self._repo_set)
+
     def __str__(self):
         return str(self.repos)
 
