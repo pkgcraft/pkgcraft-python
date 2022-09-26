@@ -113,7 +113,7 @@ cdef class RepoSet:
             C.pkgcraft_repo_set_assign_op_repo(op, s, (<Repo?>other)._repo)
         return self
 
-    def __isub(RepoSet self, other):
+    def __isub__(RepoSet self, other):
         op = C.RepoSetOp.RepoSetSub
         s = self._repo_set
         if isinstance(other, RepoSet):
