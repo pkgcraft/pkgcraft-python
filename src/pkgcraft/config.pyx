@@ -38,15 +38,15 @@ cdef class Config:
             self._repos = Repos.from_config(self._config)
         return self._repos
 
-    def add_repo_path(self, path not None, str id=None, int priority=0):
+    def add_repo_path(self, path not None, id=None, priority=0):
         """Add an external repo via its file path."""
         cdef C.Repo *repo
         cdef C.RepoFormat format
         path = str(path)
-        id = id if id is not None else path
+        id = str(id) if id is not None else path
 
         repo = C.pkgcraft_config_add_repo_path(
-            self._config, id.encode(), priority, path.encode())
+            self._config, id.encode(), int(priority), path.encode())
         if repo is NULL:
             raise PkgcraftError
 
