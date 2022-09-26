@@ -60,15 +60,15 @@ class _FileSet(MutableSet):
 class TempRawEbuildRepo:
     """Class for creating/manipulating raw ebuild repos."""
 
-    def __init__(self, path, repo_id='fake', eapi=EAPI_LATEST, masters=(), arches=()):
+    def __init__(self, path, id='fake', eapi=EAPI_LATEST, masters=(), arches=()):
         self._path = Path(path)
-        self._repo_id = repo_id
+        self._repo_id = id
         self._arches = _FileSet(self._path / 'profiles' / 'arch.list')
         self._today = datetime.today()
         try:
             os.makedirs(self._path / 'profiles')
             with open(self._path / 'profiles' / 'repo_name', 'w') as f:
-                f.write(f'{repo_id}\n')
+                f.write(f'{self._repo_id}\n')
             with open(self._path / 'profiles' / 'eapi', 'w') as f:
                 f.write(f'{eapi}\n')
             os.makedirs(self._path / 'metadata')
@@ -146,10 +146,10 @@ class TempRawEbuildRepo:
 class TempEbuildRepo(TempRawEbuildRepo, EbuildRepo):
     """Class for creating/manipulating ebuild repos."""
 
-    def __init__(self, *args, config=None, **kwargs):
-        TempRawEbuildRepo.__init__(self, *args, **kwargs)
+    def __init__(self, *args, config=None, id='fake', priority=0, **kwargs):
+        TempRawEbuildRepo.__init__(self, *args, id=id, **kwargs)
         self._config = config if config is not None else Config()
-        EbuildRepo.__init__(self, self._config, self.path)
+        EbuildRepo.__init__(self, self._config, self.path, id, priority)
 
     def create_pkg(self, cpvstr='cat/pkg-1', *args, **kwargs):
         self.create_ebuild(cpvstr, *args, **kwargs)
@@ -184,10 +184,26 @@ def repo(tmp_path_factory):
 
 
 @pytest.fixture
-def make_repo(tmp_path_factory, config):
+def letters():
+    """Return a lexically incrementing string."""
+    l = []
+    def _letters():
+        nonlocal l
+        if not l or l[-1] == 'z':
+            l.append('a')
+        else:
+            char = chr(ord(l.pop()) + 1)
+            l.append(char)
+        return ''.join(l)
+    return _letters
+
+
+@pytest.fixture
+def make_repo(tmp_path_factory, config, letters):
     """Factory for ebuild repo creation."""
     def _make_repo(path=None, **kwargs):
         path = str(tmp_path_factory.mktemp('repo')) if path is None else path
         kwargs.setdefault('config', config)
+        kwargs.setdefault('id', letters())
         return TempEbuildRepo(path, **kwargs)
     return _make_repo
