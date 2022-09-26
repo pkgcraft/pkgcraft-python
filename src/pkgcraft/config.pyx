@@ -68,7 +68,6 @@ cdef class Config:
         cdef C.RepoFormat format
         cdef char *id
         cdef size_t length
-        cdef dict d
         path = str(path)
 
         repos = C.pkgcraft_config_load_repos_conf(self._config, path.encode(), &length)

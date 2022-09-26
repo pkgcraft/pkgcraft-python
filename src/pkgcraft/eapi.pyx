@@ -11,7 +11,7 @@ EAPIS = get_eapis()
 cdef object get_official_eapis():
     cdef size_t length
     cdef const C.Eapi **eapis = C.pkgcraft_eapis_official(&length)
-    cdef dict d = {}
+    d = {}
 
     for i in range(length):
         c_str = C.pkgcraft_eapi_as_str(eapis[i])
@@ -26,7 +26,7 @@ cdef object get_official_eapis():
 cdef object get_eapis():
     cdef size_t length
     cdef const C.Eapi **eapis = C.pkgcraft_eapis(&length)
-    cdef dict d = EAPIS_OFFICIAL.copy()
+    d = EAPIS_OFFICIAL.copy()
 
     for i in range(len(d) - 1, length):
         c_str = C.pkgcraft_eapi_as_str(eapis[i])
@@ -56,7 +56,7 @@ cdef class Eapi:
         """Convert EAPI range into an ordered mapping of Eapi objects."""
         cdef size_t length
         cdef const C.Eapi **eapis
-        cdef dict d = {}
+        d = {}
 
         eapi_range_bytes = str(s).encode()
         cdef char *eapi_range_p = eapi_range_bytes
