@@ -8,7 +8,7 @@ try:
 except ImportError:
     import tomli as tomllib
 
-from pkgcraft.error import PkgcraftError
+from pkgcraft.error import InvalidVersion
 from pkgcraft.atom import Version, VersionWithOp
 
 from .. import TOMLDIR
@@ -38,7 +38,7 @@ class TestVersion:
 
     def test_invalid(self):
         for s in ('-1', '1a1', 'a', '>1-r2'):
-            with pytest.raises(PkgcraftError, match=f'invalid version: "{s}"'):
+            with pytest.raises(InvalidVersion, match=f'invalid version: "{s}"'):
                 Version(s)
 
     def test_cmp(self):
@@ -75,7 +75,7 @@ class TestVersionWithOp:
 
     def test_invalid(self):
         for s in ('1-r2',):
-            with pytest.raises(PkgcraftError, match=f'invalid version: "{s}"'):
+            with pytest.raises(InvalidVersion, match=f'invalid version: "{s}"'):
                 VersionWithOp(s)
 
     def test_pickle(self):

@@ -6,7 +6,7 @@ cdef class PkgcraftError(Exception):
 
     def __init__(self, str msg=None):
         cdef char *c_error = C.pkgcraft_last_error()
-        cdef str error = None if c_error is NULL else c_error.decode()
+        error = None if c_error is NULL else c_error.decode()
         C.pkgcraft_str_free(c_error)
 
         if msg is not None:
@@ -23,6 +23,10 @@ cdef class InvalidCpv(PkgcraftError):
 
 cdef class InvalidAtom(PkgcraftError):
     """Package atom doesn't meet required specifications."""
+
+
+cdef class InvalidVersion(PkgcraftError):
+    """Atom version doesn't meet required specifications."""
 
 
 cdef class InvalidRestrict(PkgcraftError):

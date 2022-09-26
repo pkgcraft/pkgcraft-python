@@ -1,5 +1,5 @@
 from .. cimport pkgcraft_c as C
-from ..error import PkgcraftError
+from ..error import InvalidVersion
 
 
 cdef class Version:
@@ -20,7 +20,7 @@ cdef class Version:
     def __init__(self, str version not None):
         self._version = C.pkgcraft_version(version.encode())
         if not self._version:
-            raise PkgcraftError
+            raise InvalidVersion
 
     @staticmethod
     cdef Version from_ptr(const C.AtomVersion *ver):
@@ -105,4 +105,4 @@ cdef class VersionWithOp(Version):
     def __init__(self, str version not None):
         self._version = C.pkgcraft_version_with_op(version.encode())
         if not self._version:
-            raise PkgcraftError
+            raise InvalidVersion
