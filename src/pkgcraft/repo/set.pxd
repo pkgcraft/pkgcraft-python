@@ -2,7 +2,7 @@ from .. cimport pkgcraft_c as C
 
 
 cdef class RepoSet:
-    cdef C.RepoSet *_repo_set
+    cdef C.RepoSet *_set
     cdef C.RepoSetPkgIter *_iter
 
 
