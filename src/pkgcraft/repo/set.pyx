@@ -86,6 +86,9 @@ cdef class RepoSet:
         name = self.__class__.__name__
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
+    def __bool__(self):
+        return not C.pkgcraft_repo_set_is_empty(self._set)
+
     def __iand__(RepoSet self, other):
         op = C.RepoSetOp.RepoSetAnd
         s = self._set

@@ -774,6 +774,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null RepoSet pointer.
     uint64_t pkgcraft_repo_set_hash(RepoSet *s);
 
+    # Determine if a repo set is empty.
+    #
+    # # Safety
+    # The argument must be a non-null RepoSet pointer.
+    bool pkgcraft_repo_set_is_empty(RepoSet *s);
+
     # Return a package iterator for a repo set.
     #
     # # Safety

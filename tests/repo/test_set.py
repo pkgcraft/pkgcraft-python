@@ -52,6 +52,10 @@ class TestRepoSet:
         s3 = RepoSet([r1, r3])
         assert s1 not in {s3}
 
+    def test_bool(self, repo):
+        assert not RepoSet([])
+        assert RepoSet([repo])
+
     def test_iter(self, make_repo):
         r1 = make_repo()
         r2 = make_repo()
