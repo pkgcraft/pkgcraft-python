@@ -23,6 +23,11 @@ cdef extern from "pkgcraft.h":
         RepoSetXor,
         RepoSetSub,
 
+    # Set types of configured repos
+    cdef enum RepoSetType:
+        AllRepos,
+        EbuildRepos,
+
     # Package atom
     cdef struct Atom:
         pass
@@ -252,6 +257,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The config argument must be a non-null Config pointer.
     const Repo **pkgcraft_config_repos(Config *config, uintptr_t *len);
+
+    # Return the RepoSet for a given set type.
+    #
+    # # Safety
+    # The config argument must be a non-null Config pointer.
+    RepoSet *pkgcraft_config_repos_set(Config *config, RepoSetType set_type);
 
     # Parse a CPV string into an atom.
     #

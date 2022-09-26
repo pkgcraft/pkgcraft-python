@@ -4,6 +4,7 @@ import pytest
 
 from pkgcraft.config import Config
 from pkgcraft.error import PkgcraftError
+from pkgcraft.repo import RepoSet
 
 
 class TestConfig:
@@ -40,6 +41,13 @@ class TestConfig:
         # nonexistent
         with pytest.raises(PkgcraftError, match='nonexistent repo path'):
             config.add_repo_path('/path/to/nonexistent/repo')
+
+    def test_repo_sets(self, make_repo):
+        config = Config()
+        r1 = make_repo(config=config)
+        r2 = make_repo(config=config)
+        assert config.repos.all == RepoSet([r1, r2])
+        assert config.repos.ebuild == RepoSet([r1, r2])
 
     def test_load_repos_conf(self, raw_repo, tmp_path):
         repo_path = raw_repo.path

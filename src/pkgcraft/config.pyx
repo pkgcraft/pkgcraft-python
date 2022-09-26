@@ -1,5 +1,5 @@
 from . cimport pkgcraft_c as C
-from .repo cimport EbuildRepo
+from .repo cimport EbuildRepo, RepoSet
 from .error import PkgcraftError
 
 
@@ -103,9 +103,22 @@ cdef class Repos:
         cdef size_t length
         repos = <C.Repo **>C.pkgcraft_config_repos(config, &length)
         obj = <Repos>Repos.__new__(Repos)
+        obj._config = config
         obj._repos = repos_to_dict(repos, length, True)
         C.pkgcraft_repos_free(repos, length)
         return obj
+
+    @property
+    def all(self):
+        """Return the set of all repos."""
+        s = C.pkgcraft_config_repos_set(self._config, C.RepoSetType.AllRepos)
+        return RepoSet.from_ptr(s)
+
+    @property
+    def ebuild(self):
+        """Return the set of all ebuild repos."""
+        s = C.pkgcraft_config_repos_set(self._config, C.RepoSetType.EbuildRepos)
+        return RepoSet.from_ptr(s)
 
     def __getitem__(self, key):
         return self._repos[key]

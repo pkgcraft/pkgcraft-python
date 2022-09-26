@@ -5,6 +5,9 @@ cdef class RepoSet:
     cdef C.RepoSet *_set
     cdef C.RepoSetPkgIter *_iter
 
+    @staticmethod
+    cdef RepoSet from_ptr(C.RepoSet *)
+
 
 cdef class _RestrictIter:
     cdef C.RepoSetRestrictPkgIter *_iter

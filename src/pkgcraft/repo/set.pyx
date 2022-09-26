@@ -22,6 +22,13 @@ cdef class RepoSet:
         self._set = C.pkgcraft_repo_set(array, length)
         PyMem_Free(array)
 
+    @staticmethod
+    cdef RepoSet from_ptr(C.RepoSet *s):
+        """Create an instance from a pointer."""
+        obj = <RepoSet>RepoSet.__new__(RepoSet)
+        obj._set = s
+        return obj
+
     def __iter__(self):
         if self._iter is not NULL:
             C.pkgcraft_repo_set_iter_free(self._iter)

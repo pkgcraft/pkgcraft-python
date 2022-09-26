@@ -9,6 +9,7 @@ cdef class Config:
 
 
 cdef class Repos:
+    cdef C.Config *_config
     # cached fields
     cdef dict _repos
 
