@@ -15,7 +15,7 @@ cdef class RepoSet:
     def __init__(self, repos not None):
         cdef size_t length = len(repos)
         cdef C.Repo **array = <C.Repo **> PyMem_Malloc(length * sizeof(C.Repo *))
-        if not array:
+        if not array:  # pragma: no cover
             raise MemoryError
         for (i, r) in enumerate(repos):
             array[i] = (<Repo?>r)._repo
@@ -39,7 +39,7 @@ cdef class RepoSet:
             format = C.pkgcraft_pkg_format(pkg)
             if format is C.PkgFormat.EbuildPkg:
                 return EbuildPkg.from_ptr(pkg)
-            else:
+            else:  # pragma: no cover
                 raise PkgcraftError('unsupported pkg format')
         raise StopIteration
 
@@ -174,7 +174,7 @@ cdef class RepoSet:
 cdef class _RestrictIter:
     """Iterator that applies a restriction over a repo set iterator."""
 
-    def __init__(self):
+    def __init__(self):  # pragma: no cover
         raise IndirectInit(self)
 
     @staticmethod
@@ -198,7 +198,7 @@ cdef class _RestrictIter:
             format = C.pkgcraft_pkg_format(pkg)
             if format is C.PkgFormat.EbuildPkg:
                 return EbuildPkg.from_ptr(pkg)
-            else:
+            else:  # pragma: no cover
                 raise PkgcraftError('unsupported pkg format')
         raise StopIteration
 

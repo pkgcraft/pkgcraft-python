@@ -1,7 +1,7 @@
 import pytest
 
 from pkgcraft.atom import Cpv
-from pkgcraft.error import InvalidRestrict, PkgcraftError
+from pkgcraft.error import InvalidRestrict
 from pkgcraft.repo import EbuildRepo
 
 
@@ -24,7 +24,7 @@ class TestEbuildRepo:
 
     def test_iter(self, repo):
         # calling next() directly on a repo object fails
-        with pytest.raises(TypeError, match="object is not an iterator"):
+        with pytest.raises(TypeError):
             next(repo)
 
         # empty repo
@@ -40,12 +40,12 @@ class TestEbuildRepo:
 
     def test_iter_restrict(self, repo):
         # non-None argument required
-        with pytest.raises(TypeError, match='must not be None'):
+        with pytest.raises(TypeError):
             repo.iter_restrict(None)
 
         # unsupported object type
-        with pytest.raises(TypeError, match='unsupported restriction type'):
-            list(repo.iter_restrict(repo))
+        with pytest.raises(TypeError):
+            list(repo.iter_restrict(object()))
 
         cpv = Cpv('cat/pkg-1')
 

@@ -1,6 +1,8 @@
 import pytest
 
+from pkgcraft.atom import Cpv
 from pkgcraft.config import Config
+from pkgcraft.error import InvalidRestrict
 from pkgcraft.repo import RepoSet
 
 from ..misc import OperatorMap
@@ -49,3 +51,61 @@ class TestRepoSet:
         # unequal sets
         s3 = RepoSet([r1, r3])
         assert s1 not in {s3}
+
+    def test_iter(self, make_repo):
+        r1 = make_repo()
+        r2 = make_repo()
+        s = RepoSet([r1, r2])
+
+        # calling next() directly on a repo object fails
+        with pytest.raises(TypeError):
+            next(s)
+
+        # empty set
+        assert not list(iter(s))
+
+        # single pkg
+        pkg1 = r1.create_pkg('cat/pkg-1')
+        assert list(iter(s)) == [pkg1]
+
+        # multiple pkgs
+        pkg2 = r2.create_pkg('cat/pkg-2')
+        assert list(iter(s)) == [pkg1, pkg2]
+
+    def test_iter_restrict(self, make_repo):
+        r1 = make_repo()
+        r2 = make_repo()
+        s = RepoSet([r1, r2])
+
+        # non-None argument required
+        with pytest.raises(TypeError):
+            s.iter_restrict(None)
+
+        # unsupported object type
+        with pytest.raises(TypeError):
+            list(s.iter_restrict(object()))
+
+        cpv = Cpv('cat/pkg-1')
+
+        # empty repo -- no matches
+        assert not list(s.iter_restrict(cpv))
+
+        pkg1 = r1.create_pkg('cat/pkg-1')
+        pkg2 = r2.create_pkg('cat/pkg-2')
+
+        # non-empty repo -- no matches
+        nonexistent = Cpv('nonexistent/pkg-1')
+        assert not list(s.iter_restrict(nonexistent))
+
+        # single match via Cpv
+        assert list(s.iter_restrict(cpv)) == [pkg1]
+
+        # single match via package
+        assert list(s.iter_restrict(pkg1)) == [pkg1]
+
+        # multiple matches via restriction glob
+        assert list(s.iter_restrict('cat/*')) == [pkg1, pkg2]
+
+        # invalid restriction string
+        with pytest.raises(InvalidRestrict):
+            list(s.iter_restrict('-'))
