@@ -8,14 +8,15 @@ from ..error import PkgcraftError
 cdef class EbuildRepo(Repo):
     """Ebuild package repo."""
 
-    def __init__(self, Config config not None, object path not None, str id=None, int priority=0):
+    def __init__(self, conf not None, path not None, id=None, priority=0):
+        config = <Config?>conf;
         cdef C.Repo *repo
         cdef C.RepoFormat format
         path = str(path)
-        id = id if id is not None else path
+        id = str(id) if id is not None else path
 
         repo = C.pkgcraft_config_add_repo_path(
-            config._config, id.encode(), priority, path.encode())
+            config._config, id.encode(), int(priority), path.encode())
         if repo is NULL:
             raise PkgcraftError
 
