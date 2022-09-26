@@ -83,6 +83,15 @@ cdef class RepoSet:
             C.pkgcraft_repo_set_assign_op_repo(op, s, (<Repo?>other)._repo)
         return self
 
+    def __ixor__(RepoSet self, other):
+        op = C.RepoSetOp.RepoSetXor
+        s = self._repo_set
+        if isinstance(other, RepoSet):
+            C.pkgcraft_repo_set_assign_op_set(op, s, (<RepoSet>other)._repo_set)
+        else:
+            C.pkgcraft_repo_set_assign_op_repo(op, s, (<Repo?>other)._repo)
+        return self
+
     def __isub(RepoSet self, other):
         op = C.RepoSetOp.RepoSetSub
         s = self._repo_set
@@ -105,6 +114,17 @@ cdef class RepoSet:
 
     def __or__(RepoSet self, other):
         op = C.RepoSetOp.RepoSetOr
+        obj = <RepoSet>RepoSet.__new__(RepoSet)
+        s = self._repo_set
+        if isinstance(other, RepoSet):
+            s = C.pkgcraft_repo_set_op_set(op, s, (<RepoSet>other)._repo_set)
+        else:
+            s = C.pkgcraft_repo_set_op_repo(op, s, (<Repo?>other)._repo)
+        obj._repo_set = s
+        return obj
+
+    def __xor__(RepoSet self, other):
+        op = C.RepoSetOp.RepoSetXor
         obj = <RepoSet>RepoSet.__new__(RepoSet)
         s = self._repo_set
         if isinstance(other, RepoSet):

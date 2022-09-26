@@ -20,6 +20,7 @@ cdef extern from "pkgcraft.h":
     cdef enum RepoSetOp:
         RepoSetAnd,
         RepoSetOr,
+        RepoSetXor,
         RepoSetSub,
 
     # Package atom
