@@ -27,3 +27,11 @@ cdef class InvalidAtom(PkgcraftError):
 
 cdef class InvalidRestrict(PkgcraftError):
     """Object cannot be converted to a restriction."""
+
+
+class IndirectInit(TypeError):
+    """Object cannot be created directly via __init__()."""
+
+    def __init__(self, obj):
+        obj_name = obj.__class__.__name__
+        super().__init__(f"{obj_name} objects cannot be created directly via __init__()")

@@ -1,12 +1,13 @@
 import pytest
 
 from pkgcraft.pkg import Pkg
+from pkgcraft.error import IndirectInit
 
 
 class TestPkg:
 
     def test_init(self):
-        with pytest.raises(RuntimeError, match="doesn't support manual construction"):
+        with pytest.raises(IndirectInit):
             Pkg()
 
     def test_cmp(self, repo):

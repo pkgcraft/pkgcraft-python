@@ -1,7 +1,7 @@
 import pytest
 
 from pkgcraft.eapi import Eapi, EAPIS, EAPI_LATEST, EAPIS_OFFICIAL
-from pkgcraft.error import PkgcraftError
+from pkgcraft.error import IndirectInit, PkgcraftError
 
 
 def test_globals():
@@ -13,7 +13,7 @@ def test_globals():
 class TestEapi:
 
     def test_init(self):
-        with pytest.raises(RuntimeError, match="doesn't support manual construction"):
+        with pytest.raises(IndirectInit):
             Eapi()
 
     def test_valid(self):

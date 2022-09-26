@@ -2,6 +2,7 @@ import pytest
 
 from pkgcraft.atom import Atom, Cpv
 from pkgcraft.config import Config
+from pkgcraft.error import IndirectInit
 from pkgcraft.repo import Repo
 
 from ..misc import OperatorMap
@@ -10,7 +11,7 @@ from ..misc import OperatorMap
 class TestRepo:
 
     def test_init(self):
-        with pytest.raises(RuntimeError, match="doesn't support manual construction"):
+        with pytest.raises(IndirectInit):
             Repo()
 
     def test_attrs(self, config, raw_repo):

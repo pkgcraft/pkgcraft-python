@@ -3,6 +3,7 @@ import textwrap
 import pytest
 
 from pkgcraft.eapi import EAPIS
+from pkgcraft.error import IndirectInit
 from pkgcraft.pkg import EbuildPkg
 from pkgcraft.atom import Cpv, Version
 
@@ -10,7 +11,7 @@ from pkgcraft.atom import Cpv, Version
 class TestEbuildPkg:
 
     def test_init(self):
-        with pytest.raises(RuntimeError, match="doesn't support manual construction"):
+        with pytest.raises(IndirectInit):
             EbuildPkg()
 
     def test_repr(self, repo):

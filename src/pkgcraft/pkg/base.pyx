@@ -2,14 +2,14 @@ from .. cimport pkgcraft_c as C
 from ..repo cimport Repo
 from ..atom cimport Cpv, Version
 from ..eapi import Eapi
-from ..error import PkgcraftError
+from ..error import IndirectInit, PkgcraftError
 
 
 cdef class Pkg:
     """Generic package."""
 
     def __init__(self):
-        raise RuntimeError(f"{self.__class__.__name__} class doesn't support manual construction")
+        raise IndirectInit(self)
 
     @property
     def atom(self):

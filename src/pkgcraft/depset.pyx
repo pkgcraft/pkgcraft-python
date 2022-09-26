@@ -1,11 +1,14 @@
 from . cimport pkgcraft_c as C
 from .atom cimport Cpv
 from .pkg cimport Pkg
-from .error import PkgcraftError
+from .error import IndirectInit, PkgcraftError
 
 
 cdef class DepSet:
     """Dependency set of objects."""
+
+    def __init__(self):  # pragma: no cover
+        raise IndirectInit(self)
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *deps):

@@ -1,7 +1,7 @@
 from types import MappingProxyType
 
 from . cimport pkgcraft_c as C
-from .error import PkgcraftError
+from .error import IndirectInit, PkgcraftError
 
 EAPIS_OFFICIAL = get_official_eapis()
 EAPI_LATEST = next(reversed(EAPIS_OFFICIAL.values()))
@@ -41,7 +41,7 @@ cdef object get_eapis():
 cdef class Eapi:
 
     def __init__(self):
-        raise RuntimeError(f"{self.__class__.__name__} class doesn't support manual construction")
+        raise IndirectInit(self)
 
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *eapi, str id):

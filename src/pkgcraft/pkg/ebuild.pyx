@@ -2,7 +2,7 @@ from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
 from ..depset cimport DepSet
 from . cimport Pkg
-from ..error import PkgcraftError
+from ..error import IndirectInit, PkgcraftError
 from ..repo cimport EbuildRepo
 
 
@@ -20,6 +20,9 @@ cdef class EbuildPkg(Pkg):
         self._required_use = SENTINEL
         self._restrict = SENTINEL
         self._src_uri = SENTINEL
+
+    def __init__(self):
+        raise IndirectInit(self)
 
     @staticmethod
     cdef EbuildPkg from_ptr(C.Pkg *pkg):
@@ -284,6 +287,9 @@ cdef class EbuildPkg(Pkg):
 cdef class Maintainer:
     """Ebuild package maintainer."""
 
+    def __init__(self):  # pragma: no cover
+        raise IndirectInit(self)
+
     @staticmethod
     cdef Maintainer create(C.Maintainer m):
         obj = <Maintainer>Maintainer.__new__(Maintainer)
@@ -314,6 +320,9 @@ cdef class Maintainer:
 
 cdef class Upstream:
     """Ebuild package upstream."""
+
+    def __init__(self):  # pragma: no cover
+        raise IndirectInit(self)
 
     @staticmethod
     cdef Upstream create(C.Upstream u):

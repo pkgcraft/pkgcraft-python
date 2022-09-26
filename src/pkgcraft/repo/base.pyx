@@ -2,6 +2,7 @@ from .. cimport pkgcraft_c as C
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from .. import parse
+from ..error import IndirectInit
 from ..restrict import InvalidRestrict
 
 
@@ -9,7 +10,7 @@ cdef class Repo:
     """Package repo."""
 
     def __init__(self):
-        raise RuntimeError(f"{self.__class__.__name__} class doesn't support manual construction")
+        raise IndirectInit(self)
 
     cdef Pkg create_pkg(self, C.Pkg *pkg):  # pragma: no cover
         raise RuntimeError(f"{self.__class__.__name__} class doesn't support package creation")
@@ -142,7 +143,7 @@ cdef class _RestrictIter:
     """Iterator that applies a restriction over a repo iterator."""
 
     def __init__(self):  # pragma: no cover
-        raise RuntimeError(f"{self.__class__.__name__} class doesn't support manual construction")
+        raise IndirectInit(self)
 
     @staticmethod
     cdef _RestrictIter create(Repo repo, object obj):

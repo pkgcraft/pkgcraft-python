@@ -5,7 +5,7 @@ from ..config cimport repos_to_dict
 from ..pkg cimport EbuildPkg
 from ..restrict cimport Restrict
 from . cimport Repo
-from ..error import PkgcraftError
+from ..error import IndirectInit, PkgcraftError
 from ..restrict import InvalidRestrict
 
 
@@ -174,8 +174,8 @@ cdef class RepoSet:
 cdef class _RestrictIter:
     """Iterator that applies a restriction over a repo set iterator."""
 
-    def __init__(self):  # pragma: no cover
-        raise RuntimeError(f"{self.__class__.__name__} class doesn't support manual construction")
+    def __init__(self):
+        raise IndirectInit(self)
 
     @staticmethod
     cdef _RestrictIter create(RepoSet repo_set, object obj):
