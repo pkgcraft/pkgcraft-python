@@ -12,6 +12,8 @@ cdef class Repos:
     cdef C.Config *_config
     # cached fields
     cdef dict _repos
+    cdef object _all_repos
+    cdef object _ebuild_repos
 
     @staticmethod
     cdef Repos from_config(C.Config *)

@@ -50,7 +50,7 @@ cdef class Config:
         if repo is NULL:
             raise PkgcraftError
 
-        # force repos attr refresh to get correct dict ordering by repo priority
+        # force repos attr refresh
         self._repos = None
 
         format = C.pkgcraft_repo_format(repo)
@@ -74,7 +74,7 @@ cdef class Config:
         if repos is NULL:
             raise PkgcraftError
 
-        # force repos attr refresh to get correct dict ordering by repo priority
+        # force repos attr refresh
         self._repos = None
 
         d = {}
@@ -111,14 +111,18 @@ cdef class Repos:
     @property
     def all(self):
         """Return the set of all repos."""
-        s = C.pkgcraft_config_repos_set(self._config, C.RepoSetType.AllRepos)
-        return RepoSet.from_ptr(s)
+        if self._all_repos is None:
+            s = C.pkgcraft_config_repos_set(self._config, C.RepoSetType.AllRepos)
+            self._all_repos = RepoSet.from_ptr(s)
+        return self._all_repos
 
     @property
     def ebuild(self):
         """Return the set of all ebuild repos."""
-        s = C.pkgcraft_config_repos_set(self._config, C.RepoSetType.EbuildRepos)
-        return RepoSet.from_ptr(s)
+        if self._ebuild_repos is None:
+            s = C.pkgcraft_config_repos_set(self._config, C.RepoSetType.EbuildRepos)
+            self._ebuild_repos = RepoSet.from_ptr(s)
+        return self._ebuild_repos
 
     def __getitem__(self, key):
         return self._repos[key]
