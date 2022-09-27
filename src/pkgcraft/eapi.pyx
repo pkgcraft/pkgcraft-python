@@ -11,14 +11,11 @@ EAPIS = get_eapis()
 cdef dict eapis_to_dict(const C.Eapi **eapis, size_t length, int start=0):
     """Convert an array of Eapi pointers to an (id, Eapi) mapping."""
     d = {}
-
     for i in range(start, length):
         c_str = C.pkgcraft_eapi_as_str(eapis[i])
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
         d[id] = Eapi.from_ptr(eapis[i], id)
-
-    C.pkgcraft_eapis_free(eapis, length)
     return d
 
 
@@ -26,7 +23,9 @@ cdef object get_official_eapis():
     """Get the mapping of all official EAPIs."""
     cdef size_t length
     cdef const C.Eapi **eapis = C.pkgcraft_eapis_official(&length)
-    return MappingProxyType(eapis_to_dict(eapis, length))
+    d = eapis_to_dict(eapis, length)
+    C.pkgcraft_eapis_free(eapis, length)
+    return MappingProxyType(d)
 
 
 cdef object get_eapis():
@@ -35,6 +34,7 @@ cdef object get_eapis():
     cdef const C.Eapi **eapis = C.pkgcraft_eapis(&length)
     d = EAPIS_OFFICIAL.copy()
     d.update(eapis_to_dict(eapis, length, start=len(d) - 1))
+    C.pkgcraft_eapis_free(eapis, length)
     return MappingProxyType(d)
 
 
@@ -59,7 +59,9 @@ cdef class Eapi:
         eapi_range_bytes = str(s).encode()
         cdef char *eapi_range_p = eapi_range_bytes
         eapis = C.pkgcraft_eapis_range(eapi_range_p, &length)
-        return MappingProxyType(eapis_to_dict(eapis, length))
+        d = eapis_to_dict(eapis, length)
+        C.pkgcraft_eapis_free(eapis, length)
+        return MappingProxyType(d)
 
     @staticmethod
     def get(id not None):
