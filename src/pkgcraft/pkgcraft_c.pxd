@@ -230,6 +230,14 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on error.
     Config *pkgcraft_config();
 
+    # Add an external Repo to the config.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The arguments must be valid Config and Repo pointers.
+    Repo *pkgcraft_config_add_repo(Config *c, Repo *r);
+
     # Add local repo from filesystem path.
     #
     # Returns NULL on error.
@@ -663,6 +671,30 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Repo pointer.
     bool pkgcraft_repo_contains_path(Repo *r, const char *path);
 
+    # Create an ebuild repo from a given path.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The path argument should be a valid path on the system.
+    Repo *pkgcraft_repo_ebuild_from_path(const char *id, int priority, const char *path);
+
+    # Create a fake repo from a given path.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The path argument should be a valid path on the system.
+    Repo *pkgcraft_repo_fake_from_path(const char *id, int priority, const char *path);
+
+    # Create a fake repo from an array of atom strings.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    Repo *pkgcraft_repo_fake_new(const char *id, int priority, char **atoms, uintptr_t len);
+
     # Return a repos's format.
     #
     # # Safety
@@ -674,6 +706,14 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a Repo pointer or NULL.
     void pkgcraft_repo_free(Repo *r);
+
+    # Load a repo from a given path.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The path argument should be a valid path on the system.
+    Repo *pkgcraft_repo_from_path(const char *id, int priority, const char *path);
 
     # Return the hash value for a repo.
     #

@@ -9,21 +9,20 @@ cdef class EbuildRepo(Repo):
     """Ebuild package repo."""
 
     def __init__(self, conf, path, id=None, priority=0):
-        config = <Config?>conf;
+        config = <Config?>conf
         path = str(path)
         id = str(id) if id is not None else path
 
-        repo = C.pkgcraft_config_add_repo_path(
-            config._config, id.encode(), int(priority), path.encode())
+        repo = C.pkgcraft_repo_ebuild_from_path(id.encode(), int(priority), path.encode())
+        if repo is NULL:
+            raise PkgcraftError
+
+        repo = C.pkgcraft_config_add_repo(config._config, repo)
         if repo is NULL:
             raise PkgcraftError
 
         # force config repos attr refresh to get correct dict ordering by repo priority
         config._repos = None
-
-        format = C.pkgcraft_repo_format(repo)
-        if format is not C.RepoFormat.EbuildRepo:
-            raise PkgcraftError('non-ebuild repo format')
 
         self._repo = repo
         self._ref = False
