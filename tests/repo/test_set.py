@@ -153,19 +153,24 @@ class TestRepoSet:
         s = RepoSet([r1, r2, r3])
         assert (s & RepoSet([r1, r2])).repos == (r1, r2)
         assert (s & r3).repos == (r3,)
+        assert (r3 & s).repos == (r3,)
 
         # | operator
         s = RepoSet([r1])
         assert (s | RepoSet([r2, r3])).repos == (r1, r2, r3)
         assert (s | r2).repos == (r1, r2)
+        assert (r2 | s).repos == (r1, r2)
 
         # ^ operator
         s = RepoSet([r1, r2, r3])
         assert (s ^ RepoSet([r2, r3])).repos == (r1,)
         assert (s ^ r3).repos == (r1, r2)
+        assert (r3 ^ s).repos == (r1, r2)
 
         # - operator
         s = RepoSet([r1, r2])
         assert (s - RepoSet([r1, r2])).repos == ()
         assert (s - r3).repos == (r1, r2)
         assert (s - r2).repos == (r1,)
+        with pytest.raises(NotImplementedError):
+            r2 - s
