@@ -17,7 +17,7 @@ cdef class DepSet:
         return obj
 
     def __str__(self):
-        cdef char *c_str = C.pkgcraft_depset_str(self._deps)
+        c_str = C.pkgcraft_depset_str(self._deps)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s

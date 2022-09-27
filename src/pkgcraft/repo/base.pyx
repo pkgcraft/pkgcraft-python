@@ -18,7 +18,6 @@ cdef class Repo:
     @property
     def id(self):
         """Get a repo's id."""
-        cdef char *c_str
         if self._id is None:
             c_str = C.pkgcraft_repo_id(self._repo)
             self._id = c_str.decode()
@@ -28,7 +27,6 @@ cdef class Repo:
     @property
     def path(self):
         """Get a repo's path."""
-        cdef char *c_str
         if self._path is None:
             c_str = C.pkgcraft_repo_path(self._repo)
             self._path = c_str.decode()
@@ -38,32 +36,29 @@ cdef class Repo:
     @property
     def categories(self):
         """Get a repo's categories."""
-        cdef char **cats
         cdef size_t length
-
         cats = C.pkgcraft_repo_categories(self._repo, &length)
         categories = tuple(cats[i].decode() for i in range(length))
         C.pkgcraft_str_array_free(cats, length)
         return categories
 
-    def packages(self, str cat not None):
+    def packages(self, cat):
         """Get a repo's packages for a category."""
-        cdef char **pkgs
         cdef size_t length
-
         if parse.category(cat):
-            pkgs = C.pkgcraft_repo_packages(self._repo, cat.encode(), &length)
+            cat_b = (<str?>cat).encode()
+            pkgs = C.pkgcraft_repo_packages(self._repo, cat_b, &length)
             packages = tuple(pkgs[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(pkgs, length)
             return packages
 
-    def versions(self, str cat not None, str pkg not None):
+    def versions(self, cat, pkg):
         """Get a repo's versions for a package."""
-        cdef char **vers
         cdef size_t length
-
         if parse.category(cat) and parse.package(pkg):
-            vers = C.pkgcraft_repo_versions(self._repo, cat.encode(), pkg.encode(), &length)
+            cat_b = (<str?>cat).encode()
+            pkg_b = (<str?>pkg).encode()
+            vers = C.pkgcraft_repo_versions(self._repo, cat_b, pkg_b, &length)
             versions = tuple(vers[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(vers, length)
             return versions
@@ -71,12 +66,12 @@ cdef class Repo:
     def __len__(self):
         return C.pkgcraft_repo_len(self._repo)
 
-    def __contains__(self, obj not None):
+    def __contains__(self, obj):
         if isinstance(obj, str):
             return C.pkgcraft_repo_contains_path(self._repo, obj.encode())
         return bool(next(self.iter_restrict(obj), None))
 
-    def __getitem__(self, obj not None):
+    def __getitem__(self, obj):
         try:
             return next(self.iter_restrict(obj))
         except (StopIteration, InvalidRestrict):
@@ -93,7 +88,7 @@ cdef class Repo:
         if self._iter is NULL:
             raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
 
-        cdef C.Pkg *pkg = C.pkgcraft_repo_iter_next(self._iter)
+        pkg = C.pkgcraft_repo_iter_next(self._iter)
         if pkg is not NULL:
             return self.create_pkg(pkg)
         raise StopIteration
@@ -124,7 +119,7 @@ cdef class Repo:
         return self.id
 
     def __repr__(self):
-        cdef size_t addr = <size_t>&self._repo
+        addr = <size_t>&self._repo
         name = self.__class__.__name__
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
@@ -161,7 +156,7 @@ cdef class _RestrictIter:
         if self._iter is NULL:  # pragma: no cover
             raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
 
-        cdef C.Pkg *pkg = C.pkgcraft_repo_restrict_iter_next(self._iter)
+        pkg = C.pkgcraft_repo_restrict_iter_next(self._iter)
         if pkg is not NULL:
             return self._repo.create_pkg(pkg)
         raise StopIteration

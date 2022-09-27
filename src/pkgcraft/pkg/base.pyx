@@ -14,14 +14,14 @@ cdef class Pkg:
     @property
     def atom(self):
         """Get a package's atom."""
-        cdef const C.Atom *cpv = C.pkgcraft_pkg_atom(self._pkg)
+        cpv = C.pkgcraft_pkg_atom(self._pkg)
         return Cpv.from_ptr(cpv)
 
     @property
     def eapi(self):
         """Get a package's EAPI."""
-        cdef const C.Eapi *eapi = C.pkgcraft_pkg_eapi(self._pkg)
-        cdef char *c_str = C.pkgcraft_eapi_as_str(eapi)
+        eapi = C.pkgcraft_pkg_eapi(self._pkg)
+        c_str = C.pkgcraft_eapi_as_str(eapi)
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return Eapi.get(id)
@@ -29,7 +29,7 @@ cdef class Pkg:
     @property
     def version(self):
         """Get a package's version."""
-        cdef const C.AtomVersion *version = C.pkgcraft_pkg_version(self._pkg)
+        version = C.pkgcraft_pkg_version(self._pkg)
         return Version.from_ptr(version)
 
     def __lt__(self, Pkg other):
@@ -51,7 +51,7 @@ cdef class Pkg:
         return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) >= 0
 
     def __repr__(self):
-        cdef size_t addr = <size_t>&self._pkg
+        addr = <size_t>&self._pkg
         name = self.__class__.__name__
         return f"<{name} '{self.atom}' at 0x{addr:0x}>"
 

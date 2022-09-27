@@ -5,9 +5,9 @@ cdef class PkgcraftError(Exception):
     """Generic pkgcraft exception."""
 
     def __init__(self, str msg=None):
-        cdef char *c_error = C.pkgcraft_last_error()
-        error = None if c_error is NULL else c_error.decode()
-        C.pkgcraft_str_free(c_error)
+        c_str = C.pkgcraft_last_error()
+        error = None if c_str is NULL else c_str.decode()
+        C.pkgcraft_str_free(c_str)
 
         if msg is not None:
             super().__init__(msg)

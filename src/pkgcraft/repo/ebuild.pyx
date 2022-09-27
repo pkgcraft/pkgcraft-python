@@ -8,10 +8,8 @@ from ..error import PkgcraftError
 cdef class EbuildRepo(Repo):
     """Ebuild package repo."""
 
-    def __init__(self, conf not None, path not None, id=None, priority=0):
+    def __init__(self, conf, path, id=None, priority=0):
         config = <Config?>conf;
-        cdef C.Repo *repo
-        cdef C.RepoFormat format
         path = str(path)
         id = str(id) if id is not None else path
 
@@ -44,9 +42,7 @@ cdef class EbuildRepo(Repo):
     @property
     def masters(self):
         """Get an ebuild repo's masters."""
-        cdef C.Repo **repos
         cdef size_t length
-
         if self._masters is None:
             repos = C.pkgcraft_ebuild_repo_masters(self._repo, &length)
             self._masters = tuple(EbuildRepo.from_ptr(repos[i], False) for i in range(length))

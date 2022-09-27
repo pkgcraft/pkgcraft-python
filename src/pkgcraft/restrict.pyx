@@ -43,7 +43,7 @@ cdef C.Restrict *obj_to_restrict(object obj) except NULL:
 cdef class Restrict:
     """Generic restriction."""
 
-    def __init__(self, obj not None):
+    def __init__(self, obj):
         self._restrict = obj_to_restrict(obj)
 
     def __and__(Restrict self, Restrict other):

@@ -54,21 +54,22 @@ cdef class Atom(Cpv):
     def __cinit__(self):
         self._use = SENTINEL
 
-    def __init__(self, str atom not None, str eapi=None):
+    def __init__(self, s, eapi=None):
+        atom = (<str?>s).encode()
         cdef char *eapi_p = NULL
         if eapi is not None:
-            eapi_bytes = eapi.encode()
+            eapi_bytes = (<str?>eapi).encode()
             eapi_p = eapi_bytes
 
-        self._atom = C.pkgcraft_atom(atom.encode(), eapi_p)
+        self._atom = C.pkgcraft_atom(atom, eapi_p)
 
         if self._atom is NULL:
             raise InvalidAtom
 
     @classmethod
-    def cached(cls, str atom not None, str eapi=None):
+    def cached(cls, s, eapi=None):
         """Return a cached Atom if one exists, otherwise return a new instance."""
-        return _cached_atom(cls, atom, eapi)
+        return _cached_atom(cls, s, eapi)
 
     @property
     def blocker(self):
@@ -102,7 +103,7 @@ cdef class Atom(Cpv):
         >>> a.slot is None
         True
         """
-        cdef char *c_str = C.pkgcraft_atom_slot(self._atom)
+        c_str = C.pkgcraft_atom_slot(self._atom)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -121,7 +122,7 @@ cdef class Atom(Cpv):
         >>> a.subslot is None
         True
         """
-        cdef char *c_str = C.pkgcraft_atom_subslot(self._atom)
+        c_str = C.pkgcraft_atom_subslot(self._atom)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -187,7 +188,7 @@ cdef class Atom(Cpv):
         >>> a.repo is None
         True
         """
-        cdef char *c_str = C.pkgcraft_atom_repo(self._atom)
+        c_str = C.pkgcraft_atom_repo(self._atom)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -203,7 +204,7 @@ cdef class Atom(Cpv):
         >>> a.cpv
         'cat/pkg-1-r2'
         """
-        cdef char *c_str = C.pkgcraft_atom_cpv(self._atom)
+        c_str = C.pkgcraft_atom_cpv(self._atom)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s

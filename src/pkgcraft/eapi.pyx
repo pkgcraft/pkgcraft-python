@@ -22,7 +22,7 @@ cdef dict eapis_to_dict(const C.Eapi **eapis, size_t length, int start=0):
 cdef object get_official_eapis():
     """Get the mapping of all official EAPIs."""
     cdef size_t length
-    cdef const C.Eapi **eapis = C.pkgcraft_eapis_official(&length)
+    eapis = C.pkgcraft_eapis_official(&length)
     d = eapis_to_dict(eapis, length)
     C.pkgcraft_eapis_free(eapis, length)
     return MappingProxyType(d)
@@ -31,8 +31,8 @@ cdef object get_official_eapis():
 cdef object get_eapis():
     """Get the mapping of all known EAPIs."""
     cdef size_t length
-    cdef const C.Eapi **eapis = C.pkgcraft_eapis(&length)
     d = EAPIS_OFFICIAL.copy()
+    eapis = C.pkgcraft_eapis(&length)
     d.update(eapis_to_dict(eapis, length, start=len(d) - 1))
     C.pkgcraft_eapis_free(eapis, length)
     return MappingProxyType(d)
@@ -52,30 +52,27 @@ cdef class Eapi:
         return obj
 
     @staticmethod
-    def range(s not None):
+    def range(s):
         """Convert EAPI range into an ordered mapping of Eapi objects."""
         cdef size_t length
-        cdef const C.Eapi **eapis
-        eapi_range_bytes = str(s).encode()
-        cdef char *eapi_range_p = eapi_range_bytes
-        eapis = C.pkgcraft_eapis_range(eapi_range_p, &length)
+        eapi_range = (<str?>s).encode()
+        eapis = C.pkgcraft_eapis_range(eapi_range, &length)
         d = eapis_to_dict(eapis, length)
         C.pkgcraft_eapis_free(eapis, length)
         return MappingProxyType(d)
 
     @staticmethod
-    def get(id not None):
+    def get(id):
         """Get an EAPI given its identifier."""
         try:
             return EAPIS[id]
         except KeyError:
             raise PkgcraftError(f'unknown or invalid EAPI: {id}')
 
-    def has(self, feature not None):
+    def has(self, s):
         """Check if an EAPI has a given feature."""
-        feature_bytes = str(feature).encode()
-        cdef char *feature_p = feature_bytes
-        return C.pkgcraft_eapi_has(self._eapi, feature_p)
+        feature = (<str?>s).encode()
+        return C.pkgcraft_eapi_has(self._eapi, feature)
 
     def __lt__(self, Eapi other):
         return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) == -1
@@ -99,7 +96,7 @@ cdef class Eapi:
         return self._id
 
     def __repr__(self):
-        cdef size_t addr = <size_t>&self._eapi
+        addr = <size_t>&self._eapi
         name = self.__class__.__name__
         return f"<{name} '{self}' at 0x{addr:0x}>"
 

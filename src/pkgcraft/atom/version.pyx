@@ -17,8 +17,9 @@ cdef class Version:
     >>> v.revision
     '2'
     """
-    def __init__(self, str version not None):
-        self._version = C.pkgcraft_version(version.encode())
+    def __init__(self, s):
+        ver = (<str?>s).encode()
+        self._version = C.pkgcraft_version(ver)
         if not self._version:
             raise InvalidVersion
 
@@ -42,7 +43,7 @@ cdef class Version:
         >>> v.revision
         '0'
         """
-        cdef char *c_str = C.pkgcraft_version_revision(self._version)
+        c_str = C.pkgcraft_version_revision(self._version)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
@@ -66,13 +67,13 @@ cdef class Version:
         return C.pkgcraft_version_cmp(self._version, other._version) >= 0
 
     def __str__(self):
-        cdef char *c_str = C.pkgcraft_version_str(self._version)
+        c_str = C.pkgcraft_version_str(self._version)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
 
     def __repr__(self):
-        cdef size_t addr = <size_t>&self._version
+        addr = <size_t>&self._version
         return f"<Version '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
@@ -81,7 +82,7 @@ cdef class Version:
         return self._hash
 
     def __reduce__(self):
-        cdef char *c_str = C.pkgcraft_version_str(self._version)
+        c_str = C.pkgcraft_version_str(self._version)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return (self.__class__, (s,))
@@ -102,7 +103,8 @@ cdef class VersionWithOp(Version):
     >>> v.revision
     '0'
     """
-    def __init__(self, str version not None):
-        self._version = C.pkgcraft_version_with_op(version.encode())
+    def __init__(self, s):
+        ver = (<str?>s).encode()
+        self._version = C.pkgcraft_version_with_op(ver)
         if not self._version:
             raise InvalidVersion

@@ -21,8 +21,9 @@ cdef class Cpv:
     def __cinit__(self):
         self._version = SENTINEL
 
-    def __init__(self, str atom not None):
-        self._atom = C.pkgcraft_cpv(atom.encode())
+    def __init__(self, s):
+        cpv = (<str?>s).encode()
+        self._atom = C.pkgcraft_cpv(cpv)
         if self._atom is NULL:
             raise InvalidCpv
 
@@ -43,7 +44,6 @@ cdef class Cpv:
         >>> a.category
         'cat'
         """
-        cdef char *c_str
         if self._category is None:
             c_str = C.pkgcraft_atom_category(self._atom)
             self._category = c_str.decode()
@@ -59,7 +59,6 @@ cdef class Cpv:
         >>> a.package
         'pkg'
         """
-        cdef char *c_str
         if self._package is None:
             c_str = C.pkgcraft_atom_package(self._atom)
             self._package = c_str.decode()
@@ -75,8 +74,6 @@ cdef class Cpv:
         >>> str(a.version)
         '1-r2'
         """
-        cdef const C.AtomVersion *ver
-
         if self._version is SENTINEL:
             ver = C.pkgcraft_atom_version(self._atom)
             self._version = Version.from_ptr(ver) if ver is not NULL else None
@@ -94,7 +91,7 @@ cdef class Cpv:
         >>> a.revision
         '0'
         """
-        cdef char *c_str = C.pkgcraft_atom_revision(self._atom)
+        c_str = C.pkgcraft_atom_revision(self._atom)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -110,7 +107,7 @@ cdef class Cpv:
         >>> a.key
         'cat/pkg'
         """
-        cdef char *c_str = C.pkgcraft_atom_key(self._atom)
+        c_str = C.pkgcraft_atom_key(self._atom)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
@@ -134,13 +131,13 @@ cdef class Cpv:
         return C.pkgcraft_atom_cmp(self._atom, other._atom) >= 0
 
     def __str__(self):
-        cdef char *c_str = C.pkgcraft_atom_str(self._atom)
+        c_str = C.pkgcraft_atom_str(self._atom)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
 
     def __repr__(self):
-        cdef size_t addr = <size_t>&self._atom
+        addr = <size_t>&self._atom
         name = self.__class__.__name__
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
@@ -151,7 +148,7 @@ cdef class Cpv:
 
     def __reduce__(self):
         """Support pickling Cpv objects."""
-        cdef char *c_str = C.pkgcraft_atom_str(self._atom)
+        c_str = C.pkgcraft_atom_str(self._atom)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return (self.__class__, (s,))
