@@ -145,7 +145,7 @@ cdef class RepoSet:
         elif isinstance(other, Repo):
             s = C.pkgcraft_repo_set_op_repo(op, s, (<Repo>other)._repo)
         else:
-            raise NotImplementedError
+            return NotImplemented
         obj._set = s
         return obj
 
@@ -163,7 +163,7 @@ cdef class RepoSet:
         elif isinstance(other, Repo):
             s = C.pkgcraft_repo_set_op_repo(op, s, (<Repo>other)._repo)
         else:
-            raise NotImplementedError
+            return NotImplemented
         obj._set = s
         return obj
 
@@ -181,7 +181,7 @@ cdef class RepoSet:
         elif isinstance(other, Repo):
             s = C.pkgcraft_repo_set_op_repo(op, s, (<Repo>other)._repo)
         else:
-            raise NotImplementedError
+            return NotImplemented
         obj._set = s
         return obj
 
@@ -189,7 +189,7 @@ cdef class RepoSet:
         if isinstance(self, RepoSet):
             s = (<RepoSet>self)._set
         else:
-            raise NotImplementedError
+            return NotImplemented
 
         op = C.RepoSetOp.RepoSetSub
         obj = <RepoSet>RepoSet.__new__(RepoSet)
@@ -198,7 +198,7 @@ cdef class RepoSet:
         elif isinstance(other, Repo):
             s = C.pkgcraft_repo_set_op_repo(op, s, (<Repo>other)._repo)
         else:
-            raise NotImplementedError
+            return NotImplemented
         obj._set = s
         return obj
 

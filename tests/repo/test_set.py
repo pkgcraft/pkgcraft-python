@@ -172,5 +172,5 @@ class TestRepoSet:
         assert (s - RepoSet([r1, r2])).repos == ()
         assert (s - r3).repos == (r1, r2)
         assert (s - r2).repos == (r1,)
-        with pytest.raises(NotImplementedError):
+        with pytest.raises(TypeError):
             r2 - s
