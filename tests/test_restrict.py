@@ -33,7 +33,7 @@ class TestRestrict:
         r = Restrict(Atom('=cat/pkg-1'))
         assert list(repo.iter_restrict(r)) == [pkg1]
 
-    def test_logic_combinations(self, repo):
+    def test_logic_ops(self, repo):
         pkg1 = repo.create_pkg('cat/pkg-1')
         pkg2 = repo.create_pkg('cat/pkg-2')
 
