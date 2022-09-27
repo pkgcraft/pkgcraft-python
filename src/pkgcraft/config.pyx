@@ -77,19 +77,8 @@ cdef class Config:
         # force repos attr refresh
         self._repos = None
 
-        d = {}
-        for i in range(length):
-            r = repos[i]
-            format = C.pkgcraft_repo_format(r)
-            if format is C.RepoFormat.EbuildRepo:
-                repo = EbuildRepo.from_ptr(r, False)
-            else:
-                raise PkgcraftError('unsupported repo format')
-            id = C.pkgcraft_repo_id(r)
-            d[id.decode()] = repo
-            C.pkgcraft_str_free(id)
+        d = repos_to_dict(repos, length, False)
         C.pkgcraft_repos_free(repos, length)
-
         return d
 
     def __dealloc__(self):
