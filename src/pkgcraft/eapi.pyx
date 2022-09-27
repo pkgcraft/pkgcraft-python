@@ -8,33 +8,33 @@ EAPI_LATEST = next(reversed(EAPIS_OFFICIAL.values()))
 EAPIS = get_eapis()
 
 
-cdef object get_official_eapis():
-    cdef size_t length
-    cdef const C.Eapi **eapis = C.pkgcraft_eapis_official(&length)
+cdef dict eapis_to_dict(const C.Eapi **eapis, size_t length, int start=0):
+    """Convert an array of Eapi pointers to an (id, Eapi) mapping."""
     d = {}
 
-    for i in range(length):
+    for i in range(start, length):
         c_str = C.pkgcraft_eapi_as_str(eapis[i])
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
         d[id] = Eapi.from_ptr(eapis[i], id)
 
     C.pkgcraft_eapis_free(eapis, length)
-    return MappingProxyType(d)
+    return d
+
+
+cdef object get_official_eapis():
+    """Get the mapping of all official EAPIs."""
+    cdef size_t length
+    cdef const C.Eapi **eapis = C.pkgcraft_eapis_official(&length)
+    return MappingProxyType(eapis_to_dict(eapis, length))
 
 
 cdef object get_eapis():
+    """Get the mapping of all known EAPIs."""
     cdef size_t length
     cdef const C.Eapi **eapis = C.pkgcraft_eapis(&length)
     d = EAPIS_OFFICIAL.copy()
-
-    for i in range(len(d) - 1, length):
-        c_str = C.pkgcraft_eapi_as_str(eapis[i])
-        id = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        d[id] = Eapi.from_ptr(eapis[i], id)
-
-    C.pkgcraft_eapis_free(eapis, length)
+    d.update(eapis_to_dict(eapis, length, start=len(d) - 1))
     return MappingProxyType(d)
 
 
@@ -56,20 +56,10 @@ cdef class Eapi:
         """Convert EAPI range into an ordered mapping of Eapi objects."""
         cdef size_t length
         cdef const C.Eapi **eapis
-        d = {}
-
         eapi_range_bytes = str(s).encode()
         cdef char *eapi_range_p = eapi_range_bytes
         eapis = C.pkgcraft_eapis_range(eapi_range_p, &length)
-
-        for i in range(length):
-            c_str = C.pkgcraft_eapi_as_str(eapis[i])
-            id = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            d[id] = Eapi.from_ptr(eapis[i], id)
-
-        C.pkgcraft_eapis_free(eapis, length)
-        return MappingProxyType(d)
+        return MappingProxyType(eapis_to_dict(eapis, length))
 
     @staticmethod
     def get(id not None):
