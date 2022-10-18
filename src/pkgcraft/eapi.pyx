@@ -52,11 +52,10 @@ cdef class Eapi:
         return obj
 
     @staticmethod
-    def range(s):
+    def range(str s):
         """Convert EAPI range into an ordered mapping of Eapi objects."""
         cdef size_t length
-        eapi_range = (<str?>s).encode()
-        eapis = C.pkgcraft_eapis_range(eapi_range, &length)
+        eapis = C.pkgcraft_eapis_range(s.encode(), &length)
         d = eapis_to_dict(eapis, length)
         C.pkgcraft_eapis_free(eapis, length)
         return MappingProxyType(d)
