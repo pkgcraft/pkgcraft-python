@@ -69,10 +69,9 @@ cdef class Eapi:
         except KeyError:
             raise PkgcraftError(f'unknown or invalid EAPI: {id}')
 
-    def has(self, s):
+    def has(self, str feature):
         """Check if an EAPI has a given feature."""
-        feature = (<str?>s).encode()
-        return C.pkgcraft_eapi_has(self._eapi, feature)
+        return C.pkgcraft_eapi_has(self._eapi, feature.encode())
 
     def __lt__(self, Eapi other):
         return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) == -1

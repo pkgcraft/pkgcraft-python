@@ -34,6 +34,10 @@ class TestEapi:
         assert not eapi.has('nonexistent_feature')
         assert eapi.has('slot_deps')
 
+        # invalid feature param type
+        with pytest.raises(TypeError):
+            eapi.has(object())
+
     def test_cmp(self):
         EAPI0 = EAPIS['0']
         EAPI1 = EAPIS['1']
