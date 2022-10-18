@@ -1,5 +1,6 @@
 import os
 import subprocess
+from multiprocessing import cpu_count
 
 from setuptools import setup
 from setuptools.command import build_ext as dst_build_ext
@@ -135,6 +136,10 @@ class build_ext(dst_build_ext.build_ext):
             )
 
         super().finalize_options()
+
+        # default to parallelizing build across all cores
+        if self.parallel is None:
+            self.parallel = cpu_count()
 
     def run(self):
         # delay pkg-config to avoid requiring library during sdist
