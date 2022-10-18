@@ -40,15 +40,10 @@ cdef class FakeRepo(Repo):
         if repo is NULL:
             raise PkgcraftError
 
-        repo = C.pkgcraft_config_add_repo(config._config, repo)
-        if repo is NULL:
-            raise PkgcraftError
-
-        # force config repos attr refresh to get correct dict ordering by repo priority
-        config._repos = None
-
         self._repo = repo
         self._ref = False
+
+        config.add_repo(self)
 
     @staticmethod
     cdef FakeRepo from_ptr(const C.Repo *repo, bint ref):

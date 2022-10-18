@@ -1,5 +1,5 @@
 from . cimport pkgcraft_c as C
-from .repo cimport EbuildRepo, RepoSet
+from .repo cimport EbuildRepo, Repo, RepoSet
 from .error import PkgcraftError
 
 
@@ -60,6 +60,14 @@ cdef class Config:
             raise PkgcraftError('unsupported repo format')
 
         return r
+
+    def add_repo(self, Repo repo):
+        """Add an external repo."""
+        if C.pkgcraft_config_add_repo(self._config, repo._repo) is NULL:
+            raise PkgcraftError
+
+        # force repos attr refresh
+        self._repos = None
 
     # TODO: determine default fs path based off install prefix?
     def load_repos_conf(self, path='/etc/portage/repos.conf'):
