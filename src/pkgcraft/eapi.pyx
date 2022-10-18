@@ -61,7 +61,7 @@ cdef class Eapi:
         return MappingProxyType(d)
 
     @staticmethod
-    def get(id):
+    def get(str id):
         """Get an EAPI given its identifier."""
         try:
             return EAPIS[id]
