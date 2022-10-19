@@ -15,29 +15,25 @@ jobs:
         python-version: ['3.9', '3.10', '3.11-dev']
 
     steps:
-    - name: Checkout workspace
-      uses: actions/checkout@v3
+    - name: Set pkgcraft dir env var
+      run: echo pkgcraft_dir=~/pkgcraft >> $GITHUB_ENV
+
+    - name: Download prebuilt pkgcraft-c library
+      id: download-artifact
+      uses: dawidd6/action-download-artifact@v2
       with:
-        repository: pkgcraft/pkgcraft-workspace
-        submodules: recursive
-
-    - name: Pull submodule updates
-      run: git submodule update --recursive --remote
-
-    - name: Get bash submodule commit hash
-      working-directory: scallop
-      id: bash
-      run: echo "::set-output name=commit::$(git rev-parse --short HEAD:bash)"
-
-    - name: Remove current repo from workspace
-      run: rm -rfv ${{ github.event.repository.name }}
+        github_token: ${{ secrets.PKGCRAFT_TEST_TOKEN }}
+        repo: pkgcraft/pkgcraft-c
+        branch: main
+        workflow: ci.yml
+        name: pkgcraft-c-${{ runner.os }}
+        path: ${{ env.pkgcraft_dir }}
 
     - name: Checkout code
       uses: actions/checkout@v3
       with:
         # checkout full history for setuptools-scm
         fetch-depth: 0
-        path: ${{ github.event.repository.name }}
         submodules: recursive
 
     - name: Set up Python ${{ matrix.python-version }}
@@ -45,52 +41,16 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Set up rust toolchain
-      uses: actions-rs/toolchain@v1
-      id: rust
-      with:
-        toolchain: stable
-        profile: minimal
-        override: true
-
-    - name: Set up cache
-      uses: actions/cache@v3
-      id: cache
-      with:
-        path: |
-          ~/.cargo/bin
-          ~/.cargo/registry/index
-          ~/.cargo/registry/cache
-          ~/.cargo/git/db
-          ~/.cache/pip
-          .tox
-          target
-        key: v3-${{ github.job }}-${{ runner.os }}-bash-${{ steps.bash.outputs.commit }}-rust-${{ steps.rust.outputs.rustc_hash }}-cargo-${{ hashFiles('Cargo.lock') }}
-        restore-keys: v3-${{ github.job }}-${{ runner.os }}-bash-${{ steps.bash.outputs.commit }}-rust-${{ steps.rust.outputs.rustc_hash }}-cargo-
-
-    - name: Install cargo-c via binary package on Linux
-      if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-linux.tar.gz | tar xvzf - -C ~/.cargo/bin
-
-    - name: Install cargo-c via binary package on MacOS
-      if: ${{ matrix.os == 'macos-latest' }}
-      run: |
-        curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-macos.zip > cargo-c.zip
-        unzip -o cargo-c.zip -d ~/.cargo/bin
-        rm cargo-c.zip
-
-    - name: Build and install C library
-      run: |
-        cargo cinstall -p pkgcraft-c --prefix="${PWD}/target/pkgcraft" --pkgconfigdir="${PWD}/target/pkgcraft"
-        echo "PKG_CONFIG_PATH=${PWD}/target/pkgcraft" >> $GITHUB_ENV
-        echo "LD_LIBRARY_PATH=${PWD}/target/pkgcraft/lib" >> $GITHUB_ENV
-        echo "DYLD_LIBRARY_PATH=${PWD}/target/pkgcraft/lib" >> $GITHUB_ENV
-
     - name: Install dependencies
       run: pip install tox
 
+    - name: Override build variables
+      run: |
+        echo "PKG_CONFIG_PATH=${pkgcraft_dir}" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=${pkgcraft_dir}/lib" >> $GITHUB_ENV
+        echo "DYLD_LIBRARY_PATH=${pkgcraft_dir}/lib" >> $GITHUB_ENV
+
     - name: Run tests via tox
-      working-directory: ${{ github.event.repository.name }}
       run: tox -e coverage
 
     - name: Upload coverage to Codecov
