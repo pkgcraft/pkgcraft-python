@@ -22,7 +22,7 @@ jobs:
       id: download-artifact
       uses: dawidd6/action-download-artifact@v2
       with:
-        github_token: ${{ secrets.PKGCRAFT_TEST_TOKEN }}
+        github_token: ${{ secrets.PKGCRAFT_CI_TOKEN }}
         repo: pkgcraft/pkgcraft-c
         branch: main
         workflow: ci.yml
