@@ -14,10 +14,10 @@ jobs:
             python-version: '3.10'
           - os: macos-latest
             python-version: '3.10'
-            macos_target: '11.0'
+            macos-target: '11.0'
     runs-on: ${{ matrix.os }}
     env:
-      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos_target }}
+      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-target }}
 
     steps:
     - name: Checkout workspace
@@ -72,14 +72,14 @@ jobs:
 
     - name: Create GitHub release
       uses: softprops/action-gh-release@v1
-      if: ${{ matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/') }}
+      if: ${{ runner.os == 'Linux' && startsWith(github.ref, 'refs/tags/') }}
       with:
         files: pkgcraft-python/dist/*.tar.gz
         fail_on_unmatched_files: true
 
     - name: Upload sdist to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      if: ${{ matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/') }}
+      if: ${{ runner.os == 'Linux' && startsWith(github.ref, 'refs/tags/') }}
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
         packages_dir: pkgcraft-python/dist/
