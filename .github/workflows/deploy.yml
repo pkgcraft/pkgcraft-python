@@ -53,7 +53,7 @@ jobs:
       working-directory: ${{ github.event.repository.name }}
       run: |
         pip install tox
-        tox -e sdist
+        tox --workdir ~/tox -e sdist
 
     - name: Build wheels
       run: |
