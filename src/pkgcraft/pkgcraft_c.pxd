@@ -93,16 +93,6 @@ cdef extern from "pkgcraft.h":
         char *site;
         char *name;
 
-    # Parse a string into an atom using a specific EAPI. Pass NULL for the eapi argument in
-    # order to parse using the latest EAPI with extensions (e.g. support for repo deps).
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The atom argument should be a UTF-8 string while eapi can be a string or may be
-    # NULL to use the default EAPI.
-    Atom *pkgcraft_atom(const char *atom, const char *eapi);
-
     # Return an atom's blocker status, e.g. the atom "!cat/pkg" has a weak blocker.
     #
     # Returns -1 on nonexistence.
@@ -147,6 +137,16 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_key(Atom *atom);
+
+    # Parse a string into an atom using a specific EAPI. Pass NULL for the eapi argument in
+    # order to parse using the latest EAPI with extensions (e.g. support for repo deps).
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The atom argument should be a UTF-8 string while eapi can be a string or may be
+    # NULL to use the default EAPI.
+    Atom *pkgcraft_atom_new(const char *atom, const char *eapi);
 
     # Return an atom's package, e.g. the atom "=cat/pkg-1-r2" has a package of "pkg".
     #
@@ -225,11 +225,6 @@ cdef extern from "pkgcraft.h":
     # is borrowed from its related Atom object and should never be freed manually.
     const AtomVersion *pkgcraft_atom_version(Atom *atom);
 
-    # Return the pkgcraft config for the system.
-    #
-    # Returns NULL on error.
-    Config *pkgcraft_config();
-
     # Add an external Repo to the config.
     #
     # Returns NULL on error.
@@ -260,6 +255,11 @@ cdef extern from "pkgcraft.h":
     # The path argument should be a valid path on the system.
     Repo **pkgcraft_config_load_repos_conf(Config *config, const char *path, uintptr_t *len);
 
+    # Return the pkgcraft config for the system.
+    #
+    # Returns NULL on error.
+    Config *pkgcraft_config_new();
+
     # Return the repos for a config.
     #
     # # Safety
@@ -278,7 +278,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument should be a UTF-8 string.
-    Atom *pkgcraft_cpv(const char *s);
+    Atom *pkgcraft_cpv_new(const char *s);
 
     # Free a DepSet.
     #
@@ -548,6 +548,9 @@ cdef extern from "pkgcraft.h":
     # The caller is expected to free the error string using pkgcraft_str_free().
     char *pkgcraft_last_error();
 
+    # Return the library version.
+    char *pkgcraft_lib_version();
+
     # Parse an atom string.
     #
     # Returns NULL on error.
@@ -788,12 +791,6 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null RepoRestrictPkgIter pointer.
     Pkg *pkgcraft_repo_restrict_iter_next(RepoRestrictPkgIter *i);
 
-    # Create a repo set.
-    #
-    # # Safety
-    # The argument must be an array of Repo pointers.
-    RepoSet *pkgcraft_repo_set(Repo **repos, uintptr_t len);
-
     # Perform a set operation on a repo set and repo, assigning to the set.
     #
     # # Safety
@@ -850,6 +847,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null RepoSetPkgIter pointer.
     Pkg *pkgcraft_repo_set_iter_next(RepoSetPkgIter *i);
+
+    # Create a repo set.
+    #
+    # # Safety
+    # The argument must be an array of Repo pointers.
+    RepoSet *pkgcraft_repo_set_new(Repo **repos, uintptr_t len);
 
     # Perform a set operation on a repo set and repo, creating a new set.
     #
@@ -963,14 +966,6 @@ cdef extern from "pkgcraft.h":
     # The argument must be a string pointer or NULL.
     void pkgcraft_str_free(char *s);
 
-    # Parse a string into a version.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The version argument should point to a valid string.
-    AtomVersion *pkgcraft_version(const char *version);
-
     # Compare two versions returning -1, 0, or 1 if the first version is less than, equal to, or greater
     # than the second version, respectively.
     #
@@ -989,6 +984,14 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The version argument should be a non-null Version pointer received from pkgcraft_version().
     uint64_t pkgcraft_version_hash(AtomVersion *version);
+
+    # Parse a string into a version.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The version argument should point to a valid string.
+    AtomVersion *pkgcraft_version_new(const char *version);
 
     # Return a version's revision, e.g. the version "1-r2" has a revision of "2".
     #

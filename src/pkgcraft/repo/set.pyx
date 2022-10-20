@@ -19,7 +19,7 @@ cdef class RepoSet:
             raise MemoryError
         for (i, r) in enumerate(repos):
             array[i] = (<Repo?>r)._repo
-        self._set = C.pkgcraft_repo_set(array, length)
+        self._set = C.pkgcraft_repo_set_new(array, length)
         PyMem_Free(array)
 
     @staticmethod

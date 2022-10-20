@@ -19,7 +19,7 @@ cdef class Version:
     """
     def __init__(self, s):
         ver = (<str?>s).encode()
-        self._version = C.pkgcraft_version(ver)
+        self._version = C.pkgcraft_version_new(ver)
         if not self._version:
             raise InvalidVersion
 

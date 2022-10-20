@@ -27,7 +27,7 @@ cdef class Config:
     """Config for the system."""
 
     def __init__(self):
-        self._config = C.pkgcraft_config()
+        self._config = C.pkgcraft_config_new()
         if self._config is NULL:
             raise PkgcraftError
 

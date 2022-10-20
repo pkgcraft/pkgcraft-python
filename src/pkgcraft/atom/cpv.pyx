@@ -23,7 +23,7 @@ cdef class Cpv:
 
     def __init__(self, s):
         cpv = (<str?>s).encode()
-        self._atom = C.pkgcraft_cpv(cpv)
+        self._atom = C.pkgcraft_cpv_new(cpv)
         if self._atom is NULL:
             raise InvalidCpv
 

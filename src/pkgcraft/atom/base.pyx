@@ -61,7 +61,7 @@ cdef class Atom(Cpv):
             eapi_bytes = (<str?>eapi).encode()
             eapi_p = eapi_bytes
 
-        self._atom = C.pkgcraft_atom(atom, eapi_p)
+        self._atom = C.pkgcraft_atom_new(atom, eapi_p)
 
         if self._atom is NULL:
             raise InvalidAtom
