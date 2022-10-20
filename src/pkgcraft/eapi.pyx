@@ -52,10 +52,11 @@ cdef class Eapi:
         return obj
 
     @staticmethod
-    def range(str s):
+    def range(s):
         """Convert EAPI range into an ordered mapping of Eapi objects."""
         cdef size_t length
-        eapis = C.pkgcraft_eapis_range(s.encode(), &length)
+        eapi_range = (<str?>s).encode()
+        eapis = C.pkgcraft_eapis_range(eapi_range, &length)
         d = eapis_to_dict(eapis, length)
         C.pkgcraft_eapis_free(eapis, length)
         return MappingProxyType(d)
@@ -68,9 +69,10 @@ cdef class Eapi:
         except KeyError:
             raise PkgcraftError(f'unknown or invalid EAPI: {id}')
 
-    def has(self, str feature):
+    def has(self, s):
         """Check if an EAPI has a given feature."""
-        return C.pkgcraft_eapi_has(self._eapi, feature.encode())
+        feature = (<str?>s).encode()
+        return C.pkgcraft_eapi_has(self._eapi, feature)
 
     def __lt__(self, Eapi other):
         return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) == -1

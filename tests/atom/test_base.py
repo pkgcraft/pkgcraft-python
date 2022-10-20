@@ -94,6 +94,11 @@ class TestAtom:
                 else:
                     assert Atom(s, eapi)
 
+    def test_invalid_arg_type(self):
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                Atom(obj)
+
     def test_cmp(self):
         with open(TOMLDIR / 'versions.toml', 'rb') as f:
             d = tomllib.load(f)

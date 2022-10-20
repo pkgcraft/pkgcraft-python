@@ -23,6 +23,11 @@ class TestCpv:
             with pytest.raises(InvalidCpv, match=f'invalid cpv: "{s}"'):
                 Cpv(s)
 
+    def test_invalid_arg_type(self):
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                Cpv(obj)
+
     def test_pickle(self):
         a = Cpv('cat/pkg-1-r2')
         b = pickle.loads(pickle.dumps(a))

@@ -41,6 +41,11 @@ class TestVersion:
             with pytest.raises(InvalidVersion, match=f'invalid version: "{s}"'):
                 Version(s)
 
+    def test_invalid_arg_type(self):
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                Version(obj)
+
     def test_cmp(self):
         with open(TOMLDIR / 'versions.toml', 'rb') as f:
             d = tomllib.load(f)
@@ -77,6 +82,11 @@ class TestVersionWithOp:
         for s in ('1-r2',):
             with pytest.raises(InvalidVersion, match=f'invalid version: "{s}"'):
                 VersionWithOp(s)
+
+    def test_invalid_arg_type(self):
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                VersionWithOp(obj)
 
     def test_pickle(self):
         a = VersionWithOp('>=1-r1')
