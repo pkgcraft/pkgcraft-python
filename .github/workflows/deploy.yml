@@ -68,7 +68,7 @@ jobs:
           pkgcraft-python/dist/
           pkgcraft-python/wheels/
         if-no-files-found: error
-        retention-days: 3
+        retention-days: 1
 
     - name: Create GitHub release
       uses: softprops/action-gh-release@v1
