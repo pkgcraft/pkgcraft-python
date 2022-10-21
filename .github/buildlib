@@ -13,25 +13,34 @@ doecho() {
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 doecho source "${HOME}"/.cargo/env
 
-# install cargo-c via binary package
-if [[ ${OSTYPE} == "linux-"* ]]; then
-	curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-linux.tar.gz | tar xvzf - -C "${HOME}"/.cargo/bin
-elif [[ ${OSTYPE} == "darwin"* ]]; then
-	curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-macos.zip > cargo-c.zip
-	unzip -o cargo-c.zip -d "${HOME}"/.cargo/bin
-	rm cargo-c.zip
-else
-	echo "unknown OS: ${OSTYPE}"
-	exit 1
-fi
-
-# install required clang libs on linux
+# install required libs on linux
 if [[ ${OSTYPE} == "linux-gnu" ]]; then
 	doecho dnf makecache --refresh
-	doecho dnf -y install clang
+	doecho dnf -y install ${PACKAGES}
 elif [[ ${OSTYPE} == "linux-musl" ]]; then
 	doecho apk update
-	doecho apk add clang
+	doecho apk add ${PACKAGES}
+fi
+
+if [[ ${HOSTTYPE} == "x86_64" ]]; then
+	# install cargo-c via binary package
+	if [[ ${OSTYPE} == "linux-"* ]]; then
+		curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-linux.tar.gz | tar xvzf - -C "${HOME}"/.cargo/bin
+	elif [[ ${OSTYPE} == "darwin"* ]]; then
+		curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-macos.zip > cargo-c.zip
+		unzip -o cargo-c.zip -d "${HOME}"/.cargo/bin
+		rm cargo-c.zip
+	else
+		echo "unknown OS: ${OSTYPE}"
+		exit 1
+	fi
+else
+	# avoid libgit2 usage due to memory problems when emulated under qemu
+	# https://users.rust-lang.org/t/cargo-uses-too-much-memory-being-run-in-qemu/76531
+	cargo --config net.git-fetch-with-cli=true update
+
+	# manually build cargo-c for arches without native binaries
+	cargo install cargo-c
 fi
 
 # update cargo lock file using dep versions from tagged releases

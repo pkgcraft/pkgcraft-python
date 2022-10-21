@@ -12,12 +12,20 @@ jobs:
         include:
           - os: ubuntu-latest
             python-version: '3.10'
+            arch: 'x86_64'
+            packages: 'clang'
+          - os: ubuntu-latest
+            python-version: '3.10'
+            arch: 'aarch64'
+            packages: 'clang openssl-devel'
           - os: macos-latest
             python-version: '3.10'
+            arch: 'x86_64'
             macos-target: '11.0'
     runs-on: ${{ matrix.os }}
     env:
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-target }}
+      CIBW_ENVIRONMENT: PACKAGES="${{ matrix.packages }}"
 
     steps:
     - name: Checkout workspace
@@ -55,10 +63,16 @@ jobs:
         pip install tox
         tox --workdir ~/tox -e sdist
 
+    - name: Set up QEMU
+      if: runner.os == 'Linux' && matrix.arch != 'x86_64'
+      uses: docker/setup-qemu-action@v2
+      with:
+        platforms: ${{ matrix.arch }}
+
     - name: Build wheels
       run: |
         pip install cibuildwheel>=2.8
-        cibuildwheel --output-dir pkgcraft-python/wheels pkgcraft-python
+        cibuildwheel --output-dir pkgcraft-python/wheels --archs ${{ matrix.arch }} pkgcraft-python
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
@@ -72,14 +86,14 @@ jobs:
 
     - name: Create GitHub release
       uses: softprops/action-gh-release@v1
-      if: ${{ runner.os == 'Linux' && startsWith(github.ref, 'refs/tags/') }}
+      if: ${{ runner.os == 'Linux' && matrix.arch == 'x86_64' && startsWith(github.ref, 'refs/tags/') }}
       with:
         files: pkgcraft-python/dist/*.tar.gz
         fail_on_unmatched_files: true
 
     - name: Upload sdist to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
-      if: ${{ runner.os == 'Linux' && startsWith(github.ref, 'refs/tags/') }}
+      if: ${{ runner.os == 'Linux' && matrix.arch == 'x86_64' && startsWith(github.ref, 'refs/tags/') }}
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
         packages_dir: pkgcraft-python/dist/

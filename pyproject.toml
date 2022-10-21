@@ -18,8 +18,11 @@ test-requires = "pytest"
 test-command = "{package}/.github/test {package}"
 
 [tool.cibuildwheel.linux]
-archs = ["x86_64"]
+archs = ["x86_64", "aarch64"]
 skip = "*-musllinux*"
+# avoid testing on emulated architectures
+test-skip = "*-*linux_{aarch64,ppc64le,s390x}"
+manylinux-aarch64-image = "manylinux_2_28"
 manylinux-x86_64-image = "manylinux_2_28"
 
 [tool.cibuildwheel.macos]
