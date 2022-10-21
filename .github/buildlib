@@ -14,13 +14,23 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 doecho source "${HOME}"/.cargo/env
 
 # install required libs on linux
-if [[ ${OSTYPE} == "linux-gnu" ]]; then
-	doecho dnf makecache --refresh
-	doecho dnf -y install ${PACKAGES}
-elif [[ ${OSTYPE} == "linux-musl" ]]; then
-	doecho apk update
-	doecho apk add ${PACKAGES}
-fi
+install_pkgs() {
+	local -a packages=( clang )
+	# non-native targets require openssl headers to compile cargo-c
+	if [[ ${HOSTTYPE} != "x86_64" ]]; then
+		packages+=( openssl-devel )
+	fi
+
+	if [[ ${OSTYPE} == "linux-gnu" ]]; then
+		doecho dnf makecache --refresh
+		doecho dnf -y install ${packages[@]}
+	elif [[ ${OSTYPE} == "linux-musl" ]]; then
+		doecho apk update
+		doecho apk add ${packages[@]}
+	fi
+}
+
+[[ ${OSTYPE} == "linux-"* ]] && install_pkgs
 
 if [[ ${HOSTTYPE} == "x86_64" ]]; then
 	# install cargo-c via binary package
