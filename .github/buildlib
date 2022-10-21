@@ -56,4 +56,4 @@ fi
 # update cargo lock file using dep versions from tagged releases
 doecho cargo update
 # build and install C library
-doecho cargo cinstall -p pkgcraft-c
+doecho cargo cinstall -p pkgcraft-c --profile bundled
