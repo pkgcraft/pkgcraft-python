@@ -13,13 +13,14 @@ testpaths = ["tests"]
 [tool.cibuildwheel]
 build = ["cp39-*", "cp310-*", "cp311-*"]
 build-verbosity = 1
-manylinux-x86_64-image = "manylinux_2_28"
 before-all = "{package}/.github/buildlib"
 test-requires = "pytest"
 test-command = "{package}/.github/test {package}"
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64"]
+skip = "*-musllinux*"
+manylinux-x86_64-image = "manylinux_2_28"
 
 [tool.cibuildwheel.macos]
 archs = ["x86_64"]
