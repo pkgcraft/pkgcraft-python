@@ -16,6 +16,9 @@ jobs:
           - os: ubuntu-latest
             arch: 'aarch64'
             packages: 'clang openssl-devel'
+          - os: ubuntu-latest
+            arch: 'ppc64le'
+            packages: 'clang openssl-devel'
           - os: macos-latest
             arch: 'x86_64'
             macos-target: '11.0'
