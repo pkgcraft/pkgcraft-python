@@ -22,6 +22,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-target }}
+      CIBW_CONTAINER_ENGINE: 'docker'
+      CIBW_PLATFORM: 'auto'
 
     steps:
     - name: Checkout workspace
@@ -53,22 +55,14 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Build sdist
-      working-directory: ${{ github.event.repository.name }}
-      run: |
-        pip install tox
-        tox --workdir ~/tox -e sdist
-
     - name: Set up QEMU
       if: runner.os == 'Linux' && matrix.arch != 'x86_64'
       uses: docker/setup-qemu-action@v2
       with:
         platforms: ${{ matrix.arch }}
 
-    - name: Build wheels
-      run: |
-        pip install cibuildwheel>=2.8
-        cibuildwheel --output-dir pkgcraft-python/wheels --archs ${{ matrix.arch }} pkgcraft-python
+    - name: Build sdist and wheels
+      run: ./build-wheels ${{ matrix.arch }}
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
