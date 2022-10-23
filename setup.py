@@ -11,8 +11,8 @@ MODULEDIR = 'src/pkgcraft'
 PACKAGEDIR = os.path.dirname(MODULEDIR)
 
 # version requirements for pkgcraft C library
-MINVERSION = '0.0.2'
-MAXVERSION = '0.0.2'
+MIN_VERSION = '0.0.2'
+MAX_VERSION = '0.0.2'
 
 # running against git repo
 GIT = os.path.exists(os.path.join(os.path.dirname(__file__), '.git'))
@@ -153,14 +153,14 @@ class build_ext(dst_build_ext.build_ext):
             raise SystemExit('failed retrieving pkgcraft C library version')
 
         try:
-            subprocess.check_output(['pkg-config', '--atleast-version', MINVERSION, 'pkgcraft'])
+            subprocess.check_output(['pkg-config', '--atleast-version', MIN_VERSION, 'pkgcraft'])
         except subprocess.CalledProcessError:
-            raise SystemExit(f'pkgcraft C library {version} fails requirements >={MINVERSION}')
+            raise SystemExit(f'pkgcraft C library {version} fails requirements >={MIN_VERSION}')
 
         try:
-            subprocess.check_output(['pkg-config', '--max-version', MAXVERSION, 'pkgcraft'])
+            subprocess.check_output(['pkg-config', '--max-version', MAX_VERSION, 'pkgcraft'])
         except subprocess.CalledProcessError:
-            raise SystemExit(f'pkgcraft C library {version} fails requirements <={MAXVERSION}')
+            raise SystemExit(f'pkgcraft C library {version} fails requirements <={MAX_VERSION}')
 
         for ext in self.extensions:
             for attr, data in pkgcraft_opts.items():
