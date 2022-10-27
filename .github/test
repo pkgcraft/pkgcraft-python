@@ -1,5 +1,5 @@
 #!/bin/bash
-# Run pkgcraft tests in cibuildwheel.
+# Run pkgcraft tests in cibuildwheel using the release tarball.
 
 set -e
 
