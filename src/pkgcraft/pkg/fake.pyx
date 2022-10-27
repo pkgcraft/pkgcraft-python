@@ -7,7 +7,7 @@ from ..repo cimport FakeRepo
 cdef class FakePkg(Pkg):
     """Generic ebuild package."""
 
-    def __init__(self):
+    def __init__(self):  # pragma: no cover
         raise IndirectInit(self)
 
     @staticmethod
