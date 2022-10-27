@@ -2,7 +2,6 @@ import os
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 from .. cimport pkgcraft_c as C
-from ..config cimport Config
 from ..pkg cimport FakePkg
 from . cimport Repo
 from ..error import PkgcraftError
@@ -11,8 +10,7 @@ from ..error import PkgcraftError
 cdef class FakeRepo(Repo):
     """Fake package repo."""
 
-    def __init__(self, conf, data, id=None, priority=0):
-        config = <Config?>conf
+    def __init__(self, data, id=None, priority=0):
         cdef C.Repo *repo
         path = str(data)
 
@@ -42,8 +40,6 @@ cdef class FakeRepo(Repo):
 
         self._repo = repo
         self._ref = False
-
-        config.add_repo(self)
 
     @staticmethod
     cdef FakeRepo from_ptr(const C.Repo *repo, bint ref):
