@@ -10,7 +10,7 @@ from ..error import PkgcraftError
 cdef class FakeRepo(Repo):
     """Fake package repo."""
 
-    def __init__(self, data, id=None, priority=0):
+    def __init__(self, data not None, id=None, priority=0):
         cdef C.Repo *repo
         path = str(data)
 
