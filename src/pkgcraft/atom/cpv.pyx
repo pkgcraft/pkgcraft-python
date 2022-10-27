@@ -21,9 +21,8 @@ cdef class Cpv:
     def __cinit__(self):
         self._version = SENTINEL
 
-    def __init__(self, s):
-        cpv = (<str?>s).encode()
-        self._atom = C.pkgcraft_cpv_new(cpv)
+    def __init__(self, str s not None):
+        self._atom = C.pkgcraft_cpv_new(s.encode())
         if self._atom is NULL:
             raise InvalidCpv
 

@@ -17,9 +17,8 @@ cdef class Version:
     >>> v.revision
     '2'
     """
-    def __init__(self, s):
-        ver = (<str?>s).encode()
-        self._version = C.pkgcraft_version_new(ver)
+    def __init__(self, str s not None):
+        self._version = C.pkgcraft_version_new(s.encode())
         if not self._version:
             raise InvalidVersion
 
@@ -103,8 +102,7 @@ cdef class VersionWithOp(Version):
     >>> v.revision
     '0'
     """
-    def __init__(self, s):
-        ver = (<str?>s).encode()
-        self._version = C.pkgcraft_version_with_op(ver)
+    def __init__(self, str s not None):
+        self._version = C.pkgcraft_version_with_op(s.encode())
         if not self._version:
             raise InvalidVersion

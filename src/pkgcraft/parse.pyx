@@ -1,79 +1,73 @@
 from . cimport pkgcraft_c as C
 from .error import PkgcraftError
 
-def atom(s, eapi=None):
+def atom(str s not None, eapi=None):
     """Parse an atom string.
 
     >>> from pkgcraft import parse
     >>> parse.atom('=cat/pkg-1')
     True
     """
-    atom = (<str?>s).encode()
     cdef char *eapi_p = NULL
     if eapi is not None:
         eapi_bytes = (<str?>eapi).encode()
         eapi_p = eapi_bytes
 
-    if C.pkgcraft_parse_atom(atom, eapi_p) is NULL:
+    if C.pkgcraft_parse_atom(s.encode(), eapi_p) is NULL:
         raise PkgcraftError
     return True
 
-def category(s):
+def category(str s not None):
     """Parse an atom category string.
 
     >>> from pkgcraft import parse
     >>> parse.category('cat')
     True
     """
-    cat = (<str?>s).encode()
-    if not C.pkgcraft_parse_category(cat):
+    if not C.pkgcraft_parse_category(s.encode()):
         raise PkgcraftError
     return True
 
-def package(s):
+def package(str s not None):
     """Parse an atom package string.
 
     >>> from pkgcraft import parse
     >>> parse.package('pkg')
     True
     """
-    pkg = (<str?>s).encode()
-    if not C.pkgcraft_parse_package(pkg):
+    if not C.pkgcraft_parse_package(s.encode()):
         raise PkgcraftError
     return True
 
-def version(s):
+def version(str s not None):
     """Parse an atom version string.
 
     >>> from pkgcraft import parse
     >>> parse.version('1-r2')
     True
     """
-    ver = (<str?>s).encode()
-    if not C.pkgcraft_parse_version(ver):
+    if not C.pkgcraft_parse_version(s.encode()):
         raise PkgcraftError
     return True
 
-def repo(s):
+def repo(str s not None):
     """Parse an atom repo string.
 
     >>> from pkgcraft import parse
     >>> parse.repo('repo')
     True
     """
-    repo = (<str?>s).encode()
-    if not C.pkgcraft_parse_repo(repo):
+    if not C.pkgcraft_parse_repo(s.encode()):
         raise PkgcraftError
     return True
 
-def cpv(s):
+def cpv(str s not None):
     """Parse an atom cpv string.
 
     >>> from pkgcraft import parse
     >>> parse.cpv('cat/pkg-1')
     True
     """
-    cpv = (<str?>s).encode()
-    if not C.pkgcraft_parse_cpv(cpv):
+    if not C.pkgcraft_parse_cpv(s.encode()):
         raise PkgcraftError
     return True
