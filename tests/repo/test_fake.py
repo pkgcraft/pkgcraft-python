@@ -7,6 +7,12 @@ from pkgcraft.repo import FakeRepo
 class TestFakeRepo:
 
     def test_init(self, tmp_path):
+        # invalid args
+        with pytest.raises(TypeError):
+            FakeRepo(None, id='fake')
+        with pytest.raises(AttributeError, match='missing repo id'):
+            FakeRepo([])
+
         # empty file
         path = tmp_path / 'atoms'
         path.touch()
