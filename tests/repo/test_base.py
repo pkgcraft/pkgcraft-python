@@ -63,7 +63,7 @@ class TestRepo:
         assert repo == repo
         path = repo.path
 
-        for (r1, op, r2) in (
+        for (r1_args, op, r2_args) in (
                 (['a'], '<', ['b']),
                 (['b', 1], '<=', ['a', 2]),
                 (['a'], '!=', ['b']),
@@ -72,8 +72,9 @@ class TestRepo:
                 ):
             config = Config()
             op_func = OperatorMap[op]
-            err = f"failed {r1} {op} {r2}"
-            assert op_func(config.add_repo_path(path, *r1), config.add_repo_path(path, *r2)), err
+            r1 = config.add_repo_path(path, *r1_args)
+            r2 = config.add_repo_path(path, *r2_args)
+            assert op_func(r1, r2), f'failed {r1_args} {op} {r2_args}'
 
     def test_hash(self, config, raw_repo):
         r1 = config.add_repo_path(raw_repo.path)
