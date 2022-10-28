@@ -1,13 +1,18 @@
 import pytest
 
 from pkgcraft.atom import Cpv
-from pkgcraft.error import InvalidRestrict
+from pkgcraft.error import InvalidRestrict, PkgcraftError
 from pkgcraft.repo import EbuildRepo
 
 
 class TestEbuildRepo:
 
     def test_init(self, config, raw_repo):
+        # nonexistent
+        with pytest.raises(PkgcraftError):
+            EbuildRepo(config, '/nonexistent/path/to/repo')
+
+        # valid
         r = EbuildRepo(config, raw_repo.path)
         assert r.path == str(raw_repo.path)
 
