@@ -65,7 +65,7 @@ cdef class Config:
 
         return r
 
-    def add_repo(self, Repo repo):
+    def add_repo(self, Repo repo not None):
         """Add an external repo."""
         if C.pkgcraft_config_add_repo(self._config, repo._repo) is NULL:
             raise PkgcraftError
