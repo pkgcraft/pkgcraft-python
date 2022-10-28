@@ -2,16 +2,14 @@ import textwrap
 
 import pytest
 
-from pkgcraft.config import Config
 from pkgcraft.error import PkgcraftError
 from pkgcraft.repo import FakeRepo, RepoSet
 
 
 class TestConfig:
 
-    def test_repos(self, raw_repo):
+    def test_repos(self, config, raw_repo):
         path = raw_repo.path
-        config = Config()
         assert not config.repos
         r = config.add_repo_path(path)
         assert r == config.repos[str(path)]
@@ -22,9 +20,8 @@ class TestConfig:
         assert config.repos
         assert len(config.repos) == 1
 
-    def test_add_repo_path(self, raw_repo):
+    def test_add_repo_path(self, config, raw_repo):
         path = raw_repo.path
-        config = Config()
 
         # default
         r = config.add_repo_path(path)
@@ -48,16 +45,14 @@ class TestConfig:
         config.add_repo(r)
         assert 'test' in config.repos
 
-    def test_repo_sets(self, make_repo):
-        config = Config()
+    def test_repo_sets(self, config, make_repo):
         r1 = make_repo(config=config)
         r2 = make_repo(config=config)
         assert config.repos.all == RepoSet([r1, r2])
         assert config.repos.ebuild == RepoSet([r1, r2])
 
-    def test_load_repos_conf(self, raw_repo, tmp_path):
+    def test_load_repos_conf(self, config, raw_repo, tmp_path):
         repo_path = raw_repo.path
-        config = Config()
 
         # nonexistent
         f = '/path/to/nonexistent/file'
