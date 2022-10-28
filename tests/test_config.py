@@ -4,7 +4,7 @@ import pytest
 
 from pkgcraft.config import Config
 from pkgcraft.error import PkgcraftError
-from pkgcraft.repo import RepoSet
+from pkgcraft.repo import FakeRepo, RepoSet
 
 
 class TestConfig:
@@ -41,6 +41,12 @@ class TestConfig:
         # nonexistent
         with pytest.raises(PkgcraftError, match='nonexistent repo path'):
             config.add_repo_path('/path/to/nonexistent/repo')
+
+    def test_add_repo(self, config):
+        assert not config.repos
+        r = FakeRepo([], id='test')
+        config.add_repo(r)
+        assert 'test' in config.repos
 
     def test_repo_sets(self, make_repo):
         config = Config()
