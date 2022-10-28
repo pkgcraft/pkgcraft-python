@@ -1,5 +1,5 @@
 from . cimport pkgcraft_c as C
-from .repo cimport EbuildRepo, Repo, RepoSet
+from .repo cimport EbuildRepo, FakeRepo, Repo, RepoSet
 from .error import PkgcraftError
 
 
@@ -14,6 +14,8 @@ cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
         format = C.pkgcraft_repo_format(r)
         if format is C.RepoFormat.EbuildRepo:
             repo = EbuildRepo.from_ptr(r, ref)
+        elif format is C.RepoFormat.FakeRepo:
+            repo = FakeRepo.from_ptr(r, ref)
         else:
             raise PkgcraftError('unsupported repo format')
         id = C.pkgcraft_repo_id(r)
@@ -56,6 +58,8 @@ cdef class Config:
         format = C.pkgcraft_repo_format(repo)
         if format is C.RepoFormat.EbuildRepo:
             r = EbuildRepo.from_ptr(repo, False)
+        elif format is C.RepoFormat.FakeRepo:
+            r = FakeRepo.from_ptr(repo, False)
         else:
             raise PkgcraftError('unsupported repo format')
 
