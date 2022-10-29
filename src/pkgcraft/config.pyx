@@ -16,7 +16,7 @@ cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
             repo = EbuildRepo.from_ptr(r, ref)
         elif format is C.RepoFormat.FakeRepo:
             repo = FakeRepo.from_ptr(r, ref)
-        else:
+        else:  # pragma: no cover
             raise PkgcraftError('unsupported repo format')
         id = C.pkgcraft_repo_id(r)
         d[id.decode()] = repo
@@ -60,7 +60,7 @@ cdef class Config:
             r = EbuildRepo.from_ptr(repo, False)
         elif format is C.RepoFormat.FakeRepo:
             r = FakeRepo.from_ptr(repo, False)
-        else:
+        else:  # pragma: no cover
             raise PkgcraftError('unsupported repo format')
 
         return r
