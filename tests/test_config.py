@@ -20,7 +20,7 @@ class TestConfig:
         assert config.repos
         assert len(config.repos) == 1
 
-    def test_add_repo_path(self, config, raw_repo):
+    def test_add_repo_path_ebuild(self, config, raw_repo):
         path = raw_repo.path
 
         # default
@@ -38,6 +38,24 @@ class TestConfig:
         # nonexistent
         with pytest.raises(PkgcraftError, match='nonexistent repo path'):
             config.add_repo_path('/path/to/nonexistent/repo')
+
+    def test_add_repo_path_fake(self, config, tmp_path):
+        # empty file
+        f = tmp_path / "repo1"
+        f.touch()
+        r = config.add_repo_path(f)
+        assert r == config.repos[str(f)]
+        assert len(r) == 0
+
+        # cpvs
+        f = tmp_path / "repo2"
+        f.write_text(textwrap.dedent(f"""
+            cat/pkg-1
+            cat/pkg-2
+            a/b-0
+        """))
+        r = config.add_repo_path(f)
+        assert len(r) == 3
 
     def test_add_repo(self, config):
         assert not config.repos
