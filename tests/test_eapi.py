@@ -6,9 +6,10 @@ from pkgcraft.error import IndirectInit, PkgcraftError
 
 def test_globals():
     assert len(EAPIS) > len(EAPIS_OFFICIAL)
-    for eapi in EAPIS_OFFICIAL.values():
-        assert EAPIS[str(eapi)] is eapi
-    assert EAPI_LATEST is EAPIS[str(eapi)]
+    # verify objects are shared between EAPIS_OFFICIAL and EAPIS
+    for (id, eapi) in EAPIS_OFFICIAL.items():
+        assert EAPIS[id] is eapi
+    assert EAPI_LATEST is EAPIS[id]
 
 
 class TestEapi:
