@@ -33,7 +33,7 @@ cdef object get_eapis():
     cdef size_t length
     d = EAPIS_OFFICIAL.copy()
     eapis = C.pkgcraft_eapis(&length)
-    d.update(eapis_to_dict(eapis, length, start=len(d) - 1))
+    d.update(eapis_to_dict(eapis, length, start=len(d)))
     C.pkgcraft_eapis_free(eapis, length)
     return MappingProxyType(d)
 

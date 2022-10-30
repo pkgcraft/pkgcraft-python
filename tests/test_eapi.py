@@ -5,9 +5,10 @@ from pkgcraft.error import IndirectInit, PkgcraftError
 
 
 def test_globals():
-    assert EAPIS['1'] is EAPIS_OFFICIAL['1']
     assert len(EAPIS) > len(EAPIS_OFFICIAL)
-    assert EAPI_LATEST in EAPIS.values()
+    for eapi in EAPIS_OFFICIAL.values():
+        assert EAPIS[str(eapi)] is eapi
+    assert EAPI_LATEST is EAPIS[str(eapi)]
 
 
 class TestEapi:
