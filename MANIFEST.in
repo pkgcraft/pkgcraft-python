@@ -2,7 +2,7 @@
 # include cython-generated files
 recursive-include src/pkgcraft *.c
 # include bundled test data
-recursive-include tests/data *
+recursive-include testdata *
 # drop git-related files
 global-exclude .git*
 prune .github
