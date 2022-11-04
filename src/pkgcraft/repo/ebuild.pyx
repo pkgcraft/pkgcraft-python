@@ -8,7 +8,7 @@ from ..error import PkgcraftError
 cdef class EbuildRepo(Repo):
     """Ebuild package repo."""
 
-    def __init__(self, Config config not None, path, id=None, priority=0):
+    def __init__(self, path, id=None, priority=0):
         path = str(path)
         id = str(id) if id is not None else path
 
@@ -18,8 +18,6 @@ cdef class EbuildRepo(Repo):
 
         self._repo = repo
         self._ref = False
-
-        config.add_repo(self)
 
     @staticmethod
     cdef EbuildRepo from_ptr(const C.Repo *repo, bint ref):

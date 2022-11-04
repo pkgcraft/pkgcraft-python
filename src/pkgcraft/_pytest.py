@@ -146,10 +146,10 @@ class TempRawEbuildRepo:
 class TempEbuildRepo(TempRawEbuildRepo, EbuildRepo):
     """Class for creating/manipulating ebuild repos."""
 
-    def __init__(self, *args, config=None, id='fake', priority=0, **kwargs):
+    def __init__(self, *args, config=Config(), id='fake', priority=0, **kwargs):
         TempRawEbuildRepo.__init__(self, *args, id=id, **kwargs)
-        self._config = config if config is not None else Config()
-        EbuildRepo.__init__(self, self._config, self.path, id, priority)
+        EbuildRepo.__init__(self, self.path, id, priority)
+        config.add_repo(self)
 
     def create_pkg(self, cpvstr='cat/pkg-1', *args, **kwargs):
         self.create_ebuild(cpvstr, *args, **kwargs)
