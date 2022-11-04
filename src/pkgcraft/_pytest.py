@@ -105,8 +105,8 @@ class TempRawEbuildRepo:
                 with open(self._path / 'profiles' / p.path / 'eapi', 'w') as f:
                     f.write(f'{p.eapi}\n')
 
-    def create_ebuild(self, cpvstr='cat/pkg-1', data=None, **kwargs):
-        cpv = Cpv(cpvstr)
+    def create_ebuild(self, cpv='cat/pkg-1', data=None, **kwargs):
+        cpv = Cpv(cpv)
         ebuild_dir = self._path / cpv.category / cpv.package
         os.makedirs(ebuild_dir, exist_ok=True)
 
@@ -151,9 +151,9 @@ class TempEbuildRepo(TempRawEbuildRepo, EbuildRepo):
         EbuildRepo.__init__(self, self.path, id, priority)
         config.add_repo(self)
 
-    def create_pkg(self, cpvstr='cat/pkg-1', *args, **kwargs):
-        self.create_ebuild(cpvstr, *args, **kwargs)
-        return next(iter(self.iter_restrict(cpvstr)))
+    def create_pkg(self, cpv='cat/pkg-1', *args, **kwargs):
+        self.create_ebuild(cpv, *args, **kwargs)
+        return next(iter(self.iter_restrict(cpv)))
 
 
 @pytest.fixture(scope="function")
