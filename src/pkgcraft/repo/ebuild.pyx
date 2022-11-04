@@ -9,6 +9,12 @@ cdef class EbuildRepo(Repo):
     """Ebuild package repo."""
 
     def __init__(self, path, id=None, priority=0):
+        """Create an ebuild repo from a given path.
+
+        This is for internal use only and requires adding the resulting
+        EbuildRepo object to a Config object via add_repo() otherwise a panic
+        will occur on usage.
+        """
         path = str(path)
         id = str(id) if id is not None else path
 
