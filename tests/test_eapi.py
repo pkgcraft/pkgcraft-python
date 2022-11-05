@@ -9,7 +9,7 @@ def test_globals():
     # verify objects are shared between EAPIS_OFFICIAL and EAPIS
     for (id, eapi) in EAPIS_OFFICIAL.items():
         assert EAPIS[id] is eapi
-    assert EAPI_LATEST is EAPIS[id]
+    assert EAPIS[str(EAPI_LATEST)] is EAPI_LATEST
 
 
 class TestEapi:
