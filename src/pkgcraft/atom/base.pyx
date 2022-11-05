@@ -4,6 +4,8 @@ from enum import Enum
 from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
 from .cpv cimport Cpv
+from ..eapi cimport Eapi
+from ..eapi import EAPIS
 from ..error import InvalidAtom
 
 # TODO: merge with Atom.cached function when cython bug is fixed
@@ -55,10 +57,11 @@ cdef class Atom(Cpv):
         self._use = SENTINEL
 
     def __init__(self, str s not None, eapi=None):
-        cdef char *eapi_p = NULL
-        if eapi is not None:
-            eapi_bytes = (<str?>eapi).encode()
-            eapi_p = eapi_bytes
+        cdef const C.Eapi *eapi_p = NULL
+        if isinstance(eapi, Eapi):
+            eapi_p = (<Eapi>eapi)._eapi
+        elif eapi is not None:
+            eapi_p = (<Eapi>EAPIS.get(eapi))._eapi
 
         self._atom = C.pkgcraft_atom_new(s.encode(), eapi_p)
 

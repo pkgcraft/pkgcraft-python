@@ -1,4 +1,6 @@
 from . cimport pkgcraft_c as C
+from .eapi cimport Eapi
+from .eapi import EAPIS
 from .error import PkgcraftError
 
 def atom(str s not None, eapi=None):
@@ -8,10 +10,11 @@ def atom(str s not None, eapi=None):
     >>> parse.atom('=cat/pkg-1')
     True
     """
-    cdef char *eapi_p = NULL
-    if eapi is not None:
-        eapi_bytes = (<str?>eapi).encode()
-        eapi_p = eapi_bytes
+    cdef const C.Eapi *eapi_p = NULL
+    if isinstance(eapi, Eapi):
+        eapi_p = (<Eapi>eapi)._eapi
+    elif eapi is not None:
+        eapi_p = (<Eapi>EAPIS.get(eapi))._eapi
 
     if C.pkgcraft_parse_atom(s.encode(), eapi_p) is NULL:
         raise PkgcraftError

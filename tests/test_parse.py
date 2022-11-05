@@ -1,11 +1,13 @@
 import pytest
 
 from pkgcraft import parse
+from pkgcraft.eapi import EAPIS
 from pkgcraft.error import PkgcraftError
 
 
 def test_atom():
     assert parse.atom('cat/pkg')
+    assert parse.atom('=cat/pkg-1-r2:3/4[a,b,c]', EAPIS['8'])
     assert parse.atom('=cat/pkg-1-r2:3/4[a,b,c]', '8')
 
     # invalid

@@ -38,7 +38,8 @@ class TestAtom:
         assert repr(a).startswith("<Atom 'cat/pkg' at 0x")
 
         # all fields
-        a = Atom('!!=cat/pkg-1-r2:0/2=[a,b,c]::repo', 'pkgcraft')
+        a = Atom('!!=cat/pkg-1-r2:0/2=[a,b,c]::repo', EAPIS['pkgcraft'])
+        assert a == Atom('!!=cat/pkg-1-r2:0/2=[a,b,c]::repo', 'pkgcraft')
         assert a.category == 'cat'
         assert a.package == 'pkg'
         assert a.blocker is Blocker.Strong
@@ -64,8 +65,8 @@ class TestAtom:
             d = tomllib.load(f)
         for entry in d['valid']:
             s = entry['atom']
-            passing_eapis = Eapi.range(entry['eapis']).keys()
-            for eapi in EAPIS:
+            passing_eapis = Eapi.range(entry['eapis']).values()
+            for eapi in EAPIS.values():
                 if eapi in passing_eapis:
                     a = Atom(s, eapi)
                     assert a.category == entry.get('category')
@@ -86,8 +87,8 @@ class TestAtom:
         with open(TOMLDIR / 'atoms.toml', 'rb') as f:
             d = tomllib.load(f)
         for (s, eapi_range) in d['invalid']:
-            failing_eapis = Eapi.range(eapi_range).keys()
-            for eapi in EAPIS:
+            failing_eapis = Eapi.range(eapi_range).values()
+            for eapi in EAPIS.values():
                 if eapi in failing_eapis:
                     with pytest.raises(InvalidAtom, match=f'invalid atom: "{re.escape(s)}"'):
                         Atom(s, eapi)
