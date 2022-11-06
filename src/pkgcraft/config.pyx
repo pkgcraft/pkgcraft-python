@@ -77,8 +77,6 @@ cdef class Config:
     def load_repos_conf(self, path='/etc/portage/repos.conf'):
         """Load repos from a given path to a portage-compatible repos.conf directory or file."""
         cdef C.Repo **repos
-        cdef C.RepoFormat format
-        cdef char *id
         cdef size_t length
         path = str(path)
 

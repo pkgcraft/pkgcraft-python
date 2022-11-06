@@ -1,7 +1,5 @@
 from . cimport pkgcraft_c as C
-from .atom cimport Cpv
-from .pkg cimport Pkg
-from .error import IndirectInit, PkgcraftError
+from .error import IndirectInit
 
 
 cdef class DepSet:

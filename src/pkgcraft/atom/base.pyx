@@ -8,19 +8,23 @@ from ..eapi cimport Eapi
 from ..eapi import EAPIS
 from ..error import InvalidAtom
 
+
 # TODO: merge with Atom.cached function when cython bug is fixed
 # https://github.com/cython/cython/issues/1434
 @functools.lru_cache(maxsize=10000)
 def _cached_atom(cls, atom, eapi=None):
     return cls(atom, eapi)
 
+
 class Blocker(Enum):
     Strong = 0
     Weak = 1
 
+
 class SlotOperator(Enum):
     Equal = 0
     Star = 1
+
 
 cdef class Atom(Cpv):
     """Package atom parsing.

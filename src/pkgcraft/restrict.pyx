@@ -1,7 +1,7 @@
 from . cimport pkgcraft_c as C
 from .atom cimport Atom, Cpv
 from .pkg cimport Pkg
-from .error import InvalidCpv, InvalidAtom, InvalidRestrict, PkgcraftError
+from .error import InvalidCpv, InvalidAtom, InvalidRestrict
 
 
 cdef C.Restrict *str_to_restrict(str s) except NULL:

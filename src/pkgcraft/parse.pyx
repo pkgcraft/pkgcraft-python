@@ -3,6 +3,7 @@ from .eapi cimport Eapi
 from .eapi import EAPIS
 from .error import PkgcraftError
 
+
 def atom(str s not None, eapi=None):
     """Parse an atom string.
 
@@ -20,6 +21,7 @@ def atom(str s not None, eapi=None):
         raise PkgcraftError
     return True
 
+
 def category(str s not None):
     """Parse an atom category string.
 
@@ -30,6 +32,7 @@ def category(str s not None):
     if not C.pkgcraft_parse_category(s.encode()):
         raise PkgcraftError
     return True
+
 
 def package(str s not None):
     """Parse an atom package string.
@@ -42,6 +45,7 @@ def package(str s not None):
         raise PkgcraftError
     return True
 
+
 def version(str s not None):
     """Parse an atom version string.
 
@@ -53,6 +57,7 @@ def version(str s not None):
         raise PkgcraftError
     return True
 
+
 def repo(str s not None):
     """Parse an atom repo string.
 
@@ -63,6 +68,7 @@ def repo(str s not None):
     if not C.pkgcraft_parse_repo(s.encode()):
         raise PkgcraftError
     return True
+
 
 def cpv(str s not None):
     """Parse an atom cpv string.

@@ -6,7 +6,6 @@ from ..pkg cimport EbuildPkg
 from ..restrict cimport Restrict
 from . cimport Repo
 from ..error import IndirectInit, PkgcraftError
-from ..restrict import InvalidRestrict
 
 
 cdef class RepoSet:

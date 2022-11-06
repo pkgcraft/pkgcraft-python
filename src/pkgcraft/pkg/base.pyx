@@ -1,8 +1,7 @@
 from .. cimport pkgcraft_c as C
-from ..repo cimport Repo
 from ..atom cimport Cpv, Version
 from ..eapi import Eapi
-from ..error import IndirectInit, PkgcraftError
+from ..error import IndirectInit
 
 
 cdef class Pkg:
