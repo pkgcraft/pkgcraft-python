@@ -7,15 +7,6 @@ from pkgcraft.repo import EbuildRepo
 
 class TestEbuildRepo:
 
-    def test_init(self, raw_repo):
-        # nonexistent
-        with pytest.raises(PkgcraftError):
-            EbuildRepo('/nonexistent/path/to/repo')
-
-        # valid
-        r = EbuildRepo(raw_repo.path)
-        assert r.path == str(raw_repo.path)
-
     def test_masters(self, config, make_raw_repo):
         # empty masters
         repo = make_raw_repo()

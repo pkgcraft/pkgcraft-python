@@ -146,10 +146,9 @@ class TempRawEbuildRepo:
 class TempEbuildRepo(TempRawEbuildRepo, EbuildRepo):
     """Class for creating/manipulating ebuild repos."""
 
-    def __init__(self, *args, config=Config(), id='fake', priority=0, **kwargs):
+    def __init__(self, *args, config, id='fake', priority=0, **kwargs):
         TempRawEbuildRepo.__init__(self, *args, id=id, **kwargs)
-        EbuildRepo.__init__(self, self.path, id, priority)
-        config.add_repo(self)
+        config._inject_repo_path(self, self.path, id, priority)
 
     def create_pkg(self, cpv='cat/pkg-1', *args, **kwargs):
         self.create_ebuild(cpv, *args, **kwargs)
@@ -178,9 +177,9 @@ def make_raw_repo(tmp_path_factory):
 
 
 @pytest.fixture
-def repo(tmp_path_factory):
+def repo(config, tmp_path_factory):
     """Create a generic ebuild repository."""
-    return TempEbuildRepo(str(tmp_path_factory.mktemp('repo')))
+    return TempEbuildRepo(str(tmp_path_factory.mktemp('repo')), config=config)
 
 
 @pytest.fixture

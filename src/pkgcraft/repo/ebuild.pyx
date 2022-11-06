@@ -7,23 +7,6 @@ from ..error import PkgcraftError
 cdef class EbuildRepo(Repo):
     """Ebuild package repo."""
 
-    def __init__(self, path, id=None, priority=0):
-        """Create an ebuild repo from a given path.
-
-        This is for internal use only and requires adding the resulting
-        EbuildRepo object to a Config object via add_repo() otherwise a panic
-        will occur on usage.
-        """
-        path = str(path)
-        id = str(id) if id is not None else path
-
-        repo = C.pkgcraft_repo_ebuild_from_path(id.encode(), int(priority), path.encode())
-        if repo is NULL:
-            raise PkgcraftError
-
-        self._repo = repo
-        self._ref = False
-
     @staticmethod
     cdef EbuildRepo from_ptr(const C.Repo *repo, bint ref):
         """Create an instance from a repo pointer."""

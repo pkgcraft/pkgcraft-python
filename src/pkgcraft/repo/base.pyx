@@ -12,6 +12,11 @@ cdef class Repo:
     def __init__(self):
         raise IndirectInit(self)
 
+    cdef inject_ptr(self, const C.Repo *repo, bint ref):
+        """Overwrite the repo pointer with a given value."""
+        self._repo = <C.Repo *>repo
+        self._ref = ref
+
     cdef Pkg create_pkg(self, C.Pkg *pkg):  # pragma: no cover
         raise RuntimeError(f"{self.__class__.__name__} class doesn't support package creation")
 

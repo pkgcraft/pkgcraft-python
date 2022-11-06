@@ -13,6 +13,7 @@ cdef class Repo:
     cdef str _path
     cdef int _hash
 
+    cdef inject_ptr(self, const C.Repo *, bint)
     cdef Pkg create_pkg(self, C.Pkg *)
 
 
