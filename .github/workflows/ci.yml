@@ -67,11 +67,8 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install tools
-      run: pip install cython-lint
+    - name: Install dependencies
+      run: pip install tox
 
-    - name: Run cython-lint
-      shell: bash
-      run: |
-        shopt -s extglob globstar nullglob
-        cython-lint --max-line-length 100 **/*.p{yx,xd}
+    - name: Lint code
+      run: tox -e lint
