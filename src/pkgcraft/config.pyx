@@ -6,7 +6,6 @@ from .error import PkgcraftError
 cdef Repo repo_from_ptr(C.Repo *r, bint ref):
     """Convert a repo pointer to a repo object."""
     cdef C.RepoFormat format = C.pkgcraft_repo_format(r)
-
     if format is C.RepoFormat.EbuildRepo:
         return EbuildRepo.from_ptr(r, ref)
     elif format is C.RepoFormat.FakeRepo:
