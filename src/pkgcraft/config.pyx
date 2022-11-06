@@ -3,23 +3,27 @@ from .repo cimport EbuildRepo, FakeRepo, Repo, RepoSet
 from .error import PkgcraftError
 
 
+cdef Repo repo_from_ptr(C.Repo *r, bint ref):
+    """Convert a repo pointer to a repo object."""
+    cdef C.RepoFormat format = C.pkgcraft_repo_format(r)
+
+    if format is C.RepoFormat.EbuildRepo:
+        return EbuildRepo.from_ptr(r, ref)
+    elif format is C.RepoFormat.FakeRepo:
+        return FakeRepo.from_ptr(r, ref)
+    else:  # pragma: no cover
+        raise PkgcraftError('unsupported repo format')
+
+
 cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
     """Convert an array of repos to an (id, Repo) mapping."""
-    cdef C.RepoFormat format
     cdef char *id
     d = {}
 
     for i in range(length):
         r = repos[i]
-        format = C.pkgcraft_repo_format(r)
-        if format is C.RepoFormat.EbuildRepo:
-            repo = EbuildRepo.from_ptr(r, ref)
-        elif format is C.RepoFormat.FakeRepo:
-            repo = FakeRepo.from_ptr(r, ref)
-        else:  # pragma: no cover
-            raise PkgcraftError('unsupported repo format')
         id = C.pkgcraft_repo_id(r)
-        d[id.decode()] = repo
+        d[id.decode()] = repo_from_ptr(r, ref)
         C.pkgcraft_str_free(id)
 
     return d
@@ -43,7 +47,6 @@ cdef class Config:
     def add_repo_path(self, path not None, id=None, priority=0):
         """Add an external repo via its file path."""
         cdef C.Repo *repo
-        cdef C.RepoFormat format
         path = str(path)
         id = str(id) if id is not None else path
 
@@ -55,15 +58,7 @@ cdef class Config:
         # force repos attr refresh
         self._repos = None
 
-        format = C.pkgcraft_repo_format(repo)
-        if format is C.RepoFormat.EbuildRepo:
-            r = EbuildRepo.from_ptr(repo, False)
-        elif format is C.RepoFormat.FakeRepo:
-            r = FakeRepo.from_ptr(repo, False)
-        else:  # pragma: no cover
-            raise PkgcraftError('unsupported repo format')
-
-        return r
+        return repo_from_ptr(repo, False)
 
     def add_repo(self, Repo repo not None):
         """Add an external repo."""
