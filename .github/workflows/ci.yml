@@ -55,3 +55,23 @@ jobs:
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install tools
+      run: pip install cython-lint
+
+    - name: Run cython-lint
+      shell: bash
+      run: |
+        shopt -s extglob globstar nullglob
+        cython-lint --max-line-length 100 **/*.p{yx,xd}
