@@ -43,8 +43,8 @@ cdef class Config:
             self._repos = Repos.from_config(self._config)
         return self._repos
 
-    def add_repo_path(self, path not None, id=None, priority=0):
-        """Add an external repo via its file path."""
+    cdef C.Repo *_add_repo_path(self, object path, object id, int priority) except NULL:
+        """Add an external repo via its file path and return its pointer."""
         cdef C.Repo *repo
         path = str(path)
         id = str(id) if id is not None else path
@@ -57,22 +57,16 @@ cdef class Config:
         # force repos attr refresh
         self._repos = None
 
+        return repo
+
+    def add_repo_path(self, path not None, id=None, priority=0):
+        """Add an external repo via its file path."""
+        repo = self._add_repo_path(path, id, priority)
         return repo_from_ptr(repo, False)
 
     def _inject_repo_path(self, Repo obj not None, path not None, id=None, priority=0):
         """Add an external repo via its file path and inject it into a given Repo object."""
-        cdef C.Repo *repo
-        path = str(path)
-        id = str(id) if id is not None else path
-
-        repo = C.pkgcraft_config_add_repo_path(
-            self._config, id.encode(), int(priority), path.encode())
-        if repo is NULL:
-            raise PkgcraftError
-
-        # force repos attr refresh
-        self._repos = None
-
+        repo = self._add_repo_path(path, id, priority)
         obj.inject_ptr(repo, False)
         return obj
 

@@ -7,6 +7,8 @@ cdef class Config:
     # cached fields
     cdef Repos _repos
 
+    cdef C.Repo *_add_repo_path(self, object, object, int) except NULL
+
 
 cdef class Repos:
     cdef C.Config *_config
