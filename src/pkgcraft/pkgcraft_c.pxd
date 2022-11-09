@@ -44,6 +44,9 @@ cdef extern from "pkgcraft.h":
     cdef struct DepSet:
         pass
 
+    cdef struct DepSetFlatten:
+        pass
+
     # EAPI object.
     cdef struct Eapi:
         pass
@@ -78,6 +81,9 @@ cdef extern from "pkgcraft.h":
 
     # Opaque wrapper for Restrict objects.
     cdef struct Restrict:
+        pass
+
+    cdef struct Uri:
         pass
 
     # Wrapper for package maintainers.
@@ -278,6 +284,42 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument should be a UTF-8 string.
     Atom *pkgcraft_cpv_new(const char *s);
+
+    # Return an iterator for a flattened depset.
+    #
+    # # Safety
+    # The argument must be a non-null DepSet pointer.
+    DepSetFlatten *pkgcraft_depset_flatten_iter(DepSet *dep);
+
+    # Return the next Atom from a flattened depset atom iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a non-null DepSetFlatten pointer.
+    const Atom *pkgcraft_depset_flatten_iter_atom_next(DepSetFlatten *i);
+
+    # Free a flattened depset iterator.
+    #
+    # # Safety
+    # The argument must be a non-null DepSetFlatten pointer or NULL.
+    void pkgcraft_depset_flatten_iter_free(DepSetFlatten *i);
+
+    # Return the next string from a flattened depset string iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a non-null DepSetFlatten pointer.
+    char *pkgcraft_depset_flatten_iter_str_next(DepSetFlatten *i);
+
+    # Return the next uri from a flattened depset uri iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a non-null DepSetFlatten pointer.
+    const Uri *pkgcraft_depset_flatten_iter_uri_next(DepSetFlatten *i);
 
     # Free a DepSet.
     #

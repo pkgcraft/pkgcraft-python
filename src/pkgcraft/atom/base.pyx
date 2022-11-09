@@ -72,6 +72,14 @@ cdef class Atom(Cpv):
         if self._atom is NULL:
             raise InvalidAtom
 
+    @staticmethod
+    cdef Atom from_ptr(const C.Atom *atom):
+        """Create instance from a borrowed pointer."""
+        obj = <Atom>Atom.__new__(Atom)
+        obj._atom = <C.Atom *>atom
+        obj._ref = True
+        return obj
+
     @classmethod
     def cached(cls, s, eapi=None):
         """Return a cached Atom if one exists, otherwise return a new instance."""

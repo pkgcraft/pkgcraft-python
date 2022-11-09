@@ -5,7 +5,7 @@ import pytest
 from pkgcraft.eapi import EAPIS
 from pkgcraft.error import IndirectInit
 from pkgcraft.pkg import EbuildPkg
-from pkgcraft.atom import Cpv, Version
+from pkgcraft.atom import Atom, Cpv, Version
 
 
 class TestEbuildPkg:
@@ -63,59 +63,48 @@ class TestEbuildPkg:
         pkg = repo.create_pkg(slot='1/2')
         assert pkg.subslot == '2'
 
-    def test_depend(self, repo):
-        pkg = repo.create_pkg()
-        assert not pkg.depend
-        pkg = repo.create_pkg(depend='cat/pkg')
-        assert str(pkg.depend) == 'cat/pkg'
+    def test_dep_attrs(self, repo):
+        for attr in ('depend', 'bdepend', 'idepend', 'pdepend', 'rdepend'):
+            pkg = repo.create_pkg()
+            assert not getattr(pkg, attr)
 
-    def test_bdepend(self, repo):
-        pkg = repo.create_pkg()
-        assert not pkg.bdepend
-        pkg = repo.create_pkg(bdepend='cat/pkg')
-        assert str(pkg.bdepend) == 'cat/pkg'
+            pkg = repo.create_pkg(**{attr: 'cat/pkg'})
+            val = getattr(pkg, attr)
+            assert str(val) == 'cat/pkg'
+            assert list(val.flatten()) == [Atom('cat/pkg')]
 
-    def test_idepend(self, repo):
-        pkg = repo.create_pkg()
-        assert not pkg.idepend
-        pkg = repo.create_pkg(idepend='cat/pkg')
-        assert str(pkg.idepend) == 'cat/pkg'
-
-    def test_pdepend(self, repo):
-        pkg = repo.create_pkg()
-        assert not pkg.pdepend
-        pkg = repo.create_pkg(pdepend='cat/pkg')
-        assert str(pkg.pdepend) == 'cat/pkg'
-
-    def test_rdepend(self, repo):
-        pkg = repo.create_pkg()
-        assert not pkg.rdepend
-        pkg = repo.create_pkg(rdepend='cat/pkg')
-        assert str(pkg.rdepend) == 'cat/pkg'
+            pkg = repo.create_pkg(**{attr: 'u? ( cat/pkg ) || ( a/b c/d )'})
+            val = getattr(pkg, attr)
+            assert str(val) == 'u? ( cat/pkg ) || ( a/b c/d )'
+            assert list(val.flatten()) == [Atom('cat/pkg'), Atom('a/b'), Atom('c/d')]
 
     def test_license(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.license
         pkg = repo.create_pkg(license='BSD')
         assert str(pkg.license) == 'BSD'
+        assert list(pkg.license.flatten()) == ['BSD']
 
     def test_properties(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.properties
         pkg = repo.create_pkg(properties='live')
         assert str(pkg.properties) == 'live'
+        assert list(pkg.properties.flatten()) == ['live']
 
     def test_required_use(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.required_use
         pkg = repo.create_pkg(required_use='use')
         assert str(pkg.required_use) == 'use'
+        assert list(pkg.required_use.flatten()) == ['use']
 
     def test_restrict(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.restrict
         pkg = repo.create_pkg(restrict='fetch')
         assert str(pkg.restrict) == 'fetch'
+        assert list(pkg.restrict.flatten()) == ['fetch']
 
     def test_src_uri(self, repo):
         pkg = repo.create_pkg()
