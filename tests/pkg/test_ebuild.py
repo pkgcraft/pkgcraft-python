@@ -81,29 +81,49 @@ class TestEbuildPkg:
     def test_license(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.license
+
         pkg = repo.create_pkg(license='BSD')
         assert str(pkg.license) == 'BSD'
+        assert list(pkg.license.flatten()) == ['BSD']
+
+        pkg = repo.create_pkg(license='u? ( BSD )')
+        assert str(pkg.license) == 'u? ( BSD )'
         assert list(pkg.license.flatten()) == ['BSD']
 
     def test_properties(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.properties
+
         pkg = repo.create_pkg(properties='live')
         assert str(pkg.properties) == 'live'
+        assert list(pkg.properties.flatten()) == ['live']
+
+        pkg = repo.create_pkg(properties='u? ( live )')
+        assert str(pkg.properties) == 'u? ( live )'
         assert list(pkg.properties.flatten()) == ['live']
 
     def test_required_use(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.required_use
+
         pkg = repo.create_pkg(required_use='use')
         assert str(pkg.required_use) == 'use'
         assert list(pkg.required_use.flatten()) == ['use']
 
+        pkg = repo.create_pkg(required_use='u1? ( u2 )')
+        assert str(pkg.required_use) == 'u1? ( u2 )'
+        assert list(pkg.required_use.flatten()) == ['u2']
+
     def test_restrict(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.restrict
+
         pkg = repo.create_pkg(restrict='fetch')
         assert str(pkg.restrict) == 'fetch'
+        assert list(pkg.restrict.flatten()) == ['fetch']
+
+        pkg = repo.create_pkg(restrict='u? ( fetch )')
+        assert str(pkg.restrict) == 'u? ( fetch )'
         assert list(pkg.restrict.flatten()) == ['fetch']
 
     def test_src_uri(self, repo):
