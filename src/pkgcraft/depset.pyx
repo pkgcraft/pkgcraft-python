@@ -82,10 +82,11 @@ cdef class Uri:
 
     @property
     def uri(self):
-        c_str = C.pkgcraft_uri_uri(self._uri)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        if self._uri_str is None:
+            c_str = C.pkgcraft_uri_uri(self._uri)
+            self._uri_str = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+        return self._uri_str
 
     @property
     def rename(self):

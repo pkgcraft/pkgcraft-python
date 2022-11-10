@@ -25,6 +25,8 @@ cdef class _DepSetFlatten:
 
 cdef class Uri:
     cdef const C.Uri *_uri
+    # cached fields
+    cdef str _uri_str
 
     @staticmethod
     cdef Uri from_ptr(const C.Uri *)
