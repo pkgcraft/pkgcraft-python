@@ -21,3 +21,10 @@ cdef class _DepSetFlatten:
 
     @staticmethod
     cdef _DepSetFlatten create(DepSet)
+
+
+cdef class Uri:
+    cdef const C.Uri *_uri
+
+    @staticmethod
+    cdef Uri from_ptr(const C.Uri *)

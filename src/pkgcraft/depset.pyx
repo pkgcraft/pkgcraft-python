@@ -60,11 +60,37 @@ cdef class _DepSetFlatten:
                 C.pkgcraft_str_free(<char *>obj)
                 return s
             elif self._type is DepSetUri:
-                # TODO: implement Uri object support
-                raise NotImplementedError
+                return Uri.from_ptr(<const C.Uri *>obj)
             else:
                 raise AttributeError(f'unknown DepSet type: {self._type}')
         raise StopIteration
 
     def __dealloc__(self):
         C.pkgcraft_depset_flatten_iter_free(self._iter)
+
+
+cdef class Uri:
+
+    def __init__(self):  # pragma: no cover
+        raise IndirectInit(self)
+
+    @staticmethod
+    cdef Uri from_ptr(const C.Uri *uri):
+        obj = <Uri>Uri.__new__(Uri)
+        obj._uri = uri
+        return obj
+
+    @property
+    def rename(self):
+        c_str = C.pkgcraft_uri_rename(self._uri)
+        if c_str is not NULL:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+            return s
+        return None
+
+    def __str__(self):
+        c_str = C.pkgcraft_uri_str(self._uri)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s

@@ -129,8 +129,18 @@ class TestEbuildPkg:
     def test_src_uri(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.src_uri
+
         pkg = repo.create_pkg(src_uri='https://a.com/b.tar.gz')
         assert str(pkg.src_uri) == 'https://a.com/b.tar.gz'
+        assert list(map(str, pkg.src_uri.flatten())) == ['https://a.com/b.tar.gz']
+
+        pkg = repo.create_pkg(src_uri='u? ( https://a.com/b.tar.gz )')
+        assert str(pkg.src_uri) == 'u? ( https://a.com/b.tar.gz )'
+        assert list(map(str, pkg.src_uri.flatten())) == ['https://a.com/b.tar.gz']
+
+        pkg = repo.create_pkg(src_uri='u1? ( https://a.com/b.tar.gz ) u2? ( https://a.com/z -> z.tar.xz )')
+        assert str(pkg.src_uri) == 'u1? ( https://a.com/b.tar.gz ) u2? ( https://a.com/z -> z.tar.xz )'
+        assert list(map(str, pkg.src_uri.flatten())) == ['https://a.com/b.tar.gz', 'https://a.com/z -> z.tar.xz']
 
     def test_defined_phases(self, repo):
         # none

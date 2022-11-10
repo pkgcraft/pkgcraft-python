@@ -83,6 +83,10 @@ cdef extern from "pkgcraft.h":
     cdef struct Restrict:
         pass
 
+    # Uri object.
+    cdef struct Uri:
+        pass
+
     # Wrapper for package maintainers.
     cdef struct Maintainer:
         char *email;
@@ -987,6 +991,26 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a string pointer or NULL.
     void pkgcraft_str_free(char *s);
+
+    # Get the filename rename for a Uri.
+    #
+    # Returns NULL when no rename exists.
+    #
+    # # Safety
+    # The argument must be a Uri pointer.
+    char *pkgcraft_uri_rename(const Uri *u);
+
+    # Return the formatted string for a Uri object.
+    #
+    # # Safety
+    # The argument must be a Uri pointer.
+    char *pkgcraft_uri_str(const Uri *u);
+
+    # Get the main URI from a Uri object.
+    #
+    # # Safety
+    # The argument must be a Uri pointer.
+    char *pkgcraft_uri_uri(const Uri *u);
 
     # Compare two versions returning -1, 0, or 1 if the first version is less than, equal to, or greater
     # than the second version, respectively.
