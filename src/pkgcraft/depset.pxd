@@ -2,9 +2,9 @@ from . cimport pkgcraft_c as C
 
 
 ctypedef enum DepSetType:
-    Atom,
-    String,
-    Uri
+    DepSetAtom,
+    DepSetString,
+    DepSetUri
 
 
 cdef class DepSet:

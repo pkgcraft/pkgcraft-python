@@ -53,13 +53,13 @@ cdef class _DepSetFlatten:
 
         obj = C.pkgcraft_depset_flatten_iter_next(self._iter)
         if obj is not NULL:
-            if self._type is DepSetType.Atom:
+            if self._type is DepSetAtom:
                 return Atom.from_ptr(<const C.Atom *>obj)
-            elif self._type is DepSetType.String:
+            elif self._type is DepSetString:
                 s = (<char *>obj).decode()
                 C.pkgcraft_str_free(<char *>obj)
                 return s
-            elif self._type is DepSetType.Uri:
+            elif self._type is DepSetUri:
                 # TODO: implement Uri object support
                 raise NotImplementedError
             else:
