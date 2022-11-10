@@ -9,7 +9,7 @@ import pytest
 from pkgcraft.atom import Cpv
 from pkgcraft.config import Config
 from pkgcraft.eapi import EAPI_LATEST
-from pkgcraft.repo import EbuildRepo
+from pkgcraft.repo import EbuildRepo, FakeRepo
 
 
 class _FileSet(MutableSet):
@@ -205,4 +205,16 @@ def make_repo(tmp_path_factory, config, letters):
         kwargs.setdefault('config', config)
         kwargs.setdefault('id', letters())
         return TempEbuildRepo(path, **kwargs)
+    return _make_repo
+
+
+@pytest.fixture
+def make_fake_repo(config, letters):
+    """Factory for ebuild repo creation."""
+    def _make_repo(data=(), **kwargs):
+        kwargs.setdefault('id', letters())
+        conf = kwargs.pop('config', config)
+        r = FakeRepo(data, **kwargs)
+        conf.add_repo(r)
+        return r
     return _make_repo
