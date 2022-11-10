@@ -81,6 +81,13 @@ cdef class Uri:
         return obj
 
     @property
+    def uri(self):
+        c_str = C.pkgcraft_uri_uri(self._uri)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
+
+    @property
     def rename(self):
         c_str = C.pkgcraft_uri_rename(self._uri)
         if c_str is not NULL:

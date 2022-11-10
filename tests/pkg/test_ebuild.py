@@ -132,11 +132,15 @@ class TestEbuildPkg:
 
         pkg = repo.create_pkg(src_uri='https://a.com/b.tar.gz')
         assert str(pkg.src_uri) == 'https://a.com/b.tar.gz'
-        assert list(map(str, pkg.src_uri.flatten())) == ['https://a.com/b.tar.gz']
+        u = next(pkg.src_uri.flatten())
+        assert u.uri == 'https://a.com/b.tar.gz'
+        assert u.rename is None
 
-        pkg = repo.create_pkg(src_uri='u? ( https://a.com/b.tar.gz )')
-        assert str(pkg.src_uri) == 'u? ( https://a.com/b.tar.gz )'
-        assert list(map(str, pkg.src_uri.flatten())) == ['https://a.com/b.tar.gz']
+        pkg = repo.create_pkg(src_uri='https://a.com/z -> z.tar.xz')
+        assert str(pkg.src_uri) == 'https://a.com/z -> z.tar.xz'
+        u = next(pkg.src_uri.flatten())
+        assert u.uri == 'https://a.com/z'
+        assert u.rename == 'z.tar.xz'
 
         pkg = repo.create_pkg(src_uri='u1? ( https://a.com/b.tar.gz ) u2? ( https://a.com/z -> z.tar.xz )')
         assert str(pkg.src_uri) == 'u1? ( https://a.com/b.tar.gz ) u2? ( https://a.com/z -> z.tar.xz )'
