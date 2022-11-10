@@ -1,5 +1,4 @@
 from .. cimport pkgcraft_c as C
-from ..pkg cimport EbuildPkg
 from . cimport Repo
 
 cdef class EbuildRepo(Repo):
@@ -8,5 +7,3 @@ cdef class EbuildRepo(Repo):
 
     @staticmethod
     cdef EbuildRepo from_ptr(const C.Repo *, bint)
-
-    cdef EbuildPkg create_pkg(self, C.Pkg *)
