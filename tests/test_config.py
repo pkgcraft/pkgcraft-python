@@ -63,8 +63,8 @@ class TestConfig:
         config.add_repo(r)
         assert 'test' in config.repos
 
-    def test_repo_sets(self, config, make_repo, make_fake_repo):
-        r1 = make_repo(config=config)
+    def test_repo_sets(self, config, make_ebuild_repo, make_fake_repo):
+        r1 = make_ebuild_repo(config=config)
         r2 = make_fake_repo(config=config)
         assert config.repos.all == RepoSet([r1, r2])
         assert config.repos.ebuild == RepoSet([r1])

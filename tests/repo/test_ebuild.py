@@ -7,14 +7,14 @@ from pkgcraft.repo import EbuildRepo
 
 class TestEbuildRepo:
 
-    def test_masters(self, config, make_raw_repo):
+    def test_masters(self, config, make_raw_ebuild_repo):
         # empty masters
-        repo = make_raw_repo()
+        repo = make_raw_ebuild_repo()
         r = config.add_repo_path(repo.path)
         assert not r.masters
 
         # non-empty masters
-        overlay = make_raw_repo(masters=[r.path])
+        overlay = make_raw_ebuild_repo(masters=[r.path])
         o = config.add_repo_path(overlay.path)
         assert o.masters == (r,)
 

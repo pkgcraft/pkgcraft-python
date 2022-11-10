@@ -168,7 +168,7 @@ def raw_repo(tmp_path_factory):
 
 
 @pytest.fixture
-def make_raw_repo(tmp_path_factory):
+def make_raw_ebuild_repo(tmp_path_factory):
     """Factory for ebuild repo creation."""
     def _make_repo(path=None, **kwargs):
         path = str(tmp_path_factory.mktemp('repo')) if path is None else path
@@ -198,7 +198,7 @@ def letters():
 
 
 @pytest.fixture
-def make_repo(tmp_path_factory, config, letters):
+def make_ebuild_repo(tmp_path_factory, config, letters):
     """Factory for ebuild repo creation."""
     def _make_repo(path=None, **kwargs):
         path = str(tmp_path_factory.mktemp('repo')) if path is None else path

@@ -10,20 +10,20 @@ from ..misc import OperatorMap
 
 class TestRepoSet:
 
-    def test_attrs(self, make_repo):
-        r1 = make_repo()
-        r2 = make_repo()
+    def test_attrs(self, make_ebuild_repo):
+        r1 = make_ebuild_repo()
+        r2 = make_ebuild_repo()
         s = RepoSet([r1, r2])
         assert str(s)
         assert repr(s).startswith("<RepoSet ")
 
-    def test_repos(self, make_repo):
-        r1 = make_repo()
-        r2 = make_repo()
+    def test_repos(self, make_ebuild_repo):
+        r1 = make_ebuild_repo()
+        r2 = make_ebuild_repo()
         s = RepoSet([r1, r2])
         assert s.repos == (r1, r2)
 
-    def test_cmp(self, make_repo):
+    def test_cmp(self, make_ebuild_repo):
         for (r1, op, r2) in (
                 ({'id': 'a'}, '<', {'id': 'b'}),
                 ({'id': 'b', 'priority': 1}, '<=', {'id': 'a', 'priority': 2}),
@@ -34,14 +34,14 @@ class TestRepoSet:
             config = Config()
             op_func = OperatorMap[op]
             err = f"failed {r1} {op} {r2}"
-            s1 = RepoSet([make_repo(config=config, **r1)])
-            s2 = RepoSet([make_repo(config=config, **r2)])
+            s1 = RepoSet([make_ebuild_repo(config=config, **r1)])
+            s2 = RepoSet([make_ebuild_repo(config=config, **r2)])
             assert op_func(s1, s2), err
 
-    def test_hash(self, make_repo):
-        r1 = make_repo()
-        r2 = make_repo()
-        r3 = make_repo()
+    def test_hash(self, make_ebuild_repo):
+        r1 = make_ebuild_repo()
+        r2 = make_ebuild_repo()
+        r3 = make_ebuild_repo()
 
         # equal sets
         s1 = RepoSet([r1, r2])
@@ -56,9 +56,9 @@ class TestRepoSet:
         assert not RepoSet([])
         assert RepoSet([repo])
 
-    def test_iter(self, make_repo):
-        r1 = make_repo()
-        r2 = make_repo()
+    def test_iter(self, make_ebuild_repo):
+        r1 = make_ebuild_repo()
+        r2 = make_ebuild_repo()
         s = RepoSet([r1, r2])
 
         # calling next() directly on a repo object fails
@@ -76,9 +76,9 @@ class TestRepoSet:
         pkg2 = r2.create_pkg('cat/pkg-2')
         assert list(iter(s)) == [pkg1, pkg2]
 
-    def test_iter_restrict(self, make_repo):
-        r1 = make_repo()
-        r2 = make_repo()
+    def test_iter_restrict(self, make_ebuild_repo):
+        r1 = make_ebuild_repo()
+        r2 = make_ebuild_repo()
         s = RepoSet([r1, r2])
 
         # non-None argument required
@@ -114,10 +114,10 @@ class TestRepoSet:
         with pytest.raises(InvalidRestrict):
             list(s.iter_restrict('-'))
 
-    def test_set_ops(self, make_repo):
-        r1 = make_repo()
-        r2 = make_repo()
-        r3 = make_repo()
+    def test_set_ops(self, make_ebuild_repo):
+        r1 = make_ebuild_repo()
+        r2 = make_ebuild_repo()
+        r3 = make_ebuild_repo()
 
         # &= operator
         s = RepoSet([r1, r2, r3])
