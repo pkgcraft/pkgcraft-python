@@ -1,7 +1,7 @@
 from .. cimport pkgcraft_c as C
 from . cimport Pkg
-from ..error import IndirectInit
 from ..repo cimport FakeRepo
+from ..error import IndirectInit
 
 
 cdef class FakePkg(Pkg):

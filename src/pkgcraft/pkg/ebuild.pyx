@@ -2,8 +2,8 @@ from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
 from ..depset cimport DepSet, DepSetAtom, DepSetString, DepSetUri
 from . cimport Pkg
-from ..error import IndirectInit, PkgcraftError
 from ..repo cimport EbuildRepo
+from ..error import IndirectInit, PkgcraftError
 
 
 cdef class EbuildPkg(Pkg):
