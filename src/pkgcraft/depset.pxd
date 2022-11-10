@@ -17,3 +17,7 @@ cdef class DepSet:
 
 cdef class _DepSetFlatten:
     cdef C.DepSetFlatten *_iter
+    cdef DepSetType _type
+
+    @staticmethod
+    cdef _DepSetFlatten create(DepSet)

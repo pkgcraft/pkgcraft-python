@@ -83,9 +83,6 @@ cdef extern from "pkgcraft.h":
     cdef struct Restrict:
         pass
 
-    cdef struct Uri:
-        pass
-
     # Wrapper for package maintainers.
     cdef struct Maintainer:
         char *email;
@@ -291,35 +288,19 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSet pointer.
     DepSetFlatten *pkgcraft_depset_flatten_iter(DepSet *dep);
 
-    # Return the next Atom from a flattened depset atom iterator.
-    #
-    # Returns NULL when the iterator is empty.
-    #
-    # # Safety
-    # The argument must be a non-null DepSetFlatten pointer.
-    const Atom *pkgcraft_depset_flatten_iter_atom_next(DepSetFlatten *i);
-
     # Free a flattened depset iterator.
     #
     # # Safety
     # The argument must be a non-null DepSetFlatten pointer or NULL.
     void pkgcraft_depset_flatten_iter_free(DepSetFlatten *i);
 
-    # Return the next string from a flattened depset string iterator.
+    # Return the next object from a flattened depset iterator.
     #
     # Returns NULL when the iterator is empty.
     #
     # # Safety
     # The argument must be a non-null DepSetFlatten pointer.
-    char *pkgcraft_depset_flatten_iter_str_next(DepSetFlatten *i);
-
-    # Return the next uri from a flattened depset uri iterator.
-    #
-    # Returns NULL when the iterator is empty.
-    #
-    # # Safety
-    # The argument must be a non-null DepSetFlatten pointer.
-    const Uri *pkgcraft_depset_flatten_iter_uri_next(DepSetFlatten *i);
+    void *pkgcraft_depset_flatten_iter_next(DepSetFlatten *i);
 
     # Free a DepSet.
     #
