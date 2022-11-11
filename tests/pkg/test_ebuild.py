@@ -68,6 +68,10 @@ class TestEbuildPkg:
             pkg = repo.create_pkg()
             assert not getattr(pkg, attr)
 
+            pkg = repo.create_pkg(**{attr: ''})
+            val = getattr(pkg, attr)
+            assert not getattr(pkg, attr)
+
             pkg = repo.create_pkg(**{attr: 'cat/pkg'})
             val = getattr(pkg, attr)
             assert str(val) == 'cat/pkg'
