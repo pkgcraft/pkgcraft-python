@@ -78,6 +78,11 @@ class TestEbuildPkg:
             assert str(val) == 'u? ( cat/pkg ) || ( a/b c/d )'
             assert list(val.flatten()) == [Atom('cat/pkg'), Atom('a/b'), Atom('c/d')]
 
+            pkg = repo.create_pkg(**{attr: 'u? ( a/b ) c/d'})
+            val = getattr(pkg, attr)
+            assert str(val) == 'u? ( a/b ) c/d'
+            assert list(val.flatten()) == [Atom('a/b'), Atom('c/d')]
+
     def test_license(self, repo):
         pkg = repo.create_pkg()
         assert not pkg.license
