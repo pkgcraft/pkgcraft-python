@@ -46,6 +46,8 @@ class TestEapi:
 
     def test_metadata_keys(self):
         assert 'SLOT' in EAPI0.metadata_keys
+        assert 'REQUIRED_USE' not in EAPI0.metadata_keys
+        assert 'REQUIRED_USE' in EAPI_LATEST.metadata_keys
 
     def test_cmp(self):
         assert EAPI0 < EAPI1

@@ -83,7 +83,7 @@ cdef class Eapi:
         cdef size_t length
         if self._dep_keys is None:
             c_keys = C.pkgcraft_eapi_dep_keys(self._eapi, &length)
-            self._dep_keys = tuple(c_keys[i].decode() for i in range(length))
+            self._dep_keys = frozenset(c_keys[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(c_keys, length)
         return self._dep_keys
 
@@ -93,7 +93,7 @@ cdef class Eapi:
         cdef size_t length
         if self._metadata_keys is None:
             c_keys = C.pkgcraft_eapi_metadata_keys(self._eapi, &length)
-            self._metadata_keys = tuple(c_keys[i].decode() for i in range(length))
+            self._metadata_keys = frozenset(c_keys[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(c_keys, length)
         return self._metadata_keys
 
