@@ -7,9 +7,18 @@ ctypedef enum DepSetType:
     DepSetUri
 
 
+cdef class DepRestrict:
+    cdef C.DepRestrict *_restrict
+    cdef DepSetType _type
+
+    @staticmethod
+    cdef DepRestrict from_ptr(C.DepRestrict *, DepSetType)
+
+
 cdef class DepSet:
     cdef C.DepSet *_deps
     cdef DepSetType _type
+    cdef C.DepSetIter *_iter
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *, DepSetType)

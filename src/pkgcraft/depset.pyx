@@ -3,6 +3,26 @@ from .atom cimport Atom
 from .error import IndirectInit
 
 
+cdef class DepRestrict:
+    """Dependency restriction."""
+
+    @staticmethod
+    cdef DepRestrict from_ptr(C.DepRestrict *r, DepSetType type):
+        obj = <DepRestrict>DepRestrict.__new__(DepRestrict)
+        obj._restrict = r
+        obj._type = type
+        return obj
+
+    def __str__(self):
+        c_str = C.pkgcraft_deprestrict_str(self._restrict)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
+
+    def __dealloc__(self):
+        C.pkgcraft_deprestrict_free(self._restrict)
+
+
 cdef class DepSet:
     """Dependency set of objects."""
 
@@ -20,6 +40,22 @@ cdef class DepSet:
         """Iterate over the objects of a flattened depset."""
         yield from _DepSetFlatten.create(self)
 
+    def __iter__(self):
+        if self._iter is not NULL:
+            C.pkgcraft_depset_iter_free(self._iter)
+        self._iter = C.pkgcraft_depset_iter(self._deps)
+        return self
+
+    def __next__(self):
+        # verify __iter__() was called since cython's generated next() method doesn't check
+        if self._iter is NULL:
+            raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
+
+        d = C.pkgcraft_depset_iter_next(self._iter)
+        if d is not NULL:
+            return DepRestrict.from_ptr(d, self._type)
+        raise StopIteration
+
     def __str__(self):
         c_str = C.pkgcraft_depset_str(self._deps)
         s = c_str.decode()
@@ -28,6 +64,7 @@ cdef class DepSet:
 
     def __dealloc__(self):
         C.pkgcraft_depset_free(self._deps)
+        C.pkgcraft_depset_iter_free(self._iter)
 
 
 cdef class _DepSetFlatten:

@@ -40,11 +40,17 @@ cdef extern from "pkgcraft.h":
     cdef struct Config:
         pass
 
+    cdef struct DepRestrict:
+        pass
+
     # Opaque wrapper for DepSet objects.
     cdef struct DepSet:
         pass
 
     cdef struct DepSetFlatten:
+        pass
+
+    cdef struct DepSetIter:
         pass
 
     # EAPI object.
@@ -286,6 +292,18 @@ cdef extern from "pkgcraft.h":
     # The argument should be a UTF-8 string.
     Atom *pkgcraft_cpv_new(const char *s);
 
+    # Free a DepRestrict object.
+    #
+    # # Safety
+    # The argument must be a DepRestrict pointer or NULL.
+    void pkgcraft_deprestrict_free(DepRestrict *r);
+
+    # Return the formatted string for a DepRestrict object.
+    #
+    # # Safety
+    # The argument must be a non-null DepRestrict pointer.
+    char *pkgcraft_deprestrict_str(DepRestrict *dep);
+
     # Return an iterator for a flattened depset.
     #
     # # Safety
@@ -311,6 +329,26 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a DepSet pointer or NULL.
     void pkgcraft_depset_free(DepSet *d);
+
+    # Return an iterator for a depset.
+    #
+    # # Safety
+    # The argument must be a non-null DepSet pointer.
+    DepSetIter *pkgcraft_depset_iter(DepSet *dep);
+
+    # Free a depset iterator.
+    #
+    # # Safety
+    # The argument must be a non-null DepSetIter pointer or NULL.
+    void pkgcraft_depset_iter_free(DepSetIter *i);
+
+    # Return the next object from a depset iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a non-null DepSetIter pointer.
+    DepRestrict *pkgcraft_depset_iter_next(DepSetIter *i);
 
     # Return the formatted string for a DepSet object.
     #
