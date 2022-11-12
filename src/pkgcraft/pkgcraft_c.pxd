@@ -375,6 +375,12 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null Eapi pointers.
     int pkgcraft_eapi_cmp(const Eapi *e1, const Eapi *e2);
 
+    # Return the array of dependency keys for an Eapi.
+    #
+    # # Safety
+    # The argument must be a non-null Eapi pointer.
+    char **pkgcraft_eapi_dep_keys(const Eapi *eapi, uintptr_t *len);
+
     # Get an EAPI from its identifier.
     #
     # Returns NULL on error.
@@ -389,11 +395,17 @@ cdef extern from "pkgcraft.h":
     # The arguments must be a non-null Eapi pointer and non-null string.
     bool pkgcraft_eapi_has(const Eapi *eapi, const char *s);
 
-    # Return the hash value for a Eapi.
+    # Return the hash value for an Eapi.
     #
     # # Safety
     # The argument must be a non-null Eapi pointer.
     uint64_t pkgcraft_eapi_hash(const Eapi *eapi);
+
+    # Return the array of metadata keys for an Eapi.
+    #
+    # # Safety
+    # The argument must be a non-null Eapi pointer.
+    char **pkgcraft_eapi_metadata_keys(const Eapi *eapi, uintptr_t *len);
 
     # Get all known EAPIS.
     #

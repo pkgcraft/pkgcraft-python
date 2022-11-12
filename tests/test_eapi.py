@@ -39,6 +39,14 @@ class TestEapi:
             with pytest.raises(TypeError):
                 EAPI1.has(obj)
 
+    def test_dep_keys(self):
+        assert 'DEPEND' in EAPI0.dep_keys
+        assert 'BDEPEND' not in EAPI0.dep_keys
+        assert 'BDEPEND' in EAPI_LATEST.dep_keys
+
+    def test_metadata_keys(self):
+        assert 'SLOT' in EAPI0.metadata_keys
+
     def test_cmp(self):
         assert EAPI0 < EAPI1
         assert EAPI0 <= EAPI1

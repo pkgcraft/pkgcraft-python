@@ -77,6 +77,24 @@ cdef class Eapi:
         """Check if an EAPI has a given feature."""
         return C.pkgcraft_eapi_has(self._eapi, s.encode())
 
+    @property
+    def dep_keys(self):
+        """Get an EAPI's dependency keys."""
+        cdef size_t length
+        c_keys = C.pkgcraft_eapi_dep_keys(self._eapi, &length)
+        keys = tuple(c_keys[i].decode() for i in range(length))
+        C.pkgcraft_str_array_free(c_keys, length)
+        return keys
+
+    @property
+    def metadata_keys(self):
+        """Get an EAPI's metadata keys."""
+        cdef size_t length
+        c_keys = C.pkgcraft_eapi_metadata_keys(self._eapi, &length)
+        keys = tuple(c_keys[i].decode() for i in range(length))
+        C.pkgcraft_str_array_free(c_keys, length)
+        return keys
+
     def __lt__(self, Eapi other):
         return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) == -1
 
