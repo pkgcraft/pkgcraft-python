@@ -107,7 +107,7 @@ cdef class _DepSetFlatten:
                 return s
             elif self._type is DepSetUri:
                 return Uri.from_ptr(<const C.Uri *>obj)
-            else:
+            else:  # pragma: no cover
                 raise AttributeError(f'unknown DepSet type: {self._type}')
         raise StopIteration
 
