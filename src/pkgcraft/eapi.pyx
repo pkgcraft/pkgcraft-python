@@ -26,7 +26,7 @@ cdef object get_official_eapis():
     d = eapis_to_dict(eapis, length)
     C.pkgcraft_eapis_free(eapis, length)
 
-    # set global variables for each official EAPI, e.g. EAPI0, EAPI1, ....
+    # set global variables for each official EAPI, e.g. EAPI0, EAPI1, ...
     for k, v in d.items():
         globals()[f'EAPI{k}'] = v
 
