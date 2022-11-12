@@ -29,9 +29,7 @@ cdef class _DepSetFlatten:
     cdef DepSetType _type
 
     @staticmethod
-    cdef _DepSetFlatten from_deprestrict(DepRestrict)
-    @staticmethod
-    cdef _DepSetFlatten from_depset(DepSet)
+    cdef _DepSetFlatten from_ptr(C.DepSetFlatten *, DepSetType)
 
 
 cdef class Uri:
