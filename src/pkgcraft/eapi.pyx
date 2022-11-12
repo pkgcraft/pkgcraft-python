@@ -81,19 +81,21 @@ cdef class Eapi:
     def dep_keys(self):
         """Get an EAPI's dependency keys."""
         cdef size_t length
-        c_keys = C.pkgcraft_eapi_dep_keys(self._eapi, &length)
-        keys = tuple(c_keys[i].decode() for i in range(length))
-        C.pkgcraft_str_array_free(c_keys, length)
-        return keys
+        if self._dep_keys is None:
+            c_keys = C.pkgcraft_eapi_dep_keys(self._eapi, &length)
+            self._dep_keys = tuple(c_keys[i].decode() for i in range(length))
+            C.pkgcraft_str_array_free(c_keys, length)
+        return self._dep_keys
 
     @property
     def metadata_keys(self):
         """Get an EAPI's metadata keys."""
         cdef size_t length
-        c_keys = C.pkgcraft_eapi_metadata_keys(self._eapi, &length)
-        keys = tuple(c_keys[i].decode() for i in range(length))
-        C.pkgcraft_str_array_free(c_keys, length)
-        return keys
+        if self._metadata_keys is None:
+            c_keys = C.pkgcraft_eapi_metadata_keys(self._eapi, &length)
+            self._metadata_keys = tuple(c_keys[i].decode() for i in range(length))
+            C.pkgcraft_str_array_free(c_keys, length)
+        return self._metadata_keys
 
     def __lt__(self, Eapi other):
         return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) == -1
