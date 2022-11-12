@@ -1,6 +1,6 @@
 import pytest
 
-from pkgcraft.eapi import Eapi, EAPIS, EAPI_LATEST, EAPIS_OFFICIAL
+from pkgcraft.eapi import Eapi, EAPI0, EAPI1, EAPIS, EAPI_LATEST, EAPIS_OFFICIAL
 from pkgcraft.error import IndirectInit, PkgcraftError
 
 
@@ -19,9 +19,8 @@ class TestEapi:
             Eapi()
 
     def test_valid(self):
-        eapi = Eapi.get('0')
-        assert str(eapi) == '0'
-        assert repr(eapi).startswith(f"<Eapi '0' at 0x")
+        assert str(EAPI0) == '0'
+        assert repr(EAPI0).startswith(f"<Eapi '0' at 0x")
 
     def test_unknown(self):
         with pytest.raises(PkgcraftError, match='unknown or invalid EAPI: unknown'):
@@ -32,18 +31,15 @@ class TestEapi:
             Eapi.get('+')
 
     def test_has(self):
-        eapi = Eapi.get('1')
-        assert not eapi.has('nonexistent_feature')
-        assert eapi.has('slot_deps')
+        assert not EAPI1.has('nonexistent_feature')
+        assert EAPI1.has('slot_deps')
 
         # invalid feature param type
         for obj in (object(), None):
             with pytest.raises(TypeError):
-                eapi.has(obj)
+                EAPI1.has(obj)
 
     def test_cmp(self):
-        EAPI0 = EAPIS['0']
-        EAPI1 = EAPIS['1']
         assert EAPI0 < EAPI1
         assert EAPI0 <= EAPI1
         assert EAPI1 <= EAPI1
@@ -54,7 +50,7 @@ class TestEapi:
         assert EAPI1 > EAPI0
 
     def test_hash(self):
-        s = {Eapi.get('0'), Eapi.get('1')}
+        s = {EAPI0, EAPI1}
         assert len(s) == 2
-        s = {Eapi.get('0'), Eapi.get('0')}
+        s = {EAPI0, EAPI0}
         assert len(s) == 1
