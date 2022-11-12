@@ -13,6 +13,10 @@ cdef class DepRestrict:
         obj._type = type
         return obj
 
+    def flatten(self):
+        """Iterate over the objects of a flattened DepRestrict."""
+        yield from _DepSetFlatten.from_deprestrict(self)
+
     def __str__(self):
         c_str = C.pkgcraft_deprestrict_str(self._restrict)
         s = c_str.decode()
@@ -37,8 +41,8 @@ cdef class DepSet:
         return obj
 
     def flatten(self):
-        """Iterate over the objects of a flattened depset."""
-        yield from _DepSetFlatten.create(self)
+        """Iterate over the objects of a flattened DepSet."""
+        yield from _DepSetFlatten.from_depset(self)
 
     def __iter__(self):
         if self._iter is not NULL:
@@ -74,7 +78,14 @@ cdef class _DepSetFlatten:
         raise IndirectInit(self)
 
     @staticmethod
-    cdef _DepSetFlatten create(DepSet d):
+    cdef _DepSetFlatten from_deprestrict(DepRestrict d):
+        o = <_DepSetFlatten>_DepSetFlatten.__new__(_DepSetFlatten)
+        o._iter = C.pkgcraft_deprestrict_flatten_iter(d._restrict)
+        o._type = d._type
+        return o
+
+    @staticmethod
+    cdef _DepSetFlatten from_depset(DepSet d):
         o = <_DepSetFlatten>_DepSetFlatten.__new__(_DepSetFlatten)
         o._iter = C.pkgcraft_depset_flatten_iter(d._deps)
         o._type = d._type

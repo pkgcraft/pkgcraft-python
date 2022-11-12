@@ -292,6 +292,12 @@ cdef extern from "pkgcraft.h":
     # The argument should be a UTF-8 string.
     Atom *pkgcraft_cpv_new(const char *s);
 
+    # Return an iterator for a flattened DepRestrict.
+    #
+    # # Safety
+    # The argument must be a non-null DepRestrict pointer.
+    DepSetFlatten *pkgcraft_deprestrict_flatten_iter(DepRestrict *dep);
+
     # Free a DepRestrict object.
     #
     # # Safety
@@ -304,7 +310,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepRestrict pointer.
     char *pkgcraft_deprestrict_str(DepRestrict *dep);
 
-    # Return an iterator for a flattened depset.
+    # Return an iterator for a flattened DepSet.
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
