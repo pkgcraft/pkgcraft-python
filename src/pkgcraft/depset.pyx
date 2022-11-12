@@ -6,6 +6,9 @@ from .error import IndirectInit
 cdef class DepRestrict:
     """Dependency restriction."""
 
+    def __init__(self):  # pragma: no cover
+        raise IndirectInit(self)
+
     @staticmethod
     cdef DepRestrict from_ptr(C.DepRestrict *r, DepSetType type):
         obj = <DepRestrict>DepRestrict.__new__(DepRestrict)
