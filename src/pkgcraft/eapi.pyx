@@ -58,7 +58,25 @@ cdef class Eapi:
 
     @staticmethod
     def range(str s not None):
-        """Convert EAPI range into an ordered mapping of Eapi objects."""
+        """Convert EAPI range into an ordered mapping of Eapi objects.
+
+        >>> from pkgcraft.eapi import Eapi, EAPI3, EAPI4, EAPIS, EAPIS_OFFICIAL
+
+        >>> Eapi.range('0-') == EAPIS
+        True
+
+        >>> Eapi.range('0~') == EAPIS_OFFICIAL
+        True
+
+        >>> Eapi.range('3-4') == {'3': EAPI3, '4': EAPI4}
+        True
+
+        >>> Eapi.range('invalid')
+        Traceback (most recent call last):
+            ...
+        pkgcraft.error.PkgcraftError: parsing failure: invalid range: invalid
+        ...
+        """
         cdef size_t length
         eapis = C.pkgcraft_eapis_range(s.encode(), &length)
         if eapis is NULL:

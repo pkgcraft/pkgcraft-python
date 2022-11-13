@@ -9,6 +9,7 @@ write_to = "src/pkgcraft/__version__.py"
 minversion = "6.0"
 addopts = "-ra"
 testpaths = ["tests"]
+doctest_optionflags = "ELLIPSIS"
 
 [tool.cibuildwheel]
 build = ["cp39-*", "cp310-*", "cp311-*"]
