@@ -1,5 +1,5 @@
 from . cimport pkgcraft_c as C
-from .repo cimport EbuildRepo, FakeRepo, Repo, RepoSet, repo_from_ptr
+from .repo cimport Repo, RepoSet
 from .error import PkgcraftError
 
 
@@ -11,7 +11,7 @@ cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
     for i in range(length):
         r = repos[i]
         id = C.pkgcraft_repo_id(r)
-        d[id.decode()] = repo_from_ptr(r, ref)
+        d[id.decode()] = Repo.from_ptr(r, ref)
         C.pkgcraft_str_free(id)
 
     return d
@@ -51,7 +51,7 @@ cdef class Config:
     def add_repo_path(self, path not None, id=None, priority=0):
         """Add an external repo via its file path."""
         repo = self._add_repo_path(path, id, priority)
-        return repo_from_ptr(repo, False)
+        return Repo.from_ptr(repo, False)
 
     def _inject_repo_path(self, Repo obj not None, path not None, id=None, priority=0):
         """Add an external repo via its file path and inject it into a given Repo object."""

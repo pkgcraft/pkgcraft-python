@@ -7,17 +7,6 @@ from ..error import IndirectInit, PkgcraftError
 from ..restrict import InvalidRestrict
 
 
-cdef Repo repo_from_ptr(C.Repo *r, bint ref):
-    """Convert a repo pointer to a repo object."""
-    format = C.pkgcraft_repo_format(r)
-    if format is C.RepoFormat.EbuildRepo:
-        return EbuildRepo.from_ptr(r, ref)
-    elif format is C.RepoFormat.FakeRepo:
-        return FakeRepo.from_ptr(r, ref)
-    else:  # pragma: no cover
-        raise PkgcraftError('unsupported repo format')
-
-
 cdef class Repo:
     """Package repo."""
 
@@ -28,6 +17,17 @@ cdef class Repo:
         """Overwrite the repo pointer with a given value."""
         self._repo = <C.Repo *>repo
         self._ref = ref
+
+    @staticmethod
+    cdef Repo from_ptr(C.Repo *r, bint ref):
+        """Convert a repo pointer to a repo object."""
+        format = C.pkgcraft_repo_format(r)
+        if format is C.RepoFormat.EbuildRepo:
+            return EbuildRepo.from_ptr(r, ref)
+        elif format is C.RepoFormat.FakeRepo:
+            return FakeRepo.from_ptr(r, ref)
+        else:  # pragma: no cover
+            raise PkgcraftError('unsupported repo format')
 
     cdef Pkg create_pkg(self, C.Pkg *pkg):  # pragma: no cover
         raise RuntimeError(f"{self.__class__.__name__} class doesn't support package creation")
