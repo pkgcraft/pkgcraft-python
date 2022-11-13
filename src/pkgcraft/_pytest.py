@@ -1,3 +1,4 @@
+import binascii
 import os
 import textwrap
 from datetime import datetime
@@ -180,6 +181,14 @@ def make_raw_ebuild_repo(tmp_path_factory):
 def repo(config, tmp_path_factory):
     """Create a generic ebuild repository."""
     return TempEbuildRepo(str(tmp_path_factory.mktemp('repo')), config=config)
+
+
+@pytest.fixture
+def random_str():
+    """Factory for random string generation."""
+    def _make_str(len=10):
+        return binascii.b2a_hex(os.urandom(len)).decode()
+    return _make_str
 
 
 @pytest.fixture

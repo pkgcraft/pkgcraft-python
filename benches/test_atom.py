@@ -1,21 +1,21 @@
-import binascii
 import os
 
 import pytest
+pytest_plugins = ('benchmark', 'pkgcraft')
 
 from pkgcraft.atom import Atom as pkgcraft_atom
 from pkgcore.ebuild.atom import atom as pkgcore_atom
 from portage.dep import Atom as portage_atom
 
-def random_atom(func):
-    cat = binascii.b2a_hex(os.urandom(10)).decode()
-    pkg = binascii.b2a_hex(os.urandom(10)).decode()
+def random_atom(func, random_str):
+    cat = random_str()
+    pkg = random_str()
     s = f'=cat_{cat}/pkg_{pkg}-1-r2:3/4=[a,b,c]'
     return func(s)
 
-def random_cp(func):
-    cat = binascii.b2a_hex(os.urandom(10)).decode()
-    pkg = binascii.b2a_hex(os.urandom(10)).decode()
+def random_cp(func, random_str):
+    cat = random_str()
+    pkg = random_str()
     s = f'cat_{cat}/pkg_{pkg}'
     return func(s)
 
@@ -31,8 +31,8 @@ def test_bench_atom_static(benchmark, lib, func):
     benchmark(func, '=cat/pkg-1-r2:3/4=[a,b,c]')
 
 @pytest.mark.parametrize("lib,func", atom_funcs)
-def test_bench_atom_random(benchmark, lib, func):
-    benchmark(random_atom, func)
+def test_bench_atom_random(benchmark, random_str, lib, func):
+    benchmark(random_atom, func, random_str)
 
 @pytest.mark.parametrize("lib,func", atom_funcs)
 def test_bench_atom_property(benchmark, lib, func):
