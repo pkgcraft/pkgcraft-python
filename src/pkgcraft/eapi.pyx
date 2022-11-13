@@ -67,14 +67,43 @@ cdef class Eapi:
 
     @staticmethod
     def get(str id):
-        """Get an EAPI given its identifier."""
+        """Get an EAPI given its identifier.
+
+        >>> from pkgcraft.eapi import Eapi, EAPI8
+
+        valid identifier
+        >>> eapi = Eapi.get('8')
+        >>> eapi is EAPI8
+        True
+
+        invalid identifier
+        >>> Eapi.get('unknown')
+        Traceback (most recent call last):
+            ...
+        pkgcraft.error.PkgcraftError: unknown or invalid EAPI: unknown
+        """
         try:
             return EAPIS[id]
         except KeyError:
             raise PkgcraftError(f'unknown or invalid EAPI: {id}')
 
     def has(self, str s not None):
-        """Check if an EAPI has a given feature."""
+        """Check if an EAPI has a given feature.
+
+        >>> from pkgcraft.eapi import EAPI5
+
+        existing feature
+        >>> EAPI5.has('subslots')
+        True
+
+        newer feature not existing in EAPI 5
+        >>> EAPI5.has('nonfatal_die')
+        False
+
+        nonexistent feature
+        >>> EAPI5.has('nonexistent')
+        False
+        """
         return C.pkgcraft_eapi_has(self._eapi, s.encode())
 
     @property
