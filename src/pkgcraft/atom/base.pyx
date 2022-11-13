@@ -32,14 +32,14 @@ cdef class Atom(Cpv):
     >>> from pkgcraft.atom import Atom
 
     Simple atom
-    >>> a = Atom("cat/pkg")
+    >>> a = Atom('cat/pkg')
     >>> a.category
     'cat'
     >>> a.package
     'pkg'
 
     Complex atom
-    >>> a = Atom("=cat/pkg-1-r2:0/2[a,b]::repo")
+    >>> a = Atom('=cat/pkg-1-r2:0/2[a,b]::repo')
     >>> a.category
     'cat'
     >>> a.package
@@ -97,13 +97,13 @@ cdef class Atom(Cpv):
         """Get an atom's blocker.
 
         >>> from pkgcraft.atom import Atom
-        >>> a = Atom("cat/pkg")
+        >>> a = Atom('cat/pkg')
         >>> a.blocker is None
         True
-        >>> a = Atom("!cat/pkg")
+        >>> a = Atom('!cat/pkg')
         >>> a.blocker is Blocker.Weak
         True
-        >>> a = Atom("!!cat/pkg")
+        >>> a = Atom('!!cat/pkg')
         >>> a.blocker is Blocker.Strong
         True
         """
@@ -117,10 +117,10 @@ cdef class Atom(Cpv):
         """Get an atom's slot.
 
         >>> from pkgcraft.atom import Atom
-        >>> a = Atom("=cat/pkg-1-r2:3/4")
+        >>> a = Atom('=cat/pkg-1-r2:3/4')
         >>> a.slot
         '3'
-        >>> a = Atom("=cat/pkg-1-r2")
+        >>> a = Atom('=cat/pkg-1-r2')
         >>> a.slot is None
         True
         """
@@ -136,13 +136,13 @@ cdef class Atom(Cpv):
         """Get an atom's subslot.
 
         >>> from pkgcraft.atom import Atom
-        >>> a = Atom("=cat/pkg-1-r2:3/4")
+        >>> a = Atom('=cat/pkg-1-r2:3/4')
         >>> a.subslot
         '4'
-        >>> a = Atom("=cat/pkg-1-r2:3")
+        >>> a = Atom('=cat/pkg-1-r2:3')
         >>> a.subslot is None
         True
-        >>> a = Atom("=cat/pkg-1-r2")
+        >>> a = Atom('=cat/pkg-1-r2')
         >>> a.subslot is None
         True
         """
@@ -158,16 +158,16 @@ cdef class Atom(Cpv):
         """Get an atom's slot operator.
 
         >>> from pkgcraft.atom import Atom
-        >>> a = Atom("=cat/pkg-1-r2")
+        >>> a = Atom('=cat/pkg-1-r2')
         >>> a.slot_op is None
         True
-        >>> a = Atom("=cat/pkg-1-r2:=")
+        >>> a = Atom('=cat/pkg-1-r2:=')
         >>> a.slot_op is SlotOperator.Equal
         True
-        >>> a = Atom("=cat/pkg-1-r2:0=")
+        >>> a = Atom('=cat/pkg-1-r2:0=')
         >>> a.slot_op is SlotOperator.Equal
         True
-        >>> a = Atom("=cat/pkg-1-r2:*")
+        >>> a = Atom('=cat/pkg-1-r2:*')
         >>> a.slot_op is SlotOperator.Star
         True
         """
@@ -181,13 +181,13 @@ cdef class Atom(Cpv):
         """Get an atom's USE deps.
 
         >>> from pkgcraft.atom import Atom
-        >>> a = Atom("=cat/pkg-1-r2[a,b,c]")
+        >>> a = Atom('=cat/pkg-1-r2[a,b,c]')
         >>> a.use
         ('a', 'b', 'c')
-        >>> a = Atom("=cat/pkg-1-r2[-a(-),b(+)=,!c(-)?]")
+        >>> a = Atom('=cat/pkg-1-r2[-a(-),b(+)=,!c(-)?]')
         >>> a.use
         ('-a(-)', 'b(+)=', '!c(-)?')
-        >>> a = Atom("=cat/pkg-1-r2")
+        >>> a = Atom('=cat/pkg-1-r2')
         >>> a.use is None
         True
         """
@@ -208,10 +208,10 @@ cdef class Atom(Cpv):
         """Get an atom's repo.
 
         >>> from pkgcraft.atom import Atom
-        >>> a = Atom("=cat/pkg-1-r2::repo")
+        >>> a = Atom('=cat/pkg-1-r2::repo')
         >>> a.repo
         'repo'
-        >>> a = Atom("=cat/pkg-1-r2")
+        >>> a = Atom('=cat/pkg-1-r2')
         >>> a.repo is None
         True
         """
@@ -227,7 +227,7 @@ cdef class Atom(Cpv):
         """Get the concatenated string of an atom's category, package, and version.
 
         >>> from pkgcraft.atom import Atom
-        >>> a = Atom("=cat/pkg-1-r2:3/4[u1,!u2?]")
+        >>> a = Atom('=cat/pkg-1-r2:3/4[u1,!u2?]')
         >>> a.cpv
         'cat/pkg-1-r2'
         """

@@ -8,12 +8,12 @@ cdef class Version:
     >>> from pkgcraft.atom import Version
 
     Simple version
-    >>> v = Version("1")
+    >>> v = Version('1')
     >>> v.revision
     '0'
 
     Revisioned version
-    >>> v = Version("1-r2")
+    >>> v = Version('1-r2')
     >>> v.revision
     '2'
     """
@@ -35,10 +35,10 @@ cdef class Version:
         """Get a version's revision.
 
         >>> from pkgcraft.atom import Version
-        >>> v = Version("1-r2")
+        >>> v = Version('1-r2')
         >>> v.revision
         '2'
-        >>> v = Version("1")
+        >>> v = Version('1')
         >>> v.revision
         '0'
         """
@@ -98,7 +98,7 @@ cdef class VersionWithOp(Version):
     """Atom version with an operator.
 
     Simple version
-    >>> v = VersionWithOp("=1")
+    >>> v = VersionWithOp('=1')
     >>> v.revision
     '0'
     """

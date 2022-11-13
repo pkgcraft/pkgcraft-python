@@ -10,7 +10,7 @@ cdef class Cpv:
     >>> from pkgcraft.atom import Cpv
 
     Valid CPV
-    >>> cpv = Cpv("cat/pkg-1-r2")
+    >>> cpv = Cpv('cat/pkg-1-r2')
     >>> cpv.category
     'cat'
     >>> cpv.package
@@ -39,7 +39,7 @@ cdef class Cpv:
         """Get an atom's category.
 
         >>> from pkgcraft.atom import Cpv
-        >>> a = Cpv("cat/pkg-1-r2")
+        >>> a = Cpv('cat/pkg-1-r2')
         >>> a.category
         'cat'
         """
@@ -54,7 +54,7 @@ cdef class Cpv:
         """Get an atom's package.
 
         >>> from pkgcraft.atom import Cpv
-        >>> a = Cpv("cat/pkg-1-r2")
+        >>> a = Cpv('cat/pkg-1-r2')
         >>> a.package
         'pkg'
         """
@@ -69,7 +69,7 @@ cdef class Cpv:
         """Get an atom's version.
 
         >>> from pkgcraft.atom import Cpv
-        >>> a = Cpv("cat/pkg-1-r2")
+        >>> a = Cpv('cat/pkg-1-r2')
         >>> str(a.version)
         '1-r2'
         """
@@ -83,10 +83,10 @@ cdef class Cpv:
         """Get an atom's revision.
 
         >>> from pkgcraft.atom import Cpv
-        >>> a = Cpv("cat/pkg-1-r2")
+        >>> a = Cpv('cat/pkg-1-r2')
         >>> a.revision
         '2'
-        >>> a = Cpv("cat/pkg-1")
+        >>> a = Cpv('cat/pkg-1')
         >>> a.revision
         '0'
         """
@@ -102,7 +102,7 @@ cdef class Cpv:
         """Get the concatenated string of an atom's category and package.
 
         >>> from pkgcraft.atom import Cpv
-        >>> a = Cpv("cat/pkg-1-r2")
+        >>> a = Cpv('cat/pkg-1-r2')
         >>> a.key
         'cat/pkg'
         """
