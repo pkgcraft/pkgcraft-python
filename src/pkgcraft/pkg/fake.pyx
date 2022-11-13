@@ -4,7 +4,7 @@ from ..error import IndirectInit
 
 
 cdef class FakePkg(Pkg):
-    """Generic ebuild package."""
+    """Generic fake package."""
 
     def __init__(self):  # pragma: no cover
         raise IndirectInit(self)
