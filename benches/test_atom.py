@@ -13,12 +13,6 @@ def random_atom(func, random_str):
     s = f'=cat_{cat}/pkg_{pkg}-1-r2:3/4=[a,b,c]'
     return func(s)
 
-def random_cp(func, random_str):
-    cat = random_str()
-    pkg = random_str()
-    s = f'cat_{cat}/pkg_{pkg}'
-    return func(s)
-
 atom_funcs = [
     ('pkgcraft', pkgcraft_atom),
     ('pkgcraft', pkgcraft_atom.cached),
