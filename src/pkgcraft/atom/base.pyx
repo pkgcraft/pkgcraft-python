@@ -139,6 +139,9 @@ cdef class Atom(Cpv):
         >>> a = Atom("=cat/pkg-1-r2:3/4")
         >>> a.subslot
         '4'
+        >>> a = Atom("=cat/pkg-1-r2:3")
+        >>> a.subslot is None
+        True
         >>> a = Atom("=cat/pkg-1-r2")
         >>> a.subslot is None
         True
@@ -181,6 +184,9 @@ cdef class Atom(Cpv):
         >>> a = Atom("=cat/pkg-1-r2[a,b,c]")
         >>> a.use
         ('a', 'b', 'c')
+        >>> a = Atom("=cat/pkg-1-r2[-a(-),b(+)=,!c(-)?]")
+        >>> a.use
+        ('-a(-)', 'b(+)=', '!c(-)?')
         >>> a = Atom("=cat/pkg-1-r2")
         >>> a.use is None
         True
@@ -221,7 +227,7 @@ cdef class Atom(Cpv):
         """Get the concatenated string of an atom's category, package, and version.
 
         >>> from pkgcraft.atom import Atom
-        >>> a = Atom("=cat/pkg-1-r2")
+        >>> a = Atom("=cat/pkg-1-r2:3/4[u1,!u2?]")
         >>> a.cpv
         'cat/pkg-1-r2'
         """
