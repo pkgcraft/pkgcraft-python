@@ -61,6 +61,8 @@ cdef class Eapi:
         """Convert EAPI range into an ordered mapping of Eapi objects."""
         cdef size_t length
         eapis = C.pkgcraft_eapis_range(s.encode(), &length)
+        if eapis is NULL:
+            raise PkgcraftError
         d = eapis_to_dict(eapis, length)
         C.pkgcraft_eapis_free(eapis, length)
         return MappingProxyType(d)
