@@ -17,6 +17,13 @@ cdef class Cpv:
     'pkg'
     >>> str(cpv.version)
     '1-r2'
+
+    Invalid CPV
+    >>> Cpv('>cat/pkg-1')
+    Traceback (most recent call last):
+        ...
+    pkgcraft.error.InvalidCpv: parsing failure: invalid cpv: >cat/pkg-1
+    ...
     """
     def __cinit__(self):
         self._version = SENTINEL

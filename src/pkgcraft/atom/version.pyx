@@ -16,6 +16,13 @@ cdef class Version:
     >>> v = Version('1-r2')
     >>> v.revision
     '2'
+
+    Invalid version
+    >>> Version('1a-1')
+    Traceback (most recent call last):
+        ...
+    pkgcraft.error.InvalidVersion: parsing failure: invalid version: 1a-1
+    ...
     """
     def __init__(self, str s not None):
         self._version = C.pkgcraft_version_new(s.encode())
@@ -101,6 +108,20 @@ cdef class VersionWithOp(Version):
     >>> v = VersionWithOp('=1')
     >>> v.revision
     '0'
+
+    Missing operator
+    >>> VersionWithOp('1')
+    Traceback (most recent call last):
+        ...
+    pkgcraft.error.InvalidVersion: parsing failure: invalid version: 1
+    ...
+
+    Invalid operator
+    >>> VersionWithOp('^1')
+    Traceback (most recent call last):
+        ...
+    pkgcraft.error.InvalidVersion: parsing failure: invalid version: ^1
+    ...
     """
     def __init__(self, str s not None):
         self._version = C.pkgcraft_version_with_op(s.encode())
