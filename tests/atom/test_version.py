@@ -38,7 +38,7 @@ class TestVersion:
 
     def test_invalid(self):
         for s in ('-1', '1a1', 'a', '>1-r2'):
-            with pytest.raises(InvalidVersion, match=f'invalid version: "{s}"'):
+            with pytest.raises(InvalidVersion, match=f'invalid version: {s}'):
                 Version(s)
 
     def test_invalid_arg_type(self):
@@ -80,7 +80,7 @@ class TestVersionWithOp:
 
     def test_invalid(self):
         for s in ('1-r2',):
-            with pytest.raises(InvalidVersion, match=f'invalid version: "{s}"'):
+            with pytest.raises(InvalidVersion, match=f'invalid version: {s}'):
                 VersionWithOp(s)
 
     def test_invalid_arg_type(self):

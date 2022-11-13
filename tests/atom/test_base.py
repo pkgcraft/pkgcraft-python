@@ -80,7 +80,7 @@ class TestAtom:
                     assert str(a) == s
                     assert repr(a).startswith(f"<Atom {s!r} at 0x")
                 else:
-                    with pytest.raises(InvalidAtom, match=f'invalid atom: "{re.escape(s)}"'):
+                    with pytest.raises(InvalidAtom, match=f'invalid atom: {re.escape(s)}'):
                         Atom(s, eapi)
 
     def test_invalid(self):
@@ -90,7 +90,7 @@ class TestAtom:
             failing_eapis = Eapi.range(eapi_range).values()
             for eapi in EAPIS.values():
                 if eapi in failing_eapis:
-                    with pytest.raises(InvalidAtom, match=f'invalid atom: "{re.escape(s)}"'):
+                    with pytest.raises(InvalidAtom, match=f'invalid atom: {re.escape(s)}'):
                         Atom(s, eapi)
                 else:
                     assert Atom(s, eapi)

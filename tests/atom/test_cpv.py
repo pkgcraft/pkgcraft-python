@@ -20,7 +20,7 @@ class TestCpv:
 
     def test_invalid(self):
         for s in ('invalid', 'cat-1', 'cat/pkg', '=cat/pkg-1'):
-            with pytest.raises(InvalidCpv, match=f'invalid cpv: "{s}"'):
+            with pytest.raises(InvalidCpv, match=f'invalid cpv: {s}'):
                 Cpv(s)
 
     def test_invalid_arg_type(self):

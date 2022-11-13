@@ -12,7 +12,7 @@ def test_atom():
 
     # invalid
     for s in ('cat', '=cat/pkg'):
-        with pytest.raises(PkgcraftError, match=f'invalid atom: "{s}"'):
+        with pytest.raises(PkgcraftError, match=f'invalid atom: {s}'):
             parse.atom(s)
 
 def test_category():
@@ -20,7 +20,7 @@ def test_category():
 
     # invalid
     for s in ('cat egory', '-cat', 'cat@'):
-        with pytest.raises(PkgcraftError, match=f'invalid category name: "{s}"'):
+        with pytest.raises(PkgcraftError, match=f'invalid category name: {s}'):
             parse.category(s)
 
 def test_package():
@@ -28,7 +28,7 @@ def test_package():
 
     # invalid
     for s in ('-pkg', 'pkg-1'):
-        with pytest.raises(PkgcraftError, match=f'invalid package name: "{s}"'):
+        with pytest.raises(PkgcraftError, match=f'invalid package name: {s}'):
             parse.package(s)
 
 def test_version():
@@ -36,7 +36,7 @@ def test_version():
 
     # invalid
     for s in ('-1', '1a1'):
-        with pytest.raises(PkgcraftError, match=f'invalid version: "{s}"'):
+        with pytest.raises(PkgcraftError, match=f'invalid version: {s}'):
             parse.version(s)
 
 def test_repo():
@@ -44,7 +44,7 @@ def test_repo():
 
     # invalid
     for s in ('-repo', 'repo-1'):
-        with pytest.raises(PkgcraftError, match=f'invalid repo name: "{s}"'):
+        with pytest.raises(PkgcraftError, match=f'invalid repo name: {s}'):
             parse.repo(s)
 
 def test_cpv():
@@ -52,5 +52,5 @@ def test_cpv():
 
     # invalid
     for s in ('cat', 'cat/pkg', '=cat/pkg-1'):
-        with pytest.raises(PkgcraftError, match=f'invalid cpv: "{s}"'):
+        with pytest.raises(PkgcraftError, match=f'invalid cpv: {s}'):
             parse.cpv(s)
