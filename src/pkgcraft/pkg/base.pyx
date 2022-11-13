@@ -1,6 +1,7 @@
 from .. cimport pkgcraft_c as C
 from ..atom cimport Cpv, Version
-from ..eapi import Eapi
+from ..eapi cimport Eapi
+from ..repo cimport repo_from_ptr
 from ..error import IndirectInit
 
 
@@ -24,6 +25,12 @@ cdef class Pkg:
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return Eapi.get(id)
+
+    @property
+    def repo(self):
+        """Get a package's repo."""
+        repo = C.pkgcraft_pkg_repo(self._pkg)
+        return repo_from_ptr(<C.Repo *>repo, True)
 
     @property
     def version(self):

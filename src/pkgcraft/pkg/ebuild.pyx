@@ -2,7 +2,6 @@ from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
 from ..depset cimport DepSet, DepSetAtom, DepSetString, DepSetUri
 from . cimport Pkg
-from ..repo cimport EbuildRepo
 from ..error import IndirectInit, PkgcraftError
 
 
@@ -30,12 +29,6 @@ cdef class EbuildPkg(Pkg):
         obj = <EbuildPkg>EbuildPkg.__new__(EbuildPkg)
         obj._pkg = <C.Pkg *>pkg
         return obj
-
-    @property
-    def repo(self):
-        """Get a package's repo."""
-        repo = C.pkgcraft_pkg_repo(self._pkg)
-        return EbuildRepo.from_ptr(repo, True)
 
     @property
     def path(self):
