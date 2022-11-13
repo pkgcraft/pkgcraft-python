@@ -1,17 +1,6 @@
 from . cimport pkgcraft_c as C
-from .repo cimport EbuildRepo, FakeRepo, Repo, RepoSet
+from .repo cimport EbuildRepo, FakeRepo, Repo, RepoSet, repo_from_ptr
 from .error import PkgcraftError
-
-
-cdef Repo repo_from_ptr(C.Repo *r, bint ref):
-    """Convert a repo pointer to a repo object."""
-    cdef C.RepoFormat format = C.pkgcraft_repo_format(r)
-    if format is C.RepoFormat.EbuildRepo:
-        return EbuildRepo.from_ptr(r, ref)
-    elif format is C.RepoFormat.FakeRepo:
-        return FakeRepo.from_ptr(r, ref)
-    else:  # pragma: no cover
-        raise PkgcraftError('unsupported repo format')
 
 
 cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):

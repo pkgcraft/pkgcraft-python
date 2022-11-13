@@ -1,9 +1,21 @@
 from .. cimport pkgcraft_c as C
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
+from . cimport EbuildRepo, FakeRepo
 from .. import parse
-from ..error import IndirectInit
+from ..error import IndirectInit, PkgcraftError
 from ..restrict import InvalidRestrict
+
+
+cdef Repo repo_from_ptr(C.Repo *r, bint ref):
+    """Convert a repo pointer to a repo object."""
+    format = C.pkgcraft_repo_format(r)
+    if format is C.RepoFormat.EbuildRepo:
+        return EbuildRepo.from_ptr(r, ref)
+    elif format is C.RepoFormat.FakeRepo:
+        return FakeRepo.from_ptr(r, ref)
+    else:  # pragma: no cover
+        raise PkgcraftError('unsupported repo format')
 
 
 cdef class Repo:

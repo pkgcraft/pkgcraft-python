@@ -2,6 +2,9 @@ from .. cimport pkgcraft_c as C
 from ..pkg cimport Pkg
 
 
+cdef Repo repo_from_ptr(C.Repo *, bint)
+
+
 cdef class Repo:
     cdef C.Repo *_repo
     # flag denoting borrowed reference that must not be deallocated
