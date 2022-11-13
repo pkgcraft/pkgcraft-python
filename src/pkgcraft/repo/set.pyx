@@ -2,10 +2,10 @@ from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 from .. cimport pkgcraft_c as C
 from ..config cimport repos_to_dict
-from ..pkg cimport EbuildPkg, FakePkg
+from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport Repo
-from ..error import IndirectInit, PkgcraftError
+from ..error import IndirectInit
 
 
 cdef class RepoSet:
@@ -41,13 +41,7 @@ cdef class RepoSet:
 
         pkg = C.pkgcraft_repo_set_iter_next(self._iter)
         if pkg is not NULL:
-            format = C.pkgcraft_pkg_format(pkg)
-            if format is C.PkgFormat.EbuildPkg:
-                return EbuildPkg.from_ptr(pkg)
-            elif format is C.PkgFormat.FakePkg:
-                return FakePkg.from_ptr(pkg)
-            else:  # pragma: no cover
-                raise PkgcraftError('unsupported pkg format')
+            return Pkg.from_ptr(pkg)
         raise StopIteration
 
     def iter_restrict(self, restrict not None):
@@ -231,13 +225,7 @@ cdef class _RestrictIter:
 
         pkg = C.pkgcraft_repo_set_restrict_iter_next(self._iter)
         if pkg is not NULL:
-            format = C.pkgcraft_pkg_format(pkg)
-            if format is C.PkgFormat.EbuildPkg:
-                return EbuildPkg.from_ptr(pkg)
-            elif format is C.PkgFormat.FakePkg:
-                return FakePkg.from_ptr(pkg)
-            else:  # pragma: no cover
-                raise PkgcraftError('unsupported pkg format')
+            return Pkg.from_ptr(pkg)
         raise StopIteration
 
     def __dealloc__(self):

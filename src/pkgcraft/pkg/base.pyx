@@ -2,7 +2,8 @@ from .. cimport pkgcraft_c as C
 from ..atom cimport Cpv, Version
 from ..eapi cimport Eapi
 from ..repo cimport Repo
-from ..error import IndirectInit
+from . cimport EbuildPkg, FakePkg
+from ..error import IndirectInit, PkgcraftError
 
 
 cdef class Pkg:
@@ -10,6 +11,17 @@ cdef class Pkg:
 
     def __init__(self):
         raise IndirectInit(self)
+
+    @staticmethod
+    cdef Pkg from_ptr(C.Pkg *pkg):
+        """Convert a pkg pointer to a pkg object."""
+        format = C.pkgcraft_pkg_format(pkg)
+        if format is C.PkgFormat.EbuildPkg:
+            return EbuildPkg.from_ptr(pkg)
+        elif format is C.PkgFormat.FakePkg:
+            return FakePkg.from_ptr(pkg)
+        else:  # pragma: no cover
+            raise PkgcraftError('unsupported pkg format')
 
     @property
     def atom(self):
