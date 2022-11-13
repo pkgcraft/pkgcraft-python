@@ -23,17 +23,17 @@ def test_bench_repo_iter(benchmark, lib, func, repo):
     assert len(pkgs) == 100
 
 
-def test_bench_repo_set_iter(benchmark, make_repo):
-    repo1 = make_repo()
-    repo2 = make_repo()
+def test_bench_repo_set_iter(benchmark, make_ebuild_repo):
+    r1 = make_ebuild_repo()
+    r2 = make_ebuild_repo()
     # create ebuilds
     for i in range(50):
-        repo1.create_ebuild(f'cat/pkg-{i}')
+        r1.create_ebuild(f'cat/pkg-{i}')
     for i in range(50, 100):
-        repo2.create_ebuild(f'cat/pkg-{i}')
+        r2.create_ebuild(f'cat/pkg-{i}')
 
-    repo = RepoSet([repo1, repo2])
-    pkgs = benchmark(lambda x: list(iter(x)), repo)
+    repos = RepoSet([r1, r2])
+    pkgs = benchmark(lambda x: list(iter(x)), repos)
     assert len(pkgs) == 100
 
 
@@ -58,20 +58,20 @@ def test_bench_repo_iter_restrict_atom(benchmark, lib, func, repo):
     assert str(pkgs[0].version) == '50'
 
 
-def test_bench_repo_set_iter_restrict_atom(benchmark, make_repo):
-    repo1 = make_repo()
-    repo2 = make_repo()
+def test_bench_repo_set_iter_restrict_atom(benchmark, make_ebuild_repo):
+    r1 = make_ebuild_repo()
+    r2 = make_ebuild_repo()
     # create ebuilds
     for i in range(50):
-        repo1.create_ebuild(f'cat/pkg-{i}')
+        r1.create_ebuild(f'cat/pkg-{i}')
     for i in range(50, 100):
-        repo2.create_ebuild(f'cat/pkg-{i}')
+        r2.create_ebuild(f'cat/pkg-{i}')
 
     # single atom restriction
     atom = Atom('=cat/pkg-50')
 
-    repo = RepoSet([repo1, repo2])
-    pkgs = benchmark(lambda x: list(repo.iter_restrict(x)), atom)
+    repos = RepoSet([r1, r2])
+    pkgs = benchmark(lambda x: list(repos.iter_restrict(x)), atom)
 
     assert len(pkgs) == 1
     assert str(pkgs[0].version) == '50'
