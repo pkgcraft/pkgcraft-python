@@ -56,6 +56,13 @@ cdef class Atom(Cpv):
     ('a', 'b')
     >>> a.repo
     'repo'
+
+    Invalid atom
+    >>> Atom('cat/pkg-1')
+    Traceback (most recent call last):
+        ...
+    pkgcraft.error.InvalidAtom: parsing failure: invalid atom: cat/pkg-1
+    ...
     """
     def __cinit__(self):
         self._use = SENTINEL
