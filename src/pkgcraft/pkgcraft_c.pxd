@@ -756,14 +756,6 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Repo pointer.
     bool pkgcraft_repo_contains_path(Repo *r, const char *path);
 
-    # Create an ebuild repo from a given path.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The path argument should be a valid path on the system.
-    Repo *pkgcraft_repo_ebuild_from_path(const char *id, int priority, const char *path);
-
     # Create a fake repo from a given path.
     #
     # Returns NULL on error.
