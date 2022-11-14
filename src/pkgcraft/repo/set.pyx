@@ -11,7 +11,7 @@ from ..error import IndirectInit
 cdef class RepoSet:
     """Ordered repo set."""
 
-    def __init__(self, repos):
+    def __init__(self, *repos):
         cdef size_t length = len(repos)
         array = <C.Repo **> PyMem_Malloc(length * sizeof(C.Repo *))
         if not array:  # pragma: no cover

@@ -68,8 +68,8 @@ class TestConfig:
     def test_repo_sets(self, config, make_ebuild_repo, make_fake_repo):
         r1 = make_ebuild_repo(config=config)
         r2 = make_fake_repo(config=config)
-        assert config.repos.all == RepoSet([r1, r2])
-        assert config.repos.ebuild == RepoSet([r1])
+        assert config.repos.all == RepoSet(r1, r2)
+        assert config.repos.ebuild == RepoSet(r1)
 
     def test_load_repos_conf(self, config, raw_repo, tmp_path):
         repo_path = raw_repo.path
