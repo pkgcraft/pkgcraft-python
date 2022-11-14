@@ -31,9 +31,9 @@ class TestRepoSet:
     def test_cmp(self, make_ebuild_repo):
         for (r1, op, r2) in (
                 ({'id': 'a'}, '<', {'id': 'b'}),
-                ({'id': 'b', 'priority': 1}, '<=', {'id': 'a', 'priority': 2}),
+                ({'id': 'a', 'priority': 2}, '<=', {'id': 'b', 'priority': 1}),
                 ({'id': 'a'}, '!=', {'id': 'b'}),
-                ({'id': 'a', 'priority': 2}, '>=', {'id': 'b', 'priority': 1}),
+                ({'id': 'b', 'priority': 1}, '>=', {'id': 'a', 'priority': 2}),
                 ({'id': 'b'}, '>', {'id': 'a'}),
                 ):
             config = Config()
