@@ -117,6 +117,12 @@ cdef class Repos:
             self._ebuild_repos = RepoSet.from_ptr(s)
         return self._ebuild_repos
 
+    def __eq__(self, other):
+        return self._repos == other
+
+    def __ne__(self, other):
+        return self._repos != other
+
     def __getitem__(self, key):
         return self._repos[key]
 
