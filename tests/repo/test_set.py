@@ -23,6 +23,11 @@ class TestRepoSet:
         s = RepoSet([r1, r2])
         assert s.repos == (r1, r2)
 
+        r1 = make_ebuild_repo(priority=1)
+        r2 = make_ebuild_repo(priority=2)
+        s = RepoSet([r1, r2])
+        assert s.repos == (r2, r1)
+
     def test_cmp(self, make_ebuild_repo):
         for (r1, op, r2) in (
                 ({'id': 'a'}, '<', {'id': 'b'}),
@@ -115,14 +120,14 @@ class TestRepoSet:
             list(s.iter_restrict('-'))
 
     def test_set_ops(self, make_ebuild_repo):
-        r1 = make_ebuild_repo()
-        r2 = make_ebuild_repo()
-        r3 = make_ebuild_repo()
+        r1 = make_ebuild_repo(priority=1)
+        r2 = make_ebuild_repo(priority=2)
+        r3 = make_ebuild_repo(priority=3)
 
         # &= operator
         s = RepoSet([r1, r2, r3])
         s &= RepoSet([r1, r2])
-        assert s.repos == (r1, r2)
+        assert s.repos == (r2, r1)
         s &= r1
         assert s.repos == (r1,)
         s &= r3
@@ -131,9 +136,9 @@ class TestRepoSet:
         # |= operator
         s = RepoSet([])
         s |= RepoSet([r1, r2])
-        assert s.repos == (r1, r2)
+        assert s.repos == (r2, r1)
         s |= r3
-        assert s.repos == (r1, r2, r3)
+        assert s.repos == (r3, r2, r1)
 
         # ^= operator
         s = RepoSet([r1, r2, r3])
@@ -151,26 +156,26 @@ class TestRepoSet:
 
         # & operator
         s = RepoSet([r1, r2, r3])
-        assert (s & RepoSet([r1, r2])).repos == (r1, r2)
+        assert (s & RepoSet([r1, r2])).repos == (r2, r1)
         assert (s & r3).repos == (r3,)
         assert (r3 & s).repos == (r3,)
 
         # | operator
         s = RepoSet([r1])
-        assert (s | RepoSet([r2, r3])).repos == (r1, r2, r3)
-        assert (s | r2).repos == (r1, r2)
-        assert (r2 | s).repos == (r1, r2)
+        assert (s | RepoSet([r2, r3])).repos == (r3, r2, r1)
+        assert (s | r2).repos == (r2, r1)
+        assert (r2 | s).repos == (r2, r1)
 
         # ^ operator
         s = RepoSet([r1, r2, r3])
         assert (s ^ RepoSet([r2, r3])).repos == (r1,)
-        assert (s ^ r3).repos == (r1, r2)
-        assert (r3 ^ s).repos == (r1, r2)
+        assert (s ^ r3).repos == (r2, r1)
+        assert (r3 ^ s).repos == (r2, r1)
 
         # - operator
         s = RepoSet([r1, r2])
         assert (s - RepoSet([r1, r2])).repos == ()
-        assert (s - r3).repos == (r1, r2)
+        assert (s - r3).repos == (r2, r1)
         assert (s - r2).repos == (r1,)
         with pytest.raises(TypeError):
             r2 - s

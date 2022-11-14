@@ -59,9 +59,11 @@ class TestConfig:
 
     def test_add_repo(self, config):
         assert not config.repos
-        r = FakeRepo([], id='test')
-        config.add_repo(r)
-        assert 'test' in config.repos
+        r1 = FakeRepo([], id='r1', priority=1)
+        r2 = FakeRepo([], id='r2', priority=2)
+        config.add_repo(r1)
+        config.add_repo(r2)
+        assert config.repos == {'r2': r2, 'r1': r1}
 
     def test_repo_sets(self, config, make_ebuild_repo, make_fake_repo):
         r1 = make_ebuild_repo(config=config)
