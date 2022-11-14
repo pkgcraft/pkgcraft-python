@@ -62,8 +62,8 @@ class TestRepoSet:
         assert RepoSet([repo])
 
     def test_iter(self, make_ebuild_repo):
-        r1 = make_ebuild_repo()
-        r2 = make_ebuild_repo()
+        r1 = make_ebuild_repo(priority=1)
+        r2 = make_ebuild_repo(priority=2)
         s = RepoSet([r1, r2])
 
         # calling next() directly on a repo object fails
@@ -79,12 +79,13 @@ class TestRepoSet:
 
         # multiple pkgs
         pkg2 = r2.create_pkg('cat/pkg-2')
-        assert list(iter(s)) == [pkg1, pkg2]
+        assert list(iter(s)) == [pkg2, pkg1]
 
     def test_iter_restrict(self, make_ebuild_repo):
         r1 = make_ebuild_repo()
         r2 = make_ebuild_repo()
-        s = RepoSet([r1, r2])
+        r3 = make_ebuild_repo(priority=1)
+        s = RepoSet([r1, r2, r3])
 
         # non-None argument required
         with pytest.raises(TypeError):
@@ -101,19 +102,20 @@ class TestRepoSet:
 
         pkg1 = r1.create_pkg('cat/pkg-1')
         pkg2 = r2.create_pkg('cat/pkg-2')
+        pkg3 = r3.create_pkg('cat/pkg-1')
 
         # non-empty repo -- no matches
         nonexistent = Cpv('nonexistent/pkg-1')
         assert not list(s.iter_restrict(nonexistent))
 
-        # single match via Cpv
-        assert list(s.iter_restrict(cpv)) == [pkg1]
+        # multiple matches via CPV
+        assert list(s.iter_restrict(cpv)) == [pkg3, pkg1]
 
         # single match via package
         assert list(s.iter_restrict(pkg1)) == [pkg1]
 
         # multiple matches via restriction glob
-        assert list(s.iter_restrict('cat/*')) == [pkg1, pkg2]
+        assert list(s.iter_restrict('cat/*')) == [pkg3, pkg1, pkg2]
 
         # invalid restriction string
         with pytest.raises(InvalidRestrict):
