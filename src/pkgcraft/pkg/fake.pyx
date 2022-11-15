@@ -1,8 +1,11 @@
+cimport cython
+
 from .. cimport pkgcraft_c as C
 from . cimport Pkg
 from ..error import IndirectInit
 
 
+@cython.final
 cdef class FakePkg(Pkg):
     """Generic fake package."""
 

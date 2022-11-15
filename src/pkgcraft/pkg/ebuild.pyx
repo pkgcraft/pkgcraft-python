@@ -1,3 +1,5 @@
+cimport cython
+
 from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
 from ..depset cimport DepSet, DepSetAtom, DepSetString, DepSetUri
@@ -5,6 +7,7 @@ from . cimport Pkg
 from ..error import IndirectInit, PkgcraftError
 
 
+@cython.final
 cdef class EbuildPkg(Pkg):
     """Generic ebuild package."""
 
@@ -247,6 +250,7 @@ cdef class EbuildPkg(Pkg):
         return self._upstreams
 
 
+@cython.final
 cdef class Maintainer:
     """Ebuild package maintainer."""
 
@@ -281,6 +285,7 @@ cdef class Maintainer:
         return hash((self.email, self.name))
 
 
+@cython.final
 cdef class Upstream:
     """Ebuild package upstream."""
 

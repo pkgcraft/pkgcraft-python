@@ -1,3 +1,5 @@
+cimport cython
+
 from . cimport pkgcraft_c as C
 from .repo cimport Repo, RepoSet
 from .error import PkgcraftError
@@ -89,6 +91,7 @@ cdef class Config:
         C.pkgcraft_config_free(self._config)
 
 
+@cython.final
 cdef class Repos:
 
     @staticmethod

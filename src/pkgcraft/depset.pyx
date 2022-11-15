@@ -1,8 +1,11 @@
+cimport cython
+
 from . cimport pkgcraft_c as C
 from .atom cimport Atom
 from .error import IndirectInit
 
 
+@cython.final
 cdef class DepRestrict:
     """Dependency restriction."""
 
@@ -31,6 +34,7 @@ cdef class DepRestrict:
         C.pkgcraft_deprestrict_free(self._restrict)
 
 
+@cython.final
 cdef class DepSet:
     """Dependency set of objects."""
 
@@ -115,6 +119,7 @@ cdef class _DepSetFlatten:
         C.pkgcraft_depset_flatten_iter_free(self._iter)
 
 
+@cython.final
 cdef class Uri:
 
     def __init__(self):  # pragma: no cover

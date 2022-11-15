@@ -1,5 +1,7 @@
 from types import MappingProxyType
 
+cimport cython
+
 from . cimport pkgcraft_c as C
 from .error import IndirectInit, PkgcraftError
 
@@ -43,6 +45,7 @@ cdef object get_eapis():
     return MappingProxyType(d)
 
 
+@cython.final
 cdef class Eapi:
 
     def __init__(self):

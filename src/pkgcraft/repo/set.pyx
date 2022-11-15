@@ -1,3 +1,4 @@
+cimport cython
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 from .. cimport pkgcraft_c as C
@@ -8,6 +9,7 @@ from . cimport Repo
 from ..error import IndirectInit
 
 
+@cython.final
 cdef class RepoSet:
     """Ordered repo set."""
 

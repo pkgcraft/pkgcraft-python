@@ -1,6 +1,8 @@
 import functools
 from enum import Enum
 
+cimport cython
+
 from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
 from .cpv cimport Cpv
@@ -26,6 +28,7 @@ class SlotOperator(Enum):
     Star = 1
 
 
+@cython.final
 cdef class Atom(Cpv):
     """Package atom parsing.
 

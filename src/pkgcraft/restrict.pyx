@@ -1,3 +1,5 @@
+cimport cython
+
 from . cimport pkgcraft_c as C
 from .atom cimport Atom, Cpv
 from .pkg cimport Pkg
@@ -40,6 +42,7 @@ cdef C.Restrict *obj_to_restrict(object obj) except NULL:
         raise TypeError(f"{obj.__class__.__name__!r} unsupported restriction type")
 
 
+@cython.final
 cdef class Restrict:
     """Generic restriction."""
 
