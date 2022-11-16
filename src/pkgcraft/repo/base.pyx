@@ -80,6 +80,9 @@ cdef class Repo:
     def __len__(self):
         return C.pkgcraft_repo_len(self._repo)
 
+    def __bool__(self):
+        return not C.pkgcraft_repo_is_empty(self._repo)
+
     def __contains__(self, obj):
         if isinstance(obj, str):
             return C.pkgcraft_repo_contains_path(self._repo, obj.encode())

@@ -91,6 +91,9 @@ cdef class RepoSet:
     def __len__(self):
         return C.pkgcraft_repo_set_len(self._set)
 
+    def __bool__(self):
+        return not C.pkgcraft_repo_set_is_empty(self._set)
+
     def __lt__(self, RepoSet other):
         return C.pkgcraft_repo_set_cmp(self._set, other._set) == -1
 
@@ -119,9 +122,6 @@ cdef class RepoSet:
         addr = <size_t>&self._set
         name = self.__class__.__name__
         return f"<{name} '{self}' at 0x{addr:0x}>"
-
-    def __bool__(self):
-        return not C.pkgcraft_repo_set_is_empty(self._set)
 
     def __iand__(RepoSet self, other):
         op = C.RepoSetOp.RepoSetAnd

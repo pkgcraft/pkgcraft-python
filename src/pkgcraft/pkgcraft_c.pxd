@@ -800,6 +800,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Repo pointer.
     char *pkgcraft_repo_id(Repo *r);
 
+    # Determine if a repo is empty.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    bool pkgcraft_repo_is_empty(Repo *r);
+
     # Return a package iterator for a repo.
     #
     # # Safety

@@ -102,18 +102,22 @@ class TestRepo:
             with pytest.raises(KeyError):
                 repo[obj]
 
-    def test_len(self, repo):
+    def test_bool_and_len(self, repo):
         # empty repo
+        assert not repo
         assert len(repo) == 0
 
         # create ebuild
         repo.create_ebuild("cat/pkg-1")
+        assert repo
         assert len(repo) == 1
 
         # recreate ebuild
         repo.create_ebuild("cat/pkg-1")
+        assert repo
         assert len(repo) == 1
 
         # create new ebuild version
         repo.create_ebuild("cat/pkg-2")
+        assert repo
         assert len(repo) == 2
