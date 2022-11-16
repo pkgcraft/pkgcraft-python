@@ -831,7 +831,7 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on error.
     #
     # # Safety
-    # The argument must be a non-null Repo pointer and category.
+    # The arguments must be a non-null Repo pointer and category.
     char **pkgcraft_repo_packages(Repo *r, const char *cat, uintptr_t *len);
 
     # Return a repo's path.
@@ -872,6 +872,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The arguments must be non-null RepoSet pointers.
     void pkgcraft_repo_set_assign_op_set(RepoSetOp op, RepoSet *s1, RepoSet *s2);
+
+    # Return a repo set's categories.
+    #
+    # # Safety
+    # The argument must be a non-null RepoSet pointer.
+    char **pkgcraft_repo_set_categories(RepoSet *s, uintptr_t *len);
 
     # Compare two repo sets returning -1, 0, or 1 if the first set is less than, equal to, or greater
     # than the second set, respectively.
@@ -918,6 +924,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null RepoSetPkgIter pointer.
     Pkg *pkgcraft_repo_set_iter_next(RepoSetPkgIter *i);
 
+    # Return a repo set's length.
+    #
+    # # Safety
+    # The argument must be a non-null RepoSet pointer.
+    uintptr_t pkgcraft_repo_set_len(RepoSet *s);
+
     # Create a repo set.
     #
     # # Safety
@@ -936,6 +948,14 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null RepoSet pointers.
     RepoSet *pkgcraft_repo_set_op_set(RepoSetOp op, RepoSet *s1, RepoSet *s2);
 
+    # Return a repo set's packages for a category.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The arguments must be a non-null RepoSet pointer and category.
+    char **pkgcraft_repo_set_packages(RepoSet *s, const char *cat, uintptr_t *len);
+
     # Return the ordered array of repos for a repo set.
     #
     # # Safety
@@ -949,12 +969,20 @@ cdef extern from "pkgcraft.h":
     # Restrict pointer.
     RepoSetPkgIter *pkgcraft_repo_set_restrict_iter(RepoSet *repo, Restrict *restrict);
 
+    # Return a repo set's versions for a package.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The arguments must be a non-null RepoSet pointer, category, and package.
+    char **pkgcraft_repo_set_versions(RepoSet *s, const char *cat, const char *pkg, uintptr_t *len);
+
     # Return a repo's versions for a package.
     #
     # Returns NULL on error.
     #
     # # Safety
-    # The argument must be a non-null Repo pointer, category, and package.
+    # The arguments must be a non-null Repo pointer, category, and package.
     char **pkgcraft_repo_versions(Repo *r, const char *cat, const char *pkg, uintptr_t *len);
 
     # Free an array of configured repos.

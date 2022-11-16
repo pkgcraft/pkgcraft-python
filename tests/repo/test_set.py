@@ -15,7 +15,7 @@ class TestRepoSet:
         r2 = make_ebuild_repo()
         s = RepoSet(r1, r2)
         assert str(s)
-        assert repr(s).startswith("<RepoSet ")
+        assert repr(s).startswith('<RepoSet ')
 
     def test_repos(self, make_ebuild_repo):
         r1 = make_ebuild_repo()
@@ -28,6 +28,41 @@ class TestRepoSet:
         s = RepoSet(r1, r2)
         assert s.repos == (r2, r1)
 
+    def test_pkg_methods(self, make_ebuild_repo):
+        r1 = make_ebuild_repo()
+        r2 = make_ebuild_repo()
+
+        # empty repo set
+        s = RepoSet()
+        assert not s.categories
+        assert not s.packages('cat')
+        assert not s.versions('cat', 'pkg')
+
+        # create ebuild
+        s = RepoSet(r1, r2)
+        r1.create_ebuild('cat/pkg-1')
+        assert s.categories == ('cat',)
+        assert s.packages('cat') == ('pkg',)
+        assert s.versions('cat', 'pkg') == ('1',)
+
+        # create new ebuild version
+        r1.create_ebuild('cat/pkg-2')
+        assert s.categories == ('cat',)
+        assert s.packages('cat') == ('pkg',)
+        assert s.versions('cat', 'pkg') == ('1', '2')
+
+        # create matching pkg in other repo
+        r2.create_ebuild('cat/pkg-1')
+        assert s.categories == ('cat',)
+        assert s.packages('cat') == ('pkg',)
+        assert s.versions('cat', 'pkg') == ('1', '2')
+
+        # create new pkg in new category in other repo
+        r2.create_ebuild('a/b-1')
+        assert s.categories == ('a', 'cat')
+        assert s.packages('a') == ('b',)
+        assert s.versions('a', 'b') == ('1',)
+
     def test_cmp(self, make_ebuild_repo):
         for (r1, op, r2) in (
                 ({'id': 'a'}, '<', {'id': 'b'}),
@@ -38,7 +73,7 @@ class TestRepoSet:
                 ):
             config = Config()
             op_func = OperatorMap[op]
-            err = f"failed {r1} {op} {r2}"
+            err = f'failed {r1} {op} {r2}'
             s1 = RepoSet(make_ebuild_repo(config=config, **r1))
             s2 = RepoSet(make_ebuild_repo(config=config, **r2))
             assert op_func(s1, s2), err
@@ -57,11 +92,19 @@ class TestRepoSet:
         s3 = RepoSet(r1, r3)
         assert s1 not in {s3}
 
-    def test_bool(self, repo):
-        assert not RepoSet()
-        assert not RepoSet(repo)
+    def test_bool_and_len(self, repo):
+        s = RepoSet()
+        assert not s
+        assert len(s) == 0
+
+        s = RepoSet(repo)
+        assert not s
+        assert len(s) == 0
+
         repo.create_pkg('cat/pkg-1')
-        assert RepoSet(repo)
+        s = RepoSet(repo)
+        assert s
+        assert len(s) == 1
 
     def test_iter(self, make_ebuild_repo):
         r1 = make_ebuild_repo(priority=1)

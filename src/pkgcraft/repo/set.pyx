@@ -6,6 +6,7 @@ from ..config cimport repos_to_dict
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport Repo
+from .. import parse
 from ..error import IndirectInit
 
 
@@ -59,6 +60,36 @@ cdef class RepoSet:
         C.pkgcraft_repos_free(repos, length)
         # TODO: replace with ordered, immutable set
         return tuple(d.values())
+
+    @property
+    def categories(self):
+        """Get a repo set's categories."""
+        cdef size_t length
+        cats = C.pkgcraft_repo_set_categories(self._set, &length)
+        categories = tuple(cats[i].decode() for i in range(length))
+        C.pkgcraft_str_array_free(cats, length)
+        return categories
+
+    def packages(self, str cat not None):
+        """Get a repo set's packages for a category."""
+        cdef size_t length
+        if parse.category(cat):
+            pkgs = C.pkgcraft_repo_set_packages(self._set, cat.encode(), &length)
+            packages = tuple(pkgs[i].decode() for i in range(length))
+            C.pkgcraft_str_array_free(pkgs, length)
+            return packages
+
+    def versions(self, str cat not None, str pkg not None):
+        """Get a repo set's versions for a package."""
+        cdef size_t length
+        if parse.category(cat) and parse.package(pkg):
+            vers = C.pkgcraft_repo_set_versions(self._set, cat.encode(), pkg.encode(), &length)
+            versions = tuple(vers[i].decode() for i in range(length))
+            C.pkgcraft_str_array_free(vers, length)
+            return versions
+
+    def __len__(self):
+        return C.pkgcraft_repo_set_len(self._set)
 
     def __lt__(self, RepoSet other):
         return C.pkgcraft_repo_set_cmp(self._set, other._set) == -1
