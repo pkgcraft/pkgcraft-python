@@ -59,6 +59,8 @@ class TestRepoSet:
 
     def test_bool(self, repo):
         assert not RepoSet()
+        assert not RepoSet(repo)
+        repo.create_pkg('cat/pkg-1')
         assert RepoSet(repo)
 
     def test_iter(self, make_ebuild_repo):
