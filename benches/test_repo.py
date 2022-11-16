@@ -32,7 +32,7 @@ def test_bench_repo_set_iter(benchmark, make_ebuild_repo):
     for i in range(50, 100):
         r2.create_ebuild(f'cat/pkg-{i}')
 
-    repos = RepoSet([r1, r2])
+    repos = RepoSet(r1, r2)
     pkgs = benchmark(lambda x: list(iter(x)), repos)
     assert len(pkgs) == 100
 
@@ -70,7 +70,7 @@ def test_bench_repo_set_iter_restrict_atom(benchmark, make_ebuild_repo):
     # single atom restriction
     atom = Atom('=cat/pkg-50')
 
-    repos = RepoSet([r1, r2])
+    repos = RepoSet(r1, r2)
     pkgs = benchmark(lambda x: list(repos.iter_restrict(x)), atom)
 
     assert len(pkgs) == 1
