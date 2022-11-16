@@ -81,10 +81,6 @@ cdef extern from "pkgcraft.h":
     cdef struct RepoSetPkgIter:
         pass
 
-    # Opaque wrapper for RepoSetRestrictPkgIter objects.
-    cdef struct RepoSetRestrictPkgIter:
-        pass
-
     # Opaque wrapper for Restrict objects.
     cdef struct Restrict:
         pass
@@ -951,21 +947,7 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The repo argument must be a non-null Repo pointer and the restrict argument must be a non-null
     # Restrict pointer.
-    RepoSetRestrictPkgIter *pkgcraft_repo_set_restrict_iter(RepoSet *repo, Restrict *restrict);
-
-    # Free a repo set restriction iterator.
-    #
-    # # Safety
-    # The argument must be a non-null RepoSetRestrictPkgIter pointer or NULL.
-    void pkgcraft_repo_set_restrict_iter_free(RepoSetRestrictPkgIter *i);
-
-    # Return the next package from a repo set restriction package iterator.
-    #
-    # Returns NULL when the iterator is empty.
-    #
-    # # Safety
-    # The argument must be a non-null RepoSetRestrictPkgIter pointer.
-    Pkg *pkgcraft_repo_set_restrict_iter_next(RepoSetRestrictPkgIter *i);
+    RepoSetPkgIter *pkgcraft_repo_set_restrict_iter(RepoSet *repo, Restrict *restrict);
 
     # Return a repo's versions for a package.
     #

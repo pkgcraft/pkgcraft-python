@@ -225,10 +225,10 @@ cdef class _RestrictIter:
         if self._iter is NULL:  # pragma: no cover
             raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
 
-        pkg = C.pkgcraft_repo_set_restrict_iter_next(self._iter)
+        pkg = C.pkgcraft_repo_set_iter_next(self._iter)
         if pkg is not NULL:
             return Pkg.from_ptr(pkg)
         raise StopIteration
 
     def __dealloc__(self):
-        C.pkgcraft_repo_set_restrict_iter_free(self._iter)
+        C.pkgcraft_repo_set_iter_free(self._iter)

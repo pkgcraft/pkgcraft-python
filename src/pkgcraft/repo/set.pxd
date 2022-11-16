@@ -10,7 +10,7 @@ cdef class RepoSet:
 
 
 cdef class _RestrictIter:
-    cdef C.RepoSetRestrictPkgIter *_iter
+    cdef C.RepoSetPkgIter *_iter
 
     @staticmethod
     cdef _RestrictIter create(RepoSet, object)
