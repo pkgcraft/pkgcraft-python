@@ -1,10 +1,10 @@
 from .. cimport pkgcraft_c as C
+from ..atom cimport Cpv
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport EbuildRepo, FakeRepo
 from .. import parse
 from ..error import IndirectInit, PkgcraftError
-from ..restrict import InvalidRestrict
 
 
 cdef class Repo:
@@ -90,8 +90,9 @@ cdef class Repo:
 
     def __getitem__(self, obj):
         try:
-            return next(self.iter_restrict(obj))
-        except (StopIteration, InvalidRestrict):
+            cpv = Cpv(obj) if isinstance(obj, str) else <Cpv?>obj
+            return next(self.iter_restrict(cpv))
+        except StopIteration:
             raise KeyError(obj)
 
     def __iter__(self):
