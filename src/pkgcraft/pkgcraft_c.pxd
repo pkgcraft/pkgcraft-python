@@ -430,194 +430,6 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null string.
     const Eapi **pkgcraft_eapis_range(const char *s, uintptr_t *len);
 
-    # Return a package's BDEPEND.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_ebuild_pkg_bdepend(Pkg *p);
-
-    # Return a package's defined phases.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    char **pkgcraft_ebuild_pkg_defined_phases(Pkg *p, uintptr_t *len);
-
-    # Return a package's DEPEND.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_ebuild_pkg_depend(Pkg *p);
-
-    # Return a package's description.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    char *pkgcraft_ebuild_pkg_description(Pkg *p);
-
-    # Return a package's ebuild file content.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    char *pkgcraft_ebuild_pkg_ebuild(Pkg *p);
-
-    # Return a package's homepage.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    char **pkgcraft_ebuild_pkg_homepage(Pkg *p, uintptr_t *len);
-
-    # Return a package's IDEPEND.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_ebuild_pkg_idepend(Pkg *p);
-
-    # Return a package's directly inherited eclasses.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    char **pkgcraft_ebuild_pkg_inherit(Pkg *p, uintptr_t *len);
-
-    # Return a package's inherited eclasses.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    char **pkgcraft_ebuild_pkg_inherited(Pkg *p, uintptr_t *len);
-
-    # Return a package's iuse.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    char **pkgcraft_ebuild_pkg_iuse(Pkg *p, uintptr_t *len);
-
-    # Return a package's keywords.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    char **pkgcraft_ebuild_pkg_keywords(Pkg *p, uintptr_t *len);
-
-    # Return a package's LICENSE.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_ebuild_pkg_license(Pkg *p);
-
-    # Return a package's long description.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    char *pkgcraft_ebuild_pkg_long_description(Pkg *p);
-
-    # Return a package's maintainers.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    Maintainer **pkgcraft_ebuild_pkg_maintainers(Pkg *p, uintptr_t *len);
-
-    # Free an array of Maintainer pointers.
-    #
-    # # Safety
-    # The argument must be the value received from pkgcraft_ebuild_pkg_maintainers() or NULL along
-    # with the length of the array.
-    void pkgcraft_ebuild_pkg_maintainers_free(Maintainer **maintainers, uintptr_t len);
-
-    # Return a package's path.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    char *pkgcraft_ebuild_pkg_path(Pkg *p);
-
-    # Return a package's PDEPEND.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_ebuild_pkg_pdepend(Pkg *p);
-
-    # Return a package's PROPERTIES.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_ebuild_pkg_properties(Pkg *p);
-
-    # Return a package's RDEPEND.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_ebuild_pkg_rdepend(Pkg *p);
-
-    # Return a package's REQUIRED_USE.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_ebuild_pkg_required_use(Pkg *p);
-
-    # Return a package's RESTRICT.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_ebuild_pkg_restrict(Pkg *p);
-
-    # Return a package's slot.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    char *pkgcraft_ebuild_pkg_slot(Pkg *p);
-
-    # Return a package's SRC_URI.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_ebuild_pkg_src_uri(Pkg *p);
-
-    # Return a package's subslot.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    char *pkgcraft_ebuild_pkg_subslot(Pkg *p);
-
-    # Return a package's upstreams.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    Upstream **pkgcraft_ebuild_pkg_upstreams(Pkg *p, uintptr_t *len);
-
-    # Free an array of Upstream pointers.
-    #
-    # # Safety
-    # The argument must be the value received from pkgcraft_ebuild_pkg_upstreams() or NULL along
-    # with the length of the array.
-    void pkgcraft_ebuild_pkg_upstreams_free(Upstream **upstreams, uintptr_t len);
-
-    # Return an ebuild repo's masters.
-    #
-    # # Safety
-    # The argument must be a non-null Repo pointer.
-    Repo **pkgcraft_ebuild_repo_masters(Repo *r, uintptr_t *len);
-
     # Get the most recent error message.
     #
     # Returns NULL on nonexistence.
@@ -697,6 +509,188 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer.
     const Eapi *pkgcraft_pkg_eapi(Pkg *p);
 
+    # Return a package's BDEPEND.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    DepSet *pkgcraft_pkg_ebuild_bdepend(Pkg *p);
+
+    # Return a package's defined phases.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char **pkgcraft_pkg_ebuild_defined_phases(Pkg *p, uintptr_t *len);
+
+    # Return a package's DEPEND.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    DepSet *pkgcraft_pkg_ebuild_depend(Pkg *p);
+
+    # Return a package's description.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char *pkgcraft_pkg_ebuild_description(Pkg *p);
+
+    # Return a package's ebuild file content.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char *pkgcraft_pkg_ebuild_ebuild(Pkg *p);
+
+    # Return a package's homepage.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char **pkgcraft_pkg_ebuild_homepage(Pkg *p, uintptr_t *len);
+
+    # Return a package's IDEPEND.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    DepSet *pkgcraft_pkg_ebuild_idepend(Pkg *p);
+
+    # Return a package's directly inherited eclasses.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char **pkgcraft_pkg_ebuild_inherit(Pkg *p, uintptr_t *len);
+
+    # Return a package's inherited eclasses.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char **pkgcraft_pkg_ebuild_inherited(Pkg *p, uintptr_t *len);
+
+    # Return a package's iuse.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char **pkgcraft_pkg_ebuild_iuse(Pkg *p, uintptr_t *len);
+
+    # Return a package's keywords.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char **pkgcraft_pkg_ebuild_keywords(Pkg *p, uintptr_t *len);
+
+    # Return a package's LICENSE.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    DepSet *pkgcraft_pkg_ebuild_license(Pkg *p);
+
+    # Return a package's long description.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char *pkgcraft_pkg_ebuild_long_description(Pkg *p);
+
+    # Return a package's maintainers.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    Maintainer **pkgcraft_pkg_ebuild_maintainers(Pkg *p, uintptr_t *len);
+
+    # Free an array of Maintainer pointers.
+    #
+    # # Safety
+    # The argument must be the value received from pkgcraft_pkg_ebuild_maintainers() or NULL along
+    # with the length of the array.
+    void pkgcraft_pkg_ebuild_maintainers_free(Maintainer **maintainers, uintptr_t len);
+
+    # Return a package's path.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char *pkgcraft_pkg_ebuild_path(Pkg *p);
+
+    # Return a package's PDEPEND.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    DepSet *pkgcraft_pkg_ebuild_pdepend(Pkg *p);
+
+    # Return a package's PROPERTIES.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    DepSet *pkgcraft_pkg_ebuild_properties(Pkg *p);
+
+    # Return a package's RDEPEND.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    DepSet *pkgcraft_pkg_ebuild_rdepend(Pkg *p);
+
+    # Return a package's REQUIRED_USE.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    DepSet *pkgcraft_pkg_ebuild_required_use(Pkg *p);
+
+    # Return a package's RESTRICT.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    DepSet *pkgcraft_pkg_ebuild_restrict(Pkg *p);
+
+    # Return a package's slot.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char *pkgcraft_pkg_ebuild_slot(Pkg *p);
+
+    # Return a package's SRC_URI.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    DepSet *pkgcraft_pkg_ebuild_src_uri(Pkg *p);
+
+    # Return a package's subslot.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char *pkgcraft_pkg_ebuild_subslot(Pkg *p);
+
+    # Return a package's upstreams.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    Upstream **pkgcraft_pkg_ebuild_upstreams(Pkg *p, uintptr_t *len);
+
+    # Free an array of Upstream pointers.
+    #
+    # # Safety
+    # The argument must be the value received from pkgcraft_pkg_ebuild_upstreams() or NULL along
+    # with the length of the array.
+    void pkgcraft_pkg_ebuild_upstreams_free(Upstream **upstreams, uintptr_t len);
+
     # Return a package's format.
     #
     # # Safety
@@ -751,6 +745,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Repo pointer.
     bool pkgcraft_repo_contains_path(Repo *r, const char *path);
+
+    # Return an ebuild repo's masters.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    Repo **pkgcraft_repo_ebuild_masters(Repo *r, uintptr_t *len);
 
     # Create a fake repo from a given path.
     #

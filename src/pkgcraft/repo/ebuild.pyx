@@ -22,6 +22,6 @@ cdef class EbuildRepo(Repo):
         """Get an ebuild repo's masters."""
         cdef size_t length
         if self._masters is None:
-            repos = C.pkgcraft_ebuild_repo_masters(self._repo, &length)
+            repos = C.pkgcraft_repo_ebuild_masters(self._repo, &length)
             self._masters = tuple(EbuildRepo.from_ptr(repos[i], False) for i in range(length))
         return self._masters
