@@ -97,6 +97,7 @@ class TestRepo:
     def test_getitem(self, repo):
         pkg = repo.create_pkg('cat/pkg-1')
         assert pkg == repo['cat/pkg-1']
+        assert pkg == repo[Cpv('cat/pkg-1')]
 
         for obj in ('cat/pkg-2', Cpv('cat/pkg-3')):
             with pytest.raises(KeyError):
