@@ -15,13 +15,12 @@ cdef class RepoSet:
     """Ordered repo set."""
 
     def __init__(self, *repos):
-        cdef size_t length = len(repos)
-        array = <C.Repo **> PyMem_Malloc(length * sizeof(C.Repo *))
+        array = <C.Repo **> PyMem_Malloc(len(repos) * sizeof(C.Repo *))
         if not array:  # pragma: no cover
             raise MemoryError
         for (i, r) in enumerate(repos):
             array[i] = (<Repo?>r)._repo
-        self._set = C.pkgcraft_repo_set_new(array, length)
+        self._set = C.pkgcraft_repo_set_new(array, len(repos))
         PyMem_Free(array)
 
     @staticmethod
