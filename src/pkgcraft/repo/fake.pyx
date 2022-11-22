@@ -41,6 +41,17 @@ cdef class FakeRepo(Repo):
         self._repo = repo
         self._ref = False
 
+    def extend(self, cpvs not None):
+        """Add packages to an existing repo."""
+        cpvs = [(<str?>s).encode() for s in cpvs]
+        array = <char **>PyMem_Malloc(len(cpvs) * sizeof(char *))
+        if not array:  # pragma: no cover
+            raise MemoryError
+        for (i, atom_b) in enumerate(cpvs):
+            array[i] = atom_b
+        C.pkgcraft_repo_fake_extend(self._repo, array, len(cpvs))
+        PyMem_Free(array)
+
     @staticmethod
     cdef FakeRepo from_ptr(const C.Repo *repo, bint ref):
         """Create an instance from a repo pointer."""

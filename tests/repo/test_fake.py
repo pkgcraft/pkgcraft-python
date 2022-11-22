@@ -55,3 +55,16 @@ class TestFakeRepo:
         assert len(r) == 2
         assert Cpv('a/b-1') in r
         assert Cpv('c/d-2') in r
+
+    def test_extend(self):
+        # no cpvs
+        r = FakeRepo(id='fake')
+        assert len(r) == 0
+
+        # single cpv
+        r.extend(['cat/pkg-1'])
+        assert [str(pkg.atom) for pkg in r] == ['cat/pkg-1']
+
+        # multiple cpvs
+        r.extend(['a/b-0', 'cat/pkg-2'])
+        assert [str(pkg.atom) for pkg in r] == ['a/b-0', 'cat/pkg-1', 'cat/pkg-2']

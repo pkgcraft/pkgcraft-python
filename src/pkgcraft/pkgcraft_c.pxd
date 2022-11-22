@@ -752,6 +752,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Repo pointer.
     Repo **pkgcraft_repo_ebuild_masters(Repo *r, uintptr_t *len);
 
+    # Add pkgs to an existing fake repo from an array of CPV strings.
+    #
+    # # Safety
+    # The arguments must be a non-null Repo pointer and an array of CPV strings.
+    void pkgcraft_repo_fake_extend(Repo *r, char **cpvs, uintptr_t len);
+
     # Create a fake repo from a given path.
     #
     # Returns NULL on error.
@@ -760,13 +766,13 @@ cdef extern from "pkgcraft.h":
     # The path argument should be a valid path on the system.
     Repo *pkgcraft_repo_fake_from_path(const char *id, int priority, const char *path);
 
-    # Create a fake repo from an array of atom strings.
+    # Create a fake repo from an array of CPV strings.
     #
     # Returns NULL on error.
     #
     # # Safety
-    # The argument must be a non-null Repo pointer.
-    Repo *pkgcraft_repo_fake_new(const char *id, int priority, char **atoms, uintptr_t len);
+    # The cpvs argument should be valid CPV strings.
+    Repo *pkgcraft_repo_fake_new(const char *id, int priority, char **cpvs, uintptr_t len);
 
     # Return a repos's format.
     #
