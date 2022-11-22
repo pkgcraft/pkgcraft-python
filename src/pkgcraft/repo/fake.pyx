@@ -26,8 +26,8 @@ cdef class FakeRepo(Repo):
             array = <char **>PyMem_Malloc(len(cpvs) * sizeof(char *))
             if not array:  # pragma: no cover
                 raise MemoryError
-            for (i, atom_b) in enumerate(cpvs):
-                array[i] = atom_b
+            for i in range(len(cpvs)):
+                array[i] = cpvs[i]
             repo = C.pkgcraft_repo_fake_new(id.encode(), int(priority), array, len(cpvs))
             PyMem_Free(array)
             if repo is NULL:
@@ -47,8 +47,8 @@ cdef class FakeRepo(Repo):
         array = <char **>PyMem_Malloc(len(cpvs) * sizeof(char *))
         if not array:  # pragma: no cover
             raise MemoryError
-        for (i, atom_b) in enumerate(cpvs):
-            array[i] = atom_b
+        for i in range(len(cpvs)):
+            array[i] = cpvs[i]
         C.pkgcraft_repo_fake_extend(self._repo, array, len(cpvs))
         PyMem_Free(array)
 
