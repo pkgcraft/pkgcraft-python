@@ -163,7 +163,7 @@ def config():
 
 
 @pytest.fixture
-def raw_repo(tmp_path_factory):
+def raw_ebuild_repo(tmp_path_factory):
     """Create a generic ebuild repository."""
     return TempRawEbuildRepo(str(tmp_path_factory.mktemp('repo')))
 
@@ -178,7 +178,7 @@ def make_raw_ebuild_repo(tmp_path_factory):
 
 
 @pytest.fixture
-def repo(config, tmp_path_factory):
+def ebuild_repo(config, tmp_path_factory):
     """Create a generic ebuild repository."""
     return TempEbuildRepo(str(tmp_path_factory.mktemp('repo')), config=config)
 

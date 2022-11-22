@@ -8,8 +8,8 @@ from pkgcraft.repo import FakeRepo, RepoSet
 
 class TestConfig:
 
-    def test_repos(self, config, raw_repo):
-        path = raw_repo.path
+    def test_repos(self, config, raw_ebuild_repo):
+        path = raw_ebuild_repo.path
         assert not config.repos
         r = config.add_repo_path(path)
         assert r == config.repos[str(path)]
@@ -20,8 +20,8 @@ class TestConfig:
         assert config.repos
         assert len(config.repos) == 1
 
-    def test_add_repo_path_ebuild(self, config, raw_repo):
-        path = raw_repo.path
+    def test_add_repo_path_ebuild(self, config, raw_ebuild_repo):
+        path = raw_ebuild_repo.path
 
         # default
         r = config.add_repo_path(path)
@@ -71,8 +71,8 @@ class TestConfig:
         assert config.repos.all == RepoSet(r1, r2)
         assert config.repos.ebuild == RepoSet(r1)
 
-    def test_load_repos_conf(self, config, raw_repo, tmp_path):
-        repo_path = raw_repo.path
+    def test_load_repos_conf(self, config, raw_ebuild_repo, tmp_path):
+        repo_path = raw_ebuild_repo.path
 
         # nonexistent
         f = '/path/to/nonexistent/file'
