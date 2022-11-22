@@ -11,25 +11,24 @@ from ..error import PkgcraftError
 cdef class FakeRepo(Repo):
     """Fake package repo."""
 
-    def __init__(self, data not None, id=None, priority=0):
+    def __init__(self, cpvs=(), id=None, priority=0):
         cdef C.Repo *repo
-        path = str(data)
 
-        if os.path.exists(path):
-            # data target is a file of atoms
+        if isinstance(cpvs, (str, os.PathLike)) and os.path.exists(cpvs):
+            # target is a file of cpvs
+            path = str(cpvs)
             id = str(id) if id is not None else path
             repo = C.pkgcraft_repo_fake_from_path(id.encode(), int(priority), path.encode())
         elif id is not None:
-            # data target is an iterable of atoms
+            # target is an iterable of cpvs
             id = str(id)
-            atoms = data.split() if isinstance(data, str) else data
-            atoms = [(<str?>s).encode() for s in atoms]
-            array = <char **>PyMem_Malloc(len(atoms) * sizeof(char *))
+            cpvs = [(<str?>s).encode() for s in cpvs]
+            array = <char **>PyMem_Malloc(len(cpvs) * sizeof(char *))
             if not array:  # pragma: no cover
                 raise MemoryError
-            for (i, atom_b) in enumerate(atoms):
+            for (i, atom_b) in enumerate(cpvs):
                 array[i] = atom_b
-            repo = C.pkgcraft_repo_fake_new(id.encode(), int(priority), array, len(atoms))
+            repo = C.pkgcraft_repo_fake_new(id.encode(), int(priority), array, len(cpvs))
             PyMem_Free(array)
             if repo is NULL:
                 raise PkgcraftError
