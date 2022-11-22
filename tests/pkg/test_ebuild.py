@@ -14,9 +14,10 @@ class TestEbuildPkg:
         with pytest.raises(IndirectInit):
             EbuildPkg()
 
-    def test_repr(self, repo):
+    def test_repr(self, make_ebuild_repo):
+        repo = make_ebuild_repo(id='fake')
         pkg = repo.create_pkg('cat/pkg-1')
-        assert repr(pkg).startswith(f"<EbuildPkg 'cat/pkg-1' at 0x")
+        assert repr(pkg).startswith(f"<EbuildPkg 'cat/pkg-1::fake' at 0x")
 
     def test_atom(self, repo):
         pkg = repo.create_pkg('cat/pkg-1')

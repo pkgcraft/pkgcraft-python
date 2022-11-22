@@ -68,10 +68,16 @@ cdef class Pkg:
     def __ge__(self, Pkg other):
         return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) >= 0
 
+    def __str__(self):
+        c_str = C.pkgcraft_pkg_str(self._pkg)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
+
     def __repr__(self):
         addr = <size_t>&self._pkg
         name = self.__class__.__name__
-        return f"<{name} '{self.atom}' at 0x{addr:0x}>"
+        return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
         if not self._hash:

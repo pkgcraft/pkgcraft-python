@@ -721,6 +721,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer.
     Restrict *pkgcraft_pkg_restrict(Pkg *p);
 
+    # Return the string for a package.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char *pkgcraft_pkg_str(Pkg *p);
+
     # Return a package's version.
     #
     # # Safety

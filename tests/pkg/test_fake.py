@@ -23,7 +23,7 @@ class TestFakePkg:
             FakePkg()
 
     def test_repr(self, pkg):
-        assert repr(pkg).startswith(f"<FakePkg 'cat/pkg-1' at 0x")
+        assert repr(pkg).startswith(f"<FakePkg 'cat/pkg-1::fake' at 0x")
 
     def test_atom(self, pkg):
         assert pkg.atom == Cpv('cat/pkg-1')
