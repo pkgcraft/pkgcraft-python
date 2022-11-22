@@ -754,9 +754,11 @@ cdef extern from "pkgcraft.h":
 
     # Add pkgs to an existing fake repo from an array of CPV strings.
     #
+    # Returns NULL on error.
+    #
     # # Safety
     # The arguments must be a non-null Repo pointer and an array of CPV strings.
-    void pkgcraft_repo_fake_extend(Repo *r, char **cpvs, uintptr_t len);
+    Repo *pkgcraft_repo_fake_extend(Repo *r, char **cpvs, uintptr_t len);
 
     # Create a fake repo from a given path.
     #

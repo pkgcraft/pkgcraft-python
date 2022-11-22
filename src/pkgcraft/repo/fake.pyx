@@ -42,15 +42,21 @@ cdef class FakeRepo(Repo):
         self._ref = False
 
     def extend(self, cpvs not None):
-        """Add packages to an existing repo."""
+        """Add packages to an existing repo.
+
+        Note that the repo cannot be included in any RepoSet objects otherwise
+        this will raise an error.
+        """
         cpvs = [(<str?>s).encode() for s in cpvs]
         array = <char **>PyMem_Malloc(len(cpvs) * sizeof(char *))
         if not array:  # pragma: no cover
             raise MemoryError
         for i in range(len(cpvs)):
             array[i] = cpvs[i]
-        C.pkgcraft_repo_fake_extend(self._repo, array, len(cpvs))
+        repo = C.pkgcraft_repo_fake_extend(self._repo, array, len(cpvs))
         PyMem_Free(array)
+        if repo is NULL:
+            raise PkgcraftError
 
     @staticmethod
     cdef FakeRepo from_ptr(const C.Repo *repo, bint ref):
