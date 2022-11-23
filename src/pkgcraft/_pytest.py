@@ -183,6 +183,20 @@ def ebuild_repo(config, tmp_path_factory):
     return TempEbuildRepo(str(tmp_path_factory.mktemp('repo')), config=config)
 
 
+class TempFakeRepo(FakeRepo):
+    """Class for creating and manipulating fake repos."""
+
+    def create_pkg(self, cpv):
+        self.extend([cpv])
+        return next(iter(self.iter_restrict(cpv)))
+
+
+@pytest.fixture
+def fake_repo():
+    """Create a generic ebuild repository."""
+    return TempFakeRepo(id='fake')
+
+
 @pytest.fixture
 def random_str():
     """Factory for random string generation."""
