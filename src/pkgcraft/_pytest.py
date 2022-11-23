@@ -224,6 +224,7 @@ def make_fake_repo(config, letters):
         kwargs.setdefault('id', letters())
         conf = kwargs.pop('config', config)
         r = FakeRepo(data, **kwargs)
-        conf.add_repo(r)
+        if conf is not None:
+            conf.add_repo(r)
         return r
     return _make_repo
