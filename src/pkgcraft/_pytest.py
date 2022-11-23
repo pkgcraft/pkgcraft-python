@@ -59,7 +59,7 @@ class _FileSet(MutableSet):
 
 
 class TempRawEbuildRepo:
-    """Class for creating/manipulating raw ebuild repos."""
+    """Class for creating and manipulating raw ebuild repos."""
 
     def __init__(self, path, id='fake', eapi=EAPI_LATEST, masters=(), arches=()):
         self._path = Path(path)
@@ -145,13 +145,13 @@ class TempRawEbuildRepo:
 
 
 class TempEbuildRepo(TempRawEbuildRepo, EbuildRepo):
-    """Class for creating/manipulating ebuild repos."""
+    """Class for creating and manipulating ebuild repos."""
 
     def __init__(self, *args, config, id='fake', priority=0, **kwargs):
         TempRawEbuildRepo.__init__(self, *args, id=id, **kwargs)
         config._inject_repo_path(self, self.path, id, priority)
 
-    def create_pkg(self, cpv='cat/pkg-1', *args, **kwargs):
+    def create_pkg(self, cpv, *args, **kwargs):
         self.create_ebuild(cpv, *args, **kwargs)
         return next(iter(self.iter_restrict(cpv)))
 

@@ -47,39 +47,39 @@ class TestEbuildPkg:
         assert pkg.path == str(path)
 
     def test_ebuild(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert pkg.ebuild
 
     def test_description(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg(description="desc")
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', description="desc")
         assert pkg.description == "desc"
 
     def test_slot(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg(slot='1/2')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', slot='1/2')
         assert pkg.slot == "1"
 
     def test_subslot(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert pkg.subslot == '0'
-        pkg = ebuild_repo.create_pkg(slot='1/2')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', slot='1/2')
         assert pkg.subslot == '2'
 
     def test_dep_attrs(self, ebuild_repo):
         for attr in ('depend', 'bdepend', 'idepend', 'pdepend', 'rdepend'):
-            pkg = ebuild_repo.create_pkg()
+            pkg = ebuild_repo.create_pkg('cat/pkg-1')
             assert not getattr(pkg, attr)
 
-            pkg = ebuild_repo.create_pkg(**{attr: ''})
+            pkg = ebuild_repo.create_pkg('cat/pkg-1', **{attr: ''})
             val = getattr(pkg, attr)
             assert not getattr(pkg, attr)
 
-            pkg = ebuild_repo.create_pkg(**{attr: 'cat/pkg'})
+            pkg = ebuild_repo.create_pkg('cat/pkg-1', **{attr: 'cat/pkg'})
             val = getattr(pkg, attr)
             assert str(val) == 'cat/pkg'
             assert list(val.flatten()) == [Atom('cat/pkg')]
             assert list(map(str, val)) == ['cat/pkg']
 
-            pkg = ebuild_repo.create_pkg(**{attr: 'u? ( cat/pkg ) || ( a/b c/d )'})
+            pkg = ebuild_repo.create_pkg('cat/pkg-1', **{attr: 'u? ( cat/pkg ) || ( a/b c/d )'})
             val = getattr(pkg, attr)
             assert str(val) == 'u? ( cat/pkg ) || ( a/b c/d )'
             assert list(val.flatten()) == [Atom('cat/pkg'), Atom('a/b'), Atom('c/d')]
@@ -87,7 +87,7 @@ class TestEbuildPkg:
             assert list(map(str, dep_restricts)) == ['u? ( cat/pkg )', '|| ( a/b c/d )']
             assert list(dep_restricts[1].flatten()) == [Atom('a/b'), Atom('c/d')]
 
-            pkg = ebuild_repo.create_pkg(**{attr: 'u? ( a/b ) c/d'})
+            pkg = ebuild_repo.create_pkg('cat/pkg-1', **{attr: 'u? ( a/b ) c/d'})
             val = getattr(pkg, attr)
             assert str(val) == 'u? ( a/b ) c/d'
             assert list(val.flatten()) == [Atom('a/b'), Atom('c/d')]
@@ -96,81 +96,81 @@ class TestEbuildPkg:
             assert list(dep_restricts[1].flatten()) == [Atom('c/d')]
 
     def test_license(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert not pkg.license
 
-        pkg = ebuild_repo.create_pkg(license='BSD')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', license='BSD')
         assert str(pkg.license) == 'BSD'
         assert list(pkg.license.flatten()) == ['BSD']
 
-        pkg = ebuild_repo.create_pkg(license='u? ( BSD )')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', license='u? ( BSD )')
         assert str(pkg.license) == 'u? ( BSD )'
         assert list(pkg.license.flatten()) == ['BSD']
 
     def test_properties(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert not pkg.properties
 
-        pkg = ebuild_repo.create_pkg(properties='live')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', properties='live')
         assert str(pkg.properties) == 'live'
         assert list(pkg.properties.flatten()) == ['live']
 
-        pkg = ebuild_repo.create_pkg(properties='u? ( live )')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', properties='u? ( live )')
         assert str(pkg.properties) == 'u? ( live )'
         assert list(pkg.properties.flatten()) == ['live']
 
     def test_required_use(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert not pkg.required_use
 
-        pkg = ebuild_repo.create_pkg(required_use='use')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', required_use='use')
         assert str(pkg.required_use) == 'use'
         assert list(pkg.required_use.flatten()) == ['use']
 
-        pkg = ebuild_repo.create_pkg(required_use='u1? ( u2 )')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', required_use='u1? ( u2 )')
         assert str(pkg.required_use) == 'u1? ( u2 )'
         assert list(pkg.required_use.flatten()) == ['u2']
 
     def test_restrict(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert not pkg.restrict
 
-        pkg = ebuild_repo.create_pkg(restrict='fetch')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', restrict='fetch')
         assert str(pkg.restrict) == 'fetch'
         assert list(pkg.restrict.flatten()) == ['fetch']
 
-        pkg = ebuild_repo.create_pkg(restrict='u? ( fetch )')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', restrict='u? ( fetch )')
         assert str(pkg.restrict) == 'u? ( fetch )'
         assert list(pkg.restrict.flatten()) == ['fetch']
 
     def test_src_uri(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert not pkg.src_uri
 
-        pkg = ebuild_repo.create_pkg(src_uri='https://a.com/b.tar.gz')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', src_uri='https://a.com/b.tar.gz')
         assert str(pkg.src_uri) == 'https://a.com/b.tar.gz'
         u = next(pkg.src_uri.flatten())
         assert u.uri == 'https://a.com/b.tar.gz'
         assert u.rename is None
 
-        pkg = ebuild_repo.create_pkg(src_uri='https://a.com/z -> z.tar.xz')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', src_uri='https://a.com/z -> z.tar.xz')
         assert str(pkg.src_uri) == 'https://a.com/z -> z.tar.xz'
         u = next(pkg.src_uri.flatten())
         assert u.uri == 'https://a.com/z'
         assert u.rename == 'z.tar.xz'
 
-        pkg = ebuild_repo.create_pkg(src_uri='u1? ( https://a.com/b.tar.gz ) u2? ( https://a.com/z -> z.tar.xz )')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', src_uri='u1? ( https://a.com/b.tar.gz ) u2? ( https://a.com/z -> z.tar.xz )')
         assert str(pkg.src_uri) == 'u1? ( https://a.com/b.tar.gz ) u2? ( https://a.com/z -> z.tar.xz )'
         assert list(map(str, pkg.src_uri.flatten())) == ['https://a.com/b.tar.gz', 'https://a.com/z -> z.tar.xz']
 
     def test_defined_phases(self, ebuild_repo):
         # none
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert not pkg.defined_phases
 
         # single
         data="src_configure() { :; }"
-        pkg = ebuild_repo.create_pkg(data=data)
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', data=data)
         assert pkg.defined_phases == {'configure'}
 
         # multiple
@@ -179,49 +179,49 @@ class TestEbuildPkg:
             src_configure() { :; }
             src_compile() { :; }
         """)
-        pkg = ebuild_repo.create_pkg(data=data)
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', data=data)
         assert pkg.defined_phases == {'prepare', 'configure', 'compile'}
 
     def test_homepage(self, ebuild_repo):
         # none
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert not pkg.homepage
 
         # single
-        pkg = ebuild_repo.create_pkg(homepage='https://a.com')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', homepage='https://a.com')
         assert len(pkg.homepage) == 1
 
         # multiple
-        pkg = ebuild_repo.create_pkg(homepage='https://a.com https://b.com')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', homepage='https://a.com https://b.com')
         assert pkg.homepage == ('https://a.com', 'https://b.com')
 
     def test_keywords(self, ebuild_repo):
         # empty
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert not pkg.keywords
 
         # multiple
-        pkg = ebuild_repo.create_pkg(keywords='amd64 ~arm64')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', keywords='amd64 ~arm64')
         assert pkg.keywords == ('amd64', '~arm64')
 
     def test_iuse(self, ebuild_repo):
         # empty
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert not pkg.iuse
 
         # multiple
-        pkg = ebuild_repo.create_pkg(iuse='a b c')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', iuse='a b c')
         assert pkg.iuse == frozenset(['a', 'b', 'c'])
 
     def test_inherits(self, ebuild_repo):
         # empty
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert not pkg.inherit
         assert not pkg.inherited
 
     def test_long_description(self, ebuild_repo):
         # none
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert pkg.long_description is None
 
         # invalid
@@ -264,7 +264,7 @@ class TestEbuildPkg:
 
     def test_maintainers(self, ebuild_repo):
         # none
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert not pkg.maintainers
 
         # invalid
@@ -315,7 +315,7 @@ class TestEbuildPkg:
 
     def test_upstreams(self, ebuild_repo):
         # none
-        pkg = ebuild_repo.create_pkg()
+        pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert not pkg.upstreams
 
         # invalid
