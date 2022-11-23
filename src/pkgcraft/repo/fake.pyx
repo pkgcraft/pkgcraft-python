@@ -44,8 +44,8 @@ cdef class FakeRepo(Repo):
     def extend(self, cpvs not None):
         """Add packages to an existing repo.
 
-        Note that the repo cannot be included in any RepoSet objects otherwise
-        this will raise an error.
+        Note that the repo cannot be included in any RepoSet or Config objects
+        otherwise this will raise an error.
         """
         cpvs = [(<str?>s).encode() for s in cpvs]
         array = <char **>PyMem_Malloc(len(cpvs) * sizeof(char *))
