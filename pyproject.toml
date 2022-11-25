@@ -11,6 +11,34 @@ addopts = "-ra"
 testpaths = ["tests"]
 doctest_optionflags = "ELLIPSIS"
 
+[tool.coverage.run]
+source = ["src/pkgcraft"]
+plugins = ["Cython.Coverage"]
+concurrency = ["multiprocessing", "thread"]
+parallel = true
+branch = true
+omit = [
+    "src/pkgcraft/__version__.py",
+    "src/pkgcraft/_pytest.py",
+    "tests/*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = true
+exclude_lines = [
+    # re-enable the standard pragma
+    "pragma: no cover",
+
+    # ignore defensive assertions
+    "raise AssertionError",
+    "raise NotImplementedError",
+
+    # ignore unexecutable code
+    "if __name__ == .__main__.:",
+]
+
 [tool.cibuildwheel]
 build = ["cp39-*", "cp310-*", "cp311-*"]
 build-verbosity = 1
