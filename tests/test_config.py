@@ -124,6 +124,7 @@ class TestConfig:
         f.write_text(textwrap.dedent(f"""
             [test2]
             location = {repo_path}
+            priority = 1
         """))
         config.load_repos_conf(dir_path)
-        assert set(config.repos) == {'test', 'test1', 'test2'}
+        assert set(config.repos) == {'test2', 'test', 'test1'}
