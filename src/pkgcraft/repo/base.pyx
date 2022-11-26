@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from .. cimport pkgcraft_c as C
 from ..atom cimport Cpv
 from ..pkg cimport Pkg
@@ -46,7 +48,7 @@ cdef class Repo:
         """Get a repo's path."""
         if self._path is None:
             c_str = C.pkgcraft_repo_path(self._repo)
-            self._path = c_str.decode()
+            self._path = Path(c_str.decode())
             C.pkgcraft_str_free(c_str)
         return self._path
 

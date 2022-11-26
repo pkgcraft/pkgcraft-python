@@ -10,7 +10,7 @@ cdef class Repo:
 
     # cached fields
     cdef str _id
-    cdef str _path
+    cdef object _path
     cdef int _hash
 
     cdef inject_ptr(self, const C.Repo *, bint)

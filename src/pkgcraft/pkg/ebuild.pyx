@@ -1,3 +1,5 @@
+from pathlib import Path
+
 cimport cython
 
 from .. cimport pkgcraft_c as C
@@ -39,7 +41,7 @@ cdef class EbuildPkg(Pkg):
         c_str = C.pkgcraft_pkg_ebuild_path(self._pkg)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
-        return s
+        return Path(s)
 
     @property
     def ebuild(self):

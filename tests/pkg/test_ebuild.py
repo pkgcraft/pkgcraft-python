@@ -44,7 +44,7 @@ class TestEbuildPkg:
     def test_path(self, ebuild_repo):
         path = ebuild_repo.create_ebuild()
         pkg = next(iter(ebuild_repo))
-        assert pkg.path == str(path)
+        assert pkg.path == path
 
     def test_ebuild(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg('cat/pkg-1')
