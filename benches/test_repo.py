@@ -7,18 +7,18 @@ from pkgcore.ebuild.atom import atom as pkgcore_atom
 
 
 @pytest.mark.parametrize("lib,func", (('pkgcraft', Atom), ('pkgcore', pkgcore_atom)))
-def test_bench_repo_iter(benchmark, lib, func, repo):
+def test_bench_repo_iter(benchmark, lib, func, ebuild_repo):
     # create ebuilds
     for i in range(100):
-        repo.create_ebuild(f'cat/pkg-{i}')
+        ebuild_repo.create_ebuild(f'cat/pkg-{i}')
 
     if lib == 'pkgcore':
         from pkgcore.ebuild import repo_objs, repository
-        repo_config = repo_objs.RepoConfig(location=str(repo.path), disable_inst_caching=True)
-        r = repository.UnconfiguredTree(str(repo.path), repo_config=repo_config)
+        repo_config = repo_objs.RepoConfig(location=str(ebuild_repo.path), disable_inst_caching=True)
+        r = repository.UnconfiguredTree(str(ebuild_repo.path), repo_config=repo_config)
         pkgs = benchmark(lambda x: list(iter(x)), r)
     else:
-        pkgs = benchmark(lambda x: list(iter(x)), repo)
+        pkgs = benchmark(lambda x: list(iter(x)), ebuild_repo)
 
     assert len(pkgs) == 100
 
@@ -38,21 +38,21 @@ def test_bench_repo_set_iter(benchmark, make_ebuild_repo):
 
 
 @pytest.mark.parametrize("lib,func", (('pkgcraft', Atom), ('pkgcore', pkgcore_atom)))
-def test_bench_repo_iter_restrict_atom(benchmark, lib, func, repo):
+def test_bench_repo_iter_restrict_atom(benchmark, lib, func, ebuild_repo):
     # create ebuilds
     for i in range(100):
-        repo.create_ebuild(f'cat/pkg-{i}')
+        ebuild_repo.create_ebuild(f'cat/pkg-{i}')
 
     # single atom restriction
     atom = func('=cat/pkg-50')
 
     if lib == 'pkgcore':
         from pkgcore.ebuild import repo_objs, repository
-        repo_config = repo_objs.RepoConfig(location=str(repo.path), disable_inst_caching=True)
-        r = repository.UnconfiguredTree(str(repo.path), repo_config=repo_config)
+        repo_config = repo_objs.RepoConfig(location=str(ebuild_repo.path), disable_inst_caching=True)
+        r = repository.UnconfiguredTree(str(ebuild_repo.path), repo_config=repo_config)
         pkgs = benchmark(lambda x: list(r.itermatch(x)), atom)
     else:
-        pkgs = benchmark(lambda x: list(repo.iter_restrict(x)), atom)
+        pkgs = benchmark(lambda x: list(ebuild_repo.iter_restrict(x)), atom)
 
     assert len(pkgs) == 1
     assert str(pkgs[0].version) == '50'
