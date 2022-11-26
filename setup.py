@@ -173,7 +173,6 @@ CYTHON_EXTS = list(cython_pyx(MODULEDIR))
 
 setup(
     ext_modules=extensions(),
-    entry_points={'pytest11': ['pkgcraft = pkgcraft._pytest']},
     cmdclass={
         'build_ext': build_ext,
         'sdist': sdist,

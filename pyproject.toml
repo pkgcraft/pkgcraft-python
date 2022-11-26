@@ -1,9 +1,39 @@
 [build-system]
-requires = ["cython~=0.29.30", "setuptools>=62", "setuptools_scm[toml]>=7", "wheel"]
+requires = ["cython~=0.29.30", "setuptools>=65.6.0", "setuptools_scm[toml]>=7", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "pkgcraft"
+description = "python bindings for pkgcraft"
+authors = [{author = "Tim Harder", email = "radhermit@gmail.com"}]
+requires-python = ">=3.9"
+keywords = ["gentoo", "cython"]
+license = {text = "MIT"}
+classifiers = [
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+dynamic = ["version", "readme"]
+
+[project.urls]
+homepage = "https://github.com/pkgcraft/pkgcraft-python"
+
+[tool.setuptools.dynamic]
+readme = {file = ["README.md"]}
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.setuptools_scm]
 write_to = "src/pkgcraft/__version__.py"
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.entry-points.pytest11]
+pkgcraft = "pkgcraft._pytest"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
