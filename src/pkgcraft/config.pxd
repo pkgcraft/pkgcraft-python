@@ -1,4 +1,5 @@
 from . cimport pkgcraft_c as C
+from .repo cimport RepoSet
 
 cdef dict repos_to_dict(C.Repo **, size_t, bint)
 
@@ -14,8 +15,8 @@ cdef class Repos:
     cdef C.Config *_config
     # cached fields
     cdef dict _repos
-    cdef object _all_repos
-    cdef object _ebuild_repos
+    cdef RepoSet _all_repos
+    cdef RepoSet _ebuild_repos
 
     @staticmethod
     cdef Repos from_config(C.Config *)
