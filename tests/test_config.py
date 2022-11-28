@@ -66,6 +66,11 @@ class TestConfig:
         assert config.repos == {'r2': r2, 'r1': r1}
 
     def test_repo_sets(self, config, make_ebuild_repo, make_fake_repo):
+        # empty
+        assert config.repos.all == RepoSet()
+        assert config.repos.ebuild == RepoSet()
+
+        # populated
         r1 = make_ebuild_repo(config=config)
         r2 = make_fake_repo(config=config)
         assert config.repos.all == RepoSet(r1, r2)
