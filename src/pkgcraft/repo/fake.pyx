@@ -1,5 +1,3 @@
-import os
-
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
 from .. cimport pkgcraft_c as C
