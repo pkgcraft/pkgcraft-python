@@ -63,20 +63,33 @@ class TestAtom:
 
         with open(TOMLDIR / 'atoms.toml', 'rb') as f:
             d = tomllib.load(f)
+
+        # converters for toml data
+        convert_values = {
+            'version': lambda x: VersionWithOp(x),
+            'slot_op': lambda x: SlotOperator.from_str(x),
+            'use': lambda x: tuple(x),
+        }
+
         for entry in d['valid']:
             s = entry['atom']
+
+            # convert toml strings into expected types
+            for k in set(entry).intersection(convert_values):
+                if val := entry.get(k):
+                    entry[k] = convert_values[k](val)
+
             passing_eapis = Eapi.range(entry['eapis']).values()
             for eapi in EAPIS.values():
                 if eapi in passing_eapis:
                     a = Atom(s, eapi)
                     assert a.category == entry.get('category')
                     assert a.package == entry.get('package')
+                    assert a.version == entry.get('version')
                     assert a.slot == entry.get('slot')
                     assert a.subslot == entry.get('subslot')
-                    if version := entry.get('version'):
-                        assert a.version == VersionWithOp(version)
-                    else:
-                        assert a.version is None
+                    assert a.slot_op == entry.get('slot_op')
+                    assert a.use == entry.get('use')
                     assert str(a) == s
                     assert repr(a).startswith(f"<Atom {s!r} at 0x")
                 else:
