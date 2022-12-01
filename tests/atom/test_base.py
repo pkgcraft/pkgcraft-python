@@ -66,6 +66,7 @@ class TestAtom:
 
         # converters for toml data
         converters = {
+            'blocker': lambda x: Blocker.from_str(x),
             'version': lambda x: VersionWithOp(x),
             'slot_op': lambda x: SlotOperator.from_str(x),
             'use': lambda x: tuple(x),
@@ -85,6 +86,7 @@ class TestAtom:
                     a = Atom(s, eapi)
                     assert a.category == entry.get('category')
                     assert a.package == entry.get('package')
+                    assert a.blocker == entry.get('blocker')
                     assert a.version == entry.get('version')
                     assert a.slot == entry.get('slot')
                     assert a.subslot == entry.get('subslot')
