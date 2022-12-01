@@ -22,10 +22,24 @@ class Blocker(Enum):
     Strong = 0
     Weak = 1
 
+    @staticmethod
+    def from_str(str s not None):
+        blocker = C.pkgcraft_atom_blocker_from_str(s.encode())
+        if blocker >= 0:
+            return Blocker(blocker)
+        raise ValueError(f'invalid Blocker: {s}')
+
 
 class SlotOperator(Enum):
     Equal = 0
     Star = 1
+
+    @staticmethod
+    def from_str(str s not None):
+        slot_op = C.pkgcraft_atom_slot_op_from_str(s.encode())
+        if slot_op >= 0:
+            return SlotOperator(slot_op)
+        raise ValueError(f'invalid SlotOperator: {s}')
 
 
 @cython.final

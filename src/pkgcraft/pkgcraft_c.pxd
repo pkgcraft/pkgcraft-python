@@ -110,6 +110,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Atom pointer.
     int pkgcraft_atom_blocker(Atom *atom);
 
+    # Parse a string into a Blocker.
+    #
+    # Returns -1 on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    int pkgcraft_atom_blocker_from_str(const char *s);
+
     # Return an atom's category, e.g. the atom "=cat/pkg-1-r2" has a category of "cat".
     #
     # # Safety
@@ -200,6 +208,14 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Atom pointer.
     int pkgcraft_atom_slot_op(Atom *atom);
+
+    # Parse a string into a SlotOperator.
+    #
+    # Returns -1 on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    int pkgcraft_atom_slot_op_from_str(const char *s);
 
     # Return the string for an atom.
     #
