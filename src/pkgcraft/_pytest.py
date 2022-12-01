@@ -194,7 +194,7 @@ class TempFakeRepo(FakeRepo):
 @pytest.fixture
 def fake_repo():
     """Create a generic ebuild repository."""
-    return TempFakeRepo(id='fake')
+    return TempFakeRepo()
 
 
 @pytest.fixture

@@ -11,35 +11,30 @@ from ..error import PkgcraftError
 cdef class FakeRepo(Repo):
     """Fake package repo."""
 
-    def __init__(self, cpvs=(), id=None, priority=0):
-        cdef C.Repo *repo
-
-        if isinstance(cpvs, (str, os.PathLike)) and os.path.exists(cpvs):
-            # target is a file of cpvs
-            path = str(cpvs)
-            id = str(id) if id is not None else path
-            repo = C.pkgcraft_repo_fake_from_path(id.encode(), int(priority), path.encode())
-        elif id is not None:
-            # target is an iterable of cpvs
-            id = str(id)
-            cpvs = [(<str?>s).encode() for s in cpvs]
-            array = <char **>PyMem_Malloc(len(cpvs) * sizeof(char *))
-            if not array:  # pragma: no cover
-                raise MemoryError
-            for i in range(len(cpvs)):
-                array[i] = cpvs[i]
-            repo = C.pkgcraft_repo_fake_new(id.encode(), int(priority), array, len(cpvs))
-            PyMem_Free(array)
-            if repo is NULL:
-                raise PkgcraftError
-        else:
-            raise AttributeError('missing repo id')
-
+    def __init__(self, cpvs=(), str id='fake', int priority=0):
+        cpvs = [(<str?>s).encode() for s in cpvs]
+        array = <char **>PyMem_Malloc(len(cpvs) * sizeof(char *))
+        if not array:  # pragma: no cover
+            raise MemoryError
+        for i in range(len(cpvs)):
+            array[i] = cpvs[i]
+        repo = C.pkgcraft_repo_fake_new(id.encode(), int(priority), array, len(cpvs))
+        PyMem_Free(array)
         if repo is NULL:
             raise PkgcraftError
 
         self._repo = repo
         self._ref = False
+
+    @staticmethod
+    def from_path(path not None, id=None, priority=0):
+        path = str(path)
+        id = str(id) if id is not None else path
+        repo = C.pkgcraft_repo_fake_from_path(id.encode(), int(priority), path.encode())
+        if repo is NULL:
+            raise PkgcraftError
+
+        return FakeRepo.from_ptr(repo, False)
 
     def extend(self, cpvs not None):
         """Add packages to an existing repo.
