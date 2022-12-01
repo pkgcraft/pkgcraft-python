@@ -65,7 +65,7 @@ class TestAtom:
             d = tomllib.load(f)
 
         # converters for toml data
-        convert_values = {
+        converters = {
             'version': lambda x: VersionWithOp(x),
             'slot_op': lambda x: SlotOperator.from_str(x),
             'use': lambda x: tuple(x),
@@ -75,9 +75,9 @@ class TestAtom:
             s = entry['atom']
 
             # convert toml strings into expected types
-            for k in set(entry).intersection(convert_values):
+            for k in set(entry).intersection(converters):
                 if val := entry.get(k):
-                    entry[k] = convert_values[k](val)
+                    entry[k] = converters[k](val)
 
             passing_eapis = Eapi.range(entry['eapis']).values()
             for eapi in EAPIS.values():
