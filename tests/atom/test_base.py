@@ -88,6 +88,7 @@ class TestAtom:
                     assert a.package == entry.get('package')
                     assert a.blocker == entry.get('blocker')
                     assert a.version == entry.get('version')
+                    assert a.revision == entry.get('revision')
                     assert a.slot == entry.get('slot')
                     assert a.subslot == entry.get('subslot')
                     assert a.slot_op == entry.get('slot_op')
