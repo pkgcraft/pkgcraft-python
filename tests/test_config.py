@@ -59,8 +59,8 @@ class TestConfig:
 
     def test_add_repo(self, config):
         assert not config.repos
-        r1 = FakeRepo([], id='r1', priority=1)
-        r2 = FakeRepo([], id='r2', priority=2)
+        r1 = FakeRepo('r1', 1, [])
+        r2 = FakeRepo('r2', 2, [])
         config.add_repo(r1)
         config.add_repo(r2)
         assert config.repos == {'r2': r2, 'r1': r1}

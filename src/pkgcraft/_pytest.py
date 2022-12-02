@@ -194,7 +194,7 @@ class TempFakeRepo(FakeRepo):
 @pytest.fixture
 def fake_repo():
     """Create a generic ebuild repository."""
-    return TempFakeRepo()
+    return TempFakeRepo('fake')
 
 
 @pytest.fixture
@@ -234,11 +234,10 @@ def make_ebuild_repo(tmp_path_factory, config, letters):
 @pytest.fixture
 def make_fake_repo(config, letters):
     """Factory for ebuild repo creation."""
-    def _make_repo(data=(), **kwargs):
-        kwargs.setdefault('id', letters())
-        conf = kwargs.pop('config', config)
-        r = FakeRepo(data, **kwargs)
-        if conf is not None:
-            conf.add_repo(r)
+    def _make_repo(cpvs=(), id=None, priority=0, config=config):
+        id = id if id is not None else letters()
+        r = TempFakeRepo(id, priority, cpvs)
+        if config is not None:
+            config.add_repo(r)
         return r
     return _make_repo

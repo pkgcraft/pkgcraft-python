@@ -9,7 +9,8 @@ from pkgcraft.atom import Cpv, Version
 
 @pytest.fixture
 def repo():
-    return FakeRepo(['cat/pkg-1'], id='fake')
+    return FakeRepo('fake', 0, ['cat/pkg-1'])
+
 
 @pytest.fixture
 def pkg(repo):

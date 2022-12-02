@@ -37,20 +37,20 @@ class TestFakeRepo:
         assert Cpv('c/d-2') in r
 
         # no cpvs
-        r = FakeRepo()
+        r = FakeRepo('fake')
         assert len(r) == 0
 
         # empty iterable
-        r = FakeRepo([])
+        r = FakeRepo('fake', cpvs=[])
         assert len(r) == 0
 
         # single pkg iterable
-        r = FakeRepo(['cat/pkg-1'])
+        r = FakeRepo('fake', cpvs=['cat/pkg-1'])
         assert len(r) == 1
         assert Cpv('cat/pkg-1') in r
 
         # multiple pkgs iterable with invalid cpv
-        r = FakeRepo(['a/b-1', 'c/d-2', '=cat/pkg-1'])
+        r = FakeRepo('fake', cpvs=['a/b-1', 'c/d-2', '=cat/pkg-1'])
         assert len(r) == 2
         assert Cpv('a/b-1') in r
         assert Cpv('c/d-2') in r

@@ -9,14 +9,14 @@ from ..error import PkgcraftError
 cdef class FakeRepo(Repo):
     """Fake package repo."""
 
-    def __init__(self, cpvs=(), str id='fake', int priority=0):
+    def __init__(self, str id not None, int priority=0, cpvs=()):
         cpvs = [(<str?>s).encode() for s in cpvs]
         array = <char **>PyMem_Malloc(len(cpvs) * sizeof(char *))
         if not array:  # pragma: no cover
             raise MemoryError
         for i in range(len(cpvs)):
             array[i] = cpvs[i]
-        repo = C.pkgcraft_repo_fake_new(id.encode(), int(priority), array, len(cpvs))
+        repo = C.pkgcraft_repo_fake_new(id.encode(), priority, array, len(cpvs))
         PyMem_Free(array)
         if repo is NULL:
             raise PkgcraftError
@@ -25,10 +25,10 @@ cdef class FakeRepo(Repo):
         self._ref = False
 
     @staticmethod
-    def from_path(path not None, id=None, priority=0):
+    def from_path(path not None, id=None, int priority=0):
         path = str(path)
         id = str(id) if id is not None else path
-        repo = C.pkgcraft_repo_fake_from_path(id.encode(), int(priority), path.encode())
+        repo = C.pkgcraft_repo_fake_from_path(id.encode(), priority, path.encode())
         if repo is NULL:
             raise PkgcraftError
 
