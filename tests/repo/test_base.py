@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from pkgcraft.atom import Atom, Cpv
@@ -81,18 +83,46 @@ class TestRepo:
         r2 = config.add_repo_path(raw_ebuild_repo.path, "fake")
         assert len({r1, r2}) == 2
 
-    def test_contains(self, ebuild_repo):
-        ebuild_repo.create_ebuild("cat/pkg-1")
-        assert 'cat/pkg' in ebuild_repo
-        assert 'cat/pkg2' not in ebuild_repo
-        assert Cpv('cat/pkg-1') in ebuild_repo
-        assert Cpv('cat/pkg-2') not in ebuild_repo
-        assert Atom('=cat/pkg-1') in ebuild_repo
-        assert Atom('=cat/pkg-2') not in ebuild_repo
+    def test_contains(self, make_ebuild_repo):
+        r1 = make_ebuild_repo()
+        r2 = make_ebuild_repo()
+        pkg1 = r1.create_pkg("cat/pkg-1")
+        pkg2 = r2.create_pkg("cat/pkg-1")
+
+        # Cpv strings
+        assert 'cat/pkg-1' in r1
+        assert 'cat/pkg-2' not in r1
+        # Cpv objects
+        assert Cpv('cat/pkg-1') in r1
+        assert Cpv('cat/pkg-2') not in r1
+        # Atom strings
+        assert 'cat/pkg' in r1
+        assert 'cat/pkg2' not in r1
+        assert '=cat/pkg-1' in r1
+        assert '=cat/pkg-2' not in r1
+        # Atom objects
+        assert Atom('=cat/pkg-1') in r1
+        assert Atom('=cat/pkg-2') not in r1
+        # Pkg objects
+        assert pkg1 in r1
+        assert pkg2 not in r1
+        assert pkg1 not in r2
+        assert pkg2 in r2
+        # Pkg atoms
+        assert pkg1.atom in r1
+        assert pkg2.atom in r1
+        # Path objects
+        assert Path('cat') in r1
+        assert Path('cat/pkg') in r1
+        assert Path('cat/pkg2') not in r1
+        assert pkg1.path in r1
+        assert pkg2.path not in r1
+        assert pkg1.path not in r2
+        assert pkg2.path in r2
 
         for obj in (object(), None):
             with pytest.raises(TypeError):
-                assert obj in ebuild_repo
+                assert obj in r1
 
     def test_getitem(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg('cat/pkg-1')

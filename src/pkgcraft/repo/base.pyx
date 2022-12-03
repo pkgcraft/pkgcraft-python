@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from .. cimport pkgcraft_c as C
@@ -86,8 +87,8 @@ cdef class Repo:
         return not C.pkgcraft_repo_is_empty(self._repo)
 
     def __contains__(self, obj):
-        if isinstance(obj, str):
-            return C.pkgcraft_repo_contains_path(self._repo, obj.encode())
+        if isinstance(obj, os.PathLike):
+            return C.pkgcraft_repo_contains_path(self._repo, str(obj).encode())
         return bool(next(self.iter_restrict(obj), None))
 
     def __getitem__(self, obj):
