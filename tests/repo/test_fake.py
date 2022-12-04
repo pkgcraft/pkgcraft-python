@@ -7,11 +7,31 @@ from pkgcraft.repo import FakeRepo, RepoSet
 
 class TestFakeRepo:
 
-    def test_init(self, tmp_path):
+    def test_init(self):
         # invalid args
         with pytest.raises(TypeError):
             FakeRepo(None)
 
+        # no cpvs
+        r = FakeRepo('fake')
+        assert len(r) == 0
+
+        # empty iterable
+        r = FakeRepo('fake', cpvs=[])
+        assert len(r) == 0
+
+        # single pkg iterable
+        r = FakeRepo('fake', cpvs=['cat/pkg-1'])
+        assert len(r) == 1
+        assert Cpv('cat/pkg-1') in r
+
+        # multiple pkgs iterable with invalid cpv
+        r = FakeRepo('fake', cpvs=['a/b-1', 'c/d-2', '=cat/pkg-1'])
+        assert len(r) == 2
+        assert Cpv('a/b-1') in r
+        assert Cpv('c/d-2') in r
+
+    def test_from_path(self, tmp_path):
         # empty file
         path = tmp_path / 'atoms'
         path.touch()
@@ -32,25 +52,6 @@ class TestFakeRepo:
         # multiple pkgs file with invalid cpv
         path.write_text('a/b-1\nc/d-2\n=cat/pkg-1')
         r = FakeRepo.from_path(path)
-        assert len(r) == 2
-        assert Cpv('a/b-1') in r
-        assert Cpv('c/d-2') in r
-
-        # no cpvs
-        r = FakeRepo('fake')
-        assert len(r) == 0
-
-        # empty iterable
-        r = FakeRepo('fake', cpvs=[])
-        assert len(r) == 0
-
-        # single pkg iterable
-        r = FakeRepo('fake', cpvs=['cat/pkg-1'])
-        assert len(r) == 1
-        assert Cpv('cat/pkg-1') in r
-
-        # multiple pkgs iterable with invalid cpv
-        r = FakeRepo('fake', cpvs=['a/b-1', 'c/d-2', '=cat/pkg-1'])
         assert len(r) == 2
         assert Cpv('a/b-1') in r
         assert Cpv('c/d-2') in r
