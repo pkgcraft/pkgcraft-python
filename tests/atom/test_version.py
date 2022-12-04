@@ -60,8 +60,7 @@ class TestVersion:
         with open(TOMLDIR / 'versions.toml', 'rb') as f:
             d = tomllib.load(f)
         for (unsorted, expected) in d['sorting']:
-            versions = sorted(Version(s) for s in unsorted)
-            assert list(map(str, versions)) == expected
+            assert sorted(map(Version, unsorted)) == [Version(s) for s in expected]
 
     def test_hash(self):
         with open(TOMLDIR / 'versions.toml', 'rb') as f:
