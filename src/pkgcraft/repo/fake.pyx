@@ -1,8 +1,9 @@
-from cpython.mem cimport PyMem_Malloc, PyMem_Free
+from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport pkgcraft_c as C
 from ..pkg cimport FakePkg
 from . cimport Repo
+
 from ..error import PkgcraftError
 
 

@@ -1,11 +1,12 @@
 cimport cython
-from cpython.mem cimport PyMem_Malloc, PyMem_Free
+from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport pkgcraft_c as C
 from ..config cimport repos_to_dict
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport Repo
+
 from .. import parse
 from ..error import IndirectInit
 

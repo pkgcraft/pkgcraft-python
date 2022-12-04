@@ -3,7 +3,8 @@ cimport cython
 from . cimport pkgcraft_c as C
 from .atom cimport Atom, Cpv
 from .pkg cimport Pkg
-from .error import InvalidCpv, InvalidAtom, InvalidRestrict
+
+from .error import InvalidAtom, InvalidCpv, InvalidRestrict
 
 
 cdef C.Restrict *str_to_restrict(str s) except NULL:

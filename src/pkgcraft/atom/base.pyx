@@ -5,8 +5,9 @@ cimport cython
 
 from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
-from .cpv cimport Cpv
 from ..eapi cimport Eapi
+from .cpv cimport Cpv
+
 from ..eapi import EAPIS
 from ..error import InvalidAtom
 

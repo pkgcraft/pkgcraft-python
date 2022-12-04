@@ -1,6 +1,7 @@
 from . cimport pkgcraft_c as C
 from .repo cimport RepoSet
 
+
 cdef dict repos_to_dict(C.Repo **, size_t, bint)
 
 cdef class Config:

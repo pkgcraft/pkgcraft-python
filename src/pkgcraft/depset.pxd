@@ -1,6 +1,5 @@
 from . cimport pkgcraft_c as C
 
-
 ctypedef enum DepSetType:
     DepSetAtom,
     DepSetString,

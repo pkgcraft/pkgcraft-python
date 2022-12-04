@@ -1,8 +1,8 @@
 import binascii
 import os
 import textwrap
-from datetime import datetime
 from collections.abc import MutableSet
+from datetime import datetime
 from pathlib import Path
 
 import pytest

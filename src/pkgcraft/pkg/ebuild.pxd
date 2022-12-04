@@ -1,6 +1,7 @@
 from .. cimport pkgcraft_c as C
 from . cimport Pkg
 
+
 cdef class EbuildPkg(Pkg):
     # cached fields
     cdef str _description
