@@ -1,6 +1,5 @@
 import pytest
 
-from pkgcraft.atom import Cpv
 from pkgcraft.error import PkgcraftError
 from pkgcraft.repo import FakeRepo, RepoSet
 
@@ -23,13 +22,14 @@ class TestFakeRepo:
         # single pkg iterable
         r = FakeRepo('fake', cpvs=['cat/pkg-1'])
         assert len(r) == 1
-        assert Cpv('cat/pkg-1') in r
+        assert 'cat/pkg-1' in r
 
         # multiple pkgs iterable with invalid cpv
         r = FakeRepo('fake', cpvs=['a/b-1', 'c/d-2', '=cat/pkg-1'])
         assert len(r) == 2
-        assert Cpv('a/b-1') in r
-        assert Cpv('c/d-2') in r
+        assert 'a/b-1' in r
+        assert 'c/d-2' in r
+        assert 'cat/pkg-1' not in r
 
     def test_from_path(self, tmp_path):
         # empty file
@@ -42,19 +42,20 @@ class TestFakeRepo:
         path.write_text('cat/pkg-1')
         r = FakeRepo.from_path(path)
         assert len(r) == 1
-        assert Cpv('cat/pkg-1') in r
+        assert 'cat/pkg-1' in r
 
         # file path from string
         r = FakeRepo.from_path(str(path))
         assert len(r) == 1
-        assert Cpv('cat/pkg-1') in r
+        assert 'cat/pkg-1' in r
 
         # multiple pkgs file with invalid cpv
         path.write_text('a/b-1\nc/d-2\n=cat/pkg-1')
         r = FakeRepo.from_path(path)
         assert len(r) == 2
-        assert Cpv('a/b-1') in r
-        assert Cpv('c/d-2') in r
+        assert 'a/b-1' in r
+        assert 'c/d-2' in r
+        assert 'cat/pkg-1' not in r
 
     def test_extend(self, config, make_fake_repo):
         r = make_fake_repo(config=None)
