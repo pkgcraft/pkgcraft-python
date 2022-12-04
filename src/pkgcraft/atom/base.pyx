@@ -27,7 +27,7 @@ class Blocker(Enum):
         blocker = C.pkgcraft_atom_blocker_from_str(s.encode())
         if blocker >= 0:
             return Blocker(blocker)
-        raise ValueError(f'invalid Blocker: {s}')
+        raise ValueError(f'invalid blocker: {s}')
 
 
 class SlotOperator(Enum):
@@ -39,7 +39,7 @@ class SlotOperator(Enum):
         slot_op = C.pkgcraft_atom_slot_op_from_str(s.encode())
         if slot_op >= 0:
             return SlotOperator(slot_op)
-        raise ValueError(f'invalid SlotOperator: {s}')
+        raise ValueError(f'invalid slot operator: {s}')
 
 
 @cython.final
