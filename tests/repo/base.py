@@ -2,8 +2,6 @@ import pytest
 
 from pkgcraft.atom import Atom, Cpv
 from pkgcraft.config import Config
-from pkgcraft.error import IndirectInit
-from pkgcraft.repo import Repo
 
 from ..misc import OperatorMap
 
