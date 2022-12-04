@@ -41,11 +41,10 @@ cdef class Config:
 
     cdef C.Repo *_add_repo_path(self, object path, object id, int priority) except NULL:
         """Add an external repo via its file path and return its pointer."""
-        cdef C.Repo *repo
         path = str(path)
         id = str(id) if id is not None else path
 
-        repo = C.pkgcraft_config_add_repo_path(
+        cdef C.Repo *repo = C.pkgcraft_config_add_repo_path(
             self._config, id.encode(), int(priority), path.encode())
         if repo is NULL:
             raise PkgcraftError

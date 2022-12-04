@@ -147,8 +147,8 @@ class TempRawEbuildRepo:
 class TempEbuildRepo(TempRawEbuildRepo, EbuildRepo):
     """Class for creating and manipulating ebuild repos."""
 
-    def __init__(self, *args, config, id='fake', priority=0, **kwargs):
-        TempRawEbuildRepo.__init__(self, *args, id=id, **kwargs)
+    def __init__(self, config, path, id='fake', priority=0, **kwargs):
+        TempRawEbuildRepo.__init__(self, path, id, **kwargs)
         config._inject_repo_path(self, self.path, id, priority)
 
     def create_pkg(self, cpv, *args, **kwargs):
@@ -180,7 +180,7 @@ def make_raw_ebuild_repo(tmp_path_factory):
 @pytest.fixture
 def ebuild_repo(config, tmp_path_factory):
     """Create a generic ebuild repository."""
-    return TempEbuildRepo(str(tmp_path_factory.mktemp('repo')), config=config)
+    return TempEbuildRepo(config, str(tmp_path_factory.mktemp('repo')))
 
 
 class TempFakeRepo(FakeRepo):
@@ -223,18 +223,18 @@ def letters():
 @pytest.fixture
 def make_ebuild_repo(tmp_path_factory, config, letters):
     """Factory for ebuild repo creation."""
-    def _make_repo(path=None, **kwargs):
+    def _make_repo(path=None, id=None, priority=0, config=config, **kwargs):
         path = str(tmp_path_factory.mktemp('repo')) if path is None else path
-        kwargs.setdefault('config', config)
-        kwargs.setdefault('id', letters())
-        return TempEbuildRepo(path, **kwargs)
+        id = id if id is not None else letters()
+        return TempEbuildRepo(config, path, id, priority, **kwargs)
     return _make_repo
 
 
 @pytest.fixture
 def make_fake_repo(config, letters):
     """Factory for ebuild repo creation."""
-    def _make_repo(cpvs=(), id=None, priority=0, config=config):
+    def _make_repo(cpvs=None, id=None, priority=0, config=None):
+        cpvs = cpvs if cpvs is not None else ()
         id = id if id is not None else letters()
         r = TempFakeRepo(id, priority, cpvs)
         if config is not None:

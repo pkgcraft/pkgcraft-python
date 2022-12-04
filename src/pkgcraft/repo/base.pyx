@@ -13,7 +13,7 @@ from ..error import IndirectInit, PkgcraftError
 cdef class Repo:
     """Package repo."""
 
-    def __init__(self):
+    def __init__(self):  # pragma: no cover
         raise IndirectInit(self)
 
     cdef inject_ptr(self, const C.Repo *repo, bint ref):

@@ -1,0 +1,127 @@
+import pytest
+
+from pkgcraft.atom import Atom, Cpv
+from pkgcraft.config import Config
+from pkgcraft.error import IndirectInit
+from pkgcraft.repo import Repo
+
+from ..misc import OperatorMap
+
+
+class BaseRepoTests:
+
+    def test_attrs_base(self, make_repo):
+        r = make_repo(id='fake')
+
+        # default
+        assert r.id == 'fake'
+        assert str(r) == 'fake'
+
+    def test_pkg_methods_base(self, repo):
+        # empty repo
+        assert not repo.categories
+        assert not repo.packages('cat')
+        assert not repo.versions('cat', 'pkg')
+
+        # create pkg
+        repo.create_pkg('cat1/pkga-1')
+        assert repo.categories == ('cat1',)
+        assert repo.packages('cat1') == ('pkga',)
+        assert repo.versions('cat1', 'pkga') == ('1',)
+
+        # create new pkg version
+        repo.create_pkg("cat1/pkga-2")
+        assert repo.categories == ('cat1',)
+        assert repo.packages('cat1') == ('pkga',)
+        assert repo.versions('cat1', 'pkga') == ('1', '2')
+
+        # create new pkg
+        repo.create_pkg("cat1/pkgb-1")
+        assert repo.categories == ('cat1',)
+        assert repo.packages('cat1') == ('pkga', 'pkgb')
+
+        # create new pkg in new category
+        repo.create_pkg("cat2/pkga-1")
+        assert repo.categories == ('cat1', 'cat2')
+        assert repo.packages('cat2') == ('pkga',)
+
+    def test_cmp_base(self, make_repo):
+        for (r1_args, op, r2_args) in (
+                (['a'], '<', ['b']),
+                (['a', 2], '<=', ['b', 1]),
+                (['a'], '!=', ['b']),
+                (['b', 1], '>=', ['a', 2]),
+                (['b'], '>', ['a']),
+                ):
+            config = Config()
+            op_func = OperatorMap[op]
+            r1 = make_repo(None, *r1_args, config=config)
+            r2 = make_repo(None, *r2_args, config=config)
+            assert op_func(r1, r2), f'failed {r1_args} {op} {r2_args}'
+
+    def test_hash_base(self, config, make_repo):
+        r1 = make_repo()
+        r2 = make_repo()
+        assert len({r1, r2}) == 2
+
+    def test_contains_base(self, make_repo):
+        r1 = make_repo()
+        r2 = make_repo()
+        pkg1 = r1.create_pkg('cat/pkg-1')
+        pkg2 = r2.create_pkg('cat/pkg-1')
+
+        # Cpv strings
+        assert 'cat/pkg-1' in r1
+        assert 'cat/pkg-2' not in r1
+        # Cpv objects
+        assert Cpv('cat/pkg-1') in r1
+        assert Cpv('cat/pkg-2') not in r1
+        # Atom strings
+        assert 'cat/pkg' in r1
+        assert 'cat/pkg2' not in r1
+        assert '=cat/pkg-1' in r1
+        assert '=cat/pkg-2' not in r1
+        # Atom objects
+        assert Atom('=cat/pkg-1') in r1
+        assert Atom('=cat/pkg-2') not in r1
+        # Pkg objects
+        assert pkg1 in r1
+        assert pkg2 not in r1
+        assert pkg1 not in r2
+        assert pkg2 in r2
+        # Pkg atoms
+        assert pkg1.atom in r1
+        assert pkg2.atom in r1
+
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                assert obj in r1
+
+    def test_getitem_base(self, repo):
+        pkg = repo.create_pkg('cat/pkg-1')
+        assert pkg == repo['cat/pkg-1']
+        assert pkg == repo[Cpv('cat/pkg-1')]
+
+        for obj in ('cat/pkg-2', Cpv('cat/pkg-3')):
+            with pytest.raises(KeyError):
+                repo[obj]
+
+    def test_bool_and_len_base(self, repo):
+        # empty repo
+        assert not repo
+        assert len(repo) == 0
+
+        # create pkg
+        repo.create_pkg('cat/pkg-1')
+        assert repo
+        assert len(repo) == 1
+
+        # recreate pkg
+        repo.create_pkg('cat/pkg-1')
+        assert repo
+        assert len(repo) == 1
+
+        # create new pkg version
+        repo.create_pkg('cat/pkg-2')
+        assert repo
+        assert len(repo) == 2
