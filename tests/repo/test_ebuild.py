@@ -24,15 +24,15 @@ class TestEbuildRepo:
             next(ebuild_repo)
 
         # empty repo
-        assert not list(iter(ebuild_repo))
+        assert not list(ebuild_repo)
 
         # single pkg
         pkg1 = ebuild_repo.create_pkg('cat/pkg-1')
-        assert list(iter(ebuild_repo)) == [pkg1]
+        assert list(ebuild_repo) == [pkg1]
 
         # multiple pkgs
         pkg2 = ebuild_repo.create_pkg('cat/pkg-2')
-        assert list(iter(ebuild_repo)) == [pkg1, pkg2]
+        assert list(ebuild_repo) == [pkg1, pkg2]
 
     def test_iter_restrict(self, ebuild_repo):
         # non-None argument required

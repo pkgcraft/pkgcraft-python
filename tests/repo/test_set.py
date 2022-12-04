@@ -118,19 +118,19 @@ class TestRepoSet:
             next(s)
 
         # empty set
-        assert not list(iter(s))
+        assert not list(s)
 
         # single pkg
         r1 = make_fake_repo(['cat/pkg-1'], id='r1', priority=1)
         r2 = make_fake_repo(id='r2', priority=2)
         s = RepoSet(r1, r2)
-        assert list(map(str, iter(s))) == ['cat/pkg-1::r1']
+        assert list(map(str, s)) == ['cat/pkg-1::r1']
 
         # multiple pkgs
         r1 = make_fake_repo(['cat/pkg-1'], id='r1', priority=1)
         r2 = make_fake_repo(['cat/pkg-2'], id='r2', priority=2)
         s = RepoSet(r1, r2)
-        assert list(map(str, iter(s))) == ['cat/pkg-2::r2', 'cat/pkg-1::r1']
+        assert list(map(str, s)) == ['cat/pkg-2::r2', 'cat/pkg-1::r1']
 
     def test_iter_restrict(self, make_fake_repo):
         s = RepoSet()
