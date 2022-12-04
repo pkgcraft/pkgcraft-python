@@ -3,8 +3,7 @@ from pathlib import Path
 import pytest
 
 from pkgcraft.atom import Cpv
-from pkgcraft.error import InvalidRestrict, PkgcraftError
-from pkgcraft.repo import EbuildRepo
+from pkgcraft.error import InvalidRestrict
 
 from .base import BaseRepoTests
 

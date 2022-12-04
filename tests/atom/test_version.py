@@ -1,4 +1,3 @@
-import operator
 import pickle
 
 import pytest

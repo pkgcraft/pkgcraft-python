@@ -4,7 +4,7 @@ import re
 
 import pytest
 
-from pkgcraft.atom import Atom, Blocker, SlotOperator, Version, VersionWithOp
+from pkgcraft.atom import Atom, Blocker, SlotOperator, VersionWithOp
 from pkgcraft.eapi import EAPIS, Eapi
 from pkgcraft.error import InvalidAtom
 
