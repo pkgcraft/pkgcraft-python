@@ -1,7 +1,7 @@
 import pytest
 
-from pkgcraft.pkg import Pkg
 from pkgcraft.error import IndirectInit
+from pkgcraft.pkg import Pkg
 
 
 class TestPkg:

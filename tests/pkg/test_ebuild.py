@@ -2,10 +2,10 @@ import textwrap
 
 import pytest
 
+from pkgcraft.atom import Atom, Cpv, Version
 from pkgcraft.eapi import EAPIS
 from pkgcraft.error import IndirectInit
 from pkgcraft.pkg import EbuildPkg
-from pkgcraft.atom import Atom, Cpv, Version
 
 
 class TestEbuildPkg:

@@ -1,6 +1,5 @@
 import operator
 
-
 OperatorMap = {
     '<': operator.lt,
     '>': operator.gt,

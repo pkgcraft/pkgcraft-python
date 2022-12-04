@@ -5,7 +5,7 @@ import re
 import pytest
 
 from pkgcraft.atom import Atom, Blocker, SlotOperator, Version, VersionWithOp
-from pkgcraft.eapi import Eapi, EAPIS
+from pkgcraft.eapi import EAPIS, Eapi
 from pkgcraft.error import InvalidAtom
 
 from ..misc import OperatorIterMap

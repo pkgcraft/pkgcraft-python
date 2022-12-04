@@ -1,6 +1,6 @@
 import pytest
 
-from pkgcraft.eapi import Eapi, EAPI0, EAPI1, EAPIS, EAPI_LATEST, EAPIS_OFFICIAL
+from pkgcraft.eapi import EAPI0, EAPI1, EAPI_LATEST, EAPIS, EAPIS_OFFICIAL, Eapi
 from pkgcraft.error import IndirectInit, PkgcraftError
 
 

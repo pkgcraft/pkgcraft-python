@@ -1,10 +1,10 @@
 import pytest
 
+from pkgcraft.atom import Cpv, Version
 from pkgcraft.eapi import EAPI_LATEST
 from pkgcraft.error import IndirectInit
 from pkgcraft.pkg import FakePkg
 from pkgcraft.repo import FakeRepo
-from pkgcraft.atom import Cpv, Version
 
 
 @pytest.fixture

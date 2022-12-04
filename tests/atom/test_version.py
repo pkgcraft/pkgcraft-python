@@ -3,8 +3,8 @@ import pickle
 
 import pytest
 
-from pkgcraft.error import InvalidVersion
 from pkgcraft.atom import Version, VersionWithOp
+from pkgcraft.error import InvalidVersion
 
 from ..misc import OperatorIterMap
 

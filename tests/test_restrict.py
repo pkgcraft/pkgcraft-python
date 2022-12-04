@@ -1,6 +1,6 @@
 import pytest
 
-from pkgcraft.atom import Cpv, Atom
+from pkgcraft.atom import Atom, Cpv
 from pkgcraft.error import InvalidRestrict
 from pkgcraft.restrict import Restrict
 
