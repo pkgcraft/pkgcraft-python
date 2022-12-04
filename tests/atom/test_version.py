@@ -2,16 +2,10 @@ import operator
 import pickle
 
 import pytest
-# TODO: drop tomli usage when only supporting >=python-3.11
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
 
 from pkgcraft.error import InvalidVersion
 from pkgcraft.atom import Version, VersionWithOp
 
-from .. import TOMLDIR
 from ..misc import OperatorIterMap
 
 
@@ -46,26 +40,20 @@ class TestVersion:
             with pytest.raises(TypeError):
                 Version(obj)
 
-    def test_cmp(self):
-        with open(TOMLDIR / 'versions.toml', 'rb') as f:
-            d = tomllib.load(f)
-        for s in d['compares']:
+    def test_cmp(self, toml_data):
+        for s in toml_data['versions.toml']['compares']:
             a, op, b = s.split()
             v1 = Version(a)
             v2 = Version(b)
             for op_func in OperatorIterMap[op]:
                 assert op_func(v1, v2), f'failed comparison: {s}'
 
-    def test_sort(self):
-        with open(TOMLDIR / 'versions.toml', 'rb') as f:
-            d = tomllib.load(f)
-        for (unsorted, expected) in d['sorting']:
+    def test_sort(self, toml_data):
+        for (unsorted, expected) in toml_data['versions.toml']['sorting']:
             assert sorted(map(Version, unsorted)) == [Version(s) for s in expected]
 
-    def test_hash(self):
-        with open(TOMLDIR / 'versions.toml', 'rb') as f:
-            d = tomllib.load(f)
-        for (versions, size) in d['hashing']:
+    def test_hash(self, toml_data):
+        for (versions, size) in toml_data['versions.toml']['hashing']:
             s = {Version(x) for x in versions}
             assert len(s) == size
 

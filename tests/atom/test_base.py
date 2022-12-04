@@ -3,17 +3,11 @@ import pickle
 import re
 
 import pytest
-# TODO: drop tomli usage when only supporting >=python-3.11
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
 
 from pkgcraft.atom import Atom, Blocker, SlotOperator, Version, VersionWithOp
 from pkgcraft.eapi import Eapi, EAPIS
 from pkgcraft.error import InvalidAtom
 
-from .. import TOMLDIR
 from ..misc import OperatorIterMap
 
 
@@ -55,14 +49,11 @@ class TestAtom:
         assert str(a) == '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo'
         assert repr(a).startswith("<Atom '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
 
-    def test_valid(self):
+    def test_valid(self, toml_data):
         atom_attrs = []
         for (attr, val) in inspect.getmembers(Atom):
             if inspect.isgetsetdescriptor(val):
                 atom_attrs.append(attr)
-
-        with open(TOMLDIR / 'atoms.toml', 'rb') as f:
-            d = tomllib.load(f)
 
         # converters for toml data
         converters = {
@@ -72,7 +63,7 @@ class TestAtom:
             'use': lambda x: tuple(x),
         }
 
-        for entry in d['valid']:
+        for entry in toml_data['atoms.toml']['valid']:
             s = entry['atom']
 
             # convert toml strings into expected types
@@ -99,10 +90,8 @@ class TestAtom:
                     with pytest.raises(InvalidAtom, match=f'invalid atom: {re.escape(s)}'):
                         Atom(s, eapi)
 
-    def test_invalid(self):
-        with open(TOMLDIR / 'atoms.toml', 'rb') as f:
-            d = tomllib.load(f)
-        for (s, eapi_range) in d['invalid']:
+    def test_invalid(self, toml_data):
+        for (s, eapi_range) in toml_data['atoms.toml']['invalid']:
             failing_eapis = Eapi.range(eapi_range).values()
             for eapi in EAPIS.values():
                 if eapi in failing_eapis:
@@ -116,26 +105,20 @@ class TestAtom:
             with pytest.raises(TypeError):
                 Atom(obj)
 
-    def test_cmp(self):
-        with open(TOMLDIR / 'versions.toml', 'rb') as f:
-            d = tomllib.load(f)
-        for s in d['compares']:
+    def test_cmp(self, toml_data):
+        for s in toml_data['versions.toml']['compares']:
             v1, op, v2 = s.split()
             a1 = Atom(f'=cat/pkg-{v1}')
             a2 = Atom(f'=cat/pkg-{v2}')
             for op_func in OperatorIterMap[op]:
                 assert op_func(a1, a2), f'failed comparison: {s}'
 
-    def test_sort(self):
-        with open(TOMLDIR / 'atoms.toml', 'rb') as f:
-            d = tomllib.load(f)
-        for (unsorted, expected) in d['sorting']:
+    def test_sort(self, toml_data):
+        for (unsorted, expected) in toml_data['atoms.toml']['sorting']:
             assert sorted(map(Atom, unsorted)) == [Atom(s) for s in expected]
 
-    def test_hash(self):
-        with open(TOMLDIR / 'versions.toml', 'rb') as f:
-            d = tomllib.load(f)
-        for (versions, size) in d['hashing']:
+    def test_hash(self, toml_data):
+        for (versions, size) in toml_data['versions.toml']['hashing']:
             s = {Atom(f'=cat/pkg-{x}') for x in versions}
             assert len(s) == size
 
