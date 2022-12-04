@@ -130,8 +130,7 @@ class TestAtom:
         with open(TOMLDIR / 'atoms.toml', 'rb') as f:
             d = tomllib.load(f)
         for (unsorted, expected) in d['sorting']:
-            atoms = sorted(Atom(s) for s in unsorted)
-            assert list(map(str, atoms)) == expected
+            assert sorted(map(Atom, unsorted)) == [Atom(s) for s in expected]
 
     def test_hash(self):
         with open(TOMLDIR / 'versions.toml', 'rb') as f:
