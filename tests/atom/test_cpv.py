@@ -14,7 +14,7 @@ class TestCpv:
         assert a.package == 'pkg'
         assert a.version == Version('1-r2')
         assert a.revision == '2'
-        assert a.key == 'cat/pkg'
+        assert a.cpn == 'cat/pkg'
         assert str(a) == 'cat/pkg-1-r2'
         assert repr(a).startswith("<Cpv 'cat/pkg-1-r2' at 0x")
 

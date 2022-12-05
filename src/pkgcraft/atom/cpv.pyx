@@ -105,15 +105,15 @@ cdef class Cpv:
         return None
 
     @property
-    def key(self):
+    def cpn(self):
         """Get the concatenated string of an atom's category and package.
 
         >>> from pkgcraft.atom import Cpv
         >>> a = Cpv('cat/pkg-1-r2')
-        >>> a.key
+        >>> a.cpn
         'cat/pkg'
         """
-        c_str = C.pkgcraft_atom_key(self._atom)
+        c_str = C.pkgcraft_atom_cpn(self._atom)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s

@@ -26,7 +26,7 @@ class TestAtom:
         assert a.repo is None
         assert a.version is None
         assert a.revision is None
-        assert a.key == 'cat/pkg'
+        assert a.cpn == 'cat/pkg'
         assert a.cpv == 'cat/pkg'
         assert str(a) == 'cat/pkg'
         assert repr(a).startswith("<Atom 'cat/pkg' at 0x")
@@ -44,7 +44,7 @@ class TestAtom:
         assert a.repo == 'repo'
         assert a.version == VersionWithOp('=1-r2')
         assert a.revision == '2'
-        assert a.key == 'cat/pkg'
+        assert a.cpn == 'cat/pkg'
         assert a.cpv == 'cat/pkg-1-r2'
         assert str(a) == '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo'
         assert repr(a).startswith("<Atom '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")

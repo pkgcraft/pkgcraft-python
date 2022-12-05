@@ -131,7 +131,13 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null Atom pointers.
     int pkgcraft_atom_cmp(Atom *a1, Atom *a2);
 
-    # Return an atom's cpv, e.g. the atom "=cat/pkg-1-r2" has a cpv of "cat/pkg-1-r2".
+    # Return an atom's CPN, e.g. the atom "=cat/pkg-1-r2" has a CPN of "cat/pkg".
+    #
+    # # Safety
+    # The argument must be a non-null Atom pointer.
+    char *pkgcraft_atom_cpn(Atom *atom);
+
+    # Return an atom's CPV, e.g. the atom "=cat/pkg-1-r2" has a CPV of "cat/pkg-1-r2".
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
@@ -148,12 +154,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Atom pointer.
     uint64_t pkgcraft_atom_hash(Atom *atom);
-
-    # Return an atom's key, e.g. the atom "=cat/pkg-1-r2" has a key of "cat/pkg".
-    #
-    # # Safety
-    # The argument must be a non-null Atom pointer.
-    char *pkgcraft_atom_key(Atom *atom);
 
     # Parse a string into an atom using a specific EAPI. Pass NULL for the eapi argument in
     # order to parse using the latest EAPI with extensions (e.g. support for repo deps).
@@ -1028,7 +1028,7 @@ cdef extern from "pkgcraft.h":
     # length of the array.
     void pkgcraft_repos_free(Repo **repos, uintptr_t len);
 
-    # Combine two restrictions via logical AND.
+    # Create a new restriction combining two restrictions via logical AND.
     #
     # # Safety
     # The arguments must be Restrict pointers.
@@ -1040,13 +1040,13 @@ cdef extern from "pkgcraft.h":
     # The argument must be a Restrict pointer or NULL.
     void pkgcraft_restrict_free(Restrict *r);
 
-    # Invert a restriction via logical NOT.
+    # Create a new restriction inverting a restriction via logical NOT.
     #
     # # Safety
     # The arguments must be a Restrict pointer.
     Restrict *pkgcraft_restrict_not(Restrict *r);
 
-    # Combine two restrictions via logical OR.
+    # Create a new restriction combining two restrictions via logical OR.
     #
     # # Safety
     # The arguments must be Restrict pointers.
@@ -1068,7 +1068,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null string.
     Restrict *pkgcraft_restrict_parse_pkg(const char *s);
 
-    # Combine two restrictions via logical XOR.
+    # Create a new restriction combining two restrictions via logical XOR.
     #
     # # Safety
     # The arguments must be Restrict pointers.
