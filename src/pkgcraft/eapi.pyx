@@ -67,11 +67,15 @@ cdef class Eapi:
 
         >>> Eapi.range('..') == EAPIS
         True
+        >>> Eapi.range('0..') == EAPIS
+        True
+        >>> Eapi.range('..2') == {'0': EAPI0, '1': EAPI1}
+        True
         >>> Eapi.range('3..4') == {'3': EAPI3}
         True
         >>> Eapi.range('3..=4') == {'3': EAPI3, '4': EAPI4}
         True
-        >>> Eapi.range('0..=L') == EAPIS_OFFICIAL
+        >>> Eapi.range('..=L') == EAPIS_OFFICIAL
         True
         >>> Eapi.range('invalid')
         Traceback (most recent call last):
