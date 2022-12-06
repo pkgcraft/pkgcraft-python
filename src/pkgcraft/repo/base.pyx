@@ -18,8 +18,8 @@ cdef class Repo:
 
     cdef inject_ptr(self, const C.Repo *repo, bint ref):
         """Overwrite the repo pointer with a given value."""
-        self._repo = <C.Repo *>repo
-        self._ref = ref
+        self.ptr = <C.Repo *>repo
+        self.ref = ref
 
     @staticmethod
     cdef Repo from_ptr(C.Repo *r, bint ref):
@@ -32,14 +32,14 @@ cdef class Repo:
         else:  # pragma: no cover
             raise PkgcraftError('unsupported repo format')
 
-    cdef Pkg create_pkg(self, C.Pkg *pkg):  # pragma: no cover
+    cdef Pkg create_pkg(self, C.Pkg *ptr):  # pragma: no cover
         raise RuntimeError(f"{self.__class__.__name__} class doesn't support package creation")
 
     @property
     def id(self):
         """Get a repo's id."""
         if self._id is None:
-            c_str = C.pkgcraft_repo_id(self._repo)
+            c_str = C.pkgcraft_repo_id(self.ptr)
             self._id = c_str.decode()
             C.pkgcraft_str_free(c_str)
         return self._id
@@ -48,7 +48,7 @@ cdef class Repo:
     def path(self):
         """Get a repo's path."""
         if self._path is None:
-            c_str = C.pkgcraft_repo_path(self._repo)
+            c_str = C.pkgcraft_repo_path(self.ptr)
             self._path = Path(c_str.decode())
             C.pkgcraft_str_free(c_str)
         return self._path
@@ -57,7 +57,7 @@ cdef class Repo:
     def categories(self):
         """Get a repo's categories."""
         cdef size_t length
-        cats = C.pkgcraft_repo_categories(self._repo, &length)
+        cats = C.pkgcraft_repo_categories(self.ptr, &length)
         categories = tuple(cats[i].decode() for i in range(length))
         C.pkgcraft_str_array_free(cats, length)
         return categories
@@ -66,7 +66,7 @@ cdef class Repo:
         """Get a repo's packages for a category."""
         cdef size_t length
         if parse.category(cat):
-            pkgs = C.pkgcraft_repo_packages(self._repo, cat.encode(), &length)
+            pkgs = C.pkgcraft_repo_packages(self.ptr, cat.encode(), &length)
             packages = tuple(pkgs[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(pkgs, length)
             return packages
@@ -75,20 +75,20 @@ cdef class Repo:
         """Get a repo's versions for a package."""
         cdef size_t length
         if parse.category(cat) and parse.package(pkg):
-            vers = C.pkgcraft_repo_versions(self._repo, cat.encode(), pkg.encode(), &length)
+            vers = C.pkgcraft_repo_versions(self.ptr, cat.encode(), pkg.encode(), &length)
             versions = tuple(vers[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(vers, length)
             return versions
 
     def __len__(self):
-        return C.pkgcraft_repo_len(self._repo)
+        return C.pkgcraft_repo_len(self.ptr)
 
     def __bool__(self):
-        return not C.pkgcraft_repo_is_empty(self._repo)
+        return not C.pkgcraft_repo_is_empty(self.ptr)
 
     def __contains__(self, obj):
         if isinstance(obj, os.PathLike):
-            return C.pkgcraft_repo_contains_path(self._repo, str(obj).encode())
+            return C.pkgcraft_repo_contains_path(self.ptr, str(obj).encode())
         return bool(next(self.iter_restrict(obj), None))
 
     def __getitem__(self, obj):
@@ -99,17 +99,17 @@ cdef class Repo:
             raise KeyError(obj)
 
     def __iter__(self):
-        if self._iter is not NULL:
-            C.pkgcraft_repo_iter_free(self._iter)
-        self._iter = C.pkgcraft_repo_iter(self._repo)
+        if self.iter_ptr is not NULL:
+            C.pkgcraft_repo_iter_free(self.iter_ptr)
+        self.iter_ptr = C.pkgcraft_repo_iter(self.ptr)
         return self
 
     def __next__(self):
         # verify __iter__() was called since cython's generated next() method doesn't check
-        if self._iter is NULL:
+        if self.iter_ptr is NULL:
             raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
 
-        pkg = C.pkgcraft_repo_iter_next(self._iter)
+        pkg = C.pkgcraft_repo_iter_next(self.iter_ptr)
         if pkg is not NULL:
             return self.create_pkg(pkg)
         raise StopIteration
@@ -119,40 +119,40 @@ cdef class Repo:
         yield from _RestrictIter.create(self, restrict)
 
     def __lt__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self._repo, other._repo) == -1
+        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) == -1
 
     def __le__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self._repo, other._repo) <= 0
+        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) <= 0
 
     def __eq__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self._repo, other._repo) == 0
+        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) == 0
 
     def __ne__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self._repo, other._repo) != 0
+        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) != 0
 
     def __gt__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self._repo, other._repo) == 1
+        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) == 1
 
     def __ge__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self._repo, other._repo) >= 0
+        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) >= 0
 
     def __str__(self):
         return self.id
 
     def __repr__(self):
-        addr = <size_t>&self._repo
+        addr = <size_t>&self.ptr
         name = self.__class__.__name__
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
         if not self._hash:
-            self._hash = C.pkgcraft_repo_hash(self._repo)
+            self._hash = C.pkgcraft_repo_hash(self.ptr)
         return self._hash
 
     def __dealloc__(self):
-        if not self._ref:
-            C.pkgcraft_repo_free(self._repo)
-        C.pkgcraft_repo_iter_free(self._iter)
+        if not self.ref:
+            C.pkgcraft_repo_free(self.ptr)
+        C.pkgcraft_repo_iter_free(self.iter_ptr)
 
 
 cdef class _RestrictIter:
@@ -165,8 +165,8 @@ cdef class _RestrictIter:
     cdef _RestrictIter create(Repo repo, object obj):
         cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
         o = <_RestrictIter>_RestrictIter.__new__(_RestrictIter)
-        o._repo = repo
-        o._iter = C.pkgcraft_repo_restrict_iter(repo._repo, r._restrict)
+        o.repo = repo
+        o.ptr = C.pkgcraft_repo_restrict_iter(repo.ptr, r.ptr)
         return o
 
     def __iter__(self):
@@ -174,13 +174,13 @@ cdef class _RestrictIter:
 
     def __next__(self):
         # verify __iter__() was called since cython's generated next() method doesn't check
-        if self._iter is NULL:  # pragma: no cover
+        if self.ptr is NULL:  # pragma: no cover
             raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
 
-        pkg = C.pkgcraft_repo_restrict_iter_next(self._iter)
+        pkg = C.pkgcraft_repo_restrict_iter_next(self.ptr)
         if pkg is not NULL:
-            return self._repo.create_pkg(pkg)
+            return self.repo.create_pkg(pkg)
         raise StopIteration
 
     def __dealloc__(self):
-        C.pkgcraft_repo_restrict_iter_free(self._iter)
+        C.pkgcraft_repo_restrict_iter_free(self.ptr)

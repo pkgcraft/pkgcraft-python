@@ -2,7 +2,7 @@ from . cimport pkgcraft_c as C
 
 
 cdef class Eapi:
-    cdef const C.Eapi *_eapi
+    cdef const C.Eapi *ptr
     # cached fields
     cdef frozenset _dep_keys
     cdef frozenset _metadata_keys

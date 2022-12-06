@@ -23,8 +23,8 @@ cdef class Config:
     """Config for the system."""
 
     def __init__(self, repos_conf=False):
-        self._config = C.pkgcraft_config_new()
-        if self._config is NULL:
+        self.ptr = C.pkgcraft_config_new()
+        if self.ptr is NULL:
             raise PkgcraftError
 
         # load repos.conf file if enabled or manually specifying a path
@@ -36,7 +36,7 @@ cdef class Config:
     def repos(self):
         """Return the config's repo mapping."""
         if self._repos is None:
-            self._repos = Repos.from_config(self._config)
+            self._repos = Repos.from_config(self.ptr)
         return self._repos
 
     cdef C.Repo *_add_repo_path(self, object path, object id, int priority) except NULL:
@@ -45,7 +45,7 @@ cdef class Config:
         id = str(id) if id is not None else path
 
         cdef C.Repo *repo = C.pkgcraft_config_add_repo_path(
-            self._config, id.encode(), int(priority), path.encode())
+            self.ptr, id.encode(), int(priority), path.encode())
         if repo is NULL:
             raise PkgcraftError
 
@@ -67,7 +67,7 @@ cdef class Config:
 
     def add_repo(self, Repo repo not None):
         """Add an external repo."""
-        if C.pkgcraft_config_add_repo(self._config, repo._repo) is NULL:
+        if C.pkgcraft_config_add_repo(self.ptr, repo.ptr) is NULL:
             raise PkgcraftError
 
         # force repos attr refresh
@@ -80,7 +80,7 @@ cdef class Config:
         cdef size_t length
         path = str(path)
 
-        repos = C.pkgcraft_config_load_repos_conf(self._config, path.encode(), &length)
+        repos = C.pkgcraft_config_load_repos_conf(self.ptr, path.encode(), &length)
         if repos is NULL:
             raise PkgcraftError
 
@@ -92,18 +92,18 @@ cdef class Config:
         return d
 
     def __dealloc__(self):
-        C.pkgcraft_config_free(self._config)
+        C.pkgcraft_config_free(self.ptr)
 
 
 @cython.final
 cdef class Repos:
 
     @staticmethod
-    cdef Repos from_config(C.Config *config):
+    cdef Repos from_config(C.Config *ptr):
         cdef size_t length
-        repos = <C.Repo **>C.pkgcraft_config_repos(config, &length)
+        repos = <C.Repo **>C.pkgcraft_config_repos(ptr, &length)
         obj = <Repos>Repos.__new__(Repos)
-        obj._config = config
+        obj.config_ptr = ptr
         obj._repos = repos_to_dict(repos, length, True)
         C.pkgcraft_repos_free(repos, length)
         return obj
@@ -112,7 +112,7 @@ cdef class Repos:
     def all(self):
         """Return the set of all repos."""
         if self._all_repos is None:
-            s = C.pkgcraft_config_repos_set(self._config, C.RepoSetType.AllRepos)
+            s = C.pkgcraft_config_repos_set(self.config_ptr, C.RepoSetType.AllRepos)
             self._all_repos = RepoSet.from_ptr(s)
         return self._all_repos
 
@@ -120,7 +120,7 @@ cdef class Repos:
     def ebuild(self):
         """Return the set of all ebuild repos."""
         if self._ebuild_repos is None:
-            s = C.pkgcraft_config_repos_set(self._config, C.RepoSetType.EbuildRepos)
+            s = C.pkgcraft_config_repos_set(self.config_ptr, C.RepoSetType.EbuildRepos)
             self._ebuild_repos = RepoSet.from_ptr(s)
         return self._ebuild_repos
 

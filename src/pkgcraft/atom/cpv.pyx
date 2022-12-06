@@ -29,16 +29,16 @@ cdef class Cpv:
         self._version = SENTINEL
 
     def __init__(self, str s not None):
-        self._atom = C.pkgcraft_cpv_new(s.encode())
-        if self._atom is NULL:
+        self.ptr = C.pkgcraft_cpv_new(s.encode())
+        if self.ptr is NULL:
             raise InvalidCpv
 
     @staticmethod
-    cdef Cpv from_ptr(const C.Atom *atom):
+    cdef Cpv from_ptr(const C.Atom *ptr):
         """Create instance from a borrowed pointer."""
         obj = <Cpv>Cpv.__new__(Cpv)
-        obj._atom = <C.Atom *>atom
-        obj._ref = True
+        obj.ptr = <C.Atom *>ptr
+        obj.ref = True
         return obj
 
     @property
@@ -51,7 +51,7 @@ cdef class Cpv:
         'cat'
         """
         if self._category is None:
-            c_str = C.pkgcraft_atom_category(self._atom)
+            c_str = C.pkgcraft_atom_category(self.ptr)
             self._category = c_str.decode()
             C.pkgcraft_str_free(c_str)
         return self._category
@@ -66,7 +66,7 @@ cdef class Cpv:
         'pkg'
         """
         if self._package is None:
-            c_str = C.pkgcraft_atom_package(self._atom)
+            c_str = C.pkgcraft_atom_package(self.ptr)
             self._package = c_str.decode()
             C.pkgcraft_str_free(c_str)
         return self._package
@@ -81,7 +81,7 @@ cdef class Cpv:
         '1-r2'
         """
         if self._version is SENTINEL:
-            ver = C.pkgcraft_atom_version(self._atom)
+            ver = C.pkgcraft_atom_version(self.ptr)
             self._version = Version.from_ptr(ver) if ver is not NULL else None
         return self._version
 
@@ -97,7 +97,7 @@ cdef class Cpv:
         >>> a.revision
         '0'
         """
-        c_str = C.pkgcraft_atom_revision(self._atom)
+        c_str = C.pkgcraft_atom_revision(self.ptr)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -113,48 +113,48 @@ cdef class Cpv:
         >>> a.cpn
         'cat/pkg'
         """
-        c_str = C.pkgcraft_atom_cpn(self._atom)
+        c_str = C.pkgcraft_atom_cpn(self.ptr)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
 
     def __lt__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self._atom, other._atom) == -1
+        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) == -1
 
     def __le__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self._atom, other._atom) <= 0
+        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) <= 0
 
     def __eq__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self._atom, other._atom) == 0
+        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) == 0
 
     def __ne__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self._atom, other._atom) != 0
+        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) != 0
 
     def __gt__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self._atom, other._atom) == 1
+        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) == 1
 
     def __ge__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self._atom, other._atom) >= 0
+        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) >= 0
 
     def __str__(self):
-        c_str = C.pkgcraft_atom_str(self._atom)
+        c_str = C.pkgcraft_atom_str(self.ptr)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
 
     def __repr__(self):
-        addr = <size_t>&self._atom
+        addr = <size_t>&self.ptr
         name = self.__class__.__name__
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
         if not self._hash:
-            self._hash = C.pkgcraft_atom_hash(self._atom)
+            self._hash = C.pkgcraft_atom_hash(self.ptr)
         return self._hash
 
     def __reduce__(self):
         """Support pickling Cpv objects."""
-        c_str = C.pkgcraft_atom_str(self._atom)
+        c_str = C.pkgcraft_atom_str(self.ptr)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return (self.__class__, (s,))
@@ -163,5 +163,5 @@ cdef class Cpv:
     # supported in <cython-3 for cdef classes:
     # https://github.com/cython/cython/pull/3804
     def __dealloc__(self):
-        if not self._ref:
-            C.pkgcraft_atom_free(self._atom)
+        if not self.ref:
+            C.pkgcraft_atom_free(self.ptr)

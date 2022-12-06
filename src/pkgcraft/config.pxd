@@ -5,7 +5,7 @@ from .repo cimport RepoSet
 cdef dict repos_to_dict(C.Repo **, size_t, bint)
 
 cdef class Config:
-    cdef C.Config *_config
+    cdef C.Config *ptr
     # cached fields
     cdef Repos _repos
 
@@ -13,7 +13,7 @@ cdef class Config:
 
 
 cdef class Repos:
-    cdef C.Config *_config
+    cdef C.Config *config_ptr
     # cached fields
     cdef dict _repos
     cdef RepoSet _all_repos

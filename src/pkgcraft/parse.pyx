@@ -11,13 +11,13 @@ def atom(str s not None, eapi=None):
     >>> parse.atom('=cat/pkg-1')
     True
     """
-    cdef const C.Eapi *eapi_p = NULL
+    cdef const C.Eapi *eapi_ptr = NULL
     if isinstance(eapi, Eapi):
-        eapi_p = (<Eapi>eapi)._eapi
+        eapi_ptr = (<Eapi>eapi).ptr
     elif eapi is not None:
-        eapi_p = (<Eapi>EAPIS.get(eapi))._eapi
+        eapi_ptr = (<Eapi>EAPIS.get(eapi)).ptr
 
-    if C.pkgcraft_parse_atom(s.encode(), eapi_p) is NULL:
+    if C.pkgcraft_parse_atom(s.encode(), eapi_ptr) is NULL:
         raise PkgcraftError
     return True
 

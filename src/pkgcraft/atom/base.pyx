@@ -86,23 +86,23 @@ cdef class Atom(Cpv):
         self._use = SENTINEL
 
     def __init__(self, str s not None, eapi=None):
-        cdef const C.Eapi *eapi_p = NULL
+        cdef const C.Eapi *eapi_ptr = NULL
         if isinstance(eapi, Eapi):
-            eapi_p = (<Eapi>eapi)._eapi
+            eapi_ptr = (<Eapi>eapi).ptr
         elif eapi is not None:
-            eapi_p = (<Eapi>EAPIS.get(eapi))._eapi
+            eapi_ptr = (<Eapi>EAPIS.get(eapi)).ptr
 
-        self._atom = C.pkgcraft_atom_new(s.encode(), eapi_p)
+        self.ptr = C.pkgcraft_atom_new(s.encode(), eapi_ptr)
 
-        if self._atom is NULL:
+        if self.ptr is NULL:
             raise InvalidAtom
 
     @staticmethod
-    cdef Atom from_ptr(const C.Atom *atom):
+    cdef Atom from_ptr(const C.Atom *ptr):
         """Create instance from a borrowed pointer."""
         obj = <Atom>Atom.__new__(Atom)
-        obj._atom = <C.Atom *>atom
-        obj._ref = True
+        obj.ptr = <C.Atom *>ptr
+        obj.ref = True
         return obj
 
     @classmethod
@@ -125,7 +125,7 @@ cdef class Atom(Cpv):
         >>> a.blocker is Blocker.Strong
         True
         """
-        cdef int blocker = C.pkgcraft_atom_blocker(self._atom)
+        cdef int blocker = C.pkgcraft_atom_blocker(self.ptr)
         if blocker >= 0:
             return Blocker(blocker)
         return None
@@ -142,7 +142,7 @@ cdef class Atom(Cpv):
         >>> a.slot is None
         True
         """
-        c_str = C.pkgcraft_atom_slot(self._atom)
+        c_str = C.pkgcraft_atom_slot(self.ptr)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -164,7 +164,7 @@ cdef class Atom(Cpv):
         >>> a.subslot is None
         True
         """
-        c_str = C.pkgcraft_atom_subslot(self._atom)
+        c_str = C.pkgcraft_atom_subslot(self.ptr)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -189,7 +189,7 @@ cdef class Atom(Cpv):
         >>> a.slot_op is SlotOperator.Star
         True
         """
-        cdef int slot_op = C.pkgcraft_atom_slot_op(self._atom)
+        cdef int slot_op = C.pkgcraft_atom_slot_op(self.ptr)
         if slot_op >= 0:
             return SlotOperator(slot_op)
         return None
@@ -213,7 +213,7 @@ cdef class Atom(Cpv):
         cdef size_t length
 
         if self._use is SENTINEL:
-            use = C.pkgcraft_atom_use_deps(self._atom, &length)
+            use = C.pkgcraft_atom_use_deps(self.ptr, &length)
             if use is not NULL:
                 self._use = tuple(use[i].decode() for i in range(length))
                 C.pkgcraft_str_array_free(use, length)
@@ -233,7 +233,7 @@ cdef class Atom(Cpv):
         >>> a.repo is None
         True
         """
-        c_str = C.pkgcraft_atom_repo(self._atom)
+        c_str = C.pkgcraft_atom_repo(self.ptr)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -249,7 +249,7 @@ cdef class Atom(Cpv):
         >>> a.cpv
         'cat/pkg-1-r2'
         """
-        c_str = C.pkgcraft_atom_cpv(self._atom)
+        c_str = C.pkgcraft_atom_cpv(self.ptr)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s

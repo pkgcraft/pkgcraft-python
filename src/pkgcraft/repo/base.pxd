@@ -3,10 +3,10 @@ from ..pkg cimport Pkg
 
 
 cdef class Repo:
-    cdef C.Repo *_repo
+    cdef C.Repo *ptr
     # flag denoting borrowed reference that must not be deallocated
-    cdef bint _ref
-    cdef C.RepoPkgIter *_iter
+    cdef bint ref
+    cdef C.RepoPkgIter *iter_ptr
 
     # cached fields
     cdef str _id
@@ -20,8 +20,8 @@ cdef class Repo:
 
 
 cdef class _RestrictIter:
-    cdef Repo _repo
-    cdef C.RepoRestrictPkgIter *_iter
+    cdef Repo repo
+    cdef C.RepoRestrictPkgIter *ptr
 
     @staticmethod
     cdef _RestrictIter create(Repo, object)

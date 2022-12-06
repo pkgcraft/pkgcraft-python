@@ -2,9 +2,9 @@ from .. cimport pkgcraft_c as C
 
 
 cdef class Cpv:
-    cdef C.Atom *_atom
+    cdef C.Atom *ptr
     # flag denoting borrowed reference that must not be deallocated
-    cdef bint _ref
+    cdef bint ref
     # cached fields
     cdef str _category
     cdef str _package

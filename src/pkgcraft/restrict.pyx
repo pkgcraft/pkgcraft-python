@@ -12,12 +12,12 @@ cdef C.Restrict *str_to_restrict(str s) except NULL:
     cdef C.Restrict *r
 
     try:
-        return C.pkgcraft_atom_restrict(Cpv(s)._atom)
+        return C.pkgcraft_atom_restrict(Cpv(s).ptr)
     except InvalidCpv:
         pass
 
     try:
-        return C.pkgcraft_atom_restrict(Atom(s)._atom)
+        return C.pkgcraft_atom_restrict(Atom(s).ptr)
     except InvalidAtom:
         pass
 
@@ -34,7 +34,7 @@ cdef C.Restrict *str_to_restrict(str s) except NULL:
 cdef C.Restrict *obj_to_restrict(object obj) except NULL:
     """Try to convert an object to a restriction pointer."""
     if isinstance(obj, Cpv):
-        return C.pkgcraft_atom_restrict((<Cpv>obj)._atom)
+        return C.pkgcraft_atom_restrict((<Cpv>obj).ptr)
     elif isinstance(obj, Pkg):
         return C.pkgcraft_pkg_restrict((<Pkg>obj)._pkg)
     elif isinstance(obj, str):
@@ -48,27 +48,27 @@ cdef class Restrict:
     """Generic restriction."""
 
     def __init__(self, obj):
-        self._restrict = obj_to_restrict(obj)
+        self.ptr = obj_to_restrict(obj)
 
     def __and__(Restrict self, Restrict other):
         obj = <Restrict>Restrict.__new__(Restrict)
-        obj._restrict = C.pkgcraft_restrict_and(self._restrict, other._restrict)
+        obj.ptr = C.pkgcraft_restrict_and(self.ptr, other.ptr)
         return obj
 
     def __or__(Restrict self, Restrict other):
         obj = <Restrict>Restrict.__new__(Restrict)
-        obj._restrict = C.pkgcraft_restrict_or(self._restrict, other._restrict)
+        obj.ptr = C.pkgcraft_restrict_or(self.ptr, other.ptr)
         return obj
 
     def __xor__(Restrict self, Restrict other):
         obj = <Restrict>Restrict.__new__(Restrict)
-        obj._restrict = C.pkgcraft_restrict_xor(self._restrict, other._restrict)
+        obj.ptr = C.pkgcraft_restrict_xor(self.ptr, other.ptr)
         return obj
 
     def __invert__(Restrict self):
         obj = <Restrict>Restrict.__new__(Restrict)
-        obj._restrict = C.pkgcraft_restrict_not(self._restrict)
+        obj.ptr = C.pkgcraft_restrict_not(self.ptr)
         return obj
 
     def __dealloc__(self):
-        C.pkgcraft_restrict_free(self._restrict)
+        C.pkgcraft_restrict_free(self.ptr)

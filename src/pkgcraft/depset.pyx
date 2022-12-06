@@ -13,25 +13,25 @@ cdef class DepRestrict:
         raise IndirectInit(self)
 
     @staticmethod
-    cdef DepRestrict from_ptr(C.DepRestrict *r, DepSetType type):
+    cdef DepRestrict from_ptr(C.DepRestrict *ptr, DepSetType type):
         obj = <DepRestrict>DepRestrict.__new__(DepRestrict)
-        obj._restrict = r
-        obj._type = type
+        obj.ptr = ptr
+        obj.type = type
         return obj
 
     def flatten(self):
         """Iterate over the objects of a flattened DepRestrict."""
-        iter = C.pkgcraft_deprestrict_flatten_iter(self._restrict)
-        yield from _DepSetFlatten.from_ptr(iter, self._type)
+        iter = C.pkgcraft_deprestrict_flatten_iter(self.ptr)
+        yield from _DepSetFlatten.from_ptr(iter, self.type)
 
     def __str__(self):
-        c_str = C.pkgcraft_deprestrict_str(self._restrict)
+        c_str = C.pkgcraft_deprestrict_str(self.ptr)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
 
     def __dealloc__(self):
-        C.pkgcraft_deprestrict_free(self._restrict)
+        C.pkgcraft_deprestrict_free(self.ptr)
 
 
 @cython.final
@@ -42,42 +42,42 @@ cdef class DepSet:
         raise IndirectInit(self)
 
     @staticmethod
-    cdef DepSet from_ptr(C.DepSet *deps, DepSetType type):
+    cdef DepSet from_ptr(C.DepSet *ptr, DepSetType type):
         obj = <DepSet>DepSet.__new__(DepSet)
-        obj._deps = deps
-        obj._type = type
+        obj.ptr = ptr
+        obj.type = type
         return obj
 
     def flatten(self):
         """Iterate over the objects of a flattened DepSet."""
-        iter = C.pkgcraft_depset_flatten_iter(self._deps)
-        yield from _DepSetFlatten.from_ptr(iter, self._type)
+        ptr = C.pkgcraft_depset_flatten_iter(self.ptr)
+        yield from _DepSetFlatten.from_ptr(ptr, self.type)
 
     def __iter__(self):
-        if self._iter is not NULL:
-            C.pkgcraft_depset_iter_free(self._iter)
-        self._iter = C.pkgcraft_depset_iter(self._deps)
+        if self.iter_ptr is not NULL:
+            C.pkgcraft_depset_iter_free(self.iter_ptr)
+        self.iter_ptr = C.pkgcraft_depset_iter(self.ptr)
         return self
 
     def __next__(self):
         # verify __iter__() was called since cython's generated next() method doesn't check
-        if self._iter is NULL:
+        if self.iter_ptr is NULL:
             raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
 
-        d = C.pkgcraft_depset_iter_next(self._iter)
+        d = C.pkgcraft_depset_iter_next(self.iter_ptr)
         if d is not NULL:
-            return DepRestrict.from_ptr(d, self._type)
+            return DepRestrict.from_ptr(d, self.type)
         raise StopIteration
 
     def __str__(self):
-        c_str = C.pkgcraft_depset_str(self._deps)
+        c_str = C.pkgcraft_depset_str(self.ptr)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
 
     def __dealloc__(self):
-        C.pkgcraft_depset_free(self._deps)
-        C.pkgcraft_depset_iter_free(self._iter)
+        C.pkgcraft_depset_free(self.ptr)
+        C.pkgcraft_depset_iter_free(self.iter_ptr)
 
 
 cdef class _DepSetFlatten:
@@ -87,10 +87,10 @@ cdef class _DepSetFlatten:
         raise IndirectInit(self)
 
     @staticmethod
-    cdef _DepSetFlatten from_ptr(C.DepSetFlatten *iter, DepSetType type):
+    cdef _DepSetFlatten from_ptr(C.DepSetFlatten *ptr, DepSetType type):
         o = <_DepSetFlatten>_DepSetFlatten.__new__(_DepSetFlatten)
-        o._iter = iter
-        o._type = type
+        o.ptr = ptr
+        o.type = type
         return o
 
     def __iter__(self):
@@ -98,25 +98,25 @@ cdef class _DepSetFlatten:
 
     def __next__(self):
         # verify __iter__() was called since cython's generated next() method doesn't check
-        if self._iter is NULL:  # pragma: no cover
+        if self.ptr is NULL:  # pragma: no cover
             raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
 
-        obj = C.pkgcraft_depset_flatten_iter_next(self._iter)
+        obj = C.pkgcraft_depset_flatten_iter_next(self.ptr)
         if obj is not NULL:
-            if self._type is DepSetAtom:
+            if self.type is DepSetAtom:
                 return Atom.from_ptr(<const C.Atom *>obj)
-            elif self._type is DepSetString:
+            elif self.type is DepSetString:
                 s = (<char *>obj).decode()
                 C.pkgcraft_str_free(<char *>obj)
                 return s
-            elif self._type is DepSetUri:
+            elif self.type is DepSetUri:
                 return Uri.from_ptr(<const C.Uri *>obj)
             else:  # pragma: no cover
-                raise AttributeError(f'unknown DepSet type: {self._type}')
+                raise AttributeError(f'unknown DepSet type: {self.type}')
         raise StopIteration
 
     def __dealloc__(self):
-        C.pkgcraft_depset_flatten_iter_free(self._iter)
+        C.pkgcraft_depset_flatten_iter_free(self.ptr)
 
 
 @cython.final
@@ -126,22 +126,22 @@ cdef class Uri:
         raise IndirectInit(self)
 
     @staticmethod
-    cdef Uri from_ptr(const C.Uri *uri):
+    cdef Uri from_ptr(const C.Uri *ptr):
         obj = <Uri>Uri.__new__(Uri)
-        obj._uri = uri
+        obj.ptr = ptr
         return obj
 
     @property
     def uri(self):
         if self._uri_str is None:
-            c_str = C.pkgcraft_uri_uri(self._uri)
+            c_str = C.pkgcraft_uri_uri(self.ptr)
             self._uri_str = c_str.decode()
             C.pkgcraft_str_free(c_str)
         return self._uri_str
 
     @property
     def rename(self):
-        c_str = C.pkgcraft_uri_rename(self._uri)
+        c_str = C.pkgcraft_uri_rename(self.ptr)
         if c_str is not NULL:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
@@ -149,7 +149,7 @@ cdef class Uri:
         return None
 
     def __str__(self):
-        c_str = C.pkgcraft_uri_str(self._uri)
+        c_str = C.pkgcraft_uri_str(self.ptr)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s

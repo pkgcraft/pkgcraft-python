@@ -52,10 +52,10 @@ cdef class Eapi:
         raise IndirectInit(self)
 
     @staticmethod
-    cdef Eapi from_ptr(const C.Eapi *eapi, str id):
+    cdef Eapi from_ptr(const C.Eapi *ptr, str id):
         """Create instance from a borrowed pointer."""
         obj = <Eapi>Eapi.__new__(Eapi)
-        obj._eapi = eapi
+        obj.ptr = ptr
         obj._id = id
         return obj
 
@@ -127,14 +127,14 @@ cdef class Eapi:
         >>> EAPI5.has('nonexistent')
         False
         """
-        return C.pkgcraft_eapi_has(self._eapi, s.encode())
+        return C.pkgcraft_eapi_has(self.ptr, s.encode())
 
     @property
     def dep_keys(self):
         """Get an EAPI's dependency keys."""
         cdef size_t length
         if self._dep_keys is None:
-            c_keys = C.pkgcraft_eapi_dep_keys(self._eapi, &length)
+            c_keys = C.pkgcraft_eapi_dep_keys(self.ptr, &length)
             self._dep_keys = frozenset(c_keys[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(c_keys, length)
         return self._dep_keys
@@ -144,38 +144,38 @@ cdef class Eapi:
         """Get an EAPI's metadata keys."""
         cdef size_t length
         if self._metadata_keys is None:
-            c_keys = C.pkgcraft_eapi_metadata_keys(self._eapi, &length)
+            c_keys = C.pkgcraft_eapi_metadata_keys(self.ptr, &length)
             self._metadata_keys = frozenset(c_keys[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(c_keys, length)
         return self._metadata_keys
 
     def __lt__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) == -1
+        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) == -1
 
     def __le__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) <= 0
+        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) <= 0
 
     def __eq__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) == 0
+        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) == 0
 
     def __ne__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) != 0
+        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) != 0
 
     def __gt__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) == 1
+        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) == 1
 
     def __ge__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self._eapi, other._eapi) >= 0
+        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) >= 0
 
     def __str__(self):
         return self._id
 
     def __repr__(self):
-        addr = <size_t>&self._eapi
+        addr = <size_t>&self.ptr
         name = self.__class__.__name__
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
         if not self._hash:
-            self._hash = C.pkgcraft_eapi_hash(self._eapi)
+            self._hash = C.pkgcraft_eapi_hash(self.ptr)
         return self._hash

@@ -17,13 +17,13 @@ cdef class FakeRepo(Repo):
             raise MemoryError
         for i in range(len(cpvs)):
             array[i] = cpvs[i]
-        repo = C.pkgcraft_repo_fake_new(id.encode(), priority, array, len(cpvs))
+        ptr = C.pkgcraft_repo_fake_new(id.encode(), priority, array, len(cpvs))
         PyMem_Free(array)
-        if repo is NULL:
+        if ptr is NULL:
             raise PkgcraftError
 
-        self._repo = repo
-        self._ref = False
+        self.ptr = ptr
+        self.ref = False
 
     @staticmethod
     def from_path(path not None, id=None, int priority=0):
@@ -47,18 +47,18 @@ cdef class FakeRepo(Repo):
             raise MemoryError
         for i in range(len(cpvs)):
             array[i] = cpvs[i]
-        repo = C.pkgcraft_repo_fake_extend(self._repo, array, len(cpvs))
+        repo = C.pkgcraft_repo_fake_extend(self.ptr, array, len(cpvs))
         PyMem_Free(array)
         if repo is NULL:
             raise PkgcraftError
 
     @staticmethod
-    cdef FakeRepo from_ptr(const C.Repo *repo, bint ref):
+    cdef FakeRepo from_ptr(const C.Repo *ptr, bint ref):
         """Create an instance from a repo pointer."""
         obj = <FakeRepo>FakeRepo.__new__(FakeRepo)
-        obj._repo = <C.Repo *>repo
-        obj._ref = ref
+        obj.ptr = <C.Repo *>ptr
+        obj.ref = ref
         return obj
 
-    cdef FakePkg create_pkg(self, C.Pkg *pkg):
-        return FakePkg.from_ptr(pkg)
+    cdef FakePkg create_pkg(self, C.Pkg *ptr):
+        return FakePkg.from_ptr(ptr)

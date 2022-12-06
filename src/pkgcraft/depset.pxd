@@ -7,32 +7,32 @@ ctypedef enum DepSetType:
 
 
 cdef class DepRestrict:
-    cdef C.DepRestrict *_restrict
-    cdef DepSetType _type
+    cdef C.DepRestrict *ptr
+    cdef DepSetType type
 
     @staticmethod
     cdef DepRestrict from_ptr(C.DepRestrict *, DepSetType)
 
 
 cdef class DepSet:
-    cdef C.DepSet *_deps
-    cdef DepSetType _type
-    cdef C.DepSetIter *_iter
+    cdef C.DepSet *ptr
+    cdef DepSetType type
+    cdef C.DepSetIter *iter_ptr
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *, DepSetType)
 
 
 cdef class _DepSetFlatten:
-    cdef C.DepSetFlatten *_iter
-    cdef DepSetType _type
+    cdef C.DepSetFlatten *ptr
+    cdef DepSetType type
 
     @staticmethod
     cdef _DepSetFlatten from_ptr(C.DepSetFlatten *, DepSetType)
 
 
 cdef class Uri:
-    cdef const C.Uri *_uri
+    cdef const C.Uri *ptr
     # cached fields
     cdef str _uri_str
 
