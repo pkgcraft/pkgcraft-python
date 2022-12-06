@@ -63,7 +63,7 @@ class TestAtom:
             'use': lambda x: tuple(x),
         }
 
-        for entry in toml_data['atoms.toml']['valid']:
+        for entry in toml_data['atom.toml']['valid']:
             s = entry['atom']
 
             # convert toml strings into expected types
@@ -91,7 +91,7 @@ class TestAtom:
                         Atom(s, eapi)
 
     def test_invalid(self, toml_data):
-        for (s, eapi_range) in toml_data['atoms.toml']['invalid']:
+        for (s, eapi_range) in toml_data['atom.toml']['invalid']:
             failing_eapis = Eapi.range(eapi_range).values()
             for eapi in EAPIS.values():
                 if eapi in failing_eapis:
@@ -106,7 +106,7 @@ class TestAtom:
                 Atom(obj)
 
     def test_cmp(self, toml_data):
-        for s in toml_data['versions.toml']['compares']:
+        for s in toml_data['version.toml']['compares']:
             v1, op, v2 = s.split()
             a1 = Atom(f'=cat/pkg-{v1}')
             a2 = Atom(f'=cat/pkg-{v2}')
@@ -114,11 +114,11 @@ class TestAtom:
                 assert op_func(a1, a2), f'failed comparison: {s}'
 
     def test_sort(self, toml_data):
-        for (unsorted, expected) in toml_data['atoms.toml']['sorting']:
+        for (unsorted, expected) in toml_data['atom.toml']['sorting']:
             assert sorted(map(Atom, unsorted)) == [Atom(s) for s in expected]
 
     def test_hash(self, toml_data):
-        for (versions, size) in toml_data['versions.toml']['hashing']:
+        for (versions, size) in toml_data['version.toml']['hashing']:
             s = {Atom(f'=cat/pkg-{x}') for x in versions}
             assert len(s) == size
 

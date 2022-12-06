@@ -65,20 +65,18 @@ cdef class Eapi:
 
         >>> from pkgcraft.eapi import Eapi, EAPI3, EAPI4, EAPIS, EAPIS_OFFICIAL
 
-        >>> Eapi.range('0-') == EAPIS
+        >>> Eapi.range('..') == EAPIS
         True
-
-        >>> Eapi.range('0~') == EAPIS_OFFICIAL
+        >>> Eapi.range('3..4') == {'3': EAPI3}
         True
-
-        >>> Eapi.range('3-4') == {'3': EAPI3, '4': EAPI4}
+        >>> Eapi.range('3..=4') == {'3': EAPI3, '4': EAPI4}
         True
-
+        >>> Eapi.range('0..=L') == EAPIS_OFFICIAL
+        True
         >>> Eapi.range('invalid')
         Traceback (most recent call last):
             ...
-        pkgcraft.error.PkgcraftError: parsing failure: invalid range: invalid
-        ...
+        pkgcraft.error.PkgcraftError: invalid EAPI range: invalid
         """
         cdef size_t length
         eapis = C.pkgcraft_eapis_range(s.encode(), &length)

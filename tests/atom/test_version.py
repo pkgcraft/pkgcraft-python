@@ -40,7 +40,7 @@ class TestVersion:
                 Version(obj)
 
     def test_cmp(self, toml_data):
-        for s in toml_data['versions.toml']['compares']:
+        for s in toml_data['version.toml']['compares']:
             a, op, b = s.split()
             v1 = Version(a)
             v2 = Version(b)
@@ -48,11 +48,11 @@ class TestVersion:
                 assert op_func(v1, v2), f'failed comparison: {s}'
 
     def test_sort(self, toml_data):
-        for (unsorted, expected) in toml_data['versions.toml']['sorting']:
+        for (unsorted, expected) in toml_data['version.toml']['sorting']:
             assert sorted(map(Version, unsorted)) == [Version(s) for s in expected]
 
     def test_hash(self, toml_data):
-        for (versions, size) in toml_data['versions.toml']['hashing']:
+        for (versions, size) in toml_data['version.toml']['hashing']:
             s = {Version(x) for x in versions}
             assert len(s) == size
 
