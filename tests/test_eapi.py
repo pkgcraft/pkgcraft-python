@@ -1,7 +1,7 @@
 import pytest
 
 from pkgcraft.eapi import EAPI0, EAPI1, EAPI_LATEST, EAPIS, EAPIS_OFFICIAL, Eapi
-from pkgcraft.error import IndirectInit, PkgcraftError
+from pkgcraft.error import IndirectInit
 
 
 def test_globals():
