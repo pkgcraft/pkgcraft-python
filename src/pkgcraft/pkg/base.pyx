@@ -1,8 +1,8 @@
 from .. cimport pkgcraft_c as C
 from ..atom cimport Cpv, Version
-from ..eapi cimport Eapi
 from ..repo cimport Repo
 from . cimport EbuildPkg, FakePkg
+from ..eapi import EAPIS
 from ..error import IndirectInit, PkgcraftError
 
 
@@ -36,7 +36,7 @@ cdef class Pkg:
         c_str = C.pkgcraft_eapi_as_str(eapi)
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
-        return Eapi.get(id)
+        return EAPIS[id]
 
     @property
     def repo(self):

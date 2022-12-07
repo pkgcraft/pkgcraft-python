@@ -18,18 +18,6 @@ class TestEapi:
         with pytest.raises(IndirectInit):
             Eapi()
 
-    def test_valid(self):
-        assert str(EAPI0) == '0'
-        assert repr(EAPI0).startswith(f"<Eapi '0' at 0x")
-
-    def test_unknown(self):
-        with pytest.raises(PkgcraftError, match='unknown or invalid EAPI: unknown'):
-            Eapi.get('unknown')
-
-    def test_invalid(self):
-        with pytest.raises(PkgcraftError, match='unknown or invalid EAPI: +'):
-            Eapi.get('+')
-
     def test_has(self):
         assert not EAPI1.has('nonexistent_feature')
         assert EAPI1.has('slot_deps')
@@ -48,6 +36,10 @@ class TestEapi:
         assert 'SLOT' in EAPI0.metadata_keys
         assert 'REQUIRED_USE' not in EAPI0.metadata_keys
         assert 'REQUIRED_USE' in EAPI_LATEST.metadata_keys
+
+    def test_methods(self):
+        assert str(EAPI0) == '0'
+        assert repr(EAPI0).startswith(f"<Eapi '0' at 0x")
 
     def test_cmp(self):
         assert EAPI0 < EAPI1

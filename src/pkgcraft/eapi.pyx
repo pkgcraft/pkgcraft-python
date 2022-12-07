@@ -86,28 +86,6 @@ cdef class Eapi:
         C.pkgcraft_eapis_free(eapis, length)
         return MappingProxyType(d)
 
-    @staticmethod
-    def get(str id):
-        """Get an EAPI given its identifier.
-
-        >>> from pkgcraft.eapi import Eapi, EAPI8
-
-        valid identifier
-        >>> eapi = Eapi.get('8')
-        >>> eapi is EAPI8
-        True
-
-        invalid identifier
-        >>> Eapi.get('unknown')
-        Traceback (most recent call last):
-            ...
-        pkgcraft.error.PkgcraftError: unknown or invalid EAPI: unknown
-        """
-        try:
-            return EAPIS[id]
-        except KeyError:
-            raise PkgcraftError(f'unknown or invalid EAPI: {id}')
-
     def has(self, str s not None):
         """Check if an EAPI has a given feature.
 
