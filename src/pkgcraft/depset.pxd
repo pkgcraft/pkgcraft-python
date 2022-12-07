@@ -1,6 +1,6 @@
 from . cimport pkgcraft_c as C
 
-ctypedef enum DepSetType:
+ctypedef enum DepSetKind:
     DepSetAtom,
     DepSetString,
     DepSetUri
@@ -8,27 +8,27 @@ ctypedef enum DepSetType:
 
 cdef class DepRestrict:
     cdef C.DepRestrict *ptr
-    cdef DepSetType type
+    cdef DepSetKind kind
 
     @staticmethod
-    cdef DepRestrict from_ptr(C.DepRestrict *, DepSetType)
+    cdef DepRestrict from_ptr(C.DepRestrict *, DepSetKind)
 
 
 cdef class DepSet:
     cdef C.DepSet *ptr
-    cdef DepSetType type
+    cdef DepSetKind kind
     cdef C.DepSetIter *iter_ptr
 
     @staticmethod
-    cdef DepSet from_ptr(C.DepSet *, DepSetType)
+    cdef DepSet from_ptr(C.DepSet *, DepSetKind)
 
 
 cdef class _DepSetFlatten:
     cdef C.DepSetFlatten *ptr
-    cdef DepSetType type
+    cdef DepSetKind kind
 
     @staticmethod
-    cdef _DepSetFlatten from_ptr(C.DepSetFlatten *, DepSetType)
+    cdef _DepSetFlatten from_ptr(C.DepSetFlatten *, DepSetKind)
 
 
 cdef class Uri:
