@@ -19,10 +19,10 @@ cdef class DepRestrict:
         obj.kind = kind
         return obj
 
-    def flatten(self):
+    def iter_flatten(self):
         """Iterate over the objects of a flattened DepRestrict."""
         ptr = C.pkgcraft_deprestrict_flatten_iter(self.ptr)
-        yield from _DepSetFlatten.from_ptr(ptr, self.kind)
+        yield from _DepSetFlattenIter.from_ptr(ptr, self.kind)
 
     def __str__(self):
         c_str = C.pkgcraft_deprestrict_str(self.ptr)
@@ -48,10 +48,10 @@ cdef class DepSet:
         obj.kind = kind
         return obj
 
-    def flatten(self):
+    def iter_flatten(self):
         """Iterate over the objects of a flattened DepSet."""
         ptr = C.pkgcraft_depset_flatten_iter(self.ptr)
-        yield from _DepSetFlatten.from_ptr(ptr, self.kind)
+        yield from _DepSetFlattenIter.from_ptr(ptr, self.kind)
 
     def __iter__(self):
         if self.iter_ptr is not NULL:
@@ -80,18 +80,18 @@ cdef class DepSet:
         C.pkgcraft_depset_iter_free(self.iter_ptr)
 
 
-cdef class _DepSetFlatten:
+cdef class _DepSetFlattenIter:
     """Iterator over a flattened DepSet."""
 
     def __init__(self):  # pragma: no cover
         raise IndirectInit(self)
 
     @staticmethod
-    cdef _DepSetFlatten from_ptr(C.DepSetFlatten *ptr, DepSetKind kind):
-        o = <_DepSetFlatten>_DepSetFlatten.__new__(_DepSetFlatten)
-        o.ptr = ptr
-        o.kind = kind
-        return o
+    cdef _DepSetFlattenIter from_ptr(C.DepSetFlattenIter *ptr, DepSetKind kind):
+        obj = <_DepSetFlattenIter>_DepSetFlattenIter.__new__(_DepSetFlattenIter)
+        obj.ptr = ptr
+        obj.kind = kind
+        return obj
 
     def __iter__(self):
         return self

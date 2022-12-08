@@ -76,24 +76,24 @@ class TestEbuildPkg:
             pkg = ebuild_repo.create_pkg('cat/pkg-1', **{attr: 'cat/pkg'})
             val = getattr(pkg, attr)
             assert str(val) == 'cat/pkg'
-            assert list(val.flatten()) == [Atom('cat/pkg')]
+            assert list(val.iter_flatten()) == [Atom('cat/pkg')]
             assert list(map(str, val)) == ['cat/pkg']
 
             pkg = ebuild_repo.create_pkg('cat/pkg-1', **{attr: 'u? ( cat/pkg ) || ( a/b c/d )'})
             val = getattr(pkg, attr)
             assert str(val) == 'u? ( cat/pkg ) || ( a/b c/d )'
-            assert list(val.flatten()) == [Atom('cat/pkg'), Atom('a/b'), Atom('c/d')]
+            assert list(val.iter_flatten()) == [Atom('cat/pkg'), Atom('a/b'), Atom('c/d')]
             dep_restricts = list(val)
             assert list(map(str, dep_restricts)) == ['u? ( cat/pkg )', '|| ( a/b c/d )']
-            assert list(dep_restricts[1].flatten()) == [Atom('a/b'), Atom('c/d')]
+            assert list(dep_restricts[1].iter_flatten()) == [Atom('a/b'), Atom('c/d')]
 
             pkg = ebuild_repo.create_pkg('cat/pkg-1', **{attr: 'u? ( a/b ) c/d'})
             val = getattr(pkg, attr)
             assert str(val) == 'u? ( a/b ) c/d'
-            assert list(val.flatten()) == [Atom('a/b'), Atom('c/d')]
+            assert list(val.iter_flatten()) == [Atom('a/b'), Atom('c/d')]
             dep_restricts = list(val)
             assert list(map(str, dep_restricts)) == ['u? ( a/b )', 'c/d']
-            assert list(dep_restricts[1].flatten()) == [Atom('c/d')]
+            assert list(dep_restricts[1].iter_flatten()) == [Atom('c/d')]
 
     def test_license(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg('cat/pkg-1')
@@ -101,11 +101,11 @@ class TestEbuildPkg:
 
         pkg = ebuild_repo.create_pkg('cat/pkg-1', license='BSD')
         assert str(pkg.license) == 'BSD'
-        assert list(pkg.license.flatten()) == ['BSD']
+        assert list(pkg.license.iter_flatten()) == ['BSD']
 
         pkg = ebuild_repo.create_pkg('cat/pkg-1', license='u? ( BSD )')
         assert str(pkg.license) == 'u? ( BSD )'
-        assert list(pkg.license.flatten()) == ['BSD']
+        assert list(pkg.license.iter_flatten()) == ['BSD']
 
     def test_properties(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg('cat/pkg-1')
@@ -113,11 +113,11 @@ class TestEbuildPkg:
 
         pkg = ebuild_repo.create_pkg('cat/pkg-1', properties='live')
         assert str(pkg.properties) == 'live'
-        assert list(pkg.properties.flatten()) == ['live']
+        assert list(pkg.properties.iter_flatten()) == ['live']
 
         pkg = ebuild_repo.create_pkg('cat/pkg-1', properties='u? ( live )')
         assert str(pkg.properties) == 'u? ( live )'
-        assert list(pkg.properties.flatten()) == ['live']
+        assert list(pkg.properties.iter_flatten()) == ['live']
 
     def test_required_use(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg('cat/pkg-1')
@@ -125,11 +125,11 @@ class TestEbuildPkg:
 
         pkg = ebuild_repo.create_pkg('cat/pkg-1', required_use='use')
         assert str(pkg.required_use) == 'use'
-        assert list(pkg.required_use.flatten()) == ['use']
+        assert list(pkg.required_use.iter_flatten()) == ['use']
 
         pkg = ebuild_repo.create_pkg('cat/pkg-1', required_use='u1? ( u2 )')
         assert str(pkg.required_use) == 'u1? ( u2 )'
-        assert list(pkg.required_use.flatten()) == ['u2']
+        assert list(pkg.required_use.iter_flatten()) == ['u2']
 
     def test_restrict(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg('cat/pkg-1')
@@ -137,11 +137,11 @@ class TestEbuildPkg:
 
         pkg = ebuild_repo.create_pkg('cat/pkg-1', restrict='fetch')
         assert str(pkg.restrict) == 'fetch'
-        assert list(pkg.restrict.flatten()) == ['fetch']
+        assert list(pkg.restrict.iter_flatten()) == ['fetch']
 
         pkg = ebuild_repo.create_pkg('cat/pkg-1', restrict='u? ( fetch )')
         assert str(pkg.restrict) == 'u? ( fetch )'
-        assert list(pkg.restrict.flatten()) == ['fetch']
+        assert list(pkg.restrict.iter_flatten()) == ['fetch']
 
     def test_src_uri(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg('cat/pkg-1')
@@ -149,19 +149,19 @@ class TestEbuildPkg:
 
         pkg = ebuild_repo.create_pkg('cat/pkg-1', src_uri='https://a.com/b.tar.gz')
         assert str(pkg.src_uri) == 'https://a.com/b.tar.gz'
-        u = next(pkg.src_uri.flatten())
+        u = next(pkg.src_uri.iter_flatten())
         assert u.uri == 'https://a.com/b.tar.gz'
         assert u.rename is None
 
         pkg = ebuild_repo.create_pkg('cat/pkg-1', src_uri='https://a.com/z -> z.tar.xz')
         assert str(pkg.src_uri) == 'https://a.com/z -> z.tar.xz'
-        u = next(pkg.src_uri.flatten())
+        u = next(pkg.src_uri.iter_flatten())
         assert u.uri == 'https://a.com/z'
         assert u.rename == 'z.tar.xz'
 
         pkg = ebuild_repo.create_pkg('cat/pkg-1', src_uri='u1? ( https://a.com/b.tar.gz ) u2? ( https://a.com/z -> z.tar.xz )')
         assert str(pkg.src_uri) == 'u1? ( https://a.com/b.tar.gz ) u2? ( https://a.com/z -> z.tar.xz )'
-        assert list(map(str, pkg.src_uri.flatten())) == ['https://a.com/b.tar.gz', 'https://a.com/z -> z.tar.xz']
+        assert list(map(str, pkg.src_uri.iter_flatten())) == ['https://a.com/b.tar.gz', 'https://a.com/z -> z.tar.xz']
 
     def test_defined_phases(self, ebuild_repo):
         # none

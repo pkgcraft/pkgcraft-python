@@ -23,12 +23,12 @@ cdef class DepSet:
     cdef DepSet from_ptr(C.DepSet *, DepSetKind)
 
 
-cdef class _DepSetFlatten:
-    cdef C.DepSetFlatten *ptr
+cdef class _DepSetFlattenIter:
+    cdef C.DepSetFlattenIter *ptr
     cdef DepSetKind kind
 
     @staticmethod
-    cdef _DepSetFlatten from_ptr(C.DepSetFlatten *, DepSetKind)
+    cdef _DepSetFlattenIter from_ptr(C.DepSetFlattenIter *, DepSetKind)
 
 
 cdef class Uri:
