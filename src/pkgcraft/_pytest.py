@@ -107,6 +107,7 @@ class TempRawEbuildRepo:
                     f.write(f'{p.eapi}\n')
 
     def create_ebuild(self, cpv='cat/pkg-1', data=None, **kwargs):
+        """Create an ebuild for a given CPV."""
         cpv = Cpv(cpv)
         ebuild_dir = self._path / cpv.category / cpv.package
         os.makedirs(ebuild_dir, exist_ok=True)
@@ -152,6 +153,7 @@ class TempEbuildRepo(TempRawEbuildRepo, EbuildRepo):
         config._inject_repo_path(self, self.path, id, priority)
 
     def create_pkg(self, cpv, *args, **kwargs):
+        """Create an ebuild for a given CPV and return the related package object."""
         self.create_ebuild(cpv, *args, **kwargs)
         return next(iter(self.iter_restrict(cpv)))
 
@@ -187,6 +189,7 @@ class TempFakeRepo(FakeRepo):
     """Class for creating and manipulating fake repos."""
 
     def create_pkg(self, cpv):
+        """Insert a given CPV and return the related package object."""
         self.extend([cpv])
         return next(iter(self.iter_restrict(cpv)))
 
@@ -200,8 +203,8 @@ def fake_repo():
 @pytest.fixture
 def random_str():
     """Factory for random string generation."""
-    def _make_str(len=10):
-        return binascii.b2a_hex(os.urandom(len)).decode()
+    def _make_str(length=10):
+        return binascii.b2a_hex(os.urandom(length)).decode()
     return _make_str
 
 
@@ -231,7 +234,7 @@ def make_ebuild_repo(tmp_path_factory, config, letters):
 
 
 @pytest.fixture
-def make_fake_repo(config, letters):
+def make_fake_repo(letters):
     """Factory for ebuild repo creation."""
     def _make_repo(cpvs=None, id=None, priority=0, config=None):
         cpvs = cpvs if cpvs is not None else ()
