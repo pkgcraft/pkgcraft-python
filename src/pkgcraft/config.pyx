@@ -11,9 +11,9 @@ cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
     d = {}
 
     for i in range(length):
-        r = repos[i]
-        id = C.pkgcraft_repo_id(r)
-        d[id.decode()] = Repo.from_ptr(r, ref)
+        ptr = repos[i]
+        id = C.pkgcraft_repo_id(ptr)
+        d[id.decode()] = Repo.from_ptr(ptr, ref)
         C.pkgcraft_str_free(id)
 
     return d
@@ -56,8 +56,8 @@ cdef class Config:
 
     def add_repo_path(self, path not None, id=None, priority=0):
         """Add an external repo via its file path."""
-        repo = self._add_repo_path(path, id, priority)
-        return Repo.from_ptr(repo, False)
+        ptr = self._add_repo_path(path, id, priority)
+        return Repo.from_ptr(ptr, False)
 
     def _inject_repo_path(self, Repo obj not None, path not None, id=None, priority=0):
         """Add an external repo via its file path and inject it into a given Repo object."""
@@ -112,16 +112,16 @@ cdef class Repos:
     def all(self):
         """Return the set of all repos."""
         if self._all_repos is None:
-            s = C.pkgcraft_config_repos_set(self.config_ptr, C.RepoSetType.AllRepos)
-            self._all_repos = RepoSet.from_ptr(s)
+            ptr = C.pkgcraft_config_repos_set(self.config_ptr, C.RepoSetType.AllRepos)
+            self._all_repos = RepoSet.from_ptr(ptr)
         return self._all_repos
 
     @property
     def ebuild(self):
         """Return the set of all ebuild repos."""
         if self._ebuild_repos is None:
-            s = C.pkgcraft_config_repos_set(self.config_ptr, C.RepoSetType.EbuildRepos)
-            self._ebuild_repos = RepoSet.from_ptr(s)
+            ptr = C.pkgcraft_config_repos_set(self.config_ptr, C.RepoSetType.EbuildRepos)
+            self._ebuild_repos = RepoSet.from_ptr(ptr)
         return self._ebuild_repos
 
     def __eq__(self, other):

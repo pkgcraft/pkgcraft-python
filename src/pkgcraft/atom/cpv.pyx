@@ -81,8 +81,8 @@ cdef class Cpv:
         '1-r2'
         """
         if self._version is SENTINEL:
-            ver = C.pkgcraft_atom_version(self.ptr)
-            self._version = Version.from_ptr(ver) if ver is not NULL else None
+            ptr = C.pkgcraft_atom_version(self.ptr)
+            self._version = Version.from_ptr(ptr) if ptr is not NULL else None
         return self._version
 
     @property

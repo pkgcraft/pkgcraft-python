@@ -29,11 +29,11 @@ cdef class FakeRepo(Repo):
     def from_path(path not None, id=None, int priority=0):
         path = str(path)
         id = str(id) if id is not None else path
-        repo = C.pkgcraft_repo_fake_from_path(id.encode(), priority, path.encode())
-        if repo is NULL:
+        ptr = C.pkgcraft_repo_fake_from_path(id.encode(), priority, path.encode())
+        if ptr is NULL:
             raise PkgcraftError
 
-        return FakeRepo.from_ptr(repo, False)
+        return FakeRepo.from_ptr(ptr, False)
 
     def extend(self, cpvs not None):
         """Add packages to an existing repo.
