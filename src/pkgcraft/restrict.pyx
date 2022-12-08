@@ -50,25 +50,23 @@ cdef class Restrict:
     def __init__(self, obj):
         self.ptr = obj_to_restrict(obj)
 
-    def __and__(Restrict self, Restrict other):
+    @staticmethod
+    cdef Restrict from_ptr(C.Restrict *ptr):
         obj = <Restrict>Restrict.__new__(Restrict)
-        obj.ptr = C.pkgcraft_restrict_and(self.ptr, other.ptr)
+        obj.ptr = ptr
         return obj
+
+    def __and__(Restrict self, Restrict other):
+        return Restrict.from_ptr(C.pkgcraft_restrict_and(self.ptr, other.ptr))
 
     def __or__(Restrict self, Restrict other):
-        obj = <Restrict>Restrict.__new__(Restrict)
-        obj.ptr = C.pkgcraft_restrict_or(self.ptr, other.ptr)
-        return obj
+        return Restrict.from_ptr(C.pkgcraft_restrict_or(self.ptr, other.ptr))
 
     def __xor__(Restrict self, Restrict other):
-        obj = <Restrict>Restrict.__new__(Restrict)
-        obj.ptr = C.pkgcraft_restrict_xor(self.ptr, other.ptr)
-        return obj
+        return Restrict.from_ptr(C.pkgcraft_restrict_xor(self.ptr, other.ptr))
 
     def __invert__(Restrict self):
-        obj = <Restrict>Restrict.__new__(Restrict)
-        obj.ptr = C.pkgcraft_restrict_not(self.ptr)
-        return obj
+        return Restrict.from_ptr(C.pkgcraft_restrict_not(self.ptr))
 
     def __dealloc__(self):
         C.pkgcraft_restrict_free(self.ptr)
