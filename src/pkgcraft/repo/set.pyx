@@ -163,15 +163,12 @@ cdef class RepoSet:
             other = self
 
         op = C.RepoSetOp.RepoSetAnd
-        obj = <RepoSet>RepoSet.__new__(RepoSet)
         if isinstance(other, RepoSet):
-            ptr = C.pkgcraft_repo_set_op_set(op, ptr, (<RepoSet>other).ptr)
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, ptr, (<RepoSet>other).ptr))
         elif isinstance(other, Repo):
-            ptr = C.pkgcraft_repo_set_op_repo(op, ptr, (<Repo>other).ptr)
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, ptr, (<Repo>other).ptr))
         else:
             return NotImplemented
-        obj.ptr = ptr
-        return obj
 
     def __or__(self, other):
         if isinstance(self, RepoSet):
@@ -181,15 +178,12 @@ cdef class RepoSet:
             other = self
 
         op = C.RepoSetOp.RepoSetOr
-        obj = <RepoSet>RepoSet.__new__(RepoSet)
         if isinstance(other, RepoSet):
-            ptr = C.pkgcraft_repo_set_op_set(op, ptr, (<RepoSet>other).ptr)
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, ptr, (<RepoSet>other).ptr))
         elif isinstance(other, Repo):
-            ptr = C.pkgcraft_repo_set_op_repo(op, ptr, (<Repo>other).ptr)
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, ptr, (<Repo>other).ptr))
         else:
             return NotImplemented
-        obj.ptr = ptr
-        return obj
 
     def __xor__(self, other):
         if isinstance(self, RepoSet):
@@ -199,15 +193,12 @@ cdef class RepoSet:
             other = self
 
         op = C.RepoSetOp.RepoSetXor
-        obj = <RepoSet>RepoSet.__new__(RepoSet)
         if isinstance(other, RepoSet):
-            ptr = C.pkgcraft_repo_set_op_set(op, ptr, (<RepoSet>other).ptr)
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, ptr, (<RepoSet>other).ptr))
         elif isinstance(other, Repo):
-            ptr = C.pkgcraft_repo_set_op_repo(op, ptr, (<Repo>other).ptr)
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, ptr, (<Repo>other).ptr))
         else:
             return NotImplemented
-        obj.ptr = ptr
-        return obj
 
     def __sub__(self, other):
         if isinstance(self, RepoSet):
@@ -216,15 +207,12 @@ cdef class RepoSet:
             return NotImplemented
 
         op = C.RepoSetOp.RepoSetSub
-        obj = <RepoSet>RepoSet.__new__(RepoSet)
         if isinstance(other, RepoSet):
-            ptr = C.pkgcraft_repo_set_op_set(op, ptr, (<RepoSet>other).ptr)
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, ptr, (<RepoSet>other).ptr))
         elif isinstance(other, Repo):
-            ptr = C.pkgcraft_repo_set_op_repo(op, ptr, (<Repo>other).ptr)
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, ptr, (<Repo>other).ptr))
         else:
             return NotImplemented
-        obj.ptr = ptr
-        return obj
 
     def __dealloc__(self):
         C.pkgcraft_repo_set_free(self.ptr)
