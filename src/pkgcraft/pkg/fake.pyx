@@ -13,8 +13,8 @@ cdef class FakePkg(Pkg):
         raise IndirectInit(self)
 
     @staticmethod
-    cdef FakePkg from_ptr(C.Pkg *pkg):
+    cdef FakePkg from_ptr(C.Pkg *ptr):
         """Create an instance from a Pkg pointer."""
         obj = <FakePkg>FakePkg.__new__(FakePkg)
-        obj._pkg = <C.Pkg *>pkg
+        obj.ptr = <C.Pkg *>ptr
         return obj

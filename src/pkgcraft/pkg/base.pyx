@@ -13,26 +13,26 @@ cdef class Pkg:
         raise IndirectInit(self)
 
     @staticmethod
-    cdef Pkg from_ptr(C.Pkg *pkg):
+    cdef Pkg from_ptr(C.Pkg *ptr):
         """Convert a pkg pointer to a pkg object."""
-        format = C.pkgcraft_pkg_format(pkg)
+        format = C.pkgcraft_pkg_format(ptr)
         if format is C.PkgFormat.EbuildPkg:
-            return EbuildPkg.from_ptr(pkg)
+            return EbuildPkg.from_ptr(ptr)
         elif format is C.PkgFormat.FakePkg:
-            return FakePkg.from_ptr(pkg)
+            return FakePkg.from_ptr(ptr)
         else:  # pragma: no cover
             raise PkgcraftError('unsupported pkg format')
 
     @property
     def atom(self):
         """Get a package's atom."""
-        cpv = C.pkgcraft_pkg_atom(self._pkg)
+        cpv = C.pkgcraft_pkg_atom(self.ptr)
         return Cpv.from_ptr(cpv)
 
     @property
     def eapi(self):
         """Get a package's EAPI."""
-        eapi = C.pkgcraft_pkg_eapi(self._pkg)
+        eapi = C.pkgcraft_pkg_eapi(self.ptr)
         c_str = C.pkgcraft_eapi_as_str(eapi)
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
@@ -41,48 +41,48 @@ cdef class Pkg:
     @property
     def repo(self):
         """Get a package's repo."""
-        repo = C.pkgcraft_pkg_repo(self._pkg)
+        repo = C.pkgcraft_pkg_repo(self.ptr)
         return Repo.from_ptr(<C.Repo *>repo, True)
 
     @property
     def version(self):
         """Get a package's version."""
-        version = C.pkgcraft_pkg_version(self._pkg)
+        version = C.pkgcraft_pkg_version(self.ptr)
         return Version.from_ptr(version)
 
     def __lt__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) == -1
+        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) == -1
 
     def __le__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) <= 0
+        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) <= 0
 
     def __eq__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) == 0
+        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) == 0
 
     def __ne__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) != 0
+        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) != 0
 
     def __gt__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) == 1
+        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) == 1
 
     def __ge__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self._pkg, other._pkg) >= 0
+        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) >= 0
 
     def __str__(self):
-        c_str = C.pkgcraft_pkg_str(self._pkg)
+        c_str = C.pkgcraft_pkg_str(self.ptr)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
 
     def __repr__(self):
-        addr = <size_t>&self._pkg
+        addr = <size_t>&self.ptr
         name = self.__class__.__name__
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
         if not self._hash:
-            self._hash = C.pkgcraft_pkg_hash(self._pkg)
+            self._hash = C.pkgcraft_pkg_hash(self.ptr)
         return self._hash
 
     def __dealloc__(self):
-        C.pkgcraft_pkg_free(self._pkg)
+        C.pkgcraft_pkg_free(self.ptr)

@@ -25,10 +25,10 @@ cdef class RepoSet:
         PyMem_Free(array)
 
     @staticmethod
-    cdef RepoSet from_ptr(C.RepoSet *s):
+    cdef RepoSet from_ptr(C.RepoSet *ptr):
         """Create an instance from a pointer."""
         obj = <RepoSet>RepoSet.__new__(RepoSet)
-        obj.ptr = s
+        obj.ptr = ptr
         return obj
 
     def __iter__(self):

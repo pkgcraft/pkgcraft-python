@@ -29,16 +29,16 @@ cdef class EbuildPkg(Pkg):
         raise IndirectInit(self)
 
     @staticmethod
-    cdef EbuildPkg from_ptr(C.Pkg *pkg):
+    cdef EbuildPkg from_ptr(C.Pkg *ptr):
         """Create an instance from a Pkg pointer."""
         obj = <EbuildPkg>EbuildPkg.__new__(EbuildPkg)
-        obj._pkg = <C.Pkg *>pkg
+        obj.ptr = <C.Pkg *>ptr
         return obj
 
     @property
     def path(self):
         """Get a package's path."""
-        c_str = C.pkgcraft_pkg_ebuild_path(self._pkg)
+        c_str = C.pkgcraft_pkg_ebuild_path(self.ptr)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return Path(s)
@@ -46,7 +46,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def ebuild(self):
         """Get a package's ebuild file content."""
-        c_str = C.pkgcraft_pkg_ebuild_ebuild(self._pkg)
+        c_str = C.pkgcraft_pkg_ebuild_ebuild(self.ptr)
         if c_str is NULL:
             raise PkgcraftError
         s = c_str.decode()
@@ -57,7 +57,7 @@ cdef class EbuildPkg(Pkg):
     def description(self):
         """Get a package's description."""
         if self._description is None:
-            c_str = C.pkgcraft_pkg_ebuild_description(self._pkg)
+            c_str = C.pkgcraft_pkg_ebuild_description(self.ptr)
             self._description = c_str.decode()
             C.pkgcraft_str_free(c_str)
         return self._description
@@ -66,7 +66,7 @@ cdef class EbuildPkg(Pkg):
     def slot(self):
         """Get a package's slot."""
         if self._slot is None:
-            c_str = C.pkgcraft_pkg_ebuild_slot(self._pkg)
+            c_str = C.pkgcraft_pkg_ebuild_slot(self.ptr)
             self._slot = c_str.decode()
             C.pkgcraft_str_free(c_str)
         return self._slot
@@ -75,7 +75,7 @@ cdef class EbuildPkg(Pkg):
     def subslot(self):
         """Get a package's subslot."""
         if self._subslot is None:
-            c_str = C.pkgcraft_pkg_ebuild_subslot(self._pkg)
+            c_str = C.pkgcraft_pkg_ebuild_subslot(self.ptr)
             self._subslot = c_str.decode()
             C.pkgcraft_str_free(c_str)
         return self._subslot
@@ -84,7 +84,7 @@ cdef class EbuildPkg(Pkg):
     def depend(self):
         """Get a package's DEPEND."""
         if self._depend is SENTINEL:
-            deps = C.pkgcraft_pkg_ebuild_depend(self._pkg)
+            deps = C.pkgcraft_pkg_ebuild_depend(self.ptr)
             self._depend = None if deps is NULL else DepSet.from_ptr(deps, DepSetAtom)
         return self._depend
 
@@ -92,7 +92,7 @@ cdef class EbuildPkg(Pkg):
     def bdepend(self):
         """Get a package's BDEPEND."""
         if self._bdepend is SENTINEL:
-            deps = C.pkgcraft_pkg_ebuild_bdepend(self._pkg)
+            deps = C.pkgcraft_pkg_ebuild_bdepend(self.ptr)
             self._bdepend = None if deps is NULL else DepSet.from_ptr(deps, DepSetAtom)
         return self._bdepend
 
@@ -100,7 +100,7 @@ cdef class EbuildPkg(Pkg):
     def idepend(self):
         """Get a package's IDEPEND."""
         if self._idepend is SENTINEL:
-            deps = C.pkgcraft_pkg_ebuild_idepend(self._pkg)
+            deps = C.pkgcraft_pkg_ebuild_idepend(self.ptr)
             self._idepend = None if deps is NULL else DepSet.from_ptr(deps, DepSetAtom)
         return self._idepend
 
@@ -108,7 +108,7 @@ cdef class EbuildPkg(Pkg):
     def pdepend(self):
         """Get a package's PDEPEND."""
         if self._pdepend is SENTINEL:
-            deps = C.pkgcraft_pkg_ebuild_pdepend(self._pkg)
+            deps = C.pkgcraft_pkg_ebuild_pdepend(self.ptr)
             self._pdepend = None if deps is NULL else DepSet.from_ptr(deps, DepSetAtom)
         return self._pdepend
 
@@ -116,7 +116,7 @@ cdef class EbuildPkg(Pkg):
     def rdepend(self):
         """Get a package's RDEPEND."""
         if self._rdepend is SENTINEL:
-            deps = C.pkgcraft_pkg_ebuild_rdepend(self._pkg)
+            deps = C.pkgcraft_pkg_ebuild_rdepend(self.ptr)
             self._rdepend = None if deps is NULL else DepSet.from_ptr(deps, DepSetAtom)
         return self._rdepend
 
@@ -124,7 +124,7 @@ cdef class EbuildPkg(Pkg):
     def license(self):
         """Get a package's LICENSE."""
         if self._license is SENTINEL:
-            deps = C.pkgcraft_pkg_ebuild_license(self._pkg)
+            deps = C.pkgcraft_pkg_ebuild_license(self.ptr)
             self._license = None if deps is NULL else DepSet.from_ptr(deps, DepSetString)
         return self._license
 
@@ -132,7 +132,7 @@ cdef class EbuildPkg(Pkg):
     def properties(self):
         """Get a package's PROPERTIES."""
         if self._properties is SENTINEL:
-            deps = C.pkgcraft_pkg_ebuild_properties(self._pkg)
+            deps = C.pkgcraft_pkg_ebuild_properties(self.ptr)
             self._properties = None if deps is NULL else DepSet.from_ptr(deps, DepSetString)
         return self._properties
 
@@ -140,7 +140,7 @@ cdef class EbuildPkg(Pkg):
     def required_use(self):
         """Get a package's REQUIRED_USE."""
         if self._required_use is SENTINEL:
-            deps = C.pkgcraft_pkg_ebuild_required_use(self._pkg)
+            deps = C.pkgcraft_pkg_ebuild_required_use(self.ptr)
             self._required_use = None if deps is NULL else DepSet.from_ptr(deps, DepSetString)
         return self._required_use
 
@@ -148,7 +148,7 @@ cdef class EbuildPkg(Pkg):
     def restrict(self):
         """Get a package's RESTRICT."""
         if self._restrict is SENTINEL:
-            deps = C.pkgcraft_pkg_ebuild_restrict(self._pkg)
+            deps = C.pkgcraft_pkg_ebuild_restrict(self.ptr)
             self._restrict = None if deps is NULL else DepSet.from_ptr(deps, DepSetString)
         return self._restrict
 
@@ -156,7 +156,7 @@ cdef class EbuildPkg(Pkg):
     def src_uri(self):
         """Get a package's SRC_URI."""
         if self._src_uri is SENTINEL:
-            deps = C.pkgcraft_pkg_ebuild_src_uri(self._pkg)
+            deps = C.pkgcraft_pkg_ebuild_src_uri(self.ptr)
             self._src_uri = None if deps is NULL else DepSet.from_ptr(deps, DepSetUri)
         return self._src_uri
 
@@ -165,7 +165,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's defined phases."""
         cdef size_t length
         if self._defined_phases is None:
-            phases = C.pkgcraft_pkg_ebuild_defined_phases(self._pkg, &length)
+            phases = C.pkgcraft_pkg_ebuild_defined_phases(self.ptr, &length)
             self._defined_phases = frozenset(phases[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(phases, length)
         return self._defined_phases
@@ -175,7 +175,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's homepage."""
         cdef size_t length
         if self._homepage is None:
-            uris = C.pkgcraft_pkg_ebuild_homepage(self._pkg, &length)
+            uris = C.pkgcraft_pkg_ebuild_homepage(self.ptr, &length)
             self._homepage = tuple(uris[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(uris, length)
         return self._homepage
@@ -185,7 +185,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's keywords."""
         cdef size_t length
         if self._keywords is None:
-            keywords = C.pkgcraft_pkg_ebuild_keywords(self._pkg, &length)
+            keywords = C.pkgcraft_pkg_ebuild_keywords(self.ptr, &length)
             self._keywords = tuple(keywords[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(keywords, length)
         return self._keywords
@@ -195,7 +195,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's USE flags."""
         cdef size_t length
         if self._iuse is None:
-            iuse = C.pkgcraft_pkg_ebuild_iuse(self._pkg, &length)
+            iuse = C.pkgcraft_pkg_ebuild_iuse(self.ptr, &length)
             self._iuse = frozenset(iuse[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(iuse, length)
         return self._iuse
@@ -205,7 +205,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's ordered set of directly inherited eclasses."""
         cdef size_t length
         if self._inherit is None:
-            eclasses = C.pkgcraft_pkg_ebuild_inherit(self._pkg, &length)
+            eclasses = C.pkgcraft_pkg_ebuild_inherit(self.ptr, &length)
             self._inherit = tuple(eclasses[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(eclasses, length)
         return self._inherit
@@ -215,7 +215,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's ordered set of inherited eclasses."""
         cdef size_t length
         if self._inherited is None:
-            eclasses = C.pkgcraft_pkg_ebuild_inherited(self._pkg, &length)
+            eclasses = C.pkgcraft_pkg_ebuild_inherited(self.ptr, &length)
             self._inherited = tuple(eclasses[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(eclasses, length)
         return self._inherited
@@ -223,7 +223,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def long_description(self):
         """Get a package's long description."""
-        c_str = C.pkgcraft_pkg_ebuild_long_description(self._pkg)
+        c_str = C.pkgcraft_pkg_ebuild_long_description(self.ptr)
         if c_str is NULL:
             return None
         else:
@@ -236,7 +236,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's maintainers."""
         cdef size_t length
         if self._maintainers is None:
-            maintainers = C.pkgcraft_pkg_ebuild_maintainers(self._pkg, &length)
+            maintainers = C.pkgcraft_pkg_ebuild_maintainers(self.ptr, &length)
             self._maintainers = tuple(Maintainer.create(maintainers[i][0]) for i in range(length))
             C.pkgcraft_pkg_ebuild_maintainers_free(maintainers, length)
         return self._maintainers
@@ -246,7 +246,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's upstreams."""
         cdef size_t length
         if self._upstreams is None:
-            upstreams = C.pkgcraft_pkg_ebuild_upstreams(self._pkg, &length)
+            upstreams = C.pkgcraft_pkg_ebuild_upstreams(self.ptr, &length)
             self._upstreams = tuple(Upstream.create(upstreams[i][0]) for i in range(length))
             C.pkgcraft_pkg_ebuild_upstreams_free(upstreams, length)
         return self._upstreams

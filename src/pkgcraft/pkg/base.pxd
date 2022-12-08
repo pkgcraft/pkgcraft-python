@@ -2,7 +2,7 @@ from .. cimport pkgcraft_c as C
 
 
 cdef class Pkg:
-    cdef C.Pkg *_pkg
+    cdef C.Pkg *ptr
     # cached fields
     cdef int _hash
 

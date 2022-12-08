@@ -36,7 +36,7 @@ cdef C.Restrict *obj_to_restrict(object obj) except NULL:
     if isinstance(obj, Cpv):
         return C.pkgcraft_atom_restrict((<Cpv>obj).ptr)
     elif isinstance(obj, Pkg):
-        return C.pkgcraft_pkg_restrict((<Pkg>obj)._pkg)
+        return C.pkgcraft_pkg_restrict((<Pkg>obj).ptr)
     elif isinstance(obj, str):
         return str_to_restrict(obj)
     else:
