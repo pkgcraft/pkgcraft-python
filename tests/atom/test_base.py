@@ -91,14 +91,10 @@ class TestAtom:
                         Atom(s, eapi)
 
     def test_invalid(self, toml_data):
-        for (s, eapi_range) in toml_data['atom.toml']['invalid']:
-            failing_eapis = Eapi.range(eapi_range).values()
+        for s in toml_data['atom.toml']['invalid']:
             for eapi in EAPIS.values():
-                if eapi in failing_eapis:
-                    with pytest.raises(InvalidAtom, match=f'invalid atom: {re.escape(s)}'):
-                        Atom(s, eapi)
-                else:
-                    assert Atom(s, eapi)
+                with pytest.raises(InvalidAtom, match=f'invalid atom: {re.escape(s)}'):
+                    Atom(s, eapi)
 
     def test_invalid_arg_type(self):
         for obj in (object(), None):
