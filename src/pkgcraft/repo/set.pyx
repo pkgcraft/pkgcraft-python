@@ -94,6 +94,9 @@ cdef class RepoSet:
     def __bool__(self):
         return not C.pkgcraft_repo_set_is_empty(self.ptr)
 
+    def __contains__(self, obj):
+        return bool(next(self.iter_restrict(obj), None))
+
     def __lt__(self, RepoSet other):
         return C.pkgcraft_repo_set_cmp(self.ptr, other.ptr) == -1
 

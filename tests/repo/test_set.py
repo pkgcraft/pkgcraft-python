@@ -1,6 +1,6 @@
 import pytest
 
-from pkgcraft.atom import Cpv
+from pkgcraft.atom import Atom, Cpv
 from pkgcraft.config import Config
 from pkgcraft.error import InvalidRestrict
 from pkgcraft.repo import RepoSet
@@ -95,6 +95,38 @@ class TestRepoSet:
         # unequal sets
         s3 = RepoSet(r1, r3)
         assert s1 not in {s3}
+
+    def test_contains(self, make_fake_repo):
+        r1 = make_fake_repo()
+        r2 = make_fake_repo()
+        pkg1 = r1.create_pkg('cat/pkg-1')
+        pkg2 = r2.create_pkg('cat/pkg-1')
+        s = RepoSet(r1, r2)
+
+        # Cpv strings
+        assert 'cat/pkg-1' in s
+        assert 'cat/pkg-2' not in s
+        # Cpv objects
+        assert Cpv('cat/pkg-1') in s
+        assert Cpv('cat/pkg-2') not in s
+        # Atom strings
+        assert 'cat/pkg' in s
+        assert 'cat/pkg2' not in s
+        assert '=cat/pkg-1' in s
+        assert '=cat/pkg-2' not in s
+        # Atom objects
+        assert Atom('=cat/pkg-1') in s
+        assert Atom('=cat/pkg-2') not in s
+        # Pkg objects
+        assert pkg1 in s
+        assert pkg2 in s
+        # Pkg atoms
+        assert pkg1.atom in s
+        assert pkg2.atom in s
+
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                assert obj in s
 
     def test_bool_and_len(self, make_fake_repo):
         s = RepoSet()
