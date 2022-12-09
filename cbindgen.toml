@@ -3,6 +3,9 @@ language = "cython"
 tab_width = 4
 line_length = 110
 
+[enum]
+rename_variants = "QualifiedScreamingSnakeCase"
+
 [fn]
 sort_by = "Name"
 

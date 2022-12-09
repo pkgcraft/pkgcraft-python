@@ -25,9 +25,9 @@ cdef class Repo:
     cdef Repo from_ptr(C.Repo *ptr, bint ref):
         """Convert a repo pointer to a repo object."""
         format = C.pkgcraft_repo_format(ptr)
-        if format is C.RepoFormat.EbuildRepo:
+        if format is C.RepoFormat.REPO_FORMAT_EBUILD:
             return EbuildRepo.from_ptr(ptr, ref)
-        elif format is C.RepoFormat.FakeRepo:
+        elif format is C.RepoFormat.REPO_FORMAT_FAKE:
             return FakeRepo.from_ptr(ptr, ref)
         else:  # pragma: no cover
             raise PkgcraftError('unsupported repo format')

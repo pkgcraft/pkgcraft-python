@@ -9,24 +9,25 @@ cdef extern from *:
 cdef extern from "pkgcraft.h":
 
     cdef enum PkgFormat:
-        EbuildPkg,
-        FakePkg,
+        PKG_FORMAT_EBUILD,
+        PKG_FORMAT_FAKE,
 
+    # Supported repo formats
     cdef enum RepoFormat:
-        EbuildRepo,
-        FakeRepo,
-        EmptyRepo,
+        REPO_FORMAT_EBUILD,
+        REPO_FORMAT_FAKE,
+        REPO_FORMAT_EMPTY,
 
     cdef enum RepoSetOp:
-        RepoSetAnd,
-        RepoSetOr,
-        RepoSetXor,
-        RepoSetSub,
+        REPO_SET_OP_AND,
+        REPO_SET_OP_OR,
+        REPO_SET_OP_XOR,
+        REPO_SET_OP_SUB,
 
     # Set types of configured repos
     cdef enum RepoSetType:
-        AllRepos,
-        EbuildRepos,
+        REPO_SET_TYPE_ALL,
+        REPO_SET_TYPE_EBUILD,
 
     # Package atom
     cdef struct Atom:

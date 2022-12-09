@@ -16,9 +16,9 @@ cdef class Pkg:
     cdef Pkg from_ptr(C.Pkg *ptr):
         """Convert a pkg pointer to a pkg object."""
         format = C.pkgcraft_pkg_format(ptr)
-        if format is C.PkgFormat.EbuildPkg:
+        if format is C.PkgFormat.PKG_FORMAT_EBUILD:
             return EbuildPkg.from_ptr(ptr)
-        elif format is C.PkgFormat.FakePkg:
+        elif format is C.PkgFormat.PKG_FORMAT_FAKE:
             return FakePkg.from_ptr(ptr)
         else:  # pragma: no cover
             raise PkgcraftError('unsupported pkg format')
