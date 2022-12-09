@@ -944,8 +944,9 @@ cdef extern from "pkgcraft.h":
     # Return a package iterator for a repo set.
     #
     # # Safety
-    # The argument must be a non-null RepoSet pointer.
-    RepoSetPkgIter *pkgcraft_repo_set_iter(RepoSet *r);
+    # The repo argument must be a non-null Repo pointer and the restrict argument can be a
+    # Restrict pointer or NULL to iterate over all packages.
+    RepoSetPkgIter *pkgcraft_repo_set_iter(RepoSet *repo, Restrict *restrict);
 
     # Free a repo set iterator.
     #
@@ -998,13 +999,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null RepoSet pointer.
     const Repo **pkgcraft_repo_set_repos(RepoSet *s, uintptr_t *len);
-
-    # Return a restriction package iterator for a repo set.
-    #
-    # # Safety
-    # The repo argument must be a non-null Repo pointer and the restrict argument must be a non-null
-    # Restrict pointer.
-    RepoSetPkgIter *pkgcraft_repo_set_restrict_iter(RepoSet *repo, Restrict *restrict);
 
     # Return a repo set's versions for a package.
     #

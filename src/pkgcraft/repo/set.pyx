@@ -34,7 +34,7 @@ cdef class RepoSet:
     def __iter__(self):
         if self.iter_ptr is not NULL:
             C.pkgcraft_repo_set_iter_free(self.iter_ptr)
-        self.iter_ptr = C.pkgcraft_repo_set_iter(self.ptr)
+        self.iter_ptr = C.pkgcraft_repo_set_iter(self.ptr, NULL)
         return self
 
     def __next__(self):
@@ -229,7 +229,7 @@ cdef class _RestrictIter:
     cdef _RestrictIter create(RepoSet s, object obj):
         cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
         o = <_RestrictIter>_RestrictIter.__new__(_RestrictIter)
-        o.ptr = C.pkgcraft_repo_set_restrict_iter(s.ptr, r.ptr)
+        o.ptr = C.pkgcraft_repo_set_iter(s.ptr, r.ptr)
         return o
 
     def __iter__(self):
