@@ -64,6 +64,8 @@ cdef class Restrict:
         """
         if isinstance(obj, Cpv):
             return C.pkgcraft_restrict_matches_atom(self.ptr, (<Cpv>obj).ptr)
+        elif isinstance(obj, Pkg):
+            return C.pkgcraft_restrict_matches_pkg(self.ptr, (<Pkg>obj).ptr)
         return False
 
     def __and__(Restrict self, Restrict other):

@@ -33,12 +33,20 @@ class TestRestrict:
         r = Restrict(Atom('=cat/pkg-1'))
         assert list(fake_repo.iter_restrict(r)) == [pkg1]
 
-    def test_matches(self):
+    def test_matches(self, fake_repo):
         r = Restrict('cat/pkg')
+        pkg1 = fake_repo.create_pkg('cat/pkg-1')
+        pkg2 = fake_repo.create_pkg('a/b-1')
+
         # Cpv objects
         assert r.matches(Cpv('cat/pkg-1'))
+        assert not r.matches(Cpv('a/b-1'))
         # Atom objects
         assert r.matches(Atom('>=cat/pkg-1'))
+        assert not r.matches(Atom('<a/b-1'))
+        # Pkg objects
+        assert r.matches(pkg1)
+        assert not r.matches(pkg2)
 
         # unsupported types
         for obj in (object(), None):
