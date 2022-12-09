@@ -1035,6 +1035,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a Restrict pointer or NULL.
     void pkgcraft_restrict_free(Restrict *r);
 
+    # Determine if a restriction matches an Atom.
+    #
+    # # Safety
+    # The arguments must be valid Restrict and Atom pointers.
+    bool pkgcraft_restrict_matches_atom(Restrict *r, Atom *atom);
+
     # Create a new restriction inverting a restriction via logical NOT.
     #
     # # Safety

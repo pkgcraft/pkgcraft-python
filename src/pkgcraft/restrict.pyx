@@ -56,6 +56,16 @@ cdef class Restrict:
         obj.ptr = ptr
         return obj
 
+    def matches(self, obj):
+        """Determine if a restriction matches a given object.
+
+        Returns True if the restriction matches a given object, otherwise False.
+        Returns False for unsupported object types.
+        """
+        if isinstance(obj, Cpv):
+            return C.pkgcraft_restrict_matches_atom(self.ptr, (<Cpv>obj).ptr)
+        return False
+
     def __and__(Restrict self, Restrict other):
         return Restrict.from_ptr(C.pkgcraft_restrict_and(self.ptr, other.ptr))
 
