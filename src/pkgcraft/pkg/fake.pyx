@@ -11,10 +11,3 @@ cdef class FakePkg(Pkg):
 
     def __init__(self):  # pragma: no cover
         raise IndirectInit(self)
-
-    @staticmethod
-    cdef FakePkg from_ptr(C.Pkg *ptr):
-        """Create an instance from a Pkg pointer."""
-        obj = <FakePkg>FakePkg.__new__(FakePkg)
-        obj.ptr = <C.Pkg *>ptr
-        return obj

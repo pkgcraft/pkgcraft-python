@@ -3,5 +3,4 @@ from . cimport Pkg
 
 
 cdef class FakePkg(Pkg):
-    @staticmethod
-    cdef FakePkg from_ptr(C.Pkg *)
+    pass

@@ -15,13 +15,18 @@ cdef class Pkg:
     @staticmethod
     cdef Pkg from_ptr(C.Pkg *ptr):
         """Convert a pkg pointer to a pkg object."""
+        cdef Pkg obj
+
         format = C.pkgcraft_pkg_format(ptr)
         if format is C.PkgFormat.PKG_FORMAT_EBUILD:
-            return EbuildPkg.from_ptr(ptr)
+            obj = <EbuildPkg>EbuildPkg.__new__(EbuildPkg)
         elif format is C.PkgFormat.PKG_FORMAT_FAKE:
-            return FakePkg.from_ptr(ptr)
+            obj = <FakePkg>FakePkg.__new__(FakePkg)
         else:  # pragma: no cover
             raise PkgcraftError('unsupported pkg format')
+
+        obj.ptr = ptr
+        return obj
 
     @property
     def atom(self):

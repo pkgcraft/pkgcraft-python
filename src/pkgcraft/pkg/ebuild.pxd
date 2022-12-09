@@ -26,9 +26,6 @@ cdef class EbuildPkg(Pkg):
     cdef tuple _upstreams
     cdef frozenset _iuse
 
-    @staticmethod
-    cdef EbuildPkg from_ptr(C.Pkg *)
-
 
 cdef class Maintainer:
     cdef readonly str email

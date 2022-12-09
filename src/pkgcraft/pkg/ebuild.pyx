@@ -28,13 +28,6 @@ cdef class EbuildPkg(Pkg):
     def __init__(self):
         raise IndirectInit(self)
 
-    @staticmethod
-    cdef EbuildPkg from_ptr(C.Pkg *ptr):
-        """Create an instance from a Pkg pointer."""
-        obj = <EbuildPkg>EbuildPkg.__new__(EbuildPkg)
-        obj.ptr = <C.Pkg *>ptr
-        return obj
-
     @property
     def path(self):
         """Get a package's path."""
