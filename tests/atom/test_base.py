@@ -11,6 +11,22 @@ from pkgcraft.error import InvalidAtom
 from ..misc import OperatorIterMap
 
 
+class TestBlocker:
+
+    def test_from_str(self):
+        for s in ('', '!!!', 'a'):
+            with pytest.raises(ValueError):
+                Blocker.from_str(s)
+
+
+class TestSlotOperator:
+
+    def test_from_str(self):
+        for s in ('', '=*', '*=', '~'):
+            with pytest.raises(ValueError):
+                SlotOperator.from_str(s)
+
+
 class TestAtom:
 
     def test_new(self):
