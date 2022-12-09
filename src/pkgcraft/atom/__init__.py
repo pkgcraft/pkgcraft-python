@@ -1,3 +1,2 @@
-from .base import Atom, Blocker, SlotOperator
-from .cpv import Cpv
+from .base import Atom, Blocker, Cpv, SlotOperator
 from .version import Version, VersionWithOp
