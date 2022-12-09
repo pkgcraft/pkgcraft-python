@@ -1,5 +1,4 @@
 from .. cimport pkgcraft_c as C
-from ..pkg cimport EbuildPkg
 from . cimport Repo
 
 
@@ -13,9 +12,6 @@ cdef class EbuildRepo(Repo):
         obj.ptr = <C.Repo *>ptr
         obj.ref = ref
         return obj
-
-    cdef EbuildPkg create_pkg(self, C.Pkg *ptr):
-        return EbuildPkg.from_ptr(ptr)
 
     @property
     def masters(self):

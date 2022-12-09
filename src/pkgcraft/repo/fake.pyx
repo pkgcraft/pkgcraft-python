@@ -1,7 +1,6 @@
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport pkgcraft_c as C
-from ..pkg cimport FakePkg
 from . cimport Repo
 
 from ..error import PkgcraftError
@@ -59,6 +58,3 @@ cdef class FakeRepo(Repo):
         obj.ptr = <C.Repo *>ptr
         obj.ref = ref
         return obj
-
-    cdef FakePkg create_pkg(self, C.Pkg *ptr):
-        return FakePkg.from_ptr(ptr)

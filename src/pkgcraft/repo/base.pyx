@@ -32,9 +32,6 @@ cdef class Repo:
         else:  # pragma: no cover
             raise PkgcraftError('unsupported repo format')
 
-    cdef Pkg create_pkg(self, C.Pkg *ptr):  # pragma: no cover
-        raise RuntimeError(f"{self.__class__.__name__} class doesn't support package creation")
-
     @property
     def id(self):
         """Get a repo's id."""
@@ -111,7 +108,7 @@ cdef class Repo:
 
         pkg = C.pkgcraft_repo_iter_next(self.iter_ptr)
         if pkg is not NULL:
-            return self.create_pkg(pkg)
+            return Pkg.from_ptr(pkg)
         raise StopIteration
 
     def iter_restrict(self, restrict not None):
@@ -179,7 +176,7 @@ cdef class _RestrictIter:
 
         pkg = C.pkgcraft_repo_restrict_iter_next(self.ptr)
         if pkg is not NULL:
-            return self.repo.create_pkg(pkg)
+            return Pkg.from_ptr(pkg)
         raise StopIteration
 
     def __dealloc__(self):

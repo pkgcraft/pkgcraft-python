@@ -14,7 +14,6 @@ cdef class Repo:
     cdef int _hash
 
     cdef inject_ptr(self, const C.Repo *, bint)
-    cdef Pkg create_pkg(self, C.Pkg *)
     @staticmethod
     cdef Repo from_ptr(C.Repo *, bint)
 
