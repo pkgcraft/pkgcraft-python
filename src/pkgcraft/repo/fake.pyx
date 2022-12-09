@@ -50,11 +50,3 @@ cdef class FakeRepo(Repo):
         PyMem_Free(array)
         if repo is NULL:
             raise PkgcraftError
-
-    @staticmethod
-    cdef FakeRepo from_ptr(const C.Repo *ptr, bint ref):
-        """Create an instance from a repo pointer."""
-        obj = <FakeRepo>FakeRepo.__new__(FakeRepo)
-        obj.ptr = <C.Repo *>ptr
-        obj.ref = ref
-        return obj
