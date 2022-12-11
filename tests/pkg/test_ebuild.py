@@ -18,6 +18,11 @@ def repo(ebuild_repo):
     return ebuild_repo
 
 
+@pytest.fixture
+def pkg(repo):
+    return repo.create_pkg('cat/pkg-1')
+
+
 class TestEbuildPkg(BasePkgTests):
 
     def test_eapi(self, ebuild_repo):
