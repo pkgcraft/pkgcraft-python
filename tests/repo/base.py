@@ -123,3 +123,23 @@ class BaseRepoTests:
         repo.create_pkg('cat/pkg-2')
         assert repo
         assert len(repo) == 2
+
+    def test_iter(self, repo):
+        # calling next() directly on a repo object fails
+        with pytest.raises(TypeError):
+            next(repo)
+
+        # multiple iter() calls free underlying pointer
+        iter(repo)
+        iter(repo)
+
+        # empty repo
+        assert not list(repo)
+
+        # single pkg
+        repo.create_pkg('cat/pkg-1')
+        assert list(map(str, repo)) == ['cat/pkg-1::fake']
+
+        # multiple pkgs
+        repo.create_pkg('cat/pkg-2')
+        assert list(map(str, repo)) == ['cat/pkg-1::fake', 'cat/pkg-2::fake']
