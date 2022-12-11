@@ -26,7 +26,7 @@ cdef C.Restrict *str_to_restrict(str s) except NULL:
     if r is NULL:
         r = C.pkgcraft_restrict_parse_pkg(restrict_bytes)
     if r is NULL:
-        raise InvalidRestrict(f'invalid restriction string: {s!r}')
+        raise InvalidRestrict(f'invalid restriction string: {s}')
 
     return r
 
