@@ -50,7 +50,8 @@ class TestRestrict:
 
         # unsupported types
         for obj in (object(), None):
-            assert not r.matches(obj)
+            with pytest.raises(TypeError):
+                assert r.matches(obj)
 
     def test_logic_ops(self, fake_repo):
         pkg1 = fake_repo.create_pkg('cat/pkg-1')
