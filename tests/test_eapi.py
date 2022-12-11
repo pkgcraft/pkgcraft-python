@@ -1,6 +1,6 @@
 import pytest
 
-from pkgcraft.eapi import EAPI0, EAPI1, EAPI_LATEST, EAPIS, EAPIS_OFFICIAL, Eapi
+from pkgcraft.eapi import EAPI0, EAPI1, EAPI_LATEST, EAPIS, EAPIS_OFFICIAL
 
 
 def test_globals():
