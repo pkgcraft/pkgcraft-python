@@ -2,7 +2,7 @@ import textwrap
 
 import pytest
 
-from pkgcraft.atom import Atom, Cpv, Version
+from pkgcraft.atom import Atom
 from pkgcraft.eapi import EAPIS
 
 from .base import BasePkgTests

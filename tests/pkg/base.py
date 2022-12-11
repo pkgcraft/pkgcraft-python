@@ -1,5 +1,3 @@
-import pytest
-
 from pkgcraft.atom import Cpv, Version
 from pkgcraft.eapi import EAPI_LATEST
 from pkgcraft.restrict import Restrict
