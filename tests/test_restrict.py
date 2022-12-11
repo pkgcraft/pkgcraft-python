@@ -53,6 +53,23 @@ class TestRestrict:
             with pytest.raises(TypeError):
                 assert r.matches(obj)
 
+    def test_eq_and_hash(self, fake_repo):
+        r1 = Restrict('cat/pkg-1')
+        assert r1 == r1
+        r2 = Restrict(Cpv('cat/pkg-1'))
+        assert r1 == r2
+        assert r2 == r1
+        assert len({r1, r2}) == 1
+
+        pkg1 = fake_repo.create_pkg('cat/pkg-1')
+        r3 = Restrict(pkg1)
+        pkg2 = fake_repo.create_pkg('cat/pkg-2')
+        r4 = Restrict(pkg2)
+        assert r3 != r4
+        assert len({r3, r4}) == 2
+        assert r2 != r3
+        assert len({r2, r3}) == 2
+
     def test_logic_ops(self, fake_repo):
         pkg1 = fake_repo.create_pkg('cat/pkg-1')
         pkg2 = fake_repo.create_pkg('cat/pkg-2')

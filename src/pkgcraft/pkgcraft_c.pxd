@@ -1040,11 +1040,23 @@ cdef extern from "pkgcraft.h":
     # The arguments must be Restrict pointers.
     Restrict *pkgcraft_restrict_and(Restrict *r1, Restrict *r2);
 
+    # Determine if two restrictions are equal.
+    #
+    # # Safety
+    # The arguments must be non-null Restrict pointers.
+    bool pkgcraft_restrict_eq(Restrict *r1, Restrict *r2);
+
     # Free a restriction.
     #
     # # Safety
     # The argument must be a Restrict pointer or NULL.
     void pkgcraft_restrict_free(Restrict *r);
+
+    # Return the hash value for a restriction.
+    #
+    # # Safety
+    # The argument must be a non-null Restrict pointer.
+    uint64_t pkgcraft_restrict_hash(Restrict *r);
 
     # Create a new restriction inverting a restriction via logical NOT.
     #
