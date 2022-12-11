@@ -2,15 +2,15 @@
 # pkgcore, and portage.
 
 import os
-import sys
 import time
 from random import randrange
 
 import humanize
-from pkgcraft.atom import Atom as pkgcraft_atom
+import psutil
 from pkgcore.ebuild.atom import atom as pkgcore_atom
 from portage.dep import Atom as portage_atom
-import psutil
+
+from pkgcraft.atom import Atom as pkgcraft_atom
 
 atom_funcs = [
     ('pkgcraft', pkgcraft_atom),

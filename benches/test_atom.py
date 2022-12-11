@@ -1,11 +1,12 @@
-import os
-
 import pytest
+
 pytest_plugins = ('benchmark', 'pkgcraft')
 
-from pkgcraft.atom import Atom as pkgcraft_atom
 from pkgcore.ebuild.atom import atom as pkgcore_atom
 from portage.dep import Atom as portage_atom
+
+from pkgcraft.atom import Atom as pkgcraft_atom
+
 
 def random_atom(func, random_str):
     cat = random_str()
