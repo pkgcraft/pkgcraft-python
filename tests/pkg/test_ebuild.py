@@ -4,42 +4,27 @@ import pytest
 
 from pkgcraft.atom import Atom, Cpv, Version
 from pkgcraft.eapi import EAPIS
-from pkgcraft.error import IndirectInit
-from pkgcraft.pkg import EbuildPkg
+
+from .base import BasePkgTests
 
 
-class TestEbuildPkg:
+@pytest.fixture
+def make_repo(make_ebuild_repo):
+    return make_ebuild_repo
 
-    def test_init(self):
-        with pytest.raises(IndirectInit):
-            EbuildPkg()
 
-    def test_repr(self, make_ebuild_repo):
-        repo = make_ebuild_repo(id='fake')
-        pkg = repo.create_pkg('cat/pkg-1')
-        assert repr(pkg).startswith(f"<EbuildPkg 'cat/pkg-1::fake' at 0x")
+@pytest.fixture
+def repo(ebuild_repo):
+    return ebuild_repo
 
-    def test_atom(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg('cat/pkg-1')
-        assert pkg.atom == Cpv('cat/pkg-1')
 
-    def test_repo(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg('cat/pkg-1')
-        assert pkg.repo == ebuild_repo
-        # repo attribute allows recursion
-        assert pkg == next(iter(pkg.repo))
+class TestEbuildPkg(BasePkgTests):
 
     def test_eapi(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg('cat/pkg-1', eapi='7')
         assert pkg.eapi is EAPIS['7']
         pkg = ebuild_repo.create_pkg('cat/pkg-1', eapi='8')
         assert pkg.eapi is EAPIS['8']
-
-    def test_version(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg('cat/pkg-1')
-        assert pkg.version == Version('1')
-        pkg = ebuild_repo.create_pkg('cat/pkg-2')
-        assert pkg.version == Version('2')
 
     def test_path(self, ebuild_repo):
         path = ebuild_repo.create_ebuild()
