@@ -1,0 +1,29 @@
+#!/usr/bin/env python
+# Find revdeps for a given atom, assumes environment is a native Gentoo system.
+
+import argparse
+
+from pkgcraft.atom import Atom
+from pkgcraft.config import Config
+from pkgcraft.eapi import EAPI_LATEST
+from pkgcraft.restrict import Restrict
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('atom')
+    args = parser.parse_args()
+
+    atom = Atom(args.atom)
+    restrict = Restrict(atom)
+    dep_keys = sorted(EAPI_LATEST.dep_keys)
+    config = Config(repos_conf=True)
+
+    for pkg in config.repos.all:
+        for (attr, deps) in ((k, deps) for k in dep_keys if (deps := getattr(pkg, k.lower()))):
+            for a in filter(restrict.matches, deps.iter_flatten()):
+                print(f'{pkg}: {attr}: {a}')
+
+
+if __name__ == '__main__':
+    main()
