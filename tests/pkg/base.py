@@ -2,6 +2,7 @@ import pytest
 
 from pkgcraft.atom import Cpv, Version
 from pkgcraft.eapi import EAPI_LATEST
+from pkgcraft.restrict import Restrict
 
 
 class BasePkgTests:
@@ -23,6 +24,13 @@ class BasePkgTests:
     def test_version_base(self, repo):
         pkg = repo.create_pkg('cat/pkg-1')
         assert pkg.version == Version('1')
+
+    def test_matches_base(self, repo):
+        pkg = repo.create_pkg('cat/pkg-1')
+        pkg_restrict = Restrict(pkg)
+        cpv_restrict = Restrict(pkg.atom)
+        assert pkg.matches(pkg_restrict)
+        assert pkg.matches(cpv_restrict)
 
     def test_cmp_base(self, repo):
         pkg1 = repo.create_pkg('cat/pkg-1')

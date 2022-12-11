@@ -1,6 +1,7 @@
 from .. cimport pkgcraft_c as C
 from ..atom cimport Cpv, Version
 from ..repo cimport Repo
+from ..restrict cimport Restrict
 from . cimport EbuildPkg, FakePkg
 from ..eapi import EAPIS
 from ..error import IndirectInit, PkgcraftError
@@ -54,6 +55,10 @@ cdef class Pkg:
         """Get a package's version."""
         version = C.pkgcraft_pkg_version(self.ptr)
         return Version.from_ptr(version)
+
+    def matches(self, Restrict r):
+        """Determine if a restriction matches a package."""
+        return C.pkgcraft_pkg_restrict_matches(self.ptr, r.ptr)
 
     def __lt__(self, Pkg other):
         return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) == -1

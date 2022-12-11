@@ -6,6 +6,7 @@ cimport cython
 from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
 from ..eapi cimport Eapi
+from ..restrict cimport Restrict
 from .version cimport Version
 
 from ..eapi import EAPIS
@@ -125,6 +126,10 @@ cdef class Cpv:
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
+
+    def matches(self, Restrict r):
+        """Determine if a restriction matches an atom."""
+        return C.pkgcraft_atom_restrict_matches(self.ptr, r.ptr)
 
     def __lt__(self, Cpv other):
         return C.pkgcraft_atom_cmp(self.ptr, other.ptr) == -1
