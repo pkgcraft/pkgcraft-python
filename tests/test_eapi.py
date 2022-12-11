@@ -1,7 +1,6 @@
 import pytest
 
 from pkgcraft.eapi import EAPI0, EAPI1, EAPI_LATEST, EAPIS, EAPIS_OFFICIAL, Eapi
-from pkgcraft.error import IndirectInit
 
 
 def test_globals():
@@ -13,10 +12,6 @@ def test_globals():
 
 
 class TestEapi:
-
-    def test_init(self):
-        with pytest.raises(IndirectInit):
-            Eapi()
 
     def test_has(self):
         assert not EAPI1.has('nonexistent_feature')

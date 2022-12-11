@@ -48,7 +48,7 @@ cdef object get_eapis():
 @cython.final
 cdef class Eapi:
 
-    def __init__(self):
+    def __init__(self):  # pragma: no cover
         raise IndirectInit(self)
 
     @staticmethod
