@@ -9,7 +9,7 @@ from ..error import IndirectInit, PkgcraftError
 cdef class Pkg:
     """Generic package."""
 
-    def __init__(self):
+    def __init__(self):  # pragma: no cover
         raise IndirectInit(self)
 
     @staticmethod

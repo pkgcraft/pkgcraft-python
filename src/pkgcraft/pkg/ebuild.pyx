@@ -25,9 +25,6 @@ cdef class EbuildPkg(Pkg):
         self._restrict = SENTINEL
         self._src_uri = SENTINEL
 
-    def __init__(self):
-        raise IndirectInit(self)
-
     @property
     def path(self):
         """Get a package's path."""
