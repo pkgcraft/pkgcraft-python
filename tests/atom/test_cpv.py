@@ -4,6 +4,7 @@ import pytest
 
 from pkgcraft.atom import Cpv, Version
 from pkgcraft.error import InvalidCpv
+from pkgcraft.restrict import Restrict
 
 
 class TestCpv:
@@ -17,6 +18,12 @@ class TestCpv:
         assert a.cpn == 'cat/pkg'
         assert str(a) == 'cat/pkg-1-r2'
         assert repr(a).startswith("<Cpv 'cat/pkg-1-r2' at 0x")
+
+    def test_matches(self):
+        a = Cpv('cat/pkg-1')
+        r = Restrict(a)
+        assert a.matches(r)
+        assert not a.matches(~r)
 
     def test_invalid(self):
         for s in ('invalid', 'cat-1', 'cat/pkg', '=cat/pkg-1'):

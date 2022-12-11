@@ -7,6 +7,7 @@ import pytest
 from pkgcraft.atom import Atom, Blocker, SlotOperator, VersionWithOp
 from pkgcraft.eapi import EAPIS, Eapi
 from pkgcraft.error import InvalidAtom
+from pkgcraft.restrict import Restrict
 
 from ..misc import OperatorIterMap
 
@@ -64,6 +65,12 @@ class TestAtom:
         assert a.cpv == 'cat/pkg-1-r2'
         assert str(a) == '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo'
         assert repr(a).startswith("<Atom '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
+
+    def test_matches(self):
+        a = Atom('=cat/pkg-1')
+        r = Restrict(a)
+        assert a.matches(r)
+        assert not a.matches(~r)
 
     def test_valid(self, toml_data):
         atom_attrs = []
