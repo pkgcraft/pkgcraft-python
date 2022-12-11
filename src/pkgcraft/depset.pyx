@@ -30,6 +30,11 @@ cdef class DepRestrict:
         C.pkgcraft_str_free(c_str)
         return s
 
+    def __repr__(self):
+        addr = <size_t>&self.ptr
+        name = self.__class__.__name__
+        return f"<{name} '{self}' at 0x{addr:0x}>"
+
     def __dealloc__(self):
         C.pkgcraft_deprestrict_free(self.ptr)
 
@@ -74,6 +79,11 @@ cdef class DepSet:
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
+
+    def __repr__(self):
+        addr = <size_t>&self.ptr
+        name = self.__class__.__name__
+        return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __dealloc__(self):
         C.pkgcraft_depset_free(self.ptr)
