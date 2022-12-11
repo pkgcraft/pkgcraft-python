@@ -17,19 +17,19 @@ cdef class PkgcraftError(Exception):
             raise RuntimeError("no error message passed and no C error occurred")
 
 
-cdef class InvalidCpv(PkgcraftError):
+class InvalidCpv(PkgcraftError, ValueError):
     """Package CPV doesn't meet required specifications."""
 
 
-cdef class InvalidAtom(PkgcraftError):
+class InvalidAtom(PkgcraftError, ValueError):
     """Package atom doesn't meet required specifications."""
 
 
-cdef class InvalidVersion(PkgcraftError):
+class InvalidVersion(PkgcraftError, ValueError):
     """Atom version doesn't meet required specifications."""
 
 
-cdef class InvalidRestrict(PkgcraftError):
+class InvalidRestrict(PkgcraftError, ValueError):
     """Object cannot be converted to a restriction."""
 
 
