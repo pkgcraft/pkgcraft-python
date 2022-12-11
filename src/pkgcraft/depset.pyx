@@ -24,6 +24,12 @@ cdef class DepRestrict:
         ptr = C.pkgcraft_deprestrict_flatten_iter(self.ptr)
         yield from _DepSetFlattenIter.from_ptr(ptr, self.kind)
 
+    def __eq__(self, DepRestrict other):
+        return C.pkgcraft_deprestrict_eq(self.ptr, other.ptr)
+
+    def __hash__(self):
+        return C.pkgcraft_deprestrict_hash(self.ptr)
+
     def __str__(self):
         c_str = C.pkgcraft_deprestrict_str(self.ptr)
         s = c_str.decode()
@@ -73,6 +79,12 @@ cdef class DepSet:
         if d is not NULL:
             return DepRestrict.from_ptr(d, self.kind)
         raise StopIteration
+
+    def __eq__(self, DepSet other):
+        return C.pkgcraft_depset_eq(self.ptr, other.ptr)
+
+    def __hash__(self):
+        return C.pkgcraft_depset_hash(self.ptr)
 
     def __str__(self):
         c_str = C.pkgcraft_depset_str(self.ptr)

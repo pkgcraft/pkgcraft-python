@@ -310,6 +310,12 @@ cdef extern from "pkgcraft.h":
     # The argument should be a UTF-8 string.
     Atom *pkgcraft_cpv_new(const char *s);
 
+    # Determine if two DepRestricts are equal.
+    #
+    # # Safety
+    # The arguments must be non-null DepRestrict pointers.
+    bool pkgcraft_deprestrict_eq(DepRestrict *d1, DepRestrict *d2);
+
     # Return an iterator for a flattened DepRestrict.
     #
     # # Safety
@@ -322,11 +328,23 @@ cdef extern from "pkgcraft.h":
     # The argument must be a DepRestrict pointer or NULL.
     void pkgcraft_deprestrict_free(DepRestrict *r);
 
+    # Return the hash value for a DepRestrict.
+    #
+    # # Safety
+    # The argument must be a non-null DepRestrict pointer.
+    uint64_t pkgcraft_deprestrict_hash(DepRestrict *d);
+
     # Return the formatted string for a DepRestrict object.
     #
     # # Safety
     # The argument must be a non-null DepRestrict pointer.
     char *pkgcraft_deprestrict_str(DepRestrict *d);
+
+    # Determine if two DepSets are equal.
+    #
+    # # Safety
+    # The arguments must be non-null DepSet pointers.
+    bool pkgcraft_depset_eq(DepSet *d1, DepSet *d2);
 
     # Return an iterator for a flattened DepSet.
     #
@@ -353,6 +371,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a DepSet pointer or NULL.
     void pkgcraft_depset_free(DepSet *d);
+
+    # Return the hash value for a DepSet.
+    #
+    # # Safety
+    # The argument must be a non-null DepSet pointer.
+    uint64_t pkgcraft_depset_hash(DepSet *d);
 
     # Return an iterator for a depset.
     #
