@@ -185,6 +185,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Atom pointer.
     Restrict *pkgcraft_atom_restrict(Atom *atom);
 
+    # Determine if a restriction matches an atom.
+    #
+    # # Safety
+    # The arguments must be valid Restrict and Atom pointers.
+    bool pkgcraft_atom_restrict_matches(Atom *atom, Restrict *r);
+
     # Return an atom's revision, e.g. the atom "=cat/pkg-1-r2" has a revision of "2".
     #
     # Returns NULL on nonexistence.
@@ -738,6 +744,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer.
     Restrict *pkgcraft_pkg_restrict(Pkg *p);
 
+    # Determine if a restriction matches a package.
+    #
+    # # Safety
+    # The arguments must be valid Restrict and Pkg pointers.
+    bool pkgcraft_pkg_restrict_matches(Pkg *pkg, Restrict *r);
+
     # Return the string for a package.
     #
     # # Safety
@@ -1034,18 +1046,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a Restrict pointer or NULL.
     void pkgcraft_restrict_free(Restrict *r);
-
-    # Determine if a restriction matches an atom.
-    #
-    # # Safety
-    # The arguments must be valid Restrict and Atom pointers.
-    bool pkgcraft_restrict_matches_atom(Restrict *r, Atom *atom);
-
-    # Determine if a restriction matches a package.
-    #
-    # # Safety
-    # The arguments must be valid Restrict and Pkg pointers.
-    bool pkgcraft_restrict_matches_pkg(Restrict *r, Pkg *pkg);
 
     # Create a new restriction inverting a restriction via logical NOT.
     #

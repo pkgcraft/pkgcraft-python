@@ -64,9 +64,9 @@ cdef class Restrict:
         Raises TypeError for object types not supporting matches.
         """
         if isinstance(obj, Cpv):
-            return C.pkgcraft_restrict_matches_atom(self.ptr, (<Cpv>obj).ptr)
+            return C.pkgcraft_atom_restrict_matches((<Cpv>obj).ptr, self.ptr)
         elif isinstance(obj, Pkg):
-            return C.pkgcraft_restrict_matches_pkg(self.ptr, (<Pkg>obj).ptr)
+            return C.pkgcraft_pkg_restrict_matches((<Pkg>obj).ptr, self.ptr)
         raise TypeError(f"{obj.__class__.__name__!r} unsupported restriction matches type")
 
     def __and__(Restrict self, Restrict other):
