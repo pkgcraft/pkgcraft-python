@@ -22,8 +22,4 @@ cdef class _RepoIter:
 
 
 cdef class _RestrictIter:
-    cdef Repo repo
     cdef C.RepoRestrictPkgIter *ptr
-
-    @staticmethod
-    cdef _RestrictIter create(Repo, object)

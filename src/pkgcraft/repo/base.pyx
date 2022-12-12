@@ -106,7 +106,7 @@ cdef class Repo:
 
     def iter_restrict(self, restrict not None):
         """Iterate over a repo's packages while applying a restriction."""
-        yield from _RestrictIter.create(self, restrict)
+        yield from _RestrictIter(self, restrict)
 
     def __lt__(self, Repo other):
         return C.pkgcraft_repo_cmp(self.ptr, other.ptr) == -1
@@ -166,25 +166,14 @@ cdef class _RepoIter:
 cdef class _RestrictIter:
     """Iterator that applies a restriction over a repo iterator."""
 
-    def __init__(self):  # pragma: no cover
-        raise IndirectInit(self)
-
-    @staticmethod
-    cdef _RestrictIter create(Repo repo, object obj):
+    def __cinit__(self, Repo repo, object obj):
         cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
-        o = <_RestrictIter>_RestrictIter.__new__(_RestrictIter)
-        o.repo = repo
-        o.ptr = C.pkgcraft_repo_restrict_iter(repo.ptr, r.ptr)
-        return o
+        self.ptr = C.pkgcraft_repo_restrict_iter(repo.ptr, r.ptr)
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        # verify __iter__() was called since cython's generated next() method doesn't check
-        if self.ptr is NULL:  # pragma: no cover
-            raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
-
         pkg = C.pkgcraft_repo_restrict_iter_next(self.ptr)
         if pkg is not NULL:
             return Pkg.from_ptr(pkg)
