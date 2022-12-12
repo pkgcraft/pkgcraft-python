@@ -11,6 +11,9 @@
 # - maintainer-needed pkgs:
 #   query --restrict 'maintainers is none'
 #
+# - pkgs maintained by three or more devs
+#   query --restrict 'maintainers all (email=~"gentoo.org$" && type=="person") && maintainers >= 3'
+#
 # - pkgs implicitly using the flag-o-matic eclass:
 #   query --restrict 'inherited >= {"flag-o-matic"} && !(inherit >= {"flag-o-matic"})'
 #
@@ -31,6 +34,9 @@ def main():
     parser.add_argument('targets', metavar='TARGET', nargs='*')
     args = parser.parse_args()
 
+    if not (args.restricts or args.targets):
+        parser.error('restrictions and/or targets must be specified')
+
     # convert strings to restrictions
     restricts = []
     if args.restricts:
@@ -38,13 +44,13 @@ def main():
             pkg_restricts = map(Restrict.pkg, args.restricts)
             restricts.append(reduce(lambda x, y: x & y, pkg_restricts))
         except InvalidRestrict as e:
-            raise SystemExit(e)
+            parser.error(e)
     if args.targets:
         try:
             target_restricts = map(Restrict.dep, args.targets)
             restricts.append(reduce(lambda x, y: x | y, target_restricts))
         except InvalidRestrict as e:
-            raise SystemExit(e)
+            parser.error(e)
 
     # combine pkg and target restrictions
     r = reduce(lambda x, y: x & y, restricts)
