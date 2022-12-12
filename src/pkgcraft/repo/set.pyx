@@ -237,10 +237,6 @@ cdef class _RestrictIter:
         return self
 
     def __next__(self):
-        # verify __iter__() was called since cython's generated next() method doesn't check
-        if self.ptr is NULL:  # pragma: no cover
-            raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
-
         pkg = C.pkgcraft_repo_set_iter_next(self.ptr)
         if pkg is not NULL:
             return Pkg.from_ptr(pkg)
