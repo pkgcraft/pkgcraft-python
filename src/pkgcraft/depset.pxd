@@ -31,9 +31,6 @@ cdef class _DepSetFlattenIter:
     cdef C.DepSetFlattenIter *ptr
     cdef DepSetKind kind
 
-    @staticmethod
-    cdef _DepSetFlattenIter from_ptr(C.DepSetFlattenIter *, DepSetKind)
-
 
 cdef class Uri:
     cdef const C.Uri *ptr

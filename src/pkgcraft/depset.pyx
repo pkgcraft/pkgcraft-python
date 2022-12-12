@@ -20,8 +20,7 @@ cdef class DepRestrict:
         return obj
 
     def __iter__(self):
-        ptr = C.pkgcraft_deprestrict_flatten_iter(self.ptr)
-        return _DepSetFlattenIter.from_ptr(ptr, self.kind)
+        return _DepSetFlattenIter(self, self.kind)
 
     def __lt__(self, DepRestrict other):
         return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) == -1
@@ -75,8 +74,7 @@ cdef class DepSet:
 
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSet."""
-        ptr = C.pkgcraft_depset_flatten_iter(self.ptr)
-        yield from _DepSetFlattenIter.from_ptr(ptr, self.kind)
+        yield from _DepSetFlattenIter(self, self.kind)
 
     def __iter__(self):
         return _DepSetIter(self)
@@ -125,24 +123,20 @@ cdef class _DepSetIter:
 cdef class _DepSetFlattenIter:
     """Iterator over a flattened DepSet."""
 
-    def __init__(self):  # pragma: no cover
-        raise IndirectInit(self)
+    def __cinit__(self, object obj, DepSetKind kind):
+        if isinstance(obj, DepSet):
+            self.ptr = C.pkgcraft_depset_flatten_iter((<DepSet>obj).ptr)
+        elif isinstance(obj, DepRestrict):
+            self.ptr = C.pkgcraft_deprestrict_flatten_iter((<DepRestrict>obj).ptr)
+        else:
+            raise TypeError(f"{obj.__class__.__name__!r} unsupported depset type")
 
-    @staticmethod
-    cdef _DepSetFlattenIter from_ptr(C.DepSetFlattenIter *ptr, DepSetKind kind):
-        obj = <_DepSetFlattenIter>_DepSetFlattenIter.__new__(_DepSetFlattenIter)
-        obj.ptr = ptr
-        obj.kind = kind
-        return obj
+        self.kind = kind
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        # verify __iter__() was called since cython's generated next() method doesn't check
-        if self.ptr is NULL:  # pragma: no cover
-            raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
-
         obj = C.pkgcraft_depset_flatten_iter_next(self.ptr)
         if obj is not NULL:
             if self.kind is DepSetAtom:
