@@ -32,20 +32,7 @@ cdef class RepoSet:
         return obj
 
     def __iter__(self):
-        if self.iter_ptr is not NULL:
-            C.pkgcraft_repo_set_iter_free(self.iter_ptr)
-        self.iter_ptr = C.pkgcraft_repo_set_iter(self.ptr, NULL)
-        return self
-
-    def __next__(self):
-        # verify __iter__() was called since cython's generated next() method doesn't check
-        if self.iter_ptr is NULL:
-            raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
-
-        ptr = C.pkgcraft_repo_set_iter_next(self.iter_ptr)
-        if ptr is not NULL:
-            return Pkg.from_ptr(ptr)
-        raise StopIteration
+        return _RepoSetIter(self)
 
     def iter_restrict(self, restrict not None):
         """Iterate over a repo set's packages while applying a restriction."""
@@ -219,7 +206,25 @@ cdef class RepoSet:
 
     def __dealloc__(self):
         C.pkgcraft_repo_set_free(self.ptr)
-        C.pkgcraft_repo_set_iter_free(self.iter_ptr)
+
+
+cdef class _RepoSetIter:
+    """Iterator over a repo set."""
+
+    def __cinit__(self, RepoSet s):
+        self.ptr = C.pkgcraft_repo_set_iter(s.ptr, NULL)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        ptr = C.pkgcraft_repo_set_iter_next(self.ptr)
+        if ptr is not NULL:
+            return Pkg.from_ptr(ptr)
+        raise StopIteration
+
+    def __dealloc__(self):
+        C.pkgcraft_repo_set_iter_free(self.ptr)
 
 
 cdef class _RestrictIter:
