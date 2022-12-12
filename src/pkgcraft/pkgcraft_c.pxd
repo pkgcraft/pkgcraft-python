@@ -310,11 +310,12 @@ cdef extern from "pkgcraft.h":
     # The argument should be a UTF-8 string.
     Atom *pkgcraft_cpv_new(const char *s);
 
-    # Determine if two DepRestricts are equal.
+    # Compare two DepRestricts returning -1, 0, or 1 if the first is less than, equal to, or greater
+    # than the second, respectively.
     #
     # # Safety
     # The arguments must be non-null DepRestrict pointers.
-    bool pkgcraft_deprestrict_eq(DepRestrict *d1, DepRestrict *d2);
+    int pkgcraft_deprestrict_cmp(DepRestrict *d1, DepRestrict *d2);
 
     # Return an iterator for a flattened DepRestrict.
     #

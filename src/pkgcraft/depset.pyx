@@ -24,8 +24,23 @@ cdef class DepRestrict:
         ptr = C.pkgcraft_deprestrict_flatten_iter(self.ptr)
         yield from _DepSetFlattenIter.from_ptr(ptr, self.kind)
 
+    def __lt__(self, DepRestrict other):
+        return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) == -1
+
+    def __le__(self, DepRestrict other):
+        return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) <= 0
+
     def __eq__(self, DepRestrict other):
-        return C.pkgcraft_deprestrict_eq(self.ptr, other.ptr)
+        return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) == 0
+
+    def __ne__(self, DepRestrict other):
+        return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) != 0
+
+    def __gt__(self, DepRestrict other):
+        return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) == 1
+
+    def __ge__(self, DepRestrict other):
+        return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) >= 0
 
     def __hash__(self):
         return C.pkgcraft_deprestrict_hash(self.ptr)
