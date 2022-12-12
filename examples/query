@@ -1,0 +1,52 @@
+#!/usr/bin/env python
+# List all packages matching given restrictions.
+#
+# Example usage:
+# - maintainer-needed pkgs:
+#   query --restrict 'maintainers is none'
+#
+# - pkgs implicitly using the flag-o-matic eclass:
+#   query --restrict 'inherited >= {"flag-o-matic"} && !(inherit >= {"flag-o-matic"})'
+
+# - dev-python/* pkgs with DEPEND=media-libs/* deps
+#   query --restrict 'depend any "media-libs/*"' 'dev-python/*'
+
+import argparse
+from functools import reduce
+
+from pkgcraft.config import Config
+from pkgcraft.error import InvalidRestrict
+from pkgcraft.restrict import Restrict
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--restrict', metavar='RESTRICT', dest='restricts', action='append')
+    parser.add_argument('targets', metavar='TARGET', nargs='*')
+    args = parser.parse_args()
+
+    # convert strings to pkg and dep restrictions
+    restricts = []
+    if args.restricts:
+        try:
+            r = [Restrict.pkg(x) for x in args.restricts]
+        except InvalidRestrict as e:
+            raise SystemExit(e)
+        restricts.append(reduce(lambda x, y: x & y, r))
+    if args.targets:
+        try:
+            r = [Restrict.dep(x) for x in args.targets]
+        except InvalidRestrict as e:
+            raise SystemExit(e)
+        restricts.append(reduce(lambda x, y: x | y, r))
+
+    # combine attribute and target restrictions
+    r = reduce(lambda x, y: x & y, restricts)
+
+    config = Config(repos_conf=True)
+    for pkg in config.repos.ebuild.iter_restrict(r):
+        print(pkg)
+
+
+if __name__ == '__main__':
+    main()
