@@ -8,7 +8,6 @@ from ..restrict cimport Restrict
 from . cimport Repo
 
 from .. import parse
-from ..error import IndirectInit
 
 
 @cython.final
@@ -36,7 +35,7 @@ cdef class RepoSet:
 
     def iter_restrict(self, restrict not None):
         """Iterate over a repo set's packages while applying a restriction."""
-        yield from _RestrictIter.create(self, restrict)
+        yield from _RestrictIter(self, restrict)
 
     @property
     def repos(self):
@@ -230,15 +229,9 @@ cdef class _RepoSetIter:
 cdef class _RestrictIter:
     """Iterator that applies a restriction over a repo set iterator."""
 
-    def __init__(self):  # pragma: no cover
-        raise IndirectInit(self)
-
-    @staticmethod
-    cdef _RestrictIter create(RepoSet s, object obj):
+    def __cinit__(self, RepoSet s, object obj):
         cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
-        o = <_RestrictIter>_RestrictIter.__new__(_RestrictIter)
-        o.ptr = C.pkgcraft_repo_set_iter(s.ptr, r.ptr)
-        return o
+        self.ptr = C.pkgcraft_repo_set_iter(s.ptr, r.ptr)
 
     def __iter__(self):
         return self
