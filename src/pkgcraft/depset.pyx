@@ -128,7 +128,7 @@ cdef class _DepSetFlattenIter:
             self.ptr = C.pkgcraft_depset_flatten_iter((<DepSet>obj).ptr)
         elif isinstance(obj, DepRestrict):
             self.ptr = C.pkgcraft_deprestrict_flatten_iter((<DepRestrict>obj).ptr)
-        else:
+        else:  # pragma: no cover
             raise TypeError(f"{obj.__class__.__name__!r} unsupported depset type")
 
         self.kind = kind
