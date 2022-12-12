@@ -25,22 +25,22 @@ def main():
     parser.add_argument('targets', metavar='TARGET', nargs='*')
     args = parser.parse_args()
 
-    # convert strings to pkg and dep restrictions
+    # convert strings to restrictions
     restricts = []
     if args.restricts:
         try:
-            r = [Restrict.pkg(x) for x in args.restricts]
+            pkg_restricts = map(Restrict.pkg, args.restricts)
+            restricts.append(reduce(lambda x, y: x & y, pkg_restricts))
         except InvalidRestrict as e:
             raise SystemExit(e)
-        restricts.append(reduce(lambda x, y: x & y, r))
     if args.targets:
         try:
-            r = [Restrict.dep(x) for x in args.targets]
+            target_restricts = map(Restrict.dep, args.targets)
+            restricts.append(reduce(lambda x, y: x | y, target_restricts))
         except InvalidRestrict as e:
             raise SystemExit(e)
-        restricts.append(reduce(lambda x, y: x | y, r))
 
-    # combine attribute and target restrictions
+    # combine pkg and target restrictions
     r = reduce(lambda x, y: x & y, restricts)
 
     config = Config(repos_conf=True)
