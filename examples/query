@@ -2,12 +2,15 @@
 # List all packages matching given restrictions.
 #
 # Example usage:
+# - all pkgs with $PN starting in 'e'
+#   query 'e*'
+#
 # - maintainer-needed pkgs:
 #   query --restrict 'maintainers is none'
 #
 # - pkgs implicitly using the flag-o-matic eclass:
 #   query --restrict 'inherited >= {"flag-o-matic"} && !(inherit >= {"flag-o-matic"})'
-
+#
 # - dev-python/* pkgs with DEPEND=media-libs/* deps
 #   query --restrict 'depend any "media-libs/*"' 'dev-python/*'
 
