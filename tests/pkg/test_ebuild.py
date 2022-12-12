@@ -75,7 +75,7 @@ class TestEbuildPkg(BasePkgTests):
             assert list(val.iter_flatten()) == [Atom('cat/pkg'), Atom('a/b'), Atom('c/d')]
             dep_restricts = list(val)
             assert list(map(str, dep_restricts)) == ['u? ( cat/pkg )', '|| ( a/b c/d )']
-            assert list(dep_restricts[1].iter_flatten()) == [Atom('a/b'), Atom('c/d')]
+            assert list(dep_restricts[1]) == [Atom('a/b'), Atom('c/d')]
 
             pkg = ebuild_repo.create_pkg('cat/pkg-1', **{attr: 'u? ( a/b ) c/d'})
             val = getattr(pkg, attr)
@@ -83,7 +83,7 @@ class TestEbuildPkg(BasePkgTests):
             assert list(val.iter_flatten()) == [Atom('a/b'), Atom('c/d')]
             dep_restricts = list(val)
             assert list(map(str, dep_restricts)) == ['u? ( a/b )', 'c/d']
-            assert list(dep_restricts[1].iter_flatten()) == [Atom('c/d')]
+            assert list(dep_restricts[1]) == [Atom('c/d')]
 
     def test_license(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg('cat/pkg-1')

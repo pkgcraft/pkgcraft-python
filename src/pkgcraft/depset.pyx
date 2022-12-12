@@ -19,10 +19,9 @@ cdef class DepRestrict:
         obj.kind = kind
         return obj
 
-    def iter_flatten(self):
-        """Iterate over the objects of a flattened DepRestrict."""
+    def __iter__(self):
         ptr = C.pkgcraft_deprestrict_flatten_iter(self.ptr)
-        yield from _DepSetFlattenIter.from_ptr(ptr, self.kind)
+        return _DepSetFlattenIter.from_ptr(ptr, self.kind)
 
     def __lt__(self, DepRestrict other):
         return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) == -1
