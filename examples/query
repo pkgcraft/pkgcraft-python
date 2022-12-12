@@ -5,6 +5,9 @@
 # - all pkgs with $PN starting in 'e'
 #   query 'e*'
 #
+# - all non-gentoo repo pkgs:
+#   query --restrict '!(repo == "gentoo")'
+#
 # - maintainer-needed pkgs:
 #   query --restrict 'maintainers is none'
 #
