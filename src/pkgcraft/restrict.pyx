@@ -56,6 +56,22 @@ cdef class Restrict:
         obj.ptr = ptr
         return obj
 
+    @staticmethod
+    def dep(str s not None):
+        """Convert a string into a dependency-based restriction."""
+        ptr = C.pkgcraft_restrict_parse_dep(s.encode())
+        if ptr is NULL:
+            raise InvalidRestrict
+        return Restrict.from_ptr(ptr)
+
+    @staticmethod
+    def pkg(str s not None):
+        """Convert a string into a package-based restriction."""
+        ptr = C.pkgcraft_restrict_parse_pkg(s.encode())
+        if ptr is NULL:
+            raise InvalidRestrict
+        return Restrict.from_ptr(ptr)
+
     def matches(self, obj):
         """Determine if a restriction matches a given object.
 
