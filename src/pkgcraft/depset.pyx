@@ -79,20 +79,7 @@ cdef class DepSet:
         yield from _DepSetFlattenIter.from_ptr(ptr, self.kind)
 
     def __iter__(self):
-        if self.iter_ptr is not NULL:
-            C.pkgcraft_depset_iter_free(self.iter_ptr)
-        self.iter_ptr = C.pkgcraft_depset_iter(self.ptr)
-        return self
-
-    def __next__(self):
-        # verify __iter__() was called since cython's generated next() method doesn't check
-        if self.iter_ptr is NULL:
-            raise TypeError(f"{self.__class__.__name__!r} object is not an iterator")
-
-        d = C.pkgcraft_depset_iter_next(self.iter_ptr)
-        if d is not NULL:
-            return DepRestrict.from_ptr(d, self.kind)
-        raise StopIteration
+        return _DepSetIter(self)
 
     def __eq__(self, DepSet other):
         return C.pkgcraft_depset_eq(self.ptr, other.ptr)
@@ -113,7 +100,26 @@ cdef class DepSet:
 
     def __dealloc__(self):
         C.pkgcraft_depset_free(self.ptr)
-        C.pkgcraft_depset_iter_free(self.iter_ptr)
+
+
+cdef class _DepSetIter:
+    """Iterator over a DepSet."""
+
+    def __cinit__(self, DepSet d):
+        self.ptr = C.pkgcraft_depset_iter(d.ptr)
+        self.kind = d.kind
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        d = C.pkgcraft_depset_iter_next(self.ptr)
+        if d is not NULL:
+            return DepRestrict.from_ptr(d, self.kind)
+        raise StopIteration
+
+    def __dealloc__(self):
+        C.pkgcraft_depset_iter_free(self.ptr)
 
 
 cdef class _DepSetFlattenIter:

@@ -17,10 +17,14 @@ cdef class DepRestrict:
 cdef class DepSet:
     cdef C.DepSet *ptr
     cdef DepSetKind kind
-    cdef C.DepSetIter *iter_ptr
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *, DepSetKind)
+
+
+cdef class _DepSetIter:
+    cdef C.DepSetIter *ptr
+    cdef DepSetKind kind
 
 
 cdef class _DepSetFlattenIter:
