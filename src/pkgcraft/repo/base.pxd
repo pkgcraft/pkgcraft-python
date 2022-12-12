@@ -6,7 +6,6 @@ cdef class Repo:
     cdef C.Repo *ptr
     # flag denoting borrowed reference that must not be deallocated
     cdef bint ref
-    cdef C.RepoPkgIter *iter_ptr
 
     # cached fields
     cdef str _id
@@ -16,6 +15,10 @@ cdef class Repo:
     cdef inject_ptr(self, const C.Repo *, bint)
     @staticmethod
     cdef Repo from_ptr(C.Repo *, bint)
+
+
+cdef class _RepoIter:
+    cdef C.RepoPkgIter *ptr
 
 
 cdef class _RestrictIter:
