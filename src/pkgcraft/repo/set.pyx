@@ -81,6 +81,8 @@ cdef class RepoSet:
         return not C.pkgcraft_repo_set_is_empty(self.ptr)
 
     def __contains__(self, obj):
+        if isinstance(obj, Repo):
+            return obj in self.repos
         return bool(next(self.iter_restrict(obj), None))
 
     def __lt__(self, RepoSet other):

@@ -123,6 +123,11 @@ class TestRepoSet:
         # Pkg atoms
         assert pkg1.atom in s
         assert pkg2.atom in s
+        # Repo objects
+        assert r1 in s
+        assert r2 in s
+        r3 = make_fake_repo()
+        assert r3 not in s
 
         for obj in (object(), None):
             with pytest.raises(TypeError):
