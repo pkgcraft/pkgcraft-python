@@ -37,20 +37,20 @@ def main():
     if not (args.restricts or args.targets):
         parser.error('restrictions and/or targets must be specified')
 
+    def str_to_restrict(convert, combine, args):
+        try:
+            return reduce(combine, map(convert, args))
+        except InvalidRestrict as e:
+            parser.error(e)
+
     # convert strings to restrictions
     restricts = []
     if args.restricts:
-        try:
-            pkg_restricts = map(Restrict.pkg, args.restricts)
-            restricts.append(reduce(lambda x, y: x & y, pkg_restricts))
-        except InvalidRestrict as e:
-            parser.error(e)
+        restricts.append(str_to_restrict(
+            Restrict.pkg, lambda x, y: x & y, args.restricts))
     if args.targets:
-        try:
-            target_restricts = map(Restrict.dep, args.targets)
-            restricts.append(reduce(lambda x, y: x | y, target_restricts))
-        except InvalidRestrict as e:
-            parser.error(e)
+        restricts.append(str_to_restrict(
+            Restrict.dep, lambda x, y: x | y, args.targets))
 
     # combine pkg and target restrictions
     r = reduce(lambda x, y: x & y, restricts)
