@@ -6,6 +6,7 @@ import argparse
 from pkgcraft.atom import Atom
 from pkgcraft.config import Config
 from pkgcraft.eapi import EAPI_LATEST
+from pkgcraft.error import PkgcraftError
 from pkgcraft.restrict import Restrict
 
 
@@ -16,7 +17,11 @@ def main():
 
     restrict = Restrict(args.atom)
     dep_keys = sorted(EAPI_LATEST.dep_keys)
-    config = Config(repos_conf=True)
+
+    try:
+        config = Config(repos_conf=True)
+    except PkgcraftError as e:
+        parser.error(e)
 
     for pkg in config.repos.ebuild:
         for (attr, deps) in ((k, deps) for k in dep_keys if (deps := getattr(pkg, k.lower()))):
