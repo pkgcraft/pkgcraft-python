@@ -41,11 +41,13 @@ cdef class RepoSet:
     def repos(self):
         """Return the set's repos in order."""
         cdef size_t length
-        repos = <C.Repo **>C.pkgcraft_repo_set_repos(self.ptr, &length)
-        d = repos_to_dict(repos, length, True)
-        C.pkgcraft_repos_free(repos, length)
-        # TODO: replace with ordered, immutable set
-        return tuple(d.values())
+        if self._repos is None:
+            repos = <C.Repo **>C.pkgcraft_repo_set_repos(self.ptr, &length)
+            d = repos_to_dict(repos, length, True)
+            C.pkgcraft_repos_free(repos, length)
+            # TODO: replace with ordered, immutable set
+            self._repos = tuple(d.values())
+        return self._repos
 
     @property
     def categories(self):
@@ -120,6 +122,8 @@ cdef class RepoSet:
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
         else:
             C.pkgcraft_repo_set_assign_op_repo(op, self.ptr, (<Repo?>other).ptr)
+        # force repos refresh
+        self._repos = None
         return self
 
     def __ior__(RepoSet self, other):
@@ -128,6 +132,8 @@ cdef class RepoSet:
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
         else:
             C.pkgcraft_repo_set_assign_op_repo(op, self.ptr, (<Repo?>other).ptr)
+        # force repos refresh
+        self._repos = None
         return self
 
     def __ixor__(RepoSet self, other):
@@ -136,6 +142,8 @@ cdef class RepoSet:
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
         else:
             C.pkgcraft_repo_set_assign_op_repo(op, self.ptr, (<Repo?>other).ptr)
+        # force repos refresh
+        self._repos = None
         return self
 
     def __isub__(RepoSet self, other):
@@ -144,6 +152,8 @@ cdef class RepoSet:
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
         else:
             C.pkgcraft_repo_set_assign_op_repo(op, self.ptr, (<Repo?>other).ptr)
+        # force repos refresh
+        self._repos = None
         return self
 
     def __and__(self, other):
