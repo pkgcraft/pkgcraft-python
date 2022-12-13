@@ -6,6 +6,8 @@ from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
 from ..depset cimport DepSet, DepSetAtom, DepSetString, DepSetUri
 from . cimport Pkg
+
+from ..set import OrderedFrozenSet
 from ..error import IndirectInit, PkgcraftError
 
 
@@ -156,7 +158,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._defined_phases is None:
             phases = C.pkgcraft_pkg_ebuild_defined_phases(self.ptr, &length)
-            self._defined_phases = frozenset(phases[i].decode() for i in range(length))
+            self._defined_phases = OrderedFrozenSet(phases[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(phases, length)
         return self._defined_phases
 
@@ -166,7 +168,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._homepage is None:
             uris = C.pkgcraft_pkg_ebuild_homepage(self.ptr, &length)
-            self._homepage = tuple(uris[i].decode() for i in range(length))
+            self._homepage = OrderedFrozenSet(uris[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(uris, length)
         return self._homepage
 
@@ -176,7 +178,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._keywords is None:
             keywords = C.pkgcraft_pkg_ebuild_keywords(self.ptr, &length)
-            self._keywords = tuple(keywords[i].decode() for i in range(length))
+            self._keywords = OrderedFrozenSet(keywords[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(keywords, length)
         return self._keywords
 
@@ -186,7 +188,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._iuse is None:
             iuse = C.pkgcraft_pkg_ebuild_iuse(self.ptr, &length)
-            self._iuse = frozenset(iuse[i].decode() for i in range(length))
+            self._iuse = OrderedFrozenSet(iuse[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(iuse, length)
         return self._iuse
 
@@ -196,7 +198,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._inherit is None:
             eclasses = C.pkgcraft_pkg_ebuild_inherit(self.ptr, &length)
-            self._inherit = tuple(eclasses[i].decode() for i in range(length))
+            self._inherit = OrderedFrozenSet(eclasses[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(eclasses, length)
         return self._inherit
 
@@ -206,7 +208,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._inherited is None:
             eclasses = C.pkgcraft_pkg_ebuild_inherited(self.ptr, &length)
-            self._inherited = tuple(eclasses[i].decode() for i in range(length))
+            self._inherited = OrderedFrozenSet(eclasses[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(eclasses, length)
         return self._inherited
 
@@ -227,7 +229,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._maintainers is None:
             maintainers = C.pkgcraft_pkg_ebuild_maintainers(self.ptr, &length)
-            self._maintainers = tuple(Maintainer.create(maintainers[i][0]) for i in range(length))
+            self._maintainers = OrderedFrozenSet(Maintainer.create(maintainers[i][0]) for i in range(length))
             C.pkgcraft_pkg_ebuild_maintainers_free(maintainers, length)
         return self._maintainers
 
@@ -237,7 +239,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._upstreams is None:
             upstreams = C.pkgcraft_pkg_ebuild_upstreams(self.ptr, &length)
-            self._upstreams = tuple(Upstream.create(upstreams[i][0]) for i in range(length))
+            self._upstreams = OrderedFrozenSet(Upstream.create(upstreams[i][0]) for i in range(length))
             C.pkgcraft_pkg_ebuild_upstreams_free(upstreams, length)
         return self._upstreams
 

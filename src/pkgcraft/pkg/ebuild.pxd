@@ -17,14 +17,14 @@ cdef class EbuildPkg(Pkg):
     cdef object _required_use
     cdef object _restrict
     cdef object _src_uri
-    cdef frozenset _defined_phases
-    cdef tuple _homepage
-    cdef tuple _keywords
-    cdef tuple _inherit
-    cdef tuple _inherited
-    cdef tuple _maintainers
-    cdef tuple _upstreams
-    cdef frozenset _iuse
+    cdef object _defined_phases
+    cdef object _homepage
+    cdef object _keywords
+    cdef object _inherit
+    cdef object _inherited
+    cdef object _maintainers
+    cdef object _upstreams
+    cdef object _iuse
 
 
 cdef class Maintainer:

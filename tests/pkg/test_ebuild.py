@@ -183,7 +183,7 @@ class TestEbuildPkg(BasePkgTests):
 
         # multiple
         pkg = ebuild_repo.create_pkg('cat/pkg-1', homepage='https://a.com https://b.com')
-        assert pkg.homepage == ('https://a.com', 'https://b.com')
+        assert pkg.homepage == {'https://a.com', 'https://b.com'}
 
     def test_keywords(self, ebuild_repo):
         # empty
@@ -192,7 +192,7 @@ class TestEbuildPkg(BasePkgTests):
 
         # multiple
         pkg = ebuild_repo.create_pkg('cat/pkg-1', keywords='amd64 ~arm64')
-        assert pkg.keywords == ('amd64', '~arm64')
+        assert pkg.keywords == {'amd64', '~arm64'}
 
     def test_iuse(self, ebuild_repo):
         # empty
@@ -201,7 +201,7 @@ class TestEbuildPkg(BasePkgTests):
 
         # multiple
         pkg = ebuild_repo.create_pkg('cat/pkg-1', iuse='a b c')
-        assert pkg.iuse == frozenset(['a', 'b', 'c'])
+        assert pkg.iuse == {'a', 'b', 'c'}
 
     def test_inherits(self, ebuild_repo):
         # empty
