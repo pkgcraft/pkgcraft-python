@@ -83,7 +83,7 @@ cdef class RepoSet:
     def __contains__(self, obj):
         if isinstance(obj, Repo):
             return obj in self.repos
-        return bool(next(self.iter_restrict(obj), None))
+        return any((obj in r) for r in self.repos)
 
     def __lt__(self, RepoSet other):
         return C.pkgcraft_repo_set_cmp(self.ptr, other.ptr) == -1
