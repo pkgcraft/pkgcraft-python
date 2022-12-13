@@ -112,18 +112,18 @@ cdef class Repos:
     @property
     def all(self):
         """Return the set of all repos."""
-        if self._all_repos is None:
+        if self._all is None:
             ptr = C.pkgcraft_config_repos_set(self.config_ptr, REPO_SET_TYPE_ALL)
-            self._all_repos = RepoSet.from_ptr(ptr)
-        return self._all_repos
+            self._all = RepoSet.from_ptr(ptr)
+        return self._all
 
     @property
     def ebuild(self):
         """Return the set of all ebuild repos."""
-        if self._ebuild_repos is None:
+        if self._ebuild is None:
             ptr = C.pkgcraft_config_repos_set(self.config_ptr, REPO_SET_TYPE_EBUILD)
-            self._ebuild_repos = RepoSet.from_ptr(ptr)
-        return self._ebuild_repos
+            self._ebuild = RepoSet.from_ptr(ptr)
+        return self._ebuild
 
     def __eq__(self, other):
         return self._repos == other
