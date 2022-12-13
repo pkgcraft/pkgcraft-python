@@ -2,7 +2,7 @@ import textwrap
 
 import pytest
 
-from pkgcraft.error import PkgcraftError
+from pkgcraft.error import ConfigError
 from pkgcraft.repo import FakeRepo, RepoSet
 
 
@@ -32,11 +32,11 @@ class TestConfig:
         assert r == config.repos['fake']
 
         # existing
-        with pytest.raises(PkgcraftError, match='existing repo: fake'):
+        with pytest.raises(ConfigError, match='existing repo: fake'):
             config.add_repo_path(path, 'fake')
 
         # nonexistent
-        with pytest.raises(PkgcraftError, match='nonexistent repo path'):
+        with pytest.raises(ConfigError, match='nonexistent repo path'):
             config.add_repo_path('/path/to/nonexistent/repo')
 
     def test_add_repo_path_fake(self, config, tmp_path):
@@ -81,7 +81,7 @@ class TestConfig:
 
         # nonexistent
         f = '/path/to/nonexistent/file'
-        with pytest.raises(PkgcraftError, match=f'config error: .* "{f}": No such file or directory'):
+        with pytest.raises(ConfigError, match=f'config error: .* "{f}": No such file or directory'):
             config.load_repos_conf(f)
 
         # empty file
@@ -102,7 +102,7 @@ class TestConfig:
             [test
             location = {repo_path}
         """))
-        with pytest.raises(PkgcraftError, match=f'config error: invalid repos.conf file: "{f}"'):
+        with pytest.raises(ConfigError, match=f'config error: invalid repos.conf file: "{f}"'):
             config.load_repos_conf(f)
 
         # file path
@@ -114,7 +114,7 @@ class TestConfig:
         assert set(config.repos) == {'test'}
 
         # reloading causes an existence error
-        with pytest.raises(PkgcraftError, match='config error: existing repo: test'):
+        with pytest.raises(ConfigError, match='config error: existing repo: test'):
             config.load_repos_conf(f)
 
         # dir path

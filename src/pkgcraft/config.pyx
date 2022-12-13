@@ -3,7 +3,7 @@ cimport cython
 from . cimport pkgcraft_c as C
 from .pkgcraft_c cimport REPO_SET_TYPE_ALL, REPO_SET_TYPE_EBUILD
 from .repo cimport Repo, RepoSet
-from .error import PkgcraftError
+from .error import ConfigError
 
 
 cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
@@ -26,7 +26,7 @@ cdef class Config:
     def __init__(self, repos_conf=False):
         self.ptr = C.pkgcraft_config_new()
         if self.ptr is NULL:
-            raise PkgcraftError
+            raise ConfigError
 
         # load repos.conf file if enabled or manually specifying a path
         if repos_conf:
@@ -48,7 +48,7 @@ cdef class Config:
         cdef C.Repo *repo = C.pkgcraft_config_add_repo_path(
             self.ptr, id.encode(), int(priority), path.encode())
         if repo is NULL:
-            raise PkgcraftError
+            raise ConfigError
 
         # force repos attr refresh
         self._repos = None
@@ -69,7 +69,7 @@ cdef class Config:
     def add_repo(self, Repo repo not None):
         """Add an external repo."""
         if C.pkgcraft_config_add_repo(self.ptr, repo.ptr) is NULL:
-            raise PkgcraftError
+            raise ConfigError
 
         # force repos attr refresh
         self._repos = None
@@ -83,7 +83,7 @@ cdef class Config:
 
         repos = C.pkgcraft_config_load_repos_conf(self.ptr, path.encode(), &length)
         if repos is NULL:
-            raise PkgcraftError
+            raise ConfigError
 
         # force repos attr refresh
         self._repos = None

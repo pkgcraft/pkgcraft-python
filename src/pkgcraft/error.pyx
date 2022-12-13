@@ -17,6 +17,10 @@ cdef class PkgcraftError(Exception):
             raise RuntimeError("no error message passed and no C error occurred")
 
 
+class ConfigError(PkgcraftError):
+    """Generic configuration exception."""
+
+
 class InvalidCpv(PkgcraftError, ValueError):
     """Package CPV doesn't meet required specifications."""
 

@@ -6,7 +6,7 @@ import argparse
 from pkgcraft.atom import Atom
 from pkgcraft.config import Config
 from pkgcraft.eapi import EAPI_LATEST
-from pkgcraft.error import PkgcraftError
+from pkgcraft.error import ConfigError
 from pkgcraft.restrict import Restrict
 
 
@@ -20,7 +20,7 @@ def main():
 
     try:
         config = Config(repos_conf=True)
-    except PkgcraftError as e:
+    except ConfigError as e:
         parser.error(e)
 
     for pkg in config.repos.ebuild:

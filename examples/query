@@ -24,7 +24,7 @@ import argparse
 from functools import reduce
 
 from pkgcraft.config import Config
-from pkgcraft.error import InvalidRestrict, PkgcraftError
+from pkgcraft.error import ConfigError, InvalidRestrict
 from pkgcraft.restrict import Restrict
 
 
@@ -57,7 +57,7 @@ def main():
 
     try:
         config = Config(repos_conf=True)
-    except PkgcraftError as e:
+    except ConfigError as e:
         parser.error(e)
 
     for pkg in config.repos.ebuild.iter_restrict(r):
