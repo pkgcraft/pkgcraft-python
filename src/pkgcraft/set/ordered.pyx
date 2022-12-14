@@ -358,16 +358,18 @@ cdef class _OrderedFrozenSet:
         return NotImplemented
 
     def __ge__(self, other):
-        ret = self < other
-        if ret is NotImplemented:
-            return ret
-        return not ret
+        if isinstance(other, Set):
+            return len(self) >= len(other) and set(self) >= set(other)
+        elif isinstance(other, list):
+            return len(self) >= len(other) and list(self) >= list(other)
+        return NotImplemented
 
     def __gt__(self, other):
-        ret = self <= other
-        if ret is NotImplemented:
-            return ret
-        return not ret
+        if isinstance(other, Set):
+            return len(self) > len(other) and set(self) > set(other)
+        elif isinstance(other, list):
+            return len(self) > len(other) and list(self) > list(other)
+        return NotImplemented
 
 
 cdef inline void _add(_OrderedSet oset, object key):
