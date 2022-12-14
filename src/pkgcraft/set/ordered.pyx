@@ -1,4 +1,4 @@
-from collections.abc import Set, MutableSet, Iterable
+from collections.abc import Iterable, MutableSet, Set
 
 from cpython cimport PyDict_Contains, PyIndex_Check
 
@@ -15,7 +15,7 @@ cdef class entry:
 
 cdef inline object  _isorderedsubset(seq1, seq2):
     if not len(seq1) <= len(seq2):
-            return False
+        return False
     for self_elem, other_elem in zip(seq1, seq2):
         if not self_elem == other_elem:
             return False

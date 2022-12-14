@@ -1,7 +1,7 @@
-import weakref
-import gc
 import copy
+import gc
 import pickle
+import weakref
 
 import pytest
 

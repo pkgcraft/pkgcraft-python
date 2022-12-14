@@ -7,8 +7,8 @@ from .._misc cimport SENTINEL
 from ..depset cimport DepSet, DepSetAtom, DepSetString, DepSetUri
 from . cimport Pkg
 
-from ..set import OrderedFrozenSet
 from ..error import IndirectInit, PkgcraftError
+from ..set import OrderedFrozenSet
 
 
 @cython.final
@@ -229,7 +229,8 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._maintainers is None:
             maintainers = C.pkgcraft_pkg_ebuild_maintainers(self.ptr, &length)
-            self._maintainers = OrderedFrozenSet(Maintainer.create(maintainers[i][0]) for i in range(length))
+            data = (Maintainer.create(maintainers[i][0]) for i in range(length))
+            self._maintainers = OrderedFrozenSet(data)
             C.pkgcraft_pkg_ebuild_maintainers_free(maintainers, length)
         return self._maintainers
 
@@ -239,7 +240,8 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._upstreams is None:
             upstreams = C.pkgcraft_pkg_ebuild_upstreams(self.ptr, &length)
-            self._upstreams = OrderedFrozenSet(Upstream.create(upstreams[i][0]) for i in range(length))
+            data = (Upstream.create(upstreams[i][0]) for i in range(length))
+            self._upstreams = OrderedFrozenSet(data)
             C.pkgcraft_pkg_ebuild_upstreams_free(upstreams, length)
         return self._upstreams
 
