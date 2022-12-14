@@ -38,7 +38,8 @@ cdef class OrderedSetIterator:
         if self.si_used != self.oset.os_used:
             # make this state sticky
             self.si_used = -1
-            raise RuntimeError(f'{self.oset!r} changed size during iteration')
+            set_type = type(self.oset).__name__
+            raise RuntimeError(f'{set_type} changed size during iteration')
 
         item = self.curr.next
         if item == self.oset.end:
@@ -66,7 +67,8 @@ cdef class OrderedSetReverseIterator:
         if self.si_used != self.oset.os_used:
             # make this state sticky
             self.si_used = -1
-            raise RuntimeError(f'{self.oset!r} changed size during iteration')
+            set_type = type(self.oset).__name__
+            raise RuntimeError(f'{set_type} changed size during iteration')
 
         item = self.curr.prev
         if item is self.oset.end:
@@ -240,9 +242,12 @@ cdef class _OrderedFrozenSet:
     # list methods
     ##
     def index(self, elem):
-        """Return the index of `elem`. Rases :class:`ValueError` if not in the OrderedSet."""
+        """Return the index of `elem`.
+        Raises :class:`ValueError` if not in the set.
+        """
         if elem not in self:
-            raise ValueError(f'{elem} is not in {self!r}')
+            set_type = self.__class__.__name__
+            raise ValueError(f'{elem} is not in {set_type}')
         cdef entry curr = self.end.next
         cdef ssize_t index = 0
         while curr.key != elem:
@@ -304,11 +309,14 @@ cdef class _OrderedFrozenSet:
         return curr.key
 
     def __getitem__(self, item):
-        """Return the `elem` at `index`. Raises :class:`IndexError` if `index` is out of range."""
+        """Return the `elem` at `index`.
+        Raises :class:`IndexError` if `index` is out of range.
+        """
         if isinstance(item, slice):
             return self._getslice(item)
         if not PyIndex_Check(item):
-            raise TypeError(f'{self!r} indices must be integers, not {item!r}')
+            set_type, item_type = self.__class__.__name__, type(item).__name__
+            raise TypeError(f'{set_type} indices must be integers, not {item_type}')
         return self._getindex(item)
 
     ##
@@ -414,7 +422,8 @@ cdef class _OrderedSet(_OrderedFrozenSet):
     cpdef pop(self, last=True):
         """Remove last element. Raises ``KeyError`` if the ``OrderedSet`` is empty."""
         if not self:
-            raise KeyError('OrderedSet is empty')
+            set_type = self.__class__.__name__
+            raise KeyError(f'{set_type} is empty')
         key = self.end.prev.key if last else self.end.next.key
         _discard(self, key)
         return key
@@ -499,7 +508,8 @@ cdef class _OrderedSet(_OrderedFrozenSet):
         return self
 
     def __hash__(self):
-        raise TypeError(f'unhashable type: {self.__class__.__name__!r}')
+        set_type = self.__class__.__name__
+        raise TypeError(f'unhashable type: {set_type!r}')
 
 
 class OrderedFrozenSet(_OrderedFrozenSet, Set):
