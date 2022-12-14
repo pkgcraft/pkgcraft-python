@@ -92,6 +92,10 @@ class TestOrderedFrozenSet:
         assert oset1 == {1, 2, 3, 4, 5}
         assert id(oset1) != orig_id
 
+    def test_hash(self, lst):
+        oset = OrderedFrozenSet(lst)
+        assert hash(oset)
+
 
 class TestOrderedSet:
 
@@ -432,3 +436,8 @@ class TestOrderedSet:
         assert oset1 > oset3
         assert oset1 > set(oset3)
         assert oset1 > list(oset3)
+
+    def test_hash(self, lst):
+        oset = OrderedSet(lst)
+        with pytest.raises(TypeError):
+            assert hash(oset)

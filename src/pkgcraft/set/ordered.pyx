@@ -371,6 +371,9 @@ cdef class _OrderedFrozenSet:
             return len(self) > len(other) and list(self) > list(other)
         return NotImplemented
 
+    def __hash__(self):
+        return hash(tuple(self.map))
+
 
 cdef inline void _add(_OrderedSet oset, object key):
     cdef entry end = oset.end
@@ -494,6 +497,9 @@ cdef class _OrderedSet(_OrderedFrozenSet):
         for elem in other:
             _add(self, elem)
         return self
+
+    def __hash__(self):
+        raise TypeError(f'unhashable type: {self.__class__.__name__!r}')
 
 
 class OrderedFrozenSet(_OrderedFrozenSet, Set):
