@@ -99,6 +99,8 @@ cdef extern from "pkgcraft.h":
         char *message;
         ErrorKind kind;
 
+    ctypedef void (*LoggingCallback)(int, char*);
+
     # Wrapper for package maintainers.
     cdef struct Maintainer:
         char *email;
@@ -493,11 +495,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null PkgcraftError pointer or NULL.
     void pkgcraft_error_free(PkgcraftError *e);
 
-    # Get the most recent error message.
+    # Get the most recent error, returns NULL if none exists.
     PkgcraftError *pkgcraft_error_last();
 
     # Return the library version.
     char *pkgcraft_lib_version();
+
+    # Enable pkgcraft logging.
+    void pkgcraft_logging_enable(LoggingCallback cb);
 
     # Parse an atom string.
     #
