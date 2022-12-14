@@ -1,10 +1,7 @@
 from collections.abc import Iterable, MutableSet, Set
 
 from cpython cimport PyDict_Contains, PyIndex_Check
-
-
-cdef extern from "Python.h":
-    int PySlice_GetIndicesEx(slice, ssize_t length, ssize_t *start, ssize_t *stop, ssize_t *step, ssize_t *slicelength) except -1
+from cpython.slice cimport PySlice_GetIndicesEx
 
 
 cdef class entry:
