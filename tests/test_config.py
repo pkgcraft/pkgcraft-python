@@ -2,7 +2,7 @@ import textwrap
 
 import pytest
 
-from pkgcraft.error import ConfigError
+from pkgcraft.error import ConfigError, InvalidRepo
 from pkgcraft.repo import FakeRepo, RepoSet
 
 
@@ -36,7 +36,7 @@ class TestConfig:
             config.add_repo_path(path, 'fake')
 
         # nonexistent
-        with pytest.raises(ConfigError, match='nonexistent repo path'):
+        with pytest.raises(InvalidRepo, match='nonexistent repo path'):
             config.add_repo_path('/path/to/nonexistent/repo')
 
     def test_add_repo_path_fake(self, config, tmp_path):

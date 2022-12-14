@@ -12,7 +12,7 @@ class TestPkgcraftError:
             raise PkgcraftError('error message')
 
     def test_no_c_error(self):
-        with pytest.raises(RuntimeError, match='no error message'):
+        with pytest.raises(RuntimeError, match='no pkgcraft-c error occurred'):
             raise PkgcraftError
 
     def test_pickle(self):

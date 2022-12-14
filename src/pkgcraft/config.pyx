@@ -3,7 +3,7 @@ cimport cython
 from . cimport pkgcraft_c as C
 from .pkgcraft_c cimport REPO_SET_TYPE_ALL, REPO_SET_TYPE_EBUILD
 from .repo cimport Repo, RepoSet
-from .error import ConfigError
+from .error import ConfigError, _raise_last_error
 
 
 cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
@@ -48,7 +48,7 @@ cdef class Config:
         cdef C.Repo *repo = C.pkgcraft_config_add_repo_path(
             self.ptr, id.encode(), int(priority), path.encode())
         if repo is NULL:
-            raise ConfigError
+            _raise_last_error()
 
         # force repos attr refresh
         self._repos = None
@@ -83,7 +83,7 @@ cdef class Config:
 
         repos = C.pkgcraft_config_load_repos_conf(self.ptr, path.encode(), &length)
         if repos is NULL:
-            raise ConfigError
+            _raise_last_error()
 
         # force repos attr refresh
         self._repos = None

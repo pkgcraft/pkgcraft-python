@@ -8,6 +8,12 @@ cdef extern from *:
 
 cdef extern from "pkgcraft.h":
 
+    cdef enum ErrorKind:
+        ERROR_KIND_GENERIC,
+        ERROR_KIND_PKGCRAFT,
+        ERROR_KIND_CONFIG,
+        ERROR_KIND_REPO,
+
     cdef enum PkgFormat:
         PKG_FORMAT_EBUILD,
         PKG_FORMAT_FAKE,
@@ -88,6 +94,10 @@ cdef extern from "pkgcraft.h":
     # Uri object.
     cdef struct Uri:
         pass
+
+    cdef struct PkgcraftError:
+        char *message;
+        ErrorKind kind;
 
     # Wrapper for package maintainers.
     cdef struct Maintainer:
@@ -477,13 +487,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null string.
     const Eapi **pkgcraft_eapis_range(const char *s, uintptr_t *len);
 
-    # Get the most recent error message.
-    #
-    # Returns NULL on nonexistence.
+    # Free an error.
     #
     # # Safety
-    # The caller is expected to free the error string using pkgcraft_str_free().
-    char *pkgcraft_last_error();
+    # The argument must be a non-null PkgcraftError pointer or NULL.
+    void pkgcraft_error_free(PkgcraftError *e);
+
+    # Get the most recent error message.
+    PkgcraftError *pkgcraft_error_last();
 
     # Return the library version.
     char *pkgcraft_lib_version();
