@@ -1,4 +1,3 @@
-from .. cimport pkgcraft_c as C
 from . cimport Pkg
 
 
