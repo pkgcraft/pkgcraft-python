@@ -38,7 +38,7 @@ cdef class OrderedSetIterator:
         if self.si_used != self.oset.os_used:
             # make this state sticky
             self.si_used = -1
-            raise RuntimeError('%s changed size during iteration' % type(self.oset).__name__)
+            raise RuntimeError(f'{self.oset!r} changed size during iteration')
 
         item = self.curr.next
         if item == self.oset.end:
@@ -66,7 +66,7 @@ cdef class OrderedSetReverseIterator:
         if self.si_used != self.oset.os_used:
             # make this state sticky
             self.si_used = -1
-            raise RuntimeError('%s changed size during iteration' % type(self.oset).__name__)
+            raise RuntimeError(f'{self.oset!r} changed size during iteration')
 
         item = self.curr.prev
         if item is self.oset.end:
@@ -242,7 +242,7 @@ cdef class _OrderedFrozenSet:
     def index(self, elem):
         """Return the index of `elem`. Rases :class:`ValueError` if not in the OrderedSet."""
         if elem not in self:
-            raise ValueError("%s is not in %s" % (elem, type(self).__name__))
+            raise ValueError(f'{elem} is not in {self!r}')
         cdef entry curr = self.end.next
         cdef ssize_t index = 0
         while curr.key != elem:
@@ -308,7 +308,7 @@ cdef class _OrderedFrozenSet:
         if isinstance(item, slice):
             return self._getslice(item)
         if not PyIndex_Check(item):
-            raise TypeError("%s indices must be integers, not %s" % (type(self).__name__, type(item)))
+            raise TypeError(f'{self!r} indices must be integers, not {item!r}')
         return self._getindex(item)
 
     ##
