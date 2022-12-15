@@ -39,15 +39,14 @@ class PkgcraftError(_PkgcraftError):
         # that occurred, automatically determining the subclass for PkgcraftError.
         if msg is None:
             msg, kind = _get_last_error()
-            map_cls = _PkgcraftError.types[kind]
+            err_cls = cls.types[kind]
             # only the generic PkgcraftError class is allowed to alter its type
             if (cls is not PkgcraftError and
                     kind != C.ERROR_KIND_PKGCRAFT and
                     kind not in cls.kinds):  # pragma: no cover
-                err_type = cls.__name__
-                raise RuntimeError(f"{err_type} doesn't handle error kind: {kind}")
-            if map_cls is not PkgcraftError:
-                inst = super().__new__(map_cls)
+                raise RuntimeError(f"{cls.__name__} doesn't handle error kind: {kind}")
+            if err_cls is not PkgcraftError:
+                inst = super().__new__(err_cls)
             else:
                 inst = super().__new__(cls)
             inst.msg = msg
