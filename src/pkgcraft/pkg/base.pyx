@@ -19,9 +19,9 @@ cdef class Pkg:
         cdef Pkg obj
 
         format = C.pkgcraft_pkg_format(ptr)
-        if format is C.PkgFormat.PKG_FORMAT_EBUILD:
+        if format == C.PkgFormat.PKG_FORMAT_EBUILD:
             obj = <EbuildPkg>EbuildPkg.__new__(EbuildPkg)
-        elif format is C.PkgFormat.PKG_FORMAT_FAKE:
+        elif format == C.PkgFormat.PKG_FORMAT_FAKE:
             obj = <FakePkg>FakePkg.__new__(FakePkg)
         else:  # pragma: no cover
             raise PkgcraftError('unsupported pkg format')

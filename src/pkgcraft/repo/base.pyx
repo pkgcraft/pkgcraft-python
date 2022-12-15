@@ -27,9 +27,9 @@ cdef class Repo:
         cdef Repo obj
 
         format = C.pkgcraft_repo_format(ptr)
-        if format is C.RepoFormat.REPO_FORMAT_EBUILD:
+        if format == C.RepoFormat.REPO_FORMAT_EBUILD:
             obj = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
-        elif format is C.RepoFormat.REPO_FORMAT_FAKE:
+        elif format == C.RepoFormat.REPO_FORMAT_FAKE:
             obj = <FakeRepo>FakeRepo.__new__(FakeRepo)
         else:  # pragma: no cover
             raise PkgcraftError('unsupported repo format')

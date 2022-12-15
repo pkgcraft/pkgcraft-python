@@ -139,13 +139,13 @@ cdef class _DepSetFlattenIter:
     def __next__(self):
         obj = C.pkgcraft_depset_flatten_iter_next(self.ptr)
         if obj is not NULL:
-            if self.kind is DepSetAtom:
+            if self.kind == DepSetAtom:
                 return Atom.from_ptr(<const C.Atom *>obj)
-            elif self.kind is DepSetString:
+            elif self.kind == DepSetString:
                 s = (<char *>obj).decode()
                 C.pkgcraft_str_free(<char *>obj)
                 return s
-            elif self.kind is DepSetUri:
+            elif self.kind == DepSetUri:
                 return Uri.from_ptr(<const C.Uri *>obj)
             else:  # pragma: no cover
                 raise AttributeError(f'unknown DepSet kind: {self.kind}')

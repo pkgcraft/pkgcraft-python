@@ -45,7 +45,7 @@ class PkgcraftError(_PkgcraftError):
             super().__init__(msg)
         else:
             msg, kind = _get_last_error()
-            if kind is not C.ErrorKind.ERROR_KIND_PKGCRAFT and kind not in self.kinds:
+            if kind != C.ErrorKind.ERROR_KIND_PKGCRAFT and kind not in self.kinds:
                 err_type = self.__class__.__name__
                 raise RuntimeError(f"{err_type} doesn't handle error kind: {kind}")
             super().__init__(msg)
