@@ -21,18 +21,26 @@
 #   query --restrict 'depend any "media-libs/*"' 'dev-python/*'
 
 import argparse
+import logging
 from functools import reduce
 
 from pkgcraft.config import Config
 from pkgcraft.error import ConfigError, InvalidRestrict
+from pkgcraft.logging import logger
 from pkgcraft.restrict import Restrict
 
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument('--quiet', '-q', action='count', default=0)
+    parser.add_argument('--verbose', '-v', action='count', default=0)
     parser.add_argument('--restrict', metavar='RESTRICT', dest='restricts', action='append')
     parser.add_argument('targets', metavar='TARGET', nargs='*')
     args = parser.parse_args()
+
+    # set logging level, defaulting to warning
+    level = logging.WARNING + (args.quiet - args.verbose) * 10
+    logger.setLevel(level)
 
     if not (args.restricts or args.targets):
         parser.error('restrictions and/or targets must be specified')
