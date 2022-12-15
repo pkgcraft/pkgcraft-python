@@ -38,7 +38,7 @@ class _PkgcraftError(Exception):
 class PkgcraftError(_PkgcraftError):
     """Generic pkgcraft exception."""
 
-    kinds = (C.ErrorKind.ERROR_KIND_GENERIC, C.ERROR_KIND_PKGCRAFT)
+    kinds = (C.ERROR_KIND_GENERIC, C.ERROR_KIND_PKGCRAFT)
 
     def __init__(self, str msg=None):
         if msg is not None:
@@ -53,12 +53,12 @@ class PkgcraftError(_PkgcraftError):
 
 class ConfigError(PkgcraftError):
     """Generic configuration exception."""
-    kinds = (C.ErrorKind.ERROR_KIND_CONFIG,)
+    kinds = (C.ERROR_KIND_CONFIG,)
 
 
 class InvalidRepo(PkgcraftError):
     """Repo doesn't meet required specifications."""
-    kinds = (C.ErrorKind.ERROR_KIND_REPO,)
+    kinds = (C.ERROR_KIND_REPO,)
 
 
 class InvalidCpv(PkgcraftError, ValueError):

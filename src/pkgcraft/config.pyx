@@ -1,7 +1,6 @@
 cimport cython
 
 from . cimport pkgcraft_c as C
-from .pkgcraft_c cimport REPO_SET_TYPE_ALL, REPO_SET_TYPE_EBUILD
 from .repo cimport Repo, RepoSet
 from .error import ConfigError, _raise_last_error
 
@@ -113,7 +112,7 @@ cdef class Repos:
     def all(self):
         """Return the set of all repos."""
         if self._all is None:
-            ptr = C.pkgcraft_config_repos_set(self.config_ptr, REPO_SET_TYPE_ALL)
+            ptr = C.pkgcraft_config_repos_set(self.config_ptr, C.REPO_SET_TYPE_ALL)
             self._all = RepoSet.from_ptr(ptr)
         return self._all
 
@@ -121,7 +120,7 @@ cdef class Repos:
     def ebuild(self):
         """Return the set of all ebuild repos."""
         if self._ebuild is None:
-            ptr = C.pkgcraft_config_repos_set(self.config_ptr, REPO_SET_TYPE_EBUILD)
+            ptr = C.pkgcraft_config_repos_set(self.config_ptr, C.REPO_SET_TYPE_EBUILD)
             self._ebuild = RepoSet.from_ptr(ptr)
         return self._ebuild
 

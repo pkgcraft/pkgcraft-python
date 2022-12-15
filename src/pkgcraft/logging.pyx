@@ -10,13 +10,13 @@ cdef void pkgcraft_logger(C.PkgcraftLog *log):
     """Callback used to inject pkgcraft log messages into python."""
     msg = log.message.decode()
 
-    if log.level in (C.LogLevel.LOG_LEVEL_DEBUG, C.LogLevel.LOG_LEVEL_TRACE):
+    if log.level in (C.LOG_LEVEL_DEBUG, C.LOG_LEVEL_TRACE):
         logger.debug(msg)
-    elif log.level == C.LogLevel.LOG_LEVEL_INFO:
+    elif log.level == C.LOG_LEVEL_INFO:
         logger.info(msg)
-    elif log.level == C.LogLevel.LOG_LEVEL_WARN:
+    elif log.level == C.LOG_LEVEL_WARN:
         logger.warning(msg)
-    elif log.level == C.LogLevel.LOG_LEVEL_ERROR:
+    elif log.level == C.LOG_LEVEL_ERROR:
         logger.error(msg)
 
     C.pkgcraft_log_free(log)
@@ -30,14 +30,14 @@ def _pkgcraft_log_test(str message not None, int level):
 
     # convert from python logging levels to pkgcraft ones
     level = level // 10
-    if level == C.LogLevel.LOG_LEVEL_ERROR:
-        log.level = C.LogLevel.LOG_LEVEL_ERROR
-    elif level == C.LogLevel.LOG_LEVEL_WARN:
-        log.level = C.LogLevel.LOG_LEVEL_WARN
-    elif level == C.LogLevel.LOG_LEVEL_INFO:
-        log.level = C.LogLevel.LOG_LEVEL_INFO
+    if level == C.LOG_LEVEL_ERROR:
+        log.level = C.LOG_LEVEL_ERROR
+    elif level == C.LOG_LEVEL_WARN:
+        log.level = C.LOG_LEVEL_WARN
+    elif level == C.LOG_LEVEL_INFO:
+        log.level = C.LOG_LEVEL_INFO
     else:
-        log.level = C.LogLevel.LOG_LEVEL_DEBUG
+        log.level = C.LOG_LEVEL_DEBUG
 
     C.pkgcraft_log_test(&log)
 
