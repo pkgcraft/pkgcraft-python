@@ -14,12 +14,6 @@ def _get_last_error():
     return msg, kind
 
 
-def _raise_last_error():
-    """Raise the last pkgcraft-c error that occurred, automatically determining the type."""
-    msg, kind = _get_last_error()
-    raise _PkgcraftError.types[kind](msg)
-
-
 class _PkgcraftError(Exception):
 
     # map of error kinds to classes
@@ -40,15 +34,29 @@ class PkgcraftError(_PkgcraftError):
 
     kinds = (C.ERROR_KIND_GENERIC, C.ERROR_KIND_PKGCRAFT)
 
-    def __init__(self, str msg=None):
-        if msg is not None:
-            super().__init__(msg)
-        else:
+    def __new__(cls, msg=None, **kwargs):
+        # If no specific message is passed, pull the last pkgcraft-c error
+        # that occurred, automatically determining the subclass for PkgcraftError.
+        if msg is None:
             msg, kind = _get_last_error()
-            if kind != C.ERROR_KIND_PKGCRAFT and kind not in self.kinds:  # pragma: no cover
-                err_type = self.__class__.__name__
+            map_cls = _PkgcraftError.types[kind]
+            # only the generic PkgcraftError class is allowed to alter its type
+            if (cls is not PkgcraftError and
+                    kind != C.ERROR_KIND_PKGCRAFT and
+                    kind not in cls.kinds):  # pragma: no cover
+                err_type = cls.__name__
                 raise RuntimeError(f"{err_type} doesn't handle error kind: {kind}")
-            super().__init__(msg)
+            if map_cls is not PkgcraftError:
+                inst = super().__new__(map_cls)
+            else:
+                inst = super().__new__(cls)
+            inst.msg = msg
+            return inst
+        return super().__new__(cls)
+
+    def __init__(self, msg=None):
+        msg = getattr(self, 'msg', msg)
+        super().__init__(msg)
 
 
 class ConfigError(PkgcraftError):
