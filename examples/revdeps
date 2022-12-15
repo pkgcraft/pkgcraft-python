@@ -7,7 +7,7 @@ import logging
 from pkgcraft.atom import Atom
 from pkgcraft.config import Config
 from pkgcraft.eapi import EAPI_LATEST
-from pkgcraft.error import ConfigError
+from pkgcraft.error import PkgcraftError
 from pkgcraft.logging import logger
 from pkgcraft.restrict import Restrict
 
@@ -28,7 +28,7 @@ def main():
 
     try:
         config = Config(repos_conf=True)
-    except ConfigError as e:
+    except PkgcraftError as e:
         parser.error(e)
 
     for pkg in config.repos.ebuild:
