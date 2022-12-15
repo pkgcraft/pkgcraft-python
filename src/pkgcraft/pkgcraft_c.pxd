@@ -518,6 +518,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null PkgcraftLog pointer or NULL.
     void pkgcraft_log_free(PkgcraftLog *l);
 
+    # Replay a given PkgcraftLog object for test purposes.
+    #
+    # # Safety
+    # The argument must be a non-null PkgcraftLog pointer.
+    void pkgcraft_log_test(const PkgcraftLog *l);
+
     # Enable pkgcraft logging support.
     void pkgcraft_logging_enable(LogCallback cb);
 
