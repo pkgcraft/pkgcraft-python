@@ -14,6 +14,13 @@ cdef extern from "pkgcraft.h":
         ERROR_KIND_CONFIG,
         ERROR_KIND_REPO,
 
+    cdef enum LogLevel:
+        LOG_LEVEL_TRACE,
+        LOG_LEVEL_DEBUG,
+        LOG_LEVEL_INFO,
+        LOG_LEVEL_WARN,
+        LOG_LEVEL_ERROR,
+
     cdef enum PkgFormat:
         PKG_FORMAT_EBUILD,
         PKG_FORMAT_FAKE,
@@ -99,7 +106,11 @@ cdef extern from "pkgcraft.h":
         char *message;
         ErrorKind kind;
 
-    ctypedef void (*LoggingCallback)(int, char*);
+    cdef struct PkgcraftLog:
+        char *message;
+        LogLevel level;
+
+    ctypedef void (*LogCallback)(PkgcraftLog*);
 
     # Wrapper for package maintainers.
     cdef struct Maintainer:
@@ -501,8 +512,14 @@ cdef extern from "pkgcraft.h":
     # Return the library version.
     char *pkgcraft_lib_version();
 
-    # Enable pkgcraft logging.
-    void pkgcraft_logging_enable(LoggingCallback cb);
+    # Free a log.
+    #
+    # # Safety
+    # The argument must be a non-null PkgcraftLog pointer or NULL.
+    void pkgcraft_log_free(PkgcraftLog *l);
+
+    # Enable pkgcraft logging support.
+    void pkgcraft_logging_enable(LogCallback cb);
 
     # Parse an atom string.
     #

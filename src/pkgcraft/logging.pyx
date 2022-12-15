@@ -6,18 +6,19 @@ logging.basicConfig()
 logger = logging.getLogger('pkgcraft')
 
 
-cdef void pkgcraft_logger(int level, char *msg_p):
-    msg = msg_p.decode()
-    C.pkgcraft_str_free(msg_p)
+cdef void pkgcraft_logger(C.PkgcraftLog *log):
+    msg = log.message.decode()
 
-    if level <= 1:
+    if log.level in (C.LogLevel.LOG_LEVEL_DEBUG, C.LogLevel.LOG_LEVEL_TRACE):
         logger.debug(msg)
-    elif level == 2:
+    elif log.level == C.LogLevel.LOG_LEVEL_INFO:
         logger.info(msg)
-    elif level == 3:
+    elif log.level == C.LogLevel.LOG_LEVEL_WARN:
         logger.warning(msg)
-    elif level >= 4:
+    elif log.level == C.LogLevel.LOG_LEVEL_ERROR:
         logger.error(msg)
+
+    C.pkgcraft_log_free(log)
 
 
 # progagate pkgcraft log messages to python on module import
