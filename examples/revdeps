@@ -7,7 +7,7 @@ import logging
 from pkgcraft.atom import Atom
 from pkgcraft.config import Config
 from pkgcraft.eapi import EAPI_LATEST
-from pkgcraft.error import PkgcraftError
+from pkgcraft.error import InvalidRestrict, PkgcraftError
 from pkgcraft.logging import logger
 from pkgcraft.restrict import Restrict
 
@@ -16,21 +16,24 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--quiet', '-q', action='count', default=0)
     parser.add_argument('--verbose', '-v', action='count', default=0)
-    parser.add_argument('atom', type=Atom)
+    parser.add_argument('dep')
     args = parser.parse_args()
 
     # set logging level, defaulting to warning
     level = logging.WARNING + (args.quiet - args.verbose) * 10
     logger.setLevel(level)
 
-    restrict = Restrict(args.atom)
-    dep_keys = sorted(EAPI_LATEST.dep_keys)
+    try:
+        restrict = Restrict.dep(args.dep)
+    except InvalidRestrict as e:
+        parser.error(e)
 
     try:
         config = Config(repos_conf=True)
     except PkgcraftError as e:
         parser.error(e)
 
+    dep_keys = sorted(EAPI_LATEST.dep_keys)
     for pkg in config.repos.ebuild:
         for (attr, deps) in ((k, deps) for k in dep_keys if (deps := getattr(pkg, k.lower()))):
             for a in filter(restrict.matches, deps.iter_flatten()):
