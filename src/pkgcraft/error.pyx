@@ -29,7 +29,7 @@ class _PkgcraftError(Exception):
     def __init_subclass__(cls, **kwargs):
         for kind in cls.kinds:
             setting = cls.types.setdefault(kind, cls)
-            if setting is not cls:
+            if setting is not cls:  # pragma: no cover
                 name, existing = cls.__name__, setting.__name__
                 raise RuntimeError(f'{name}: error kind {kind} already registered to {existing}')
         super().__init_subclass__(**kwargs)
@@ -45,7 +45,7 @@ class PkgcraftError(_PkgcraftError):
             super().__init__(msg)
         else:
             msg, kind = _get_last_error()
-            if kind != C.ErrorKind.ERROR_KIND_PKGCRAFT and kind not in self.kinds:
+            if kind != C.ERROR_KIND_PKGCRAFT and kind not in self.kinds:  # pragma: no cover
                 err_type = self.__class__.__name__
                 raise RuntimeError(f"{err_type} doesn't handle error kind: {kind}")
             super().__init__(msg)
