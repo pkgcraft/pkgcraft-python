@@ -124,8 +124,12 @@ class TestOrderedSet:
         oset.discard(4)
 
     def test_pop(self):
-        oset = OrderedSet([1, 2, 3])
+        # popping from an empty set raises KeyError
+        oset = OrderedSet()
+        with pytest.raises(KeyError):
+            oset.pop()
 
+        oset = OrderedSet([1, 2, 3])
         v = oset.pop()
         assert v == 3
         v not in oset
@@ -135,11 +139,14 @@ class TestOrderedSet:
         v not in oset
 
     def test_remove(self, lst):
-        oset = OrderedSet(lst)
+        # removing a missing element raises KeyError
+        oset = OrderedSet()
+        with pytest.raises(KeyError):
+            oset.remove(1)
 
+        oset = OrderedSet(lst)
         oset.remove(3)
         lst.remove(3)
-
         assert list(oset) == lst
 
     def test_clear(self):
