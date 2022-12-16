@@ -4,7 +4,7 @@ from ..repo cimport Repo
 from ..restrict cimport Restrict
 from . cimport EbuildPkg, FakePkg
 from ..eapi import EAPIS
-from ..error import IndirectInit, PkgcraftError
+from ..error import IndirectInit
 
 
 cdef class Pkg:
@@ -24,7 +24,7 @@ cdef class Pkg:
         elif format == C.PkgFormat.PKG_FORMAT_FAKE:
             obj = <FakePkg>FakePkg.__new__(FakePkg)
         else:  # pragma: no cover
-            raise PkgcraftError('unsupported pkg format')
+            raise NotImplementedError(f'unsupported pkg format: {format}')
 
         obj.ptr = ptr
         return obj

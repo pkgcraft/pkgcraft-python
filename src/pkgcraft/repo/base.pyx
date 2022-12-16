@@ -7,7 +7,7 @@ from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport EbuildRepo, FakeRepo
 from .. import parse
-from ..error import IndirectInit, PkgcraftError
+from ..error import IndirectInit
 
 
 cdef class Repo:
@@ -32,7 +32,7 @@ cdef class Repo:
         elif format == C.RepoFormat.REPO_FORMAT_FAKE:
             obj = <FakeRepo>FakeRepo.__new__(FakeRepo)
         else:  # pragma: no cover
-            raise PkgcraftError('unsupported repo format')
+            raise NotImplementedError(f'unsupported repo format: {format}')
 
         obj.ptr = ptr
         obj.ref = ref
