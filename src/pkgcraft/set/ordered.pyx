@@ -208,11 +208,6 @@ cdef class _OrderedFrozenSet:
         """
         :rtype: OrderedSet
         """
-        if not isinstance(self, Iterable):
-            return NotImplemented
-        if not isinstance(other, Iterable):
-            return NotImplemented
-
         return (self - other) | (other - self)
 
     def union(self, other):
