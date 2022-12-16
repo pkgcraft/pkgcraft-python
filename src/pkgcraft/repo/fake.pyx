@@ -3,7 +3,7 @@ from cpython.mem cimport PyMem_Free, PyMem_Malloc
 from .. cimport pkgcraft_c as C
 from . cimport Repo
 
-from ..error import PkgcraftError
+from ..error import InvalidRepo, PkgcraftError
 
 
 cdef class FakeRepo(Repo):
@@ -19,7 +19,7 @@ cdef class FakeRepo(Repo):
         ptr = C.pkgcraft_repo_fake_new(id.encode(), priority, array, len(cpvs))
         PyMem_Free(array)
         if ptr is NULL:
-            raise PkgcraftError
+            raise InvalidRepo
 
         self.ptr = ptr
         self.ref = False
@@ -30,7 +30,7 @@ cdef class FakeRepo(Repo):
         id = str(id) if id is not None else path
         ptr = C.pkgcraft_repo_fake_from_path(id.encode(), priority, path.encode())
         if ptr is NULL:
-            raise PkgcraftError
+            raise InvalidRepo
 
         return FakeRepo.from_ptr(ptr, False)
 

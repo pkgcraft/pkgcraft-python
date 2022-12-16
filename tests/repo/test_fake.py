@@ -1,6 +1,6 @@
 import pytest
 
-from pkgcraft.error import PkgcraftError
+from pkgcraft.error import InvalidRepo, PkgcraftError
 from pkgcraft.repo import FakeRepo, RepoSet
 
 from .base import BaseRepoTests
@@ -44,6 +44,10 @@ class TestFakeRepo(BaseRepoTests):
         assert 'cat/pkg-1' not in r
 
     def test_from_path(self, tmp_path):
+        # nonexistent path
+        with pytest.raises(InvalidRepo):
+            FakeRepo.from_path('/path/to/nonexistent/repo')
+
         # empty file
         path = tmp_path / 'atoms'
         path.touch()
