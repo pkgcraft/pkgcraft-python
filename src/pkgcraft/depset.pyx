@@ -148,7 +148,7 @@ cdef class _DepSetFlattenIter:
             elif self.kind == DepSetUri:
                 return Uri.from_ptr(<const C.Uri *>obj)
             else:  # pragma: no cover
-                raise AttributeError(f'unknown DepSet kind: {self.kind}')
+                raise TypeError(f'unknown DepSet kind: {self.kind}')
         raise StopIteration
 
     def __dealloc__(self):
