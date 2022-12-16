@@ -11,7 +11,7 @@ cdef class entry:
 
 
 cdef inline object  _isorderedsubset(seq1, seq2):
-    if not len(seq1) <= len(seq2):
+    if len(seq1) > len(seq2):
         return False
     for self_elem, other_elem in zip(seq1, seq2):
         if not self_elem == other_elem:

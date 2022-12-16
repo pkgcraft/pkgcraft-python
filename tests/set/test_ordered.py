@@ -286,6 +286,7 @@ class TestOrderedSet:
 
         assert oset1.isorderedsubset(oset2)
         assert not oset1.isorderedsubset(oset3)
+        assert not oset2.isorderedsubset(oset1)
         assert not oset2.isorderedsubset(oset3)
 
     def test_orderedsuperset(self):
@@ -294,6 +295,7 @@ class TestOrderedSet:
         oset3 = OrderedSet([1, 2, 4, 3])
 
         assert oset2.isorderedsuperset(oset1)
+        assert not oset1.isorderedsuperset(oset3)
         assert not oset3.isorderedsuperset(oset1)
         assert not oset3.isorderedsuperset(oset2)
 
