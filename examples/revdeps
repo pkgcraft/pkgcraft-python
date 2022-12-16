@@ -15,6 +15,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--quiet', '-q', action='count', default=0)
     parser.add_argument('--verbose', '-v', action='count', default=0)
+    parser.add_argument('--repo', '-r', metavar='REPO_PATH', dest='repos', action='append')
     parser.add_argument('dep')
     args = parser.parse_args()
 
@@ -27,8 +28,14 @@ def main():
     except InvalidRestrict as e:
         parser.error(e)
 
+    # try to load specified repos, falling back to repos.conf
+    config = Config()
     try:
-        config = Config(repos_conf=True)
+        if args.repos:
+            for path in args.repos:
+                config.add_repo_path(path)
+        else:
+            config.load_repos_conf()
     except PkgcraftError as e:
         parser.error(e)
 
