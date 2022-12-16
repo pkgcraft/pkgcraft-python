@@ -35,9 +35,11 @@ class PkgcraftError(_PkgcraftError):
     kinds = (C.ERROR_KIND_GENERIC, C.ERROR_KIND_PKGCRAFT)
 
     def __new__(cls, msg=None, **kwargs):
-        # If no specific message is passed, pull the last pkgcraft-c error
-        # that occurred, automatically determining the subclass for PkgcraftError.
-        if msg is None:
+        if msg is not None:
+            inst = super().__new__(cls)
+        else:
+            # If no specific message is passed, pull the last pkgcraft-c error
+            # that occurred, automatically determining the subclass for PkgcraftError.
             msg, kind = _get_last_error()
             err_cls = cls.types[kind]
             # only the generic PkgcraftError class is allowed to alter its type
@@ -49,13 +51,12 @@ class PkgcraftError(_PkgcraftError):
                 inst = super().__new__(err_cls)
             else:
                 inst = super().__new__(cls)
-            inst.msg = msg
-            return inst
-        return super().__new__(cls)
 
-    def __init__(self, msg=None):
-        msg = getattr(self, 'msg', msg)
-        super().__init__(msg)
+        inst.msg = msg
+        return inst
+
+    def __init__(self, *args):
+        super().__init__(self.msg)
 
 
 class ConfigError(PkgcraftError):
