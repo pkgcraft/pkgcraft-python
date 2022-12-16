@@ -1,6 +1,7 @@
 import pytest
 
-from pkgcraft.error import PkgcraftError
+from pkgcraft.eapi import Eapi
+from pkgcraft.error import IndirectInit, PkgcraftError
 
 
 class TestPkgcraftError:
@@ -12,3 +13,10 @@ class TestPkgcraftError:
     def test_no_c_error(self):
         with pytest.raises(RuntimeError, match='no pkgcraft-c error occurred'):
             raise PkgcraftError
+
+
+class TestIndirectInit:
+
+    def test_class_init(self):
+        with pytest.raises(IndirectInit):
+            Eapi()
