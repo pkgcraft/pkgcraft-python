@@ -192,6 +192,7 @@ class TestOrderedSet:
 
         oset3 = oset1 - oset2
         assert oset3 == OrderedSet([1, 2])
+        assert oset1 - [3, 4, 5] == oset3
 
         assert oset1.difference(oset2) == oset3
 
@@ -203,26 +204,38 @@ class TestOrderedSet:
         oset5.difference_update(oset2)
         assert oset5 == oset3
 
+        oset1 -= oset1
+        assert not oset1
+
+        # non-iterable objects raise TypeError
+        for (o1, o2) in ((oset1, object()), (object(), oset1)):
+            with pytest.raises(TypeError):
+                o1 - o2
+
     def test_intersection_and_update(self):
         oset1 = OrderedSet([1, 2, 3])
         oset2 = OrderedSet([3, 4, 5])
 
-        # intersection not supported for non-iterable types
-        with pytest.raises(TypeError):
-            oset1 & object
-
         oset3 = oset1 & oset2
         assert oset3 == OrderedSet([3])
         assert oset1.intersection(oset2) == oset3
+        assert oset1 & [3, 4, 5] == oset3
 
         oset4 = oset1.copy()
         oset4 &= oset2
-
         assert oset4 == oset3
 
         oset5 = oset1.copy()
         oset5.intersection_update(oset2)
         assert oset5 == oset3
+
+        oset1 &= oset1
+        assert oset1 == oset1
+
+        # non-iterable objects raise TypeError
+        for (o1, o2) in ((oset1, object()), (object(), oset1)):
+            with pytest.raises(TypeError):
+                o1 & o2
 
     def test_issubset(self):
         oset1 = OrderedSet([1, 2, 3])
@@ -284,7 +297,7 @@ class TestOrderedSet:
         assert not oset3.isorderedsuperset(oset1)
         assert not oset3.isorderedsuperset(oset2)
 
-    def test_symmetric_difference_and_update(self):
+    def test_symmetric_difference_update(self):
         oset1 = OrderedSet([1, 2, 3])
         oset2 = OrderedSet([2, 3, 4])
 
@@ -300,6 +313,13 @@ class TestOrderedSet:
         oset5 = oset1.copy()
         oset5.symmetric_difference_update(oset2)
         assert oset5 == oset3
+
+        oset6 = oset1.copy()
+        oset6 ^= [2, 3, 4]
+        assert oset6 == oset3
+
+        oset1 ^= oset1
+        assert not oset1
 
         # non-iterable objects raise TypeError
         for (o1, o2) in ((oset1, object()), (object(), oset1)):
@@ -414,6 +434,7 @@ class TestOrderedSet:
     def test_iter_mutated(self, lst):
         oset = OrderedSet(lst)
         it = iter(oset)
+        assert it is iter(it)
         oset.add('a')
 
         with pytest.raises(RuntimeError):

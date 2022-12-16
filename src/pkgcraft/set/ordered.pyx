@@ -150,11 +150,9 @@ cdef class _OrderedFrozenSet:
         """
         ostyp = type(self if isinstance(self, OrderedSet) else other)
 
-        if not isinstance(self, Iterable):
+        if not (isinstance(self, Iterable) and isinstance(other, Iterable)):
             return NotImplemented
         if not isinstance(other, Set):
-            if not isinstance(other, Iterable):
-                return NotImplemented
             other = ostyp._from_iterable(other)
 
         return ostyp._from_iterable(value for value in self if value in other)
