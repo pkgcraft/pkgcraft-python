@@ -33,6 +33,22 @@ class TestRestrict:
         r = Restrict(Atom('=cat/pkg-1'))
         assert list(fake_repo.iter_restrict(r)) == [pkg1]
 
+    def test_dep(self, fake_repo):
+        with pytest.raises(InvalidRestrict):
+            Restrict.dep('cat/pkg#')
+
+        r = Restrict.dep('cat/pkg')
+        pkg = fake_repo.create_pkg('cat/pkg-1')
+        assert r.matches(pkg)
+
+    def test_pkg(self, ebuild_repo):
+        with pytest.raises(InvalidRestrict):
+            Restrict.pkg('description ~= "fake"')
+
+        r = Restrict.pkg('description =~ "fake"')
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', description='fake pkg')
+        assert r.matches(pkg)
+
     def test_matches(self, fake_repo):
         r = Restrict('cat/pkg')
         pkg1 = fake_repo.create_pkg('cat/pkg-1')
