@@ -207,8 +207,13 @@ class TestOrderedSet:
         oset1 = OrderedSet([1, 2, 3])
         oset2 = OrderedSet([3, 4, 5])
 
+        # intersection not supported for non-iterable types
+        with pytest.raises(TypeError):
+            oset1 & object
+
         oset3 = oset1 & oset2
         assert oset3 == OrderedSet([3])
+        assert oset1.intersection(oset2) == oset3
 
         oset4 = oset1.copy()
         oset4 &= oset2
@@ -360,9 +365,22 @@ class TestOrderedSet:
         oset = OrderedSet("abcd")
         assert oset.index("b") == 1
 
+        # nonexistent elements raise ValueError
+        with pytest.raises(ValueError):
+            oset.index("z")
+
     def test_getitem(self):
         oset = OrderedSet("abcd")
         assert oset[2] == "c"
+        assert oset[-1] == "d"
+        assert oset[-2] == "c"
+
+        with pytest.raises(IndexError):
+            oset[10]
+
+        # bad indices raise TypeError
+        with pytest.raises(TypeError):
+            oset["a"]
 
     def test_getitem_slice(self):
         oset = OrderedSet("abcdef")
@@ -411,6 +429,8 @@ class TestOrderedSet:
     def test_repr(self):
         oset = OrderedSet([1])
         assert repr(oset) == "OrderedSet([1])"
+        oset = OrderedSet()
+        assert repr(oset) == "OrderedSet()"
 
     def test_eq(self, lst):
         oset1 = OrderedSet(lst)
@@ -429,20 +449,28 @@ class TestOrderedSet:
         assert oset2 <= oset1
         assert oset2 <= set(oset1)
         assert oset2 <= list(oset1)
+        with pytest.raises(TypeError):
+            oset2 <= object()
 
         assert oset1 >= oset2
         assert oset1 >= set(oset2)
         assert oset1 >= list(oset2)
+        with pytest.raises(TypeError):
+            oset1 >= object()
 
         oset3 = OrderedSet(lst[:-1])
 
         assert oset3 < oset1
         assert oset3 < set(oset1)
         assert oset3 < list(oset1)
+        with pytest.raises(TypeError):
+            oset3 < object()
 
         assert oset1 > oset3
         assert oset1 > set(oset3)
         assert oset1 > list(oset3)
+        with pytest.raises(TypeError):
+            oset1 > object()
 
     def test_hash(self, lst):
         oset = OrderedSet(lst)
