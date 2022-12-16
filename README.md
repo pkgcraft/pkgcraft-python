@@ -6,6 +6,21 @@
 
 Python bindings for [pkgcraft](https://github.com/pkgcraft/pkgcraft).
 
+## Install
+
+Install pre-built package from pypi:
+
+    pip install pkgcraft
+
+Install from git (assumes pkgcraft-c has been installed from git and cython is
+available):
+
+    pip install https://github.com/pkgcraft/pkgcraft-python/archive/master.tar.gz
+
+Install from a tarball (assumes required release of pkgcraft-c is installed):
+
+    python setup.py install
+
 ## Development
 
 Requirements: >=python-3.9, [tox](https://pypi.org/project/tox/),
@@ -28,5 +43,5 @@ cd pkgcraft-python
 tox -e python
 ```
 
-All testing is generally done under tox using many targets to perform different
-functions. Use `tox list` to see all the target descriptions.
+For development purposes, testing is performed under tox using varying targets
+for different functions. Use `tox list` to see all the target descriptions.
