@@ -127,9 +127,6 @@ cdef class Repos:
     def __eq__(self, other):
         return self._repos == other
 
-    def __ne__(self, other):
-        return self._repos != other
-
     def __getitem__(self, key):
         return self._repos[key]
 

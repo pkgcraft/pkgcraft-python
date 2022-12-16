@@ -80,6 +80,7 @@ class TestConfig:
         r2 = FakeRepo('r2', 2, [])
         config.add_repo(r1)
         config.add_repo(r2)
+        assert config.repos != {}
         assert config.repos == {'r2': r2, 'r1': r1}
 
         # re-adding a repo fails
