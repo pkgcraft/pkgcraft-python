@@ -26,10 +26,7 @@ source ./build pkgcraft-c
 cd pkgcraft-python
 # build and test
 tox -e python
-# test under valgrind
-tox -e valgrind
-# run benchmarks
-tox -e bench
-# run memory usage benchmarks
-tox -e membench
 ```
+
+All testing is generally done under tox using many targets to perform different
+functions. Use `tox list` to see all the target descriptions.
