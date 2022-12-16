@@ -1,9 +1,11 @@
+import os
 import textwrap
 
 import pytest
 
 from pkgcraft.atom import Atom
 from pkgcraft.eapi import EAPIS
+from pkgcraft.error import PkgcraftError
 
 from .base import BasePkgTests
 
@@ -39,6 +41,11 @@ class TestEbuildPkg(BasePkgTests):
     def test_ebuild(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg('cat/pkg-1')
         assert pkg.ebuild
+
+        # missing file causes error
+        os.remove(pkg.path)
+        with pytest.raises(PkgcraftError):
+            pkg.ebuild
 
     def test_description(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg('cat/pkg-1', description="desc")
