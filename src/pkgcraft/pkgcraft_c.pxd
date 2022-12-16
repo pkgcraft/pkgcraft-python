@@ -308,9 +308,7 @@ cdef extern from "pkgcraft.h":
     # The path argument should be a valid path on the system.
     Repo **pkgcraft_config_load_repos_conf(Config *config, const char *path, uintptr_t *len);
 
-    # Return the pkgcraft config for the system.
-    #
-    # Returns NULL on error.
+    # Create an empty pkgcraft config.
     Config *pkgcraft_config_new();
 
     # Return the repos for a config.

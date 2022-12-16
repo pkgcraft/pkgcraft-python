@@ -24,8 +24,6 @@ cdef class Config:
 
     def __init__(self, repos_conf=False):
         self.ptr = C.pkgcraft_config_new()
-        if self.ptr is NULL:
-            raise ConfigError
 
         # load repos.conf file if enabled or manually specifying a path
         if repos_conf:
