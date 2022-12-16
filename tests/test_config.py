@@ -82,6 +82,10 @@ class TestConfig:
         config.add_repo(r2)
         assert config.repos == {'r2': r2, 'r1': r1}
 
+        # re-adding a repo fails
+        with pytest.raises(ConfigError):
+            config.add_repo(r1)
+
     def test_repo_sets(self, config, make_ebuild_repo, make_fake_repo):
         # empty
         assert config.repos.all == RepoSet()
