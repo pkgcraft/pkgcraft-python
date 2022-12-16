@@ -301,6 +301,11 @@ class TestOrderedSet:
         oset5.symmetric_difference_update(oset2)
         assert oset5 == oset3
 
+        # non-iterable objects raise TypeError
+        for (o1, o2) in ((oset1, object()), (object(), oset1)):
+            with pytest.raises(TypeError):
+                o1 ^ o2
+
     def test_union_and_update(self, lst):
         oset = OrderedSet(lst)
 
@@ -324,6 +329,11 @@ class TestOrderedSet:
         oset1 = OrderedSet(lst)
         oset1.update("abc")
         assert oset1 == oset2 | "abc"
+
+        # non-iterable objects raise TypeError
+        for (o1, o2) in ((oset1, object()), (object(), oset1)):
+            with pytest.raises(TypeError):
+                o1 | o2
 
     def test_union_with_iterable(self):
         oset1  = OrderedSet([1])
