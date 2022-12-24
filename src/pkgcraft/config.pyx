@@ -1,3 +1,5 @@
+import os
+
 cimport cython
 
 from . cimport pkgcraft_c as C
@@ -52,24 +54,24 @@ cdef class Config:
 
         return repo
 
-    def add_repo_path(self, path not None, id=None, priority=0):
-        """Add an external repo via its file path."""
-        ptr = self._add_repo_path(path, id, priority)
-        return Repo.from_ptr(ptr, False)
-
     def _inject_repo_path(self, Repo obj not None, path not None, id=None, priority=0):
         """Add an external repo via its file path and inject it into a given Repo object."""
         repo = self._add_repo_path(path, id, priority)
         obj.inject_ptr(repo, False)
         return obj
 
-    def add_repo(self, Repo repo not None):
-        """Add an external repo."""
-        if C.pkgcraft_config_add_repo(self.ptr, repo.ptr) is NULL:
-            raise ConfigError
-
-        # force repos attr refresh
-        self._repos = None
+    def add_repo(self, repo not None, id=None, priority=0):
+        """Add an external repo via its file path or from a Repo object."""
+        if isinstance(repo, (str, os.PathLike)):
+            path = str(repo)
+            ptr = self._add_repo_path(path, id, priority)
+            self._repos = None
+            return Repo.from_ptr(ptr, False)
+        else:
+            if C.pkgcraft_config_add_repo(self.ptr, (<Repo?>repo).ptr) is NULL:
+                raise ConfigError
+            self._repos = None
+            return repo
 
     # TODO: determine default fs path based off install prefix?
     def load_repos_conf(self, path='/etc/portage/repos.conf'):

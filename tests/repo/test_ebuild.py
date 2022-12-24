@@ -38,12 +38,12 @@ class TestEbuildRepo(BaseRepoTests):
     def test_masters(self, config, make_raw_ebuild_repo):
         # empty masters
         repo = make_raw_ebuild_repo()
-        r = config.add_repo_path(repo.path)
+        r = config.add_repo(repo.path)
         assert not r.masters
 
         # non-empty masters
         overlay = make_raw_ebuild_repo(masters=[r.path])
-        o = config.add_repo_path(overlay.path)
+        o = config.add_repo(overlay.path)
         assert o.masters == (r,)
 
     def test_iter(self, ebuild_repo):

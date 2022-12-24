@@ -28,7 +28,7 @@ class TestConfig:
     def test_repos(self, config, raw_ebuild_repo):
         path = raw_ebuild_repo.path
         assert not config.repos
-        r = config.add_repo_path(path)
+        r = config.add_repo(path)
         assert r == config.repos[str(path)]
 
         d = {x: config.repos[x] for x in config.repos}
@@ -41,26 +41,26 @@ class TestConfig:
         path = raw_ebuild_repo.path
 
         # default
-        r = config.add_repo_path(path)
+        r = config.add_repo(path)
         assert r == config.repos[str(path)]
 
         # custom
-        r = config.add_repo_path(path, 'fake')
+        r = config.add_repo(path, 'fake')
         assert r == config.repos['fake']
 
         # existing
         with pytest.raises(ConfigError, match='existing repo: fake'):
-            config.add_repo_path(path, 'fake')
+            config.add_repo(path, 'fake')
 
         # nonexistent
         with pytest.raises(InvalidRepo, match='nonexistent repo path'):
-            config.add_repo_path('/path/to/nonexistent/repo')
+            config.add_repo('/path/to/nonexistent/repo')
 
     def test_add_repo_path_fake(self, config, tmp_path):
         # empty file
         f = tmp_path / "repo1"
         f.touch()
-        r = config.add_repo_path(f)
+        r = config.add_repo(f)
         assert r == config.repos[str(f)]
         assert len(r) == 0
 
@@ -71,7 +71,7 @@ class TestConfig:
             cat/pkg-2
             a/b-0
         """))
-        r = config.add_repo_path(f)
+        r = config.add_repo(f)
         assert len(r) == 3
 
     def test_add_repo(self, config):
