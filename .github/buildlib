@@ -9,6 +9,8 @@ doecho() {
 	"$@"
 }
 
+echo Building pkgcraft-c on ${OSTYPE} for ${HOSTTYPE}
+
 # install rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 doecho source "${HOME}"/.cargo/env
@@ -32,19 +34,26 @@ install_pkgs() {
 
 [[ ${OSTYPE} == "linux-"* ]] && install_pkgs
 
-if [[ ${HOSTTYPE} == "x86_64" ]]; then
-	# install cargo-c via binary package
-	if [[ ${OSTYPE} == "linux-"* ]]; then
-		curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-linux.tar.gz | tar xvzf - -C "${HOME}"/.cargo/bin
-	elif [[ ${OSTYPE} == "darwin"* ]]; then
+# install binary cargo-c package if available
+if [[ ${OSTYPE} == "linux-"* ]]; then
+	if [[ ${HOSTTYPE} == "aarch64" ]]; then
+		curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-aarch64-unknown-linux-musl.tar.gz | tar xvzf - -C "${HOME}"/.cargo/bin
+	elif [[ ${HOSTTYPE} == "x86_64" ]]; then
+		curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-x86_64-unknown-linux-musl.tar.gz | tar xvzf - -C "${HOME}"/.cargo/bin
+	else
+		SOURCE_CARGO_C=true
+	fi
+elif [[ ${OSTYPE} == "darwin"* ]]; then
+	if [[ ${HOSTTYPE} == "x86_64" ]]; then
 		curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-macos.zip > cargo-c.zip
 		unzip -o cargo-c.zip -d "${HOME}"/.cargo/bin
 		rm cargo-c.zip
 	else
-		echo "unknown OS: ${OSTYPE}"
-		exit 1
+		SOURCE_CARGO_C=true
 	fi
-else
+fi
+
+if [[ -n ${SOURCE_CARGO_C} ]]; then
 	# avoid libgit2 usage due to memory problems when emulated under qemu
 	# https://users.rust-lang.org/t/cargo-uses-too-much-memory-being-run-in-qemu/76531
 	cargo --config net.git-fetch-with-cli=true update
