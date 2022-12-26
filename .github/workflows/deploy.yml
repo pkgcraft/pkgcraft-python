@@ -16,9 +16,6 @@ jobs:
             arch: 'aarch64'
           - os: ubuntu-latest
             arch: 'ppc64le'
-          - os: macos-latest
-            arch: 'x86_64'
-            macos-target: '11.0'
     runs-on: ${{ matrix.os }}
     env:
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-target }}
