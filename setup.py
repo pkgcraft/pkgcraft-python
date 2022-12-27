@@ -10,8 +10,8 @@ MODULEDIR = 'src/pkgcraft'
 PACKAGEDIR = os.path.dirname(MODULEDIR)
 
 # version requirements for pkgcraft C library
-MIN_VERSION = '0.0.3'
-MAX_VERSION = '0.0.3'
+MIN_VERSION = '0.0.4'
+MAX_VERSION = '0.0.4'
 
 # running against git repo
 GIT = os.path.exists(os.path.join(os.path.dirname(__file__), '.git'))
