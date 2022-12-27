@@ -4,7 +4,6 @@ from multiprocessing import cpu_count
 
 from setuptools import setup
 from setuptools.command import build_ext as dst_build_ext
-from setuptools.command import sdist as dst_sdist
 from setuptools.extension import Extension
 
 MODULEDIR = 'src/pkgcraft'
@@ -89,22 +88,6 @@ def extensions(**build_opts):
     return exts
 
 
-class sdist(dst_sdist.sdist):
-    """sdist command wrapper to bundle generated files for release."""
-
-    def run(self):
-        # generate cython extensions
-        if CYTHON_EXTS:
-            from Cython.Build import cythonize
-            cythonize(
-                CYTHON_EXTS,
-                compiler_directives=compiler_directives,
-                annotate=False,
-            )
-
-        super().run()
-
-
 class build_ext(dst_build_ext.build_ext):
     """Enable building cython extensions with coverage support."""
 
@@ -175,6 +158,5 @@ setup(
     ext_modules=extensions(),
     cmdclass={
         'build_ext': build_ext,
-        'sdist': sdist,
     },
 )
