@@ -71,6 +71,7 @@ exclude_lines = [
 
 [tool.cibuildwheel]
 build = ["cp39-*", "cp310-*", "cp311-*"]
+build-frontend = "build"
 build-verbosity = 1
 before-all = "{package}/.github/buildlib"
 test-requires = "pytest"
