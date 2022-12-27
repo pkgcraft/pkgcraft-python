@@ -71,7 +71,7 @@ def extensions(**build_opts):
         build_opts = {'depends': [], 'include_dirs': []}
     exts = []
 
-    for ext in CYTHON_EXTS:
+    for ext in cython_pyx(MODULEDIR):
         cythonized = os.path.splitext(ext)[0] + '.c'
         # use pre-generated modules for releases
         if not GIT and os.path.exists(cythonized):
@@ -152,7 +152,6 @@ class build_ext(dst_build_ext.build_ext):
         super().run()
 
 
-CYTHON_EXTS = list(cython_pyx(MODULEDIR))
 
 setup(
     ext_modules=extensions(),
