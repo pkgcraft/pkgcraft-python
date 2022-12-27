@@ -152,10 +152,24 @@ class build_ext(dst_build_ext.build_ext):
         super().run()
 
 
+def exclude_cython_files():
+    """Generate package data exclusion mapping to avoid installing cython files."""
+    excluded = ["*.pxd", "*.pyx", "*.c"]
+    excludes = {}
+
+    for root, dirs, _files in os.walk('src'):
+        for d in dirs:
+            path = os.path.join(root, d).lstrip('src/')
+            module = path.replace(os.path.sep, '.')
+            excludes[module] = excluded
+
+    return excludes
+
 
 setup(
     ext_modules=extensions(),
     cmdclass={
         'build_ext': build_ext,
     },
+    exclude_package_data=exclude_cython_files(),
 )
