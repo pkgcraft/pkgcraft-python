@@ -21,7 +21,7 @@ dynamic = ["version", "readme"]
 homepage = "https://github.com/pkgcraft/pkgcraft-python"
 
 [tool.setuptools.dynamic]
-readme = {file = ["README.md"]}
+readme = {file = ["README.rst"]}
 
 [tool.setuptools.packages.find]
 where = ["src"]
