@@ -14,7 +14,7 @@ jobs:
       with:
         # checkout full history for setuptools-scm
         fetch-depth: 0
-        submodules: recursive
+        submodules: true
 
     - name: Set up Python
       uses: actions/setup-python@v4
