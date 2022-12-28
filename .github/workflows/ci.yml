@@ -36,7 +36,7 @@ jobs:
       with:
         # checkout full history for setuptools-scm
         fetch-depth: 0
-        submodules: recursive
+        submodules: true
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
