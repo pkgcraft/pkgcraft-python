@@ -25,24 +25,7 @@ Install from a tarball (assumes required release of pkgcraft-c is installed)::
 Development
 ===========
 
-Requirements: >=python-3.9, tox_, valgrind_, and everything required to build
-pkgcraft-c_
-
-Use the following commands to set up a dev environment:
-
-.. code-block:: bash
-
-    # clone the pkgcraft workspace and pull the latest project updates
-    git clone --recurse-submodules https://github.com/pkgcraft/pkgcraft-workspace.git
-    cd pkgcraft-workspace
-    git submodule update --recursive --remote
-
-    # build pkgcraft-c library and set shell variables (e.g. $PKG_CONFIG_PATH)
-    source ./build pkgcraft-c
-
-    cd pkgcraft-python
-    # build and test
-    tox -e python
+Requirements: tox_, valgrind_, and pkgcraft-c_
 
 For development purposes, testing is performed under tox using varying targets
 for different functions. Use **tox list** to see all the target descriptions.
