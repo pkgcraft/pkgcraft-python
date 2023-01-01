@@ -25,9 +25,9 @@ jobs:
       uses: dawidd6/action-download-artifact@v2
       with:
         github_token: ${{ secrets.PKGCRAFT_CI_TOKEN }}
-        repo: pkgcraft/pkgcraft-c
+        repo: pkgcraft/pkgcraft
         branch: main
-        workflow: ci.yml
+        workflow: pkgcraft-c.yml
         name: pkgcraft-c-${{ runner.os }}
         path: ${{ env.pkgcraft_dir }}
 
