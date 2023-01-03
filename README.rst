@@ -25,10 +25,12 @@ Install from a tarball (assumes required release of pkgcraft-c is installed)::
 Development
 ===========
 
-Requirements: tox_, valgrind_, and pkgcraft-c_
+Requirements: tox_ and pkgcraft-c_
 
-For development purposes, testing is performed under tox using varying targets
-for different functions. Use **tox list** to see all the target descriptions.
+For development purposes, testing is performed under tox with varying targets
+for different functions, e.g. `tox -e valgrind` runs tests while checking for
+memory leaks using valgrind_. Use **tox list** to see all the target
+descriptions.
 
 .. _tox: https://pypi.org/project/tox/
 .. _valgrind: https://valgrind.org/
