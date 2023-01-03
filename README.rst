@@ -28,7 +28,7 @@ Development
 Requirements: tox_ and pkgcraft-c_
 
 For development purposes, testing is performed under tox with varying targets
-for different functions, e.g. `tox -e valgrind` runs tests while checking for
+for different functions, e.g. ``tox -e valgrind`` runs tests while checking for
 memory leaks using valgrind_. Use **tox list** to see all the target
 descriptions.
 
