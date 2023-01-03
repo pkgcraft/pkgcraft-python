@@ -25,6 +25,11 @@ class TestEbuildRepo(BaseRepoTests):
         with pytest.raises(InvalidRepo):
             EbuildRepo.from_path('/path/to/nonexistent/repo')
 
+        # overlays must be initialized via Config.add_repo()
+        repo = make_raw_ebuild_repo(masters=['nonexistent'])
+        with pytest.raises(InvalidRepo):
+            EbuildRepo.from_path(repo.path)
+
         repo = make_raw_ebuild_repo()
         path = repo.path
 
