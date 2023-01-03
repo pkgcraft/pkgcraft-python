@@ -48,7 +48,8 @@ cdef class Repo:
 
         # When called using a subclass try to load that type, otherwise try types in order.
         if cls.format is not None:
-            ptr = C.pkgcraft_repo_from_format(id.encode(), priority, path.encode(), cls.format, True)
+            ptr = C.pkgcraft_repo_from_format(
+                id.encode(), priority, path.encode(), cls.format, True)
         else:
             ptr = C.pkgcraft_repo_from_path(id.encode(), priority, path.encode(), True)
 

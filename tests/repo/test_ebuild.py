@@ -2,7 +2,6 @@ from pathlib import Path
 
 import pytest
 
-from pkgcraft.atom import Cpv
 from pkgcraft.error import InvalidRepo
 from pkgcraft.repo import EbuildRepo
 
