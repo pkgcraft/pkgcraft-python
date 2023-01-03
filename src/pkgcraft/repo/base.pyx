@@ -7,11 +7,13 @@ from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport EbuildRepo, FakeRepo
 from .. import parse
-from ..error import IndirectInit
+from ..error import IndirectInit, InvalidRepo
 
 
 cdef class Repo:
     """Package repo."""
+
+    format = None
 
     def __init__(self):  # pragma: no cover
         raise IndirectInit(self)
@@ -37,6 +39,23 @@ cdef class Repo:
         obj.ptr = ptr
         obj.ref = ref
         return obj
+
+    @classmethod
+    def from_path(cls, path not None, id=None, int priority=0):
+        """Load a repo from a given path."""
+        path = str(path)
+        id = str(id) if id is not None else path
+
+        # When called using a subclass try to load that type, otherwise try types in order.
+        if cls.format is not None:
+            ptr = C.pkgcraft_repo_from_format(id.encode(), priority, path.encode(), cls.format, True)
+        else:
+            ptr = C.pkgcraft_repo_from_path(id.encode(), priority, path.encode(), True)
+
+        if ptr is NULL:
+            raise InvalidRepo
+
+        return Repo.from_ptr(ptr, False)
 
     @property
     def id(self):

@@ -856,14 +856,6 @@ cdef extern from "pkgcraft.h":
     # The arguments must be a non-null Repo pointer and an array of CPV strings.
     Repo *pkgcraft_repo_fake_extend(Repo *r, char **cpvs, uintptr_t len);
 
-    # Create a fake repo from a given path.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The path argument should be a valid path on the system.
-    Repo *pkgcraft_repo_fake_from_path(const char *id, int priority, const char *path);
-
     # Create a fake repo from an array of CPV strings.
     #
     # Returns NULL on error.
@@ -884,13 +876,25 @@ cdef extern from "pkgcraft.h":
     # The argument must be a Repo pointer or NULL.
     void pkgcraft_repo_free(Repo *r);
 
+    # Try to load a certain repo type from a given path.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The path argument should be a valid path on the system.
+    Repo *pkgcraft_repo_from_format(const char *id,
+                                    int priority,
+                                    const char *path,
+                                    RepoFormat format,
+                                    bool finalize);
+
     # Load a repo from a given path.
     #
     # Returns NULL on error.
     #
     # # Safety
     # The path argument should be a valid path on the system.
-    Repo *pkgcraft_repo_from_path(const char *id, int priority, const char *path);
+    Repo *pkgcraft_repo_from_path(const char *id, int priority, const char *path, bool finalize);
 
     # Return the hash value for a repo.
     #
