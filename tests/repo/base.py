@@ -124,7 +124,7 @@ class BaseRepoTests:
         assert repo
         assert len(repo) == 2
 
-    def test_iter(self, repo):
+    def test_iter_base(self, repo):
         # calling next() directly on a repo object fails
         with pytest.raises(TypeError):
             next(repo)

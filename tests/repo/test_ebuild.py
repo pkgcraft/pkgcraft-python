@@ -46,22 +46,6 @@ class TestEbuildRepo(BaseRepoTests):
         o = config.add_repo(overlay.path)
         assert o.masters == (r,)
 
-    def test_iter(self, ebuild_repo):
-        # calling next() directly on a repo object fails
-        with pytest.raises(TypeError):
-            next(ebuild_repo)
-
-        # empty repo
-        assert not list(ebuild_repo)
-
-        # single pkg
-        pkg1 = ebuild_repo.create_pkg('cat/pkg-1')
-        assert list(ebuild_repo) == [pkg1]
-
-        # multiple pkgs
-        pkg2 = ebuild_repo.create_pkg('cat/pkg-2')
-        assert list(ebuild_repo) == [pkg1, pkg2]
-
     def test_iter_restrict(self, ebuild_repo):
         # non-None argument required
         with pytest.raises(TypeError):
