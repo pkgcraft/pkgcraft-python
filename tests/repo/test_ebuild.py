@@ -27,7 +27,7 @@ class TestEbuildRepo(BaseRepoTests):
 
         # overlays must be initialized via Config.add_repo()
         repo = make_raw_ebuild_repo(masters=['nonexistent'])
-        with pytest.raises(InvalidRepo):
+        with pytest.raises(InvalidRepo, match='overlay must be added via config'):
             EbuildRepo.from_path(repo.path)
 
         repo = make_raw_ebuild_repo()
