@@ -3,7 +3,6 @@ from pathlib import Path
 import pytest
 
 from pkgcraft.atom import Cpv
-from pkgcraft.error import InvalidRestrict
 
 from .base import BaseRepoTests
 
@@ -20,7 +19,7 @@ def repo(ebuild_repo):
 
 class TestEbuildRepo(BaseRepoTests):
 
-    def test_contains(self, make_ebuild_repo):
+    def test_contains_path(self, make_ebuild_repo):
         r1 = make_ebuild_repo()
         r2 = make_ebuild_repo()
         pkg1 = r1.create_pkg('cat/pkg-1')
@@ -45,37 +44,3 @@ class TestEbuildRepo(BaseRepoTests):
         overlay = make_raw_ebuild_repo(masters=[r.path])
         o = config.add_repo(overlay.path)
         assert o.masters == (r,)
-
-    def test_iter_restrict(self, ebuild_repo):
-        # non-None argument required
-        with pytest.raises(TypeError):
-            ebuild_repo.iter_restrict(None)
-
-        # unsupported object type
-        with pytest.raises(TypeError):
-            list(ebuild_repo.iter_restrict(object()))
-
-        cpv = Cpv('cat/pkg-1')
-
-        # empty repo -- no matches
-        assert not list(ebuild_repo.iter_restrict(cpv))
-
-        pkg1 = ebuild_repo.create_pkg('cat/pkg-1')
-        pkg2 = ebuild_repo.create_pkg('cat/pkg-2')
-
-        # non-empty repo -- no matches
-        nonexistent = Cpv('nonexistent/pkg-1')
-        assert not list(ebuild_repo.iter_restrict(nonexistent))
-
-        # single match via Cpv
-        assert list(ebuild_repo.iter_restrict(cpv)) == [pkg1]
-
-        # single match via package
-        assert list(ebuild_repo.iter_restrict(pkg1)) == [pkg1]
-
-        # multiple matches via restriction glob
-        assert list(ebuild_repo.iter_restrict('cat/*')) == [pkg1, pkg2]
-
-        # invalid restriction string
-        with pytest.raises(InvalidRestrict):
-            list(ebuild_repo.iter_restrict('-'))
