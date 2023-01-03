@@ -48,13 +48,13 @@ class TestFakeRepo(BaseRepoTests):
         with pytest.raises(InvalidRepo):
             FakeRepo.from_path('/path/to/nonexistent/repo')
 
-        # empty file
+        # empty repo
         path = tmp_path / 'atoms'
         path.touch()
         r = FakeRepo.from_path(path)
         assert len(r) == 0
 
-        # single pkg file
+        # single pkg
         path.write_text('cat/pkg-1')
         r = FakeRepo.from_path(path)
         assert len(r) == 1
@@ -65,7 +65,7 @@ class TestFakeRepo(BaseRepoTests):
         assert len(r) == 1
         assert 'cat/pkg-1' in r
 
-        # multiple pkgs file with invalid cpv
+        # multiple pkgs with invalid cpv
         path.write_text('a/b-1\nc/d-2\n=cat/pkg-1')
         r = FakeRepo.from_path(path)
         assert len(r) == 2

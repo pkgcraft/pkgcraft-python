@@ -3,6 +3,8 @@ from pathlib import Path
 import pytest
 
 from pkgcraft.atom import Cpv
+from pkgcraft.error import InvalidRepo
+from pkgcraft.repo import EbuildRepo
 
 from .base import BaseRepoTests
 
@@ -18,6 +20,36 @@ def repo(ebuild_repo):
 
 
 class TestEbuildRepo(BaseRepoTests):
+
+    def test_from_path(self, make_raw_ebuild_repo):
+        # nonexistent path
+        with pytest.raises(InvalidRepo):
+            EbuildRepo.from_path('/path/to/nonexistent/repo')
+
+        repo = make_raw_ebuild_repo()
+        path = repo.path
+
+        # empty repo
+        r = EbuildRepo.from_path(path)
+        assert len(r) == 0
+
+        # single pkg
+        repo.create_ebuild('cat/pkg-1')
+        r = EbuildRepo.from_path(path)
+        assert len(r) == 1
+        assert 'cat/pkg-1' in r
+
+        # file path from string
+        r = EbuildRepo.from_path(str(path))
+        assert len(r) == 1
+        assert 'cat/pkg-1' in r
+
+        # multiple pkgs
+        repo.create_ebuild('cat/pkg-2')
+        r = EbuildRepo.from_path(path)
+        assert len(r) == 2
+        assert 'cat/pkg-1' in r
+        assert 'cat/pkg-2' in r
 
     def test_contains_path(self, make_ebuild_repo):
         r1 = make_ebuild_repo()
