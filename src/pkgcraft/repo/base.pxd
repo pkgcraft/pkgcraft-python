@@ -17,9 +17,9 @@ cdef class Repo:
     cdef Repo from_ptr(C.Repo *, bint)
 
 
-cdef class _RepoIter:
+cdef class _Iter:
     cdef C.RepoPkgIter *ptr
 
 
-cdef class _RestrictIter:
+cdef class _IterRestrict:
     cdef C.RepoRestrictPkgIter *ptr

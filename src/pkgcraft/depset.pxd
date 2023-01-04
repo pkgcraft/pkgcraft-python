@@ -22,12 +22,12 @@ cdef class DepSet:
     cdef DepSet from_ptr(C.DepSet *, DepSetKind)
 
 
-cdef class _DepSetIter:
+cdef class _Iter:
     cdef C.DepSetIter *ptr
     cdef DepSetKind kind
 
 
-cdef class _DepSetFlattenIter:
+cdef class _IterFlatten:
     cdef C.DepSetFlattenIter *ptr
     cdef DepSetKind kind
 

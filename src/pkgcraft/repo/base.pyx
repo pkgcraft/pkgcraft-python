@@ -122,11 +122,11 @@ cdef class Repo:
             raise KeyError(obj)
 
     def __iter__(self):
-        return _RepoIter(self)
+        return _Iter(self)
 
     def iter_restrict(self, restrict not None):
         """Iterate over a repo's packages while applying a restriction."""
-        yield from _RestrictIter(self, restrict)
+        yield from _IterRestrict(self, restrict)
 
     def __lt__(self, Repo other):
         return C.pkgcraft_repo_cmp(self.ptr, other.ptr) == -1
@@ -164,7 +164,7 @@ cdef class Repo:
             C.pkgcraft_repo_free(self.ptr)
 
 
-cdef class _RepoIter:
+cdef class _Iter:
     """Iterator over a repo."""
 
     def __cinit__(self, Repo r):
@@ -183,7 +183,7 @@ cdef class _RepoIter:
         C.pkgcraft_repo_iter_free(self.ptr)
 
 
-cdef class _RestrictIter:
+cdef class _IterRestrict:
     """Iterator that applies a restriction over a repo iterator."""
 
     def __cinit__(self, Repo repo, object obj):

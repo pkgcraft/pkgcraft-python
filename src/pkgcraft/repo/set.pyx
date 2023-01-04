@@ -31,11 +31,11 @@ cdef class RepoSet:
         return obj
 
     def __iter__(self):
-        return _RepoSetIter(self)
+        return _Iter(self)
 
     def iter_restrict(self, restrict not None):
         """Iterate over a repo set's packages while applying a restriction."""
-        yield from _RestrictIter(self, restrict)
+        yield from _IterRestrict(self, restrict)
 
     @property
     def repos(self):
@@ -219,7 +219,7 @@ cdef class RepoSet:
         C.pkgcraft_repo_set_free(self.ptr)
 
 
-cdef class _RepoSetIter:
+cdef class _Iter:
     """Iterator over a repo set."""
 
     def __cinit__(self, RepoSet s):
@@ -238,7 +238,7 @@ cdef class _RepoSetIter:
         C.pkgcraft_repo_set_iter_free(self.ptr)
 
 
-cdef class _RestrictIter:
+cdef class _IterRestrict:
     """Iterator that applies a restriction over a repo set iterator."""
 
     def __cinit__(self, RepoSet s, object obj):

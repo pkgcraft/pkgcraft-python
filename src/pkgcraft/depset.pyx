@@ -20,7 +20,7 @@ cdef class DepRestrict:
         return obj
 
     def __iter__(self):
-        return _DepSetFlattenIter(self, self.kind)
+        return _IterFlatten(self, self.kind)
 
     def __lt__(self, DepRestrict other):
         return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) == -1
@@ -74,10 +74,10 @@ cdef class DepSet:
 
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSet."""
-        yield from _DepSetFlattenIter(self, self.kind)
+        yield from _IterFlatten(self, self.kind)
 
     def __iter__(self):
-        return _DepSetIter(self)
+        return _Iter(self)
 
     def __eq__(self, DepSet other):
         return C.pkgcraft_depset_eq(self.ptr, other.ptr)
@@ -100,7 +100,7 @@ cdef class DepSet:
         C.pkgcraft_depset_free(self.ptr)
 
 
-cdef class _DepSetIter:
+cdef class _Iter:
     """Iterator over a DepSet."""
 
     def __cinit__(self, DepSet d):
@@ -120,7 +120,7 @@ cdef class _DepSetIter:
         C.pkgcraft_depset_iter_free(self.ptr)
 
 
-cdef class _DepSetFlattenIter:
+cdef class _IterFlatten:
     """Iterator over a flattened DepSet."""
 
     def __cinit__(self, object obj, DepSetKind kind):
