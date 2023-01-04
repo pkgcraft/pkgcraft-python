@@ -174,9 +174,9 @@ cdef class _RepoIter:
         return self
 
     def __next__(self):
-        pkg = C.pkgcraft_repo_iter_next(self.ptr)
-        if pkg is not NULL:
-            return Pkg.from_ptr(pkg)
+        ptr = C.pkgcraft_repo_iter_next(self.ptr)
+        if ptr is not NULL:
+            return Pkg.from_ptr(ptr)
         raise StopIteration
 
     def __dealloc__(self):
@@ -194,9 +194,9 @@ cdef class _RestrictIter:
         return self
 
     def __next__(self):
-        pkg = C.pkgcraft_repo_restrict_iter_next(self.ptr)
-        if pkg is not NULL:
-            return Pkg.from_ptr(pkg)
+        ptr = C.pkgcraft_repo_restrict_iter_next(self.ptr)
+        if ptr is not NULL:
+            return Pkg.from_ptr(ptr)
         raise StopIteration
 
     def __dealloc__(self):

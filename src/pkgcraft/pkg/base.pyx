@@ -32,8 +32,7 @@ cdef class Pkg:
     @property
     def atom(self):
         """Get a package's atom."""
-        cpv = C.pkgcraft_pkg_atom(self.ptr)
-        return Cpv.from_ptr(cpv)
+        return Cpv.from_ptr(C.pkgcraft_pkg_atom(self.ptr))
 
     @property
     def eapi(self):
@@ -47,14 +46,14 @@ cdef class Pkg:
     @property
     def repo(self):
         """Get a package's repo."""
-        repo = C.pkgcraft_pkg_repo(self.ptr)
-        return Repo.from_ptr(<C.Repo *>repo, True)
+        ptr = C.pkgcraft_pkg_repo(self.ptr)
+        return Repo.from_ptr(<C.Repo *>ptr, True)
 
     @property
     def version(self):
         """Get a package's version."""
-        version = C.pkgcraft_pkg_version(self.ptr)
-        return Version.from_ptr(version)
+        ptr = C.pkgcraft_pkg_version(self.ptr)
+        return Version.from_ptr(ptr)
 
     def matches(self, Restrict r):
         """Determine if a restriction matches a package."""

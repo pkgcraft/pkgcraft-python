@@ -111,9 +111,9 @@ cdef class _DepSetIter:
         return self
 
     def __next__(self):
-        d = C.pkgcraft_depset_iter_next(self.ptr)
-        if d is not NULL:
-            return DepRestrict.from_ptr(d, self.kind)
+        ptr = C.pkgcraft_depset_iter_next(self.ptr)
+        if ptr is not NULL:
+            return DepRestrict.from_ptr(ptr, self.kind)
         raise StopIteration
 
     def __dealloc__(self):
@@ -137,16 +137,16 @@ cdef class _DepSetFlattenIter:
         return self
 
     def __next__(self):
-        obj = C.pkgcraft_depset_flatten_iter_next(self.ptr)
-        if obj is not NULL:
+        ptr = C.pkgcraft_depset_flatten_iter_next(self.ptr)
+        if ptr is not NULL:
             if self.kind == DepSetAtom:
-                return Atom.from_ptr(<const C.Atom *>obj)
+                return Atom.from_ptr(<const C.Atom *>ptr)
             elif self.kind == DepSetString:
-                s = (<char *>obj).decode()
-                C.pkgcraft_str_free(<char *>obj)
+                s = (<char *>ptr).decode()
+                C.pkgcraft_str_free(<char *>ptr)
                 return s
             elif self.kind == DepSetUri:
-                return Uri.from_ptr(<const C.Uri *>obj)
+                return Uri.from_ptr(<const C.Uri *>ptr)
             else:  # pragma: no cover
                 raise TypeError(f'unknown DepSet kind: {self.kind}')
         raise StopIteration
