@@ -97,7 +97,7 @@ class IndirectType(TypeError):
         super().__init__(f"{obj_name} objects cannot be created directly via __init__()")
 
 
-cdef class IndirectInit:
+cdef class _IndirectInit:
     """Object cannot be created directly via __init__()."""
 
     def __init__(self):

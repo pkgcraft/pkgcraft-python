@@ -2,11 +2,11 @@ cimport cython
 
 from . cimport pkgcraft_c as C
 from .atom cimport Atom
-from .error cimport IndirectInit
+from .error cimport _IndirectInit
 
 
 @cython.final
-cdef class DepRestrict(IndirectInit):
+cdef class DepRestrict(_IndirectInit):
     """Dependency restriction."""
 
     @staticmethod
@@ -56,7 +56,7 @@ cdef class DepRestrict(IndirectInit):
 
 
 @cython.final
-cdef class DepSet(IndirectInit):
+cdef class DepSet(_IndirectInit):
     """Dependency set of objects."""
 
     @staticmethod
@@ -150,7 +150,7 @@ cdef class _IterFlatten:
 
 
 @cython.final
-cdef class Uri(IndirectInit):
+cdef class Uri(_IndirectInit):
 
     @staticmethod
     cdef Uri from_ptr(const C.Uri *ptr):

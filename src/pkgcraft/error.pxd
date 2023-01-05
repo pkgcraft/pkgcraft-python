@@ -1,2 +1,2 @@
-cdef class IndirectInit:
+cdef class _IndirectInit:
     pass

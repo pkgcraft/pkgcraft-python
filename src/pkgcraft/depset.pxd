@@ -1,5 +1,5 @@
 from . cimport pkgcraft_c as C
-from .error cimport IndirectInit
+from .error cimport _IndirectInit
 
 ctypedef enum DepSetKind:
     DepSetAtom,
@@ -7,7 +7,7 @@ ctypedef enum DepSetKind:
     DepSetUri
 
 
-cdef class DepRestrict(IndirectInit):
+cdef class DepRestrict(_IndirectInit):
     cdef C.DepRestrict *ptr
     cdef DepSetKind kind
 
@@ -15,7 +15,7 @@ cdef class DepRestrict(IndirectInit):
     cdef DepRestrict from_ptr(C.DepRestrict *, DepSetKind)
 
 
-cdef class DepSet(IndirectInit):
+cdef class DepSet(_IndirectInit):
     cdef C.DepSet *ptr
     cdef DepSetKind kind
 
@@ -33,7 +33,7 @@ cdef class _IterFlatten:
     cdef DepSetKind kind
 
 
-cdef class Uri(IndirectInit):
+cdef class Uri(_IndirectInit):
     cdef const C.Uri *ptr
     # cached fields
     cdef str _uri_str

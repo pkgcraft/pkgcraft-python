@@ -1,8 +1,8 @@
 from .. cimport pkgcraft_c as C
-from ..error cimport IndirectInit
+from ..error cimport _IndirectInit
 
 
-cdef class Pkg(IndirectInit):
+cdef class Pkg(_IndirectInit):
     cdef C.Pkg *ptr
     # cached fields
     cdef int _hash

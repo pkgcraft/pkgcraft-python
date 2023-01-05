@@ -1,13 +1,13 @@
 from .. cimport pkgcraft_c as C
 from ..atom cimport Cpv, Version
-from ..error cimport IndirectInit
+from ..error cimport _IndirectInit
 from ..repo cimport Repo
 from ..restrict cimport Restrict
 from . cimport EbuildPkg, FakePkg
 from ..eapi import EAPIS
 
 
-cdef class Pkg(IndirectInit):
+cdef class Pkg(_IndirectInit):
     """Generic package."""
 
     @staticmethod

@@ -3,7 +3,7 @@ from types import MappingProxyType
 cimport cython
 
 from . cimport pkgcraft_c as C
-from .error cimport IndirectInit
+from .error cimport _IndirectInit
 
 from .error import PkgcraftError
 
@@ -48,7 +48,7 @@ cdef object get_eapis():
 
 
 @cython.final
-cdef class Eapi(IndirectInit):
+cdef class Eapi(_IndirectInit):
 
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *ptr, str id):

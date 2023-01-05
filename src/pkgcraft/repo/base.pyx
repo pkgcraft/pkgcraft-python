@@ -3,7 +3,7 @@ from pathlib import Path
 
 from .. cimport pkgcraft_c as C
 from ..atom cimport Cpv
-from ..error cimport IndirectInit
+from ..error cimport _IndirectInit
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport EbuildRepo, FakeRepo
@@ -12,7 +12,7 @@ from .. import parse
 from ..error import InvalidRepo
 
 
-cdef class Repo(IndirectInit):
+cdef class Repo(_IndirectInit):
     """Package repo."""
 
     format = None
