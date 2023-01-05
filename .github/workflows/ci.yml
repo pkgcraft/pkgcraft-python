@@ -72,4 +72,5 @@ jobs:
       run: tox -c tox.ini -e coverage
 
     - name: Upload coverage to Codecov
+      if: ${{ github.event_name != 'workflow_call' }}
       uses: codecov/codecov-action@v3
