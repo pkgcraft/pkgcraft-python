@@ -1,7 +1,8 @@
 from . cimport pkgcraft_c as C
+from .error cimport IndirectInit
 
 
-cdef class Eapi:
+cdef class Eapi(IndirectInit):
     cdef const C.Eapi *ptr
     # cached fields
     cdef frozenset _dep_keys

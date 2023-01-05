@@ -3,20 +3,19 @@ from pathlib import Path
 
 from .. cimport pkgcraft_c as C
 from ..atom cimport Cpv
+from ..error cimport IndirectInit
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport EbuildRepo, FakeRepo
+
 from .. import parse
-from ..error import IndirectInit, InvalidRepo
+from ..error import InvalidRepo
 
 
-cdef class Repo:
+cdef class Repo(IndirectInit):
     """Package repo."""
 
     format = None
-
-    def __init__(self):  # pragma: no cover
-        raise IndirectInit(self)
 
     cdef inject_ptr(self, const C.Repo *repo, bint ref):
         """Overwrite the repo pointer with a given value."""

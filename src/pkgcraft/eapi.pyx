@@ -3,7 +3,9 @@ from types import MappingProxyType
 cimport cython
 
 from . cimport pkgcraft_c as C
-from .error import IndirectInit, PkgcraftError
+from .error cimport IndirectInit
+
+from .error import PkgcraftError
 
 EAPIS_OFFICIAL = get_official_eapis()
 EAPI_LATEST = next(reversed(EAPIS_OFFICIAL.values()))
@@ -46,10 +48,7 @@ cdef object get_eapis():
 
 
 @cython.final
-cdef class Eapi:
-
-    def __init__(self):  # pragma: no cover
-        raise IndirectInit(self)
+cdef class Eapi(IndirectInit):
 
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *ptr, str id):

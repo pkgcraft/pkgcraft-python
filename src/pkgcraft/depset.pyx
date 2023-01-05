@@ -2,15 +2,12 @@ cimport cython
 
 from . cimport pkgcraft_c as C
 from .atom cimport Atom
-from .error import IndirectInit
+from .error cimport IndirectInit
 
 
 @cython.final
-cdef class DepRestrict:
+cdef class DepRestrict(IndirectInit):
     """Dependency restriction."""
-
-    def __init__(self):  # pragma: no cover
-        raise IndirectInit(self)
 
     @staticmethod
     cdef DepRestrict from_ptr(C.DepRestrict *ptr, DepSetKind kind):
@@ -59,11 +56,8 @@ cdef class DepRestrict:
 
 
 @cython.final
-cdef class DepSet:
+cdef class DepSet(IndirectInit):
     """Dependency set of objects."""
-
-    def __init__(self):  # pragma: no cover
-        raise IndirectInit(self)
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *ptr, DepSetKind kind):
@@ -156,10 +150,7 @@ cdef class _IterFlatten:
 
 
 @cython.final
-cdef class Uri:
-
-    def __init__(self):  # pragma: no cover
-        raise IndirectInit(self)
+cdef class Uri(IndirectInit):
 
     @staticmethod
     cdef Uri from_ptr(const C.Uri *ptr):

@@ -1,8 +1,9 @@
 from .. cimport pkgcraft_c as C
+from ..error cimport IndirectInit
 from ..pkg cimport Pkg
 
 
-cdef class Repo:
+cdef class Repo(IndirectInit):
     cdef C.Repo *ptr
     # flag denoting borrowed reference that must not be deallocated
     cdef bint ref

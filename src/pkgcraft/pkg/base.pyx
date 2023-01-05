@@ -1,17 +1,14 @@
 from .. cimport pkgcraft_c as C
 from ..atom cimport Cpv, Version
+from ..error cimport IndirectInit
 from ..repo cimport Repo
 from ..restrict cimport Restrict
 from . cimport EbuildPkg, FakePkg
 from ..eapi import EAPIS
-from ..error import IndirectInit
 
 
-cdef class Pkg:
+cdef class Pkg(IndirectInit):
     """Generic package."""
-
-    def __init__(self):  # pragma: no cover
-        raise IndirectInit(self)
 
     @staticmethod
     cdef Pkg from_ptr(C.Pkg *ptr):
