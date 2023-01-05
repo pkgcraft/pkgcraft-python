@@ -7,7 +7,7 @@ from .._misc cimport SENTINEL
 from ..depset cimport DepSet, DepSetAtom, DepSetString, DepSetUri
 from . cimport Pkg
 
-from ..error import IndirectInit, PkgcraftError
+from ..error import PkgcraftError
 from ..set import OrderedFrozenSet
 
 
@@ -250,18 +250,23 @@ cdef class EbuildPkg(Pkg):
 cdef class Maintainer:
     """Ebuild package maintainer."""
 
-    def __init__(self):  # pragma: no cover
-        raise IndirectInit(self)
+    def __cinit__(self, str email not None, str name=None, str description=None,
+                  str maint_type=None, str proxied=None):
+        self.email = email
+        self.name = name
+        self.description = description
+        self.maint_type = maint_type
+        self.proxied = proxied
 
     @staticmethod
     cdef Maintainer create(C.Maintainer m):
-        obj = <Maintainer>Maintainer.__new__(Maintainer)
-        obj.email = m.email.decode()
-        obj.name = m.name.decode() if m.name is not NULL else None
-        obj.description = m.description.decode() if m.description is not NULL else None
-        obj.maint_type = m.maint_type.decode() if m.maint_type is not NULL else None
-        obj.proxied = m.proxied.decode() if m.proxied is not NULL else None
-        return obj
+        return Maintainer(
+            m.email.decode(),
+            name=m.name.decode() if m.name is not NULL else None,
+            description=m.description.decode() if m.description is not NULL else None,
+            maint_type=m.maint_type.decode() if m.maint_type is not NULL else None,
+            proxied=m.proxied.decode() if m.proxied is not NULL else None,
+        )
 
     def __str__(self):
         if self.name is not None:
@@ -285,15 +290,13 @@ cdef class Maintainer:
 cdef class Upstream:
     """Ebuild package upstream."""
 
-    def __init__(self):  # pragma: no cover
-        raise IndirectInit(self)
+    def __cinit__(self, str site not None, str name not None):
+        self.site = site
+        self.name = name
 
     @staticmethod
     cdef Upstream create(C.Upstream u):
-        obj = <Upstream>Upstream.__new__(Upstream)
-        obj.site = u.site.decode()
-        obj.name = u.name.decode()
-        return obj
+        return Upstream(u.site.decode(), u.name.decode())
 
     def __str__(self):
         return f'{self.site}: {self.name}'
