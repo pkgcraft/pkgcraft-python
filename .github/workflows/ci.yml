@@ -49,6 +49,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
       with:
+        repository: pkgcraft/pkgcraft-python
         # checkout full history for setuptools-scm
         fetch-depth: 0
         submodules: true
