@@ -3,8 +3,23 @@ name: CI
 on:
   push:
     branches-ignore: [deploy]
+    paths:
+      - "pyproject.toml"
+      - "setup.py"
+      - "src/**"
+      - "testdata/**"
+      - "tests/**"
+      - "tox.ini"
+      - ".github/workflows/ci.yml"
   pull_request:
     branches: [main]
+    paths:
+      - "pyproject.toml"
+      - "setup.py"
+      - "src/**"
+      - "testdata/**"
+      - "tests/**"
+      - "tox.ini"
   workflow_dispatch:
   workflow_call:
 
