@@ -34,8 +34,8 @@ descriptions.
 
 .. _tox: https://pypi.org/project/tox/
 .. _valgrind: https://valgrind.org/
-.. _pkgcraft: https://github.com/pkgcraft/pkgcraft
-.. _pkgcraft-c: https://github.com/pkgcraft/pkgcraft-c
+.. _pkgcraft: https://github.com/pkgcraft/pkgcraft/tree/main/crates/pkgcraft
+.. _pkgcraft-c: https://github.com/pkgcraft/pkgcraft/tree/main/crates/pkgcraft-c
 
 .. |CI| image:: https://github.com/pkgcraft/pkgcraft-python/workflows/CI/badge.svg
    :target: https://github.com/pkgcraft/pkgcraft-python/actions/workflows/ci.yml
