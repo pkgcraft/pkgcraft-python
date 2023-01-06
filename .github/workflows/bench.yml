@@ -1,0 +1,55 @@
+name: bench
+
+on:
+  schedule:
+    - cron: '19 7 14 * *'
+  push:
+    paths:
+      - "benches/**"
+      - ".github/workflows/bench.yml"
+  workflow_dispatch:
+
+jobs:
+  bench:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set pkgcraft dir env var
+      run: echo pkgcraft_dir=~/pkgcraft >> $GITHUB_ENV
+
+    - name: Download prebuilt pkgcraft-c library
+      id: download-artifact
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{ secrets.PKGCRAFT_CI_TOKEN }}
+        repo: pkgcraft/pkgcraft
+        branch: main
+        workflow: pkgcraft-c.yml
+        name: pkgcraft-c-${{ runner.os }}
+        path: ${{ env.pkgcraft_dir }}
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        repository: pkgcraft/pkgcraft-python
+        # checkout full history for setuptools-scm
+        fetch-depth: 0
+        submodules: true
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: pip install tox
+
+    - name: Override build variables
+      run: |
+        echo "PKG_CONFIG_PATH=${pkgcraft_dir}" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=${pkgcraft_dir}/lib" >> $GITHUB_ENV
+        echo "DYLD_LIBRARY_PATH=${pkgcraft_dir}/lib" >> $GITHUB_ENV
+
+    - name: Run benchmarks via tox
+      run: |
+        tox -e bench
+        tox -e membench
