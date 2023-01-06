@@ -21,15 +21,49 @@ on:
       - "tests/**"
       - "tox.ini"
   workflow_dispatch:
+    inputs:
+      python-version:
+        required: false
+        type: string
   workflow_call:
+    inputs:
+      python-version:
+        required: false
+        type: string
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      python-version: ${{ steps.vars.outputs.python-version }}
+    steps:
+    - name: Checkout code to determine the minimum supported python version
+      if: ${{ inputs.python-version == '' }}
+      uses: actions/checkout@v3
+      with:
+        repository: pkgcraft/pkgcraft-python
+
+    - name: Set python versions to test against
+      id: vars
+      run: |
+        if [[ -n "${{ inputs.python-version }}" ]]; then
+          echo "python-version=$(jq 'split(",")' -Rc <(echo '${{ inputs.python-version }}'))" >> $GITHUB_OUTPUT
+        else
+          min_ver=$(sed -rn '/^requires-python\s*=/ s/^.*=\s*">=([0-9](\.[0-9])*)(.*)/\1/p' pyproject.toml)
+          if [[ -n ${min_ver} ]]; then
+            echo "python-version=['${min_ver}', '3.x']" >> $GITHUB_OUTPUT
+          else
+            exit 1
+          fi
+        fi
+
   test:
+    needs: setup
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest]
-        python-version: ['3.9', '3.10', '3.11']
+        python-version: ${{ fromJson(needs.setup.outputs.python-version) }}
 
     steps:
     - name: Set pkgcraft dir env var
@@ -72,5 +106,5 @@ jobs:
       run: tox -c tox.ini -e coverage
 
     - name: Upload coverage to Codecov
-      if: ${{ github.event_name != 'workflow_call' }}
+      if: ${{ inputs.python-version == '' }}
       uses: codecov/codecov-action@v3
