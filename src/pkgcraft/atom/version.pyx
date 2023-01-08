@@ -68,11 +68,11 @@ cdef class Version:
     def __ne__(self, Version other):
         return C.pkgcraft_version_cmp(self.ptr, other.ptr) != 0
 
-    def __gt__(self, Version other):
-        return C.pkgcraft_version_cmp(self.ptr, other.ptr) == 1
-
     def __ge__(self, Version other):
         return C.pkgcraft_version_cmp(self.ptr, other.ptr) >= 0
+
+    def __gt__(self, Version other):
+        return C.pkgcraft_version_cmp(self.ptr, other.ptr) == 1
 
     def __str__(self):
         c_str = C.pkgcraft_version_str(self.ptr)

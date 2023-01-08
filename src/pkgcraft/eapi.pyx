@@ -136,11 +136,11 @@ cdef class Eapi(_IndirectInit):
     def __ne__(self, Eapi other):
         return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) != 0
 
-    def __gt__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) == 1
-
     def __ge__(self, Eapi other):
         return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) >= 0
+
+    def __gt__(self, Eapi other):
+        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) == 1
 
     def __str__(self):
         return self._id

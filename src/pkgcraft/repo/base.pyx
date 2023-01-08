@@ -139,11 +139,11 @@ cdef class Repo(_IndirectInit):
     def __ne__(self, Repo other):
         return C.pkgcraft_repo_cmp(self.ptr, other.ptr) != 0
 
-    def __gt__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) == 1
-
     def __ge__(self, Repo other):
         return C.pkgcraft_repo_cmp(self.ptr, other.ptr) >= 0
+
+    def __gt__(self, Repo other):
+        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) == 1
 
     def __str__(self):
         return self.id

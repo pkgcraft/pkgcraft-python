@@ -68,11 +68,11 @@ cdef class Pkg(_IndirectInit):
     def __ne__(self, Pkg other):
         return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) != 0
 
-    def __gt__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) == 1
-
     def __ge__(self, Pkg other):
         return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) >= 0
+
+    def __gt__(self, Pkg other):
+        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) == 1
 
     def __str__(self):
         c_str = C.pkgcraft_pkg_str(self.ptr)

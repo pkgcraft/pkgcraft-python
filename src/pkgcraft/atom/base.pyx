@@ -143,11 +143,11 @@ cdef class Cpv:
     def __ne__(self, Cpv other):
         return C.pkgcraft_atom_cmp(self.ptr, other.ptr) != 0
 
-    def __gt__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) == 1
-
     def __ge__(self, Cpv other):
         return C.pkgcraft_atom_cmp(self.ptr, other.ptr) >= 0
+
+    def __gt__(self, Cpv other):
+        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) == 1
 
     def __str__(self):
         c_str = C.pkgcraft_atom_str(self.ptr)
