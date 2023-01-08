@@ -61,10 +61,12 @@ cdef class DepSet(_IndirectInit):
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *ptr, DepSetKind kind):
-        obj = <DepSet>DepSet.__new__(DepSet)
-        obj.ptr = ptr
-        obj.kind = kind
-        return obj
+        if ptr is not NULL:
+            obj = <DepSet>DepSet.__new__(DepSet)
+            obj.ptr = ptr
+            obj.kind = kind
+            return obj
+        return None
 
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSet."""
