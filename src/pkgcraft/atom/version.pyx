@@ -32,10 +32,12 @@ cdef class Version:
     @staticmethod
     cdef Version from_ptr(const C.AtomVersion *ptr):
         """Create instance from a borrowed pointer."""
-        obj = <Version>Version.__new__(Version)
-        obj.ptr = <C.AtomVersion *>ptr
-        obj.ref = True
-        return obj
+        if ptr is not NULL:
+            obj = <Version>Version.__new__(Version)
+            obj.ptr = <C.AtomVersion *>ptr
+            obj.ref = True
+            return obj
+        return None
 
     @property
     def revision(self):
