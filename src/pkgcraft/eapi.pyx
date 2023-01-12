@@ -13,22 +13,22 @@ EAPI_LATEST = next(reversed(EAPIS_OFFICIAL.values()))
 EAPIS = get_eapis()
 
 
-cdef dict eapis_to_dict(const C.Eapi **eapis, size_t length, int start=0):
-    """Convert an array of Eapi pointers to an (id, Eapi) mapping."""
-    d = {}
+cdef list eapis_to_list(const C.Eapi **c_eapis, size_t length, int start=0):
+    """Convert an array of Eapi pointers to a list of Eapi objects."""
+    eapis = []
     for i in range(start, length):
-        c_str = C.pkgcraft_eapi_as_str(eapis[i])
+        c_str = C.pkgcraft_eapi_as_str(c_eapis[i])
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
-        d[id] = Eapi.from_ptr(eapis[i], id)
-    return d
+        eapis.append(Eapi.from_ptr(c_eapis[i], id))
+    return eapis
 
 
 cdef object get_official_eapis():
     """Get the mapping of all official EAPIs."""
     cdef size_t length
     eapis = C.pkgcraft_eapis_official(&length)
-    d = eapis_to_dict(eapis, length)
+    d = {str(eapi): eapi for eapi in eapis_to_list(eapis, length)}
     C.pkgcraft_eapis_free(eapis, length)
 
     # set global variables for each official EAPI, e.g. EAPI0, EAPI1, ...
@@ -43,7 +43,7 @@ cdef object get_eapis():
     cdef size_t length
     d = EAPIS_OFFICIAL.copy()
     eapis = C.pkgcraft_eapis(&length)
-    d.update(eapis_to_dict(eapis, length, start=len(d)))
+    d.update((str(eapi), eapi) for eapi in eapis_to_list(eapis, length, start=len(d)))
     C.pkgcraft_eapis_free(eapis, length)
     return MappingProxyType(d)
 
@@ -82,14 +82,7 @@ cdef class Eapi(_IndirectInit):
         c_eapis = C.pkgcraft_eapis_range(s.encode(), &length)
         if c_eapis is NULL:
             raise PkgcraftError
-
-        eapis = []
-        for i in range(length):
-            c_str = C.pkgcraft_eapi_as_str(c_eapis[i])
-            id = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            eapis.append(Eapi.from_ptr(c_eapis[i], id))
-
+        eapis = eapis_to_list(c_eapis, length)
         C.pkgcraft_eapis_free(c_eapis, length)
         return OrderedFrozenSet(eapis)
 
