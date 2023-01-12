@@ -6,6 +6,7 @@ from . cimport pkgcraft_c as C
 from .error cimport _IndirectInit
 
 from .error import PkgcraftError
+from .set import OrderedFrozenSet
 
 EAPIS_OFFICIAL = get_official_eapis()
 EAPI_LATEST = next(reversed(EAPIS_OFFICIAL.values()))
@@ -60,17 +61,17 @@ cdef class Eapi(_IndirectInit):
 
     @staticmethod
     def range(str s not None):
-        """Convert EAPI range into an ordered mapping of Eapi objects.
+        """Convert EAPI range into an ordered set of Eapi objects.
 
         >>> from pkgcraft.eapi import Eapi, EAPI3, EAPI4, EAPIS, EAPIS_OFFICIAL
 
-        >>> Eapi.range('..') == EAPIS
+        >>> Eapi.range('..') == set(EAPIS.values())
         True
-        >>> Eapi.range('..2') == {'0': EAPI0, '1': EAPI1}
+        >>> Eapi.range('..2') == {EAPI0, EAPI1}
         True
-        >>> Eapi.range('3..4') == {'3': EAPI3}
+        >>> Eapi.range('3..4') == {EAPI3}
         True
-        >>> Eapi.range('3..=4') == {'3': EAPI3, '4': EAPI4}
+        >>> Eapi.range('3..=4') == {EAPI3, EAPI4}
         True
         >>> Eapi.range('..9999')
         Traceback (most recent call last):
@@ -78,12 +79,19 @@ cdef class Eapi(_IndirectInit):
         pkgcraft.error.PkgcraftError: invalid EAPI range: ..9999
         """
         cdef size_t length
-        eapis = C.pkgcraft_eapis_range(s.encode(), &length)
-        if eapis is NULL:
+        c_eapis = C.pkgcraft_eapis_range(s.encode(), &length)
+        if c_eapis is NULL:
             raise PkgcraftError
-        d = eapis_to_dict(eapis, length)
-        C.pkgcraft_eapis_free(eapis, length)
-        return MappingProxyType(d)
+
+        eapis = []
+        for i in range(length):
+            c_str = C.pkgcraft_eapi_as_str(c_eapis[i])
+            id = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+            eapis.append(Eapi.from_ptr(c_eapis[i], id))
+
+        C.pkgcraft_eapis_free(c_eapis, length)
+        return OrderedFrozenSet(eapis)
 
     def has(self, str s not None):
         """Check if an EAPI has a given feature.

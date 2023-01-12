@@ -94,7 +94,7 @@ class TestAtom:
                 if val := entry.get(k):
                     entry[k] = converters[k](val)
 
-            passing_eapis = Eapi.range(entry['eapis']).values()
+            passing_eapis = Eapi.range(entry['eapis'])
             for eapi in EAPIS.values():
                 if eapi in passing_eapis:
                     a = Atom(s, eapi)
