@@ -48,8 +48,13 @@ class TestVersion:
                 assert op_func(v1, v2), f'failed comparison: {s}'
 
     def test_sort(self, toml_data):
-        for (unsorted, expected) in toml_data['version.toml']['sorting']:
-            assert sorted(map(Version, unsorted)) == [Version(s) for s in expected]
+        for (expected, equal) in toml_data['version.toml']['sorting']:
+            expected = [Version(s) for s in expected]
+            ordered = sorted(reversed(expected))
+            if equal:
+                # equal versions aren't sorted so reversing should restore the original order
+                ordered = list(reversed(ordered))
+            assert ordered == expected
 
     def test_hash(self, toml_data):
         for (versions, size) in toml_data['version.toml']['hashing']:
