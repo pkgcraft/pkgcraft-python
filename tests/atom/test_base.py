@@ -133,10 +133,10 @@ class TestAtom:
                 assert op_func(a1, a2), f'failed comparison: {s}'
 
     def test_sort(self, toml_data):
-        for (expected, equal) in toml_data['atom.toml']['sorting']:
-            expected = [Atom(s) for s in expected]
+        for d in toml_data['atom.toml']['sorting']:
+            expected = [Atom(s) for s in d['sorted']]
             ordered = sorted(reversed(expected))
-            if equal:
+            if d['equal']:
                 # equal atoms aren't sorted so reversing should restore the original order
                 ordered = list(reversed(ordered))
             assert ordered == expected

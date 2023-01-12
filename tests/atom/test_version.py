@@ -48,10 +48,10 @@ class TestVersion:
                 assert op_func(v1, v2), f'failed comparison: {s}'
 
     def test_sort(self, toml_data):
-        for (expected, equal) in toml_data['version.toml']['sorting']:
-            expected = [Version(s) for s in expected]
+        for d in toml_data['version.toml']['sorting']:
+            expected = [Version(s) for s in d['sorted']]
             ordered = sorted(reversed(expected))
-            if equal:
+            if d['equal']:
                 # equal versions aren't sorted so reversing should restore the original order
                 ordered = list(reversed(ordered))
             assert ordered == expected
