@@ -142,9 +142,10 @@ class TestAtom:
             assert ordered == expected
 
     def test_hash(self, toml_data):
-        for (versions, size) in toml_data['version.toml']['hashing']:
-            s = {Atom(f'=cat/pkg-{x}') for x in versions}
-            assert len(s) == size
+        for d in toml_data['version.toml']['hashing']:
+            s = {Atom(f'=cat/pkg-{x}') for x in d['versions']}
+            length = 1 if d['equal'] else len(d['versions'])
+            assert len(s) == length
 
     def test_cached(self):
         l = [Atom.cached('cat/pkg') for _ in range(1000)]
