@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+# Find all packages in a given repo that don't have any reverse dependencies.
+
+import argparse
+import logging
+import os
+from collections import defaultdict
+
+from pkgcraft.config import Config
+from pkgcraft.eapi import EAPI_LATEST
+from pkgcraft.error import PkgcraftError
+from pkgcraft.logging import logger
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--quiet', '-q', action='count', default=0)
+    parser.add_argument('--verbose', '-v', action='count', default=0)
+    parser.add_argument('--repo', '-r', default='gentoo')
+    args = parser.parse_args()
+
+    # set logging level, defaulting to warning
+    level = logging.WARNING + (args.quiet - args.verbose) * 10
+    logger.setLevel(level)
+
+    # load specified repo path or id
+    config = Config()
+    try:
+        if os.path.sep in args.repo:
+            repo = config.add_repo(path)
+        else:
+            config.load_repos_conf()
+            repo = config.repos[args.repo]
+    except PkgcraftError as e:
+        parser.error(e)
+
+    dep_keys = sorted(EAPI_LATEST.dep_keys)
+    cache = defaultdict(lambda: defaultdict(set))
+
+    # create revdeps cache
+    for pkg in repo:
+        cpv = pkg.atom
+        for (attr, deps) in ((k, deps) for k in dep_keys if (deps := getattr(pkg, k.lower()))):
+            for dep in deps.iter_flatten():
+                cache[dep.cpn][dep].add(cpv)
+
+    # find packages lacking revdeps
+    for pkg in repo:
+        cpv = pkg.atom
+        for dep in cache.get(cpv.cpn, ()):
+            if dep.intersects(cpv) and dep.blocker is None:
+                break
+        else:
+            print(cpv)
+
+
+if __name__ == '__main__':
+    main()
