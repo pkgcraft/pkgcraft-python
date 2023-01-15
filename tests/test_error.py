@@ -1,7 +1,7 @@
 import pytest
 
+from pkgcraft.eapi import Eapi
 from pkgcraft.error import IndirectType, PkgcraftError
-from pkgcraft.repo import Repo
 
 
 class TestPkgcraftError:
@@ -19,4 +19,4 @@ class TestIndirectType:
 
     def test_class_init(self):
         with pytest.raises(IndirectType):
-            Repo()
+            Eapi()

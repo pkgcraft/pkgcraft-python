@@ -15,12 +15,6 @@ def test_globals():
 
 class TestEapi:
 
-    def test_init(self):
-        Eapi('0') == EAPI0
-        Eapi('1') != EAPI0
-        with pytest.raises(ValueError):
-            Eapi('nonexistent')
-
     def test_has(self):
         assert not EAPI1.has('nonexistent_feature')
         assert EAPI1.has('slot_deps')
@@ -63,4 +57,4 @@ class TestEapi:
     def test_eapi_pickle(self):
         e1 = EAPI0
         e2 = pickle.loads(pickle.dumps(e1))
-        assert e1 == e2
+        assert e1 is e2

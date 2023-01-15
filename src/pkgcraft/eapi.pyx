@@ -4,12 +4,21 @@ cimport cython
 
 from . cimport pkgcraft_c as C
 
+from .error cimport _IndirectInit
 from .error import PkgcraftError
 from .set import OrderedFrozenSet
 
 EAPIS_OFFICIAL = get_official_eapis()
 EAPI_LATEST = next(reversed(EAPIS_OFFICIAL.values()))
 EAPIS = get_eapis()
+
+
+def _eapi_from_id(str id not None):
+    """Support unpickling an Eapi object from a given ID."""
+    try:
+        return EAPIS[id]
+    except KeyError:
+        raise ValueError(f'unknown EAPI: {id}')
 
 
 cdef list eapis_to_list(const C.Eapi **c_eapis, size_t length, int start=0):
@@ -48,15 +57,7 @@ cdef object get_eapis():
 
 
 @cython.final
-cdef class Eapi:
-
-    def __init__(self, str id not None):
-        cdef Eapi eapi = EAPIS.get(id)
-        if eapi is None:
-            raise ValueError(f'unknown EAPI: {id}')
-
-        self.ptr = eapi.ptr
-        self._id = id
+cdef class Eapi(_IndirectInit):
 
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *ptr, str id):
@@ -164,4 +165,4 @@ cdef class Eapi:
         return self._hash
 
     def __reduce__(self):
-        return (Eapi, (self._id,))
+        return (_eapi_from_id, (self._id,))
