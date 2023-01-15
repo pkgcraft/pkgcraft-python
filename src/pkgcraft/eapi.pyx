@@ -3,7 +3,6 @@ from types import MappingProxyType
 cimport cython
 
 from . cimport pkgcraft_c as C
-from .error cimport _IndirectInit
 
 from .error import PkgcraftError
 from .set import OrderedFrozenSet
@@ -49,7 +48,15 @@ cdef object get_eapis():
 
 
 @cython.final
-cdef class Eapi(_IndirectInit):
+cdef class Eapi:
+
+    def __init__(self, str id not None):
+        cdef Eapi eapi = EAPIS.get(id)
+        if eapi is None:
+            raise ValueError(f'unknown EAPI: {id}')
+
+        self.ptr = eapi.ptr
+        self._id = id
 
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *ptr, str id):
