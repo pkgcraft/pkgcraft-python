@@ -3,8 +3,8 @@ from types import MappingProxyType
 cimport cython
 
 from . cimport pkgcraft_c as C
-
 from .error cimport _IndirectInit
+
 from .error import PkgcraftError
 from .set import OrderedFrozenSet
 
