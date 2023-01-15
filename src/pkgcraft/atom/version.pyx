@@ -30,12 +30,11 @@ cdef class Version:
             raise InvalidVersion
 
     @staticmethod
-    cdef Version from_ptr(const C.AtomVersion *ptr):
+    cdef Version from_ptr(C.AtomVersion *ptr):
         """Create instance from a borrowed pointer."""
         if ptr is not NULL:
             obj = <Version>Version.__new__(Version)
-            obj.ptr = <C.AtomVersion *>ptr
-            obj.ref = True
+            obj.ptr = ptr
             return obj
         return None
 
@@ -99,8 +98,7 @@ cdef class Version:
     # supported in <cython-3 for cdef classes:
     # https://github.com/cython/cython/pull/3804
     def __dealloc__(self):
-        if not self.ref:
-            C.pkgcraft_version_free(self.ptr)
+        C.pkgcraft_version_free(self.ptr)
 
 
 cdef class VersionWithOp(Version):

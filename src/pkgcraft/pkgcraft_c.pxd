@@ -274,9 +274,8 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on nonexistence.
     #
     # # Safety
-    # The argument must be a non-null Atom pointer. Also, note that the returned pointer
-    # is borrowed from its related Atom object and should never be freed manually.
-    const AtomVersion *pkgcraft_atom_version(Atom *atom);
+    # The argument must be a non-null Atom pointer.
+    AtomVersion *pkgcraft_atom_version(Atom *atom);
 
     # Add an external Repo to the config.
     #
@@ -578,7 +577,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    const Atom *pkgcraft_pkg_atom(Pkg *p);
+    Atom *pkgcraft_pkg_atom(Pkg *p);
 
     # Compare two packages returning -1, 0, or 1 if the first package is less than, equal to, or
     # greater than the second package, respectively.
@@ -821,7 +820,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    const AtomVersion *pkgcraft_pkg_version(Pkg *p);
+    AtomVersion *pkgcraft_pkg_version(Pkg *p);
 
     # Return a repo's categories.
     #
@@ -1170,25 +1169,31 @@ cdef extern from "pkgcraft.h":
     # The argument must be a string pointer or NULL.
     void pkgcraft_str_free(char *s);
 
+    # Free a Uri object.
+    #
+    # # Safety
+    # The argument must be a non-null Uri pointer or NULL.
+    void pkgcraft_uri_free(Uri *u);
+
     # Get the filename rename for a Uri.
     #
     # Returns NULL when no rename exists.
     #
     # # Safety
     # The argument must be a Uri pointer.
-    char *pkgcraft_uri_rename(const Uri *u);
+    char *pkgcraft_uri_rename(Uri *u);
 
     # Return the formatted string for a Uri object.
     #
     # # Safety
     # The argument must be a Uri pointer.
-    char *pkgcraft_uri_str(const Uri *u);
+    char *pkgcraft_uri_str(Uri *u);
 
     # Get the main URI from a Uri object.
     #
     # # Safety
     # The argument must be a Uri pointer.
-    char *pkgcraft_uri_uri(const Uri *u);
+    char *pkgcraft_uri_uri(Uri *u);
 
     # Compare two versions returning -1, 0, or 1 if the first version is less than, equal to, or greater
     # than the second version, respectively.

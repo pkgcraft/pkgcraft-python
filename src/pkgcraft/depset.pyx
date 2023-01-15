@@ -136,13 +136,13 @@ cdef class _IterFlatten:
         ptr = C.pkgcraft_depset_flatten_iter_next(self.ptr)
         if ptr is not NULL:
             if self.kind == DepSetAtom:
-                return Atom.from_ptr(<const C.Atom *>ptr)
+                return Atom.from_ptr(<C.Atom *>ptr)
             elif self.kind == DepSetString:
                 s = (<char *>ptr).decode()
                 C.pkgcraft_str_free(<char *>ptr)
                 return s
             elif self.kind == DepSetUri:
-                return Uri.from_ptr(<const C.Uri *>ptr)
+                return Uri.from_ptr(<C.Uri *>ptr)
             else:  # pragma: no cover
                 raise TypeError(f'unknown DepSet kind: {self.kind}')
         raise StopIteration
@@ -155,7 +155,7 @@ cdef class _IterFlatten:
 cdef class Uri(_IndirectInit):
 
     @staticmethod
-    cdef Uri from_ptr(const C.Uri *ptr):
+    cdef Uri from_ptr(C.Uri *ptr):
         obj = <Uri>Uri.__new__(Uri)
         obj.ptr = ptr
         return obj
@@ -182,3 +182,6 @@ cdef class Uri(_IndirectInit):
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
+
+    def __dealloc__(self):
+        C.pkgcraft_uri_free(self.ptr)

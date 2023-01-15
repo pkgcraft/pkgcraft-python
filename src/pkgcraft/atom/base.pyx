@@ -43,11 +43,10 @@ cdef class Cpv:
             raise InvalidCpv
 
     @staticmethod
-    cdef Cpv from_ptr(const C.Atom *ptr):
-        """Create instance from a borrowed pointer."""
+    cdef Cpv from_ptr(C.Atom *ptr):
+        """Convert an Atom pointer to a Cpv object."""
         obj = <Cpv>Cpv.__new__(Cpv)
         obj.ptr = <C.Atom *>ptr
-        obj.ref = True
         return obj
 
     @property
@@ -176,8 +175,7 @@ cdef class Cpv:
     # supported in <cython-3 for cdef classes:
     # https://github.com/cython/cython/pull/3804
     def __dealloc__(self):
-        if not self.ref:
-            C.pkgcraft_atom_free(self.ptr)
+        C.pkgcraft_atom_free(self.ptr)
 
 
 # TODO: merge with Atom.cached function when cython bug is fixed
@@ -264,6 +262,13 @@ cdef class Atom(Cpv):
 
         if self.ptr is NULL:
             raise InvalidAtom
+
+    @staticmethod
+    cdef Atom from_ptr(C.Atom *ptr):
+        """Convert an Atom pointer to a Atom object."""
+        obj = <Atom>Atom.__new__(Atom)
+        obj.ptr = <C.Atom *>ptr
+        return obj
 
     @classmethod
     def cached(cls, s, eapi=None):

@@ -34,9 +34,9 @@ cdef class _IterFlatten:
 
 
 cdef class Uri(_IndirectInit):
-    cdef const C.Uri *ptr
+    cdef C.Uri *ptr
     # cached fields
     cdef str _uri_str
 
     @staticmethod
-    cdef Uri from_ptr(const C.Uri *)
+    cdef Uri from_ptr(C.Uri *)
