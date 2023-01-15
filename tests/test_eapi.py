@@ -1,3 +1,5 @@
+import pickle
+
 import pytest
 
 from pkgcraft.eapi import EAPI0, EAPI1, EAPI_LATEST, EAPIS, EAPIS_OFFICIAL, Eapi
@@ -57,3 +59,8 @@ class TestEapi:
         assert len(s) == 2
         s = {EAPI0, EAPI0}
         assert len(s) == 1
+
+    def test_eapi_pickle(self):
+        e1 = EAPI0
+        e2 = pickle.loads(pickle.dumps(e1))
+        assert e1 == e2

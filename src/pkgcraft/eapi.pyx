@@ -162,3 +162,6 @@ cdef class Eapi:
         if not self._hash:
             self._hash = C.pkgcraft_eapi_hash(self.ptr)
         return self._hash
+
+    def __reduce__(self):
+        return (Eapi, (self._id,))
