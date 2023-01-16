@@ -16,11 +16,12 @@ Install pre-built package from pypi::
 Install from git (assumes pkgcraft-c has been installed from git and cython is
 available)::
 
-    pip install https://github.com/pkgcraft/pkgcraft-python/archive/master.tar.gz
+    git clone --recurse-submodules https://github.com/pkgcraft/pkgcraft-python.git
+    pip install pkgcraft-python
 
-Install from a tarball (assumes required release of pkgcraft-c is installed)::
+Install from a release tarball (assumes required release of pkgcraft-c is installed)::
 
-    python setup.py install
+    pip install path/to/release/tar.ball.gz
 
 Development
 ===========
