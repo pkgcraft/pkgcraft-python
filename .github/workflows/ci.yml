@@ -78,6 +78,7 @@ jobs:
         branch: main
         workflow: pkgcraft-c.yml
         workflow_conclusion: ""
+        search_artifacts: true
         name: pkgcraft-c-${{ runner.os }}
         path: ${{ env.pkgcraft_dir }}
 
