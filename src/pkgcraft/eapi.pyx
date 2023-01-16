@@ -13,6 +13,16 @@ EAPI_LATEST = next(reversed(EAPIS_OFFICIAL.values()))
 EAPIS = get_eapis()
 
 
+cdef const C.Eapi *eapi_ptr_from_obj(object obj) except? NULL:
+    """Try to convert an object to an Eapi pointer."""
+    cdef const C.Eapi *eapi_ptr = NULL
+    if isinstance(obj, Eapi):
+        eapi_ptr = (<Eapi>obj).ptr
+    elif obj is not None:
+        eapi_ptr = (<Eapi>EAPIS.get(obj)).ptr
+    return eapi_ptr
+
+
 def _eapi_from_id(str id not None):
     """Support unpickling an Eapi object from a given ID."""
     try:
