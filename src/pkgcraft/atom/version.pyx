@@ -55,6 +55,10 @@ cdef class Version:
         C.pkgcraft_str_free(c_str)
         return s
 
+    def intersects(self, Version other):
+        """Determine if two versions intersect."""
+        return C.pkgcraft_version_intersects(self.ptr, other.ptr)
+
     def __lt__(self, Version other):
         return C.pkgcraft_version_cmp(self.ptr, other.ptr) == -1
 

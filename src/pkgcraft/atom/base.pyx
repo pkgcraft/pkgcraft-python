@@ -130,6 +130,10 @@ cdef class Cpv:
         """Determine if a restriction matches an atom."""
         return C.pkgcraft_atom_restrict_matches(self.ptr, r.ptr)
 
+    def intersects(self, Cpv other):
+        """Determine if two atoms intersect."""
+        return C.pkgcraft_atom_intersects(self.ptr, other.ptr)
+
     def __lt__(self, Cpv other):
         return C.pkgcraft_atom_cmp(self.ptr, other.ptr) == -1
 

@@ -178,6 +178,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Atom pointer.
     uint64_t pkgcraft_atom_hash(Atom *atom);
 
+    # Determine if two atoms intersect.
+    #
+    # # Safety
+    # The arguments must be non-null Atom pointers.
+    bool pkgcraft_atom_intersects(Atom *a1, Atom *a2);
+
     # Parse a string into an atom using a specific EAPI. Pass NULL for the eapi argument in
     # order to parse using the latest EAPI with extensions (e.g. support for repo deps).
     #
@@ -1199,7 +1205,7 @@ cdef extern from "pkgcraft.h":
     # than the second version, respectively.
     #
     # # Safety
-    # The version arguments should be non-null Version pointers received from pkgcraft_version().
+    # The version arguments should be non-null Version pointers.
     int pkgcraft_version_cmp(AtomVersion *v1, AtomVersion *v2);
 
     # Free a version.
@@ -1213,6 +1219,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The version argument should be a non-null Version pointer received from pkgcraft_version().
     uint64_t pkgcraft_version_hash(AtomVersion *version);
+
+    # Determine if two versions intersect.
+    #
+    # # Safety
+    # The version arguments should be non-null Version pointers.
+    bool pkgcraft_version_intersects(AtomVersion *v1, AtomVersion *v2);
 
     # Parse a string into a version.
     #
