@@ -6,7 +6,7 @@ from pkgcraft.error import IndirectType, PkgcraftError
 
 class TestPkgcraftError:
 
-    def test_new(self):
+    def test_init(self):
         with pytest.raises(PkgcraftError, match='error message'):
             raise PkgcraftError('error message')
 

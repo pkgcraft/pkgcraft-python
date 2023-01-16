@@ -9,7 +9,7 @@ from pkgcraft.restrict import Restrict
 
 class TestCpv:
 
-    def test_new(self):
+    def test_init(self):
         a = Cpv('cat/pkg-1-r2')
         assert a.category == 'cat'
         assert a.package == 'pkg'

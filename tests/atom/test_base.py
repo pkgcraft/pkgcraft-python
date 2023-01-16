@@ -30,7 +30,7 @@ class TestSlotOperator:
 
 class TestAtom:
 
-    def test_new(self):
+    def test_init(self):
         # no version
         a = Atom('cat/pkg')
         assert a.category == 'cat'
