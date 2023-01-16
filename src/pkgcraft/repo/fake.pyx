@@ -15,12 +15,12 @@ cdef class FakeRepo(Repo):
 
     format = C.RepoFormat.REPO_FORMAT_FAKE
 
-    def __init__(self, path_or_cpvs=(), id=None, int priority=0):
-        if isinstance(path_or_cpvs, (str, os.PathLike)):
-            super().__init__(path_or_cpvs, id, priority)
+    def __init__(self, cpvs_or_path=(), id=None, int priority=0):
+        if isinstance(cpvs_or_path, (str, os.PathLike)):
+            super().__init__(cpvs_or_path, id, priority)
         else:
             # convert cpv strings into C array
-            cpvs = [(<str?>s).encode() for s in path_or_cpvs]
+            cpvs = [(<str?>s).encode() for s in cpvs_or_path]
             array = <char **>PyMem_Malloc(len(cpvs) * sizeof(char *))
             if not array:  # pragma: no cover
                 raise MemoryError

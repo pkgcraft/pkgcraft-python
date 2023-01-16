@@ -239,10 +239,10 @@ def make_ebuild_repo(tmp_path_factory, letters):
 @pytest.fixture
 def make_fake_repo(letters):
     """Factory for ebuild repo creation."""
-    def _make_repo(cpvs=None, id=None, priority=0, config=None):
-        cpvs = cpvs if cpvs is not None else ()
+    def _make_repo(cpvs_or_path=None, id=None, priority=0, config=None):
+        cpvs_or_path = cpvs_or_path if cpvs_or_path is not None else ()
         id = id if id is not None else letters()
-        r = TempFakeRepo(cpvs, id, priority)
+        r = TempFakeRepo(cpvs_or_path, id, priority)
         if config is not None:
             config.add_repo(r)
         return r
