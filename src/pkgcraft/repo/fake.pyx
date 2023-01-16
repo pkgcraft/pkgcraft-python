@@ -1,3 +1,7 @@
+import os
+import random
+import string
+
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport pkgcraft_c as C
@@ -11,20 +15,30 @@ cdef class FakeRepo(Repo):
 
     format = C.RepoFormat.REPO_FORMAT_FAKE
 
-    def __init__(self, str id not None, int priority=0, cpvs=()):
-        cpvs = [(<str?>s).encode() for s in cpvs]
-        array = <char **>PyMem_Malloc(len(cpvs) * sizeof(char *))
-        if not array:  # pragma: no cover
-            raise MemoryError
-        for i in range(len(cpvs)):
-            array[i] = cpvs[i]
-        ptr = C.pkgcraft_repo_fake_new(id.encode(), priority, array, len(cpvs))
-        PyMem_Free(array)
-        if ptr is NULL:
-            raise InvalidRepo
+    def __init__(self, path_or_cpvs=(), id=None, int priority=0):
+        if isinstance(path_or_cpvs, (str, os.PathLike)):
+            super().__init__(path_or_cpvs, id, priority)
+        else:
+            # convert cpv strings into C array
+            cpvs = [(<str?>s).encode() for s in path_or_cpvs]
+            array = <char **>PyMem_Malloc(len(cpvs) * sizeof(char *))
+            if not array:  # pragma: no cover
+                raise MemoryError
+            for i in range(len(cpvs)):
+                array[i] = cpvs[i]
 
-        self.ptr = ptr
-        self.ref = False
+            # generate a semi-random repo ID if none was given
+            if id is None:
+                rand = ''.join(random.choices(string.ascii_letters, k=10))
+                id = f'fake-{rand}'
+
+            ptr = C.pkgcraft_repo_fake_new(id.encode(), priority, array, len(cpvs))
+            PyMem_Free(array)
+            if ptr is NULL:
+                raise InvalidRepo
+
+            self.ptr = ptr
+            self.ref = False
 
     def extend(self, cpvs not None):
         """Add packages to an existing repo.

@@ -54,12 +54,6 @@ cdef class Config:
 
         return repo
 
-    def _inject_repo_path(self, Repo obj not None, path not None, id=None, priority=0):
-        """Add an external repo via its file path and inject it into a given Repo object."""
-        repo = self._add_repo_path(path, id, priority)
-        obj.inject_ptr(repo, False)
-        return obj
-
     def add_repo(self, repo not None, id=None, priority=0):
         """Add an external repo via its file path or from a Repo object."""
         if isinstance(repo, (str, os.PathLike)):

@@ -148,9 +148,9 @@ class TempRawEbuildRepo:
 class TempEbuildRepo(TempRawEbuildRepo, EbuildRepo):
     """Class for creating and manipulating ebuild repos."""
 
-    def __init__(self, config, path, id='fake', priority=0, **kwargs):
+    def __init__(self, path, id='fake', priority=0, **kwargs):
         TempRawEbuildRepo.__init__(self, path, id, **kwargs)
-        config._inject_repo_path(self, self.path, id, priority)
+        EbuildRepo.__init__(self, self.path, id, priority)
 
     def create_pkg(self, cpv, *args, **kwargs):
         """Create an ebuild for a given CPV and return the related package object."""
@@ -180,9 +180,9 @@ def make_raw_ebuild_repo(tmp_path_factory):
 
 
 @pytest.fixture
-def ebuild_repo(config, tmp_path_factory):
+def ebuild_repo(tmp_path_factory):
     """Create a generic ebuild repository."""
-    return TempEbuildRepo(config, str(tmp_path_factory.mktemp('repo')))
+    return TempEbuildRepo(str(tmp_path_factory.mktemp('repo')))
 
 
 class TempFakeRepo(FakeRepo):
@@ -197,7 +197,7 @@ class TempFakeRepo(FakeRepo):
 @pytest.fixture
 def fake_repo():
     """Create a generic ebuild repository."""
-    return TempFakeRepo('fake')
+    return TempFakeRepo()
 
 
 @pytest.fixture
@@ -224,12 +224,15 @@ def letters():
 
 
 @pytest.fixture
-def make_ebuild_repo(tmp_path_factory, config, letters):
+def make_ebuild_repo(tmp_path_factory, letters):
     """Factory for ebuild repo creation."""
-    def _make_repo(path=None, id=None, priority=0, config=config, **kwargs):
+    def _make_repo(path=None, id=None, priority=0, config=None, **kwargs):
         path = str(tmp_path_factory.mktemp('repo')) if path is None else path
         id = id if id is not None else letters()
-        return TempEbuildRepo(config, path, id, priority, **kwargs)
+        r = TempEbuildRepo(path, id, priority, **kwargs)
+        if config is not None:
+            config.add_repo(r)
+        return r
     return _make_repo
 
 
@@ -239,7 +242,7 @@ def make_fake_repo(letters):
     def _make_repo(cpvs=None, id=None, priority=0, config=None):
         cpvs = cpvs if cpvs is not None else ()
         id = id if id is not None else letters()
-        r = TempFakeRepo(id, priority, cpvs)
+        r = TempFakeRepo(cpvs, id, priority)
         if config is not None:
             config.add_repo(r)
         return r

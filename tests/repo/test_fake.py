@@ -12,62 +12,61 @@ def make_repo(make_fake_repo):
 
 
 @pytest.fixture
-def repo(fake_repo):
-    return fake_repo
+def repo(make_fake_repo):
+    return make_fake_repo(id='fake')
 
 
 class TestFakeRepo(BaseRepoTests):
 
-    def test_init(self):
+    def test_init(self, tmp_path):
         # invalid args
         with pytest.raises(TypeError):
             FakeRepo(None)
 
         # no cpvs
-        r = FakeRepo('fake')
+        r = FakeRepo()
         assert len(r) == 0
 
         # empty iterable
-        r = FakeRepo('fake', cpvs=[])
+        r = FakeRepo([])
         assert len(r) == 0
 
         # single pkg iterable
-        r = FakeRepo('fake', cpvs=['cat/pkg-1'])
+        r = FakeRepo(['cat/pkg-1'])
         assert len(r) == 1
         assert 'cat/pkg-1' in r
 
         # multiple pkgs iterable with invalid cpv
-        r = FakeRepo('fake', cpvs=['a/b-1', 'c/d-2', '=cat/pkg-1'])
+        r = FakeRepo(['a/b-1', 'c/d-2', '=cat/pkg-1'])
         assert len(r) == 2
         assert 'a/b-1' in r
         assert 'c/d-2' in r
         assert 'cat/pkg-1' not in r
 
-    def test_from_path(self, tmp_path):
         # nonexistent path
         with pytest.raises(InvalidRepo):
-            FakeRepo.from_path('/path/to/nonexistent/repo')
+            FakeRepo('/path/to/nonexistent/repo')
 
         # empty repo
         path = tmp_path / 'atoms'
         path.touch()
-        r = FakeRepo.from_path(path)
+        r = FakeRepo(path)
         assert len(r) == 0
 
         # single pkg
         path.write_text('cat/pkg-1')
-        r = FakeRepo.from_path(path)
+        r = FakeRepo(path)
         assert len(r) == 1
         assert 'cat/pkg-1' in r
 
         # file path from string
-        r = FakeRepo.from_path(str(path))
+        r = FakeRepo(str(path))
         assert len(r) == 1
         assert 'cat/pkg-1' in r
 
         # multiple pkgs with invalid cpv
         path.write_text('a/b-1\nc/d-2\n=cat/pkg-1')
-        r = FakeRepo.from_path(path)
+        r = FakeRepo(path)
         assert len(r) == 2
         assert 'a/b-1' in r
         assert 'c/d-2' in r

@@ -9,8 +9,8 @@ def make_repo(make_fake_repo):
 
 
 @pytest.fixture
-def repo(fake_repo):
-    return fake_repo
+def repo(make_fake_repo):
+    return make_fake_repo(id='fake')
 
 
 @pytest.fixture

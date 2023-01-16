@@ -1,9 +1,8 @@
 from .. cimport pkgcraft_c as C
-from ..error cimport _IndirectInit
 from ..pkg cimport Pkg
 
 
-cdef class Repo(_IndirectInit):
+cdef class Repo:
     cdef C.Repo *ptr
     # flag denoting borrowed reference that must not be deallocated
     cdef bint ref
@@ -13,9 +12,8 @@ cdef class Repo(_IndirectInit):
     cdef object _path
     cdef int _hash
 
-    cdef inject_ptr(self, const C.Repo *, bint)
     @staticmethod
-    cdef Repo from_ptr(C.Repo *, bint)
+    cdef Repo from_ptr(C.Repo *, bint, Repo obj=*)
 
 
 cdef class _Iter:

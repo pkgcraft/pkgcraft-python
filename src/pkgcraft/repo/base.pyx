@@ -3,7 +3,6 @@ from pathlib import Path
 
 from .. cimport pkgcraft_c as C
 from ..atom cimport Cpv
-from ..error cimport _IndirectInit
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport EbuildRepo, FakeRepo
@@ -12,50 +11,43 @@ from .. import parse
 from ..error import InvalidRepo
 
 
-cdef class Repo(_IndirectInit):
+cdef class Repo:
     """Package repo."""
 
     format = None
 
-    cdef inject_ptr(self, const C.Repo *repo, bint ref):
-        """Overwrite the repo pointer with a given value."""
-        self.ptr = <C.Repo *>repo
-        self.ref = ref
-
-    @staticmethod
-    cdef Repo from_ptr(C.Repo *ptr, bint ref):
-        """Convert a repo pointer to a repo object."""
-        cdef Repo obj
-
-        format = C.pkgcraft_repo_format(ptr)
-        if format == C.RepoFormat.REPO_FORMAT_EBUILD:
-            obj = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
-        elif format == C.RepoFormat.REPO_FORMAT_FAKE:
-            obj = <FakeRepo>FakeRepo.__new__(FakeRepo)
-        else:  # pragma: no cover
-            raise NotImplementedError(f'unsupported repo format: {format}')
-
-        obj.ptr = ptr
-        obj.ref = ref
-        return obj
-
-    @classmethod
-    def from_path(cls, path not None, id=None, int priority=0):
-        """Load a repo from a given path."""
+    def __init__(self, path not None, id=None, int priority=0):
+        """Create a repo from a given path."""
         path = str(path)
         id = str(id) if id is not None else path
 
         # When called using a subclass try to load that type, otherwise try types in order.
-        if cls.format is not None:
+        if self.format is not None:
             ptr = C.pkgcraft_repo_from_format(
-                id.encode(), priority, path.encode(), cls.format, True)
+                id.encode(), priority, path.encode(), self.format, True)
         else:
             ptr = C.pkgcraft_repo_from_path(id.encode(), priority, path.encode(), True)
 
         if ptr is NULL:
             raise InvalidRepo
 
-        return Repo.from_ptr(ptr, False)
+        Repo.from_ptr(ptr, False, self)
+
+    @staticmethod
+    cdef Repo from_ptr(C.Repo *ptr, bint ref, Repo obj=None):
+        """Convert a repo pointer to a repo object."""
+        if obj is None:
+            format = C.pkgcraft_repo_format(ptr)
+            if format == C.RepoFormat.REPO_FORMAT_EBUILD:
+                obj = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
+            elif format == C.RepoFormat.REPO_FORMAT_FAKE:
+                obj = <FakeRepo>FakeRepo.__new__(FakeRepo)
+            else:  # pragma: no cover
+                raise NotImplementedError(f'unsupported repo format: {format}')
+
+        obj.ptr = ptr
+        obj.ref = ref
+        return obj
 
     @property
     def id(self):

@@ -20,37 +20,37 @@ def repo(ebuild_repo):
 
 class TestEbuildRepo(BaseRepoTests):
 
-    def test_from_path(self, make_raw_ebuild_repo):
+    def test_init(self, make_raw_ebuild_repo):
         # nonexistent path
         with pytest.raises(InvalidRepo):
-            EbuildRepo.from_path('/path/to/nonexistent/repo')
+            EbuildRepo('/path/to/nonexistent/repo')
 
         # overlays must be initialized via Config.add_repo()
         repo = make_raw_ebuild_repo(masters=['nonexistent'])
         with pytest.raises(InvalidRepo, match='overlay must be added via config'):
-            EbuildRepo.from_path(repo.path)
+            EbuildRepo(repo.path)
 
         repo = make_raw_ebuild_repo()
         path = repo.path
 
         # empty repo
-        r = EbuildRepo.from_path(path)
+        r = EbuildRepo(path)
         assert len(r) == 0
 
         # single pkg
         repo.create_ebuild('cat/pkg-1')
-        r = EbuildRepo.from_path(path)
+        r = EbuildRepo(path)
         assert len(r) == 1
         assert 'cat/pkg-1' in r
 
         # file path from string
-        r = EbuildRepo.from_path(str(path))
+        r = EbuildRepo(str(path))
         assert len(r) == 1
         assert 'cat/pkg-1' in r
 
         # multiple pkgs
         repo.create_ebuild('cat/pkg-2')
-        r = EbuildRepo.from_path(path)
+        r = EbuildRepo(path)
         assert len(r) == 2
         assert 'cat/pkg-1' in r
         assert 'cat/pkg-2' in r
