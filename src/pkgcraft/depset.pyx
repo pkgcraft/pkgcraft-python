@@ -138,8 +138,9 @@ cdef class _IterFlatten:
             if self.kind == DepSetAtom:
                 return Atom.from_ptr(<C.Atom *>ptr)
             elif self.kind == DepSetString:
-                s = (<char *>ptr).decode()
-                C.pkgcraft_str_free(<char *>ptr)
+                c_str = <char *>ptr
+                s = c_str.decode()
+                C.pkgcraft_str_free(c_str)
                 return s
             elif self.kind == DepSetUri:
                 return Uri.from_ptr(<C.Uri *>ptr)

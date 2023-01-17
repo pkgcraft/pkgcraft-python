@@ -9,15 +9,12 @@ from .error import ConfigError, PkgcraftError
 
 cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
     """Convert an array of repos to an (id, Repo) mapping."""
-    cdef char *id
     d = {}
-
     for i in range(length):
         ptr = repos[i]
-        id = C.pkgcraft_repo_id(ptr)
-        d[id.decode()] = Repo.from_ptr(ptr, ref)
-        C.pkgcraft_str_free(id)
-
+        c_str = C.pkgcraft_repo_id(ptr)
+        d[c_str.decode()] = Repo.from_ptr(ptr, ref)
+        C.pkgcraft_str_free(c_str)
     return d
 
 
