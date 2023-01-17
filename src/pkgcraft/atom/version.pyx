@@ -56,7 +56,18 @@ cdef class Version:
         return s
 
     def intersects(self, Version other):
-        """Determine if two versions intersect."""
+        """Determine if two versions intersect.
+
+        >>> from pkgcraft.atom import Version, VersionWithOp
+        >>> v1 = VersionWithOp('>1')
+        >>> v2 = Version('2-r1')
+        >>> v1.intersects(v2) and v2.intersects(v1)
+        True
+        >>> v1 = VersionWithOp('>1-r1')
+        >>> v2 = VersionWithOp('=1-r1')
+        >>> v1.intersects(v2) or v2.intersects(v1)
+        False
+        """
         return C.pkgcraft_version_intersects(self.ptr, other.ptr)
 
     def __lt__(self, Version other):
