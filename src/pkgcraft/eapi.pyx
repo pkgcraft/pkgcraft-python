@@ -30,10 +30,7 @@ cdef list eapis_to_list(const C.Eapi **c_eapis, size_t length, int start=0):
     """Convert an array of Eapi pointers to a list of Eapi objects."""
     eapis = []
     for i in range(start, length):
-        c_str = C.pkgcraft_eapi_as_str(c_eapis[i])
-        id = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        eapis.append(Eapi.from_ptr(c_eapis[i], id))
+        eapis.append(Eapi.from_ptr(c_eapis[i]))
     return eapis
 
 
@@ -65,10 +62,13 @@ cdef object get_eapis():
 cdef class Eapi(_IndirectInit):
 
     @staticmethod
-    cdef Eapi from_ptr(const C.Eapi *ptr, str id):
-        """Create instance from a borrowed pointer."""
+    cdef Eapi from_ptr(const C.Eapi *ptr):
+        """Convert a borrowed Eapi pointer into an Eapi object."""
         obj = <Eapi>Eapi.__new__(Eapi)
         obj.ptr = ptr
+        c_str = C.pkgcraft_eapi_as_str(ptr)
+        id = c_str.decode()
+        C.pkgcraft_str_free(c_str)
         obj._id = id
         return obj
 

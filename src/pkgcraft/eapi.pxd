@@ -13,4 +13,4 @@ cdef class Eapi(_IndirectInit):
     cdef int _hash
 
     @staticmethod
-    cdef Eapi from_ptr(const C.Eapi *, str)
+    cdef Eapi from_ptr(const C.Eapi *)
