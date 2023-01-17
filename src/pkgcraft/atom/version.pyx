@@ -104,10 +104,7 @@ cdef class Version:
         return self._hash
 
     def __reduce__(self):
-        c_str = C.pkgcraft_version_str(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return (self.__class__, (s,))
+        return (self.__class__, (str(self),))
 
     # TODO: move to __del__() when migrating to >=cython-3 since it's not
     # supported in <cython-3 for cdef classes:
@@ -142,3 +139,9 @@ cdef class VersionWithOp(Version):
         self.ptr = C.pkgcraft_version_with_op(s.encode())
         if self.ptr is NULL:
             raise InvalidVersion
+
+    def __str__(self):
+        c_str = C.pkgcraft_version_str_with_op(self.ptr)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s

@@ -1211,13 +1211,13 @@ cdef extern from "pkgcraft.h":
     # Free a version.
     #
     # # Safety
-    # The version argument should be a non-null Version pointer received from pkgcraft_version().
+    # The version argument should be a non-null Version pointer.
     void pkgcraft_version_free(AtomVersion *version);
 
     # Return the hash value for a version.
     #
     # # Safety
-    # The version argument should be a non-null Version pointer received from pkgcraft_version().
+    # The version argument should be a non-null Version pointer.
     uint64_t pkgcraft_version_hash(AtomVersion *version);
 
     # Determine if two versions intersect.
@@ -1237,14 +1237,20 @@ cdef extern from "pkgcraft.h":
     # Return a version's revision, e.g. the version "1-r2" has a revision of "2".
     #
     # # Safety
-    # The version argument should be a non-null Version pointer received from pkgcraft_version().
+    # The version argument should be a non-null Version pointer.
     char *pkgcraft_version_revision(AtomVersion *version);
 
-    # Return the string for a version.
+    # Return a version's string value.
     #
     # # Safety
-    # The version argument should be a non-null Version pointer received from pkgcraft_version().
+    # The version argument should be a non-null Version pointer.
     char *pkgcraft_version_str(AtomVersion *version);
+
+    # Return a version's string value including operator.
+    #
+    # # Safety
+    # The version argument should be a non-null Version pointer.
+    char *pkgcraft_version_str_with_op(AtomVersion *version);
 
     # Parse a string into a version with an operator.
     #
