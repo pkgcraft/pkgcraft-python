@@ -26,7 +26,7 @@ cdef class Version:
     """
     def __init__(self, str s not None):
         self.ptr = C.pkgcraft_version_new(s.encode())
-        if not self.ptr:
+        if self.ptr is NULL:
             raise InvalidVersion
 
     @staticmethod
@@ -140,5 +140,5 @@ cdef class VersionWithOp(Version):
     """
     def __init__(self, str s not None):
         self.ptr = C.pkgcraft_version_with_op(s.encode())
-        if not self.ptr:
+        if self.ptr is NULL:
             raise InvalidVersion
