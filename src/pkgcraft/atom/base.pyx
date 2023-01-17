@@ -130,7 +130,18 @@ cdef class Cpv:
         return C.pkgcraft_atom_restrict_matches(self.ptr, r.ptr)
 
     def intersects(self, Cpv other):
-        """Determine if two atoms intersect."""
+        """Determine if two atoms intersect.
+
+        >>> from pkgcraft.atom import Atom, Cpv
+        >>> atom = Atom('>cat/pkg-1')
+        >>> cpv = Cpv('cat/pkg-2-r1')
+        >>> atom.intersects(cpv) and cpv.intersects(atom)
+        True
+        >>> a1 = Atom('>cat/pkg-1-r1')
+        >>> a2 = Atom('=cat/pkg-1-r1')
+        >>> a1.intersects(a2) or a2.intersects(a1)
+        False
+        """
         return C.pkgcraft_atom_intersects(self.ptr, other.ptr)
 
     def __lt__(self, Cpv other):
