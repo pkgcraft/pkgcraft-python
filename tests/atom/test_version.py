@@ -1,3 +1,4 @@
+import itertools
 import pickle
 
 import pytest
@@ -46,6 +47,29 @@ class TestVersion:
             v2 = Version(b)
             for op_func in OperatorIterMap[op]:
                 assert op_func(v1, v2), f'failed comparison: {s}'
+
+    def test_intersects(self, toml_data):
+        def ver_parse(s):
+            """Convert string to non-op version falling back to op-ed version."""
+            try:
+                return Version(s)
+            except InvalidVersion:
+                return VersionWithOp(s)
+
+        for d in toml_data['version.toml']['intersects']:
+            # test intersections between all pairs of distinct values
+            for (s1, s2) in itertools.permutations(d['vals'], 2):
+                (v1, v2) = (ver_parse(s1), ver_parse(s2))
+
+                # versions intersect themselves
+                assert v1.intersects(v1)
+                assert v2.intersects(v2)
+
+                # versions all intersect or not depending on status
+                if d['status']:
+                    assert v1.intersects(v2)
+                else:
+                    assert not v1.intersects(v2)
 
     def test_sort(self, toml_data):
         for d in toml_data['version.toml']['sorting']:
