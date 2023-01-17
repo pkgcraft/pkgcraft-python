@@ -48,9 +48,8 @@ class TestAtom:
         assert str(a) == 'cat/pkg'
         assert repr(a).startswith("<Atom 'cat/pkg' at 0x")
 
-        # all fields
-        a = Atom('!!=cat/pkg-1-r2:0/2=[a,b,c]::repo', EAPIS['pkgcraft'])
-        assert a == Atom('!!=cat/pkg-1-r2:0/2=[a,b,c]::repo', 'pkgcraft')
+        # all fields -- extended EAPI default allows repo deps
+        a = Atom('!!=cat/pkg-1-r2:0/2=[a,b,c]::repo')
         assert a.category == 'cat'
         assert a.package == 'pkg'
         assert a.blocker is Blocker.Strong
@@ -65,6 +64,19 @@ class TestAtom:
         assert a.cpv == 'cat/pkg-1-r2'
         assert str(a) == '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo'
         assert repr(a).startswith("<Atom '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
+
+        # explicitly specifying an official EAPI fails
+        for eapi in ('8', EAPIS['8']):
+            with pytest.raises(InvalidAtom):
+                Atom('cat/pkg::repo', eapi)
+
+        # unknown EAPI
+        with pytest.raises(ValueError, match=f'unknown EAPI'):
+            Atom('cat/pkg', 'nonexistent')
+
+        # invalid EAPI type
+        with pytest.raises(TypeError):
+            Atom('cat/pkg', object())
 
     def test_matches(self):
         a = Atom('=cat/pkg-1')

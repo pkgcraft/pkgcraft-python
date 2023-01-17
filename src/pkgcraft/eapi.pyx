@@ -13,22 +13,25 @@ EAPI_LATEST = next(reversed(EAPIS_OFFICIAL.values()))
 EAPIS = get_eapis()
 
 
+cpdef Eapi eapi_from_obj(object obj):
+    """Try to convert an object to an Eapi object."""
+    if isinstance(obj, Eapi):
+        return obj
+    elif isinstance(obj, str):
+        try:
+            return EAPIS[obj]
+        except KeyError:
+            raise ValueError(f'unknown EAPI: {obj}')
+    else:
+        raise TypeError(f'{obj.__class__.__name__!r} unsupported Eapi type')
+
+
 cdef const C.Eapi *eapi_ptr_from_obj(object obj) except? NULL:
     """Try to convert an object to an Eapi pointer."""
-    cdef const C.Eapi *eapi_ptr = NULL
-    if isinstance(obj, Eapi):
-        eapi_ptr = (<Eapi>obj).ptr
-    elif obj is not None:
-        eapi_ptr = (<Eapi>EAPIS.get(obj)).ptr
-    return eapi_ptr
-
-
-def _eapi_from_id(str id not None):
-    """Support unpickling an Eapi object from a given ID."""
-    try:
-        return EAPIS[id]
-    except KeyError:
-        raise ValueError(f'unknown EAPI: {id}')
+    if obj is not None:
+        return eapi_from_obj(obj).ptr
+    else:
+        return NULL
 
 
 cdef list eapis_to_list(const C.Eapi **c_eapis, size_t length, int start=0):
@@ -175,4 +178,4 @@ cdef class Eapi(_IndirectInit):
         return self._hash
 
     def __reduce__(self):
-        return (_eapi_from_id, (self._id,))
+        return (eapi_from_obj, (self._id,))

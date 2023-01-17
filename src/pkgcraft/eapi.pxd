@@ -2,7 +2,9 @@ from . cimport pkgcraft_c as C
 from .error cimport _IndirectInit
 
 
+cpdef Eapi eapi_from_obj(object obj)
 cdef const C.Eapi *eapi_ptr_from_obj(object obj) except? NULL
+
 
 cdef class Eapi(_IndirectInit):
     cdef const C.Eapi *ptr

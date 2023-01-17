@@ -2,7 +2,7 @@ import pickle
 
 import pytest
 
-from pkgcraft.eapi import EAPI0, EAPI1, EAPI_LATEST, EAPIS, EAPIS_OFFICIAL
+from pkgcraft.eapi import EAPI0, EAPI1, EAPI_LATEST, EAPIS, EAPIS_OFFICIAL, eapi_from_obj
 
 
 def test_globals():
@@ -11,6 +11,19 @@ def test_globals():
     for (id, eapi) in EAPIS_OFFICIAL.items():
         assert EAPIS[id] is eapi
     assert EAPIS[str(EAPI_LATEST)] is EAPI_LATEST
+
+
+def test_eapi_from_obj():
+    assert eapi_from_obj(EAPI0) is EAPI0
+    assert eapi_from_obj('0') is EAPI0
+
+    # unknown EAPI
+    with pytest.raises(ValueError):
+        assert eapi_from_obj('unknown')
+
+    # invalid type
+    with pytest.raises(TypeError):
+        assert eapi_from_obj(object())
 
 
 class TestEapi:
