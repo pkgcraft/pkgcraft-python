@@ -5,7 +5,7 @@ cimport cython
 
 from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
-from ..eapi cimport eapi_ptr_from_obj
+from ..eapi cimport eapi_from_obj
 from ..restrict cimport Restrict
 from .version cimport Version
 
@@ -255,7 +255,11 @@ cdef class Atom(Cpv):
         self._use = SENTINEL
 
     def __init__(self, str s not None, eapi=None):
-        self.ptr = C.pkgcraft_atom_new(s.encode(), eapi_ptr_from_obj(eapi))
+        cdef const C.Eapi *eapi_ptr = NULL
+        if eapi is not None:
+            eapi_ptr = eapi_from_obj(eapi).ptr
+
+        self.ptr = C.pkgcraft_atom_new(s.encode(), eapi_ptr)
         if self.ptr is NULL:
             raise InvalidAtom
 

@@ -26,14 +26,6 @@ cpdef Eapi eapi_from_obj(object obj):
         raise TypeError(f'{obj.__class__.__name__!r} unsupported Eapi type')
 
 
-cdef const C.Eapi *eapi_ptr_from_obj(object obj) except? NULL:
-    """Try to convert an object to an Eapi pointer."""
-    if obj is not None:
-        return eapi_from_obj(obj).ptr
-    else:
-        return NULL
-
-
 cdef list eapis_to_list(const C.Eapi **c_eapis, size_t length, int start=0):
     """Convert an array of Eapi pointers to a list of Eapi objects."""
     eapis = []
