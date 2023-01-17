@@ -31,7 +31,7 @@ cdef class Version:
 
     @staticmethod
     cdef Version from_ptr(C.AtomVersion *ptr):
-        """Create instance from a borrowed pointer."""
+        """Convert a Version pointer to a Version object."""
         if ptr is not NULL:
             obj = <Version>Version.__new__(Version)
             obj.ptr = ptr
