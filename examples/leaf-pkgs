@@ -36,17 +36,18 @@ def main():
 
     dep_keys = sorted(EAPI_LATEST.dep_keys)
     cache = defaultdict(lambda: defaultdict(set))
+    cpvs = []
 
     # create revdeps cache
     for pkg in repo:
         cpv = pkg.atom
+        cpvs.append(cpv)
         for (attr, deps) in ((k, deps) for k in dep_keys if (deps := getattr(pkg, k.lower()))):
             for dep in deps.iter_flatten():
                 cache[dep.cpn][dep].add(cpv)
 
     # find packages lacking revdeps
-    for pkg in repo:
-        cpv = pkg.atom
+    for cpv in cpvs:
         for dep in cache.get(cpv.cpn, ()):
             if dep.intersects(cpv) and dep.blocker is None:
                 break
