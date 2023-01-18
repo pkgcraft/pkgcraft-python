@@ -5,6 +5,7 @@ import argparse
 import logging
 import os
 from collections import defaultdict
+from itertools import chain
 
 from pkgcraft.config import Config
 from pkgcraft.eapi import EAPI_LATEST
@@ -42,9 +43,9 @@ def main():
     for pkg in repo:
         cpv = pkg.atom
         cpvs.append(cpv)
-        for (attr, deps) in ((k, deps) for k in dep_keys if (deps := getattr(pkg, k.lower()))):
-            for dep in deps.iter_flatten():
-                cache[dep.cpn][dep].add(cpv)
+        deps = (deps for k in dep_keys if (deps := getattr(pkg, k.lower())))
+        for dep in chain.from_iterable(d.iter_flatten() for d in deps):
+            cache[dep.cpn][dep].add(cpv)
 
     # find packages lacking revdeps
     for cpv in cpvs:
