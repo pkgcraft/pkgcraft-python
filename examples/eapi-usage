@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+# Determine the EAPI usage rates in a given repo.
+
+import argparse
+import logging
+import os
+from collections import defaultdict
+from operator import itemgetter
+
+from pkgcraft.config import Config
+from pkgcraft.error import PkgcraftError
+from pkgcraft.logging import logger
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--quiet', '-q', action='count', default=0)
+    parser.add_argument('--verbose', '-v', action='count', default=0)
+    parser.add_argument('--repo', '-r', default='gentoo')
+    args = parser.parse_args()
+
+    # set logging level, defaulting to warning
+    level = logging.WARNING + (args.quiet - args.verbose) * 10
+    logger.setLevel(level)
+
+    # load specified repo path or id
+    config = Config()
+    try:
+        if os.path.sep in args.repo:
+            repo = config.add_repo(path)
+        else:
+            config.load_repos_conf()
+            repo = config.repos[args.repo]
+    except PkgcraftError as e:
+        parser.error(e)
+
+    # determine EAPI usage
+    eapis = defaultdict(list)
+    for pkg in repo:
+        eapis[pkg.eapi].append(pkg.atom)
+
+    # output EAPI usage in descending order
+    for (eapi, cpvs) in sorted(eapis.items(), key=lambda x: len(x[1]), reverse=True):
+        print(f'EAPI {eapi}: {len(cpvs)} pkgs')
+
+
+if __name__ == '__main__':
+    main()
