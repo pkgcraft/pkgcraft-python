@@ -1,12 +1,13 @@
 import inspect
+import itertools
 import pickle
 import re
 
 import pytest
 
-from pkgcraft.atom import Atom, Blocker, SlotOperator, VersionWithOp
+from pkgcraft.atom import Atom, Blocker, Cpv, SlotOperator, VersionWithOp
 from pkgcraft.eapi import EAPIS, Eapi
-from pkgcraft.error import InvalidAtom
+from pkgcraft.error import InvalidAtom, InvalidCpv
 from pkgcraft.restrict import Restrict
 
 from ..misc import OperatorIterMap
@@ -143,6 +144,29 @@ class TestAtom:
             a2 = Atom(f'=cat/pkg-{v2}')
             for op_func in OperatorIterMap[op]:
                 assert op_func(a1, a2), f'failed comparison: {s}'
+
+    def test_intersects(self, toml_data):
+        def parse(s):
+            """Convert string to CPV falling back to regular atom."""
+            try:
+                return Cpv(s)
+            except InvalidCpv:
+                return Atom(s)
+
+        for d in toml_data['atom.toml']['intersects']:
+            # test intersections between all pairs of distinct values
+            for (s1, s2) in itertools.permutations(d['vals'], 2):
+                (v1, v2) = (parse(s1), parse(s2))
+
+                # elements intersect themselves
+                assert v1.intersects(v1)
+                assert v2.intersects(v2)
+
+                # intersect or not depending on status
+                if d['status']:
+                    assert v1.intersects(v2)
+                else:
+                    assert not v1.intersects(v2)
 
     def test_sort(self, toml_data):
         for d in toml_data['atom.toml']['sorting']:

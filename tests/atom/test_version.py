@@ -49,7 +49,7 @@ class TestVersion:
                 assert op_func(v1, v2), f'failed comparison: {s}'
 
     def test_intersects(self, toml_data):
-        def ver_parse(s):
+        def parse(s):
             """Convert string to non-op version falling back to op-ed version."""
             try:
                 return Version(s)
@@ -59,13 +59,13 @@ class TestVersion:
         for d in toml_data['version.toml']['intersects']:
             # test intersections between all pairs of distinct values
             for (s1, s2) in itertools.permutations(d['vals'], 2):
-                (v1, v2) = (ver_parse(s1), ver_parse(s2))
+                (v1, v2) = (parse(s1), parse(s2))
 
-                # versions intersect themselves
+                # elements intersect themselves
                 assert v1.intersects(v1)
                 assert v2.intersects(v2)
 
-                # versions all intersect or not depending on status
+                # intersect or not depending on status
                 if d['status']:
                     assert v1.intersects(v2)
                 else:
