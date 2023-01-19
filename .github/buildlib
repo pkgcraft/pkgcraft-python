@@ -62,7 +62,8 @@ if [[ -n ${SOURCE_CARGO_C} ]]; then
 	cargo install cargo-c
 fi
 
-# update cargo lock file using dep versions from tagged releases
-doecho cargo update
+# clone the pkgcraft repo from a specific tag or branch
+git clone -b ${PKGCRAFT_C_REF:-main} --recurse-submodules https://github.com/pkgcraft/pkgcraft.git
+
 # build and install C library
-doecho cargo cinstall -p pkgcraft-c --profile bundled
+doecho cargo cinstall --manifest-path pkgcraft/Cargo.toml -p pkgcraft-c --profile bundled

@@ -4,8 +4,36 @@ on:
   push:
     branches: [deploy]
     tags: [v*]
+  workflow_dispatch:
+    inputs:
+      pkgcraft-c-ref:
+        required: false
+        type: string
+        default: 'main'
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      pkgcraft-c-ref: ${{ steps.vars.outputs.pkgcraft-c-ref }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Determine target pkgcraft-c version
+      id: vars
+      run: |
+        if [[ -n "${{ inputs.pkgcraft-c-ref }}" ]]; then
+          echo "pkgcraft-c-ref=${{ inputs.pkgcraft-c-ref }}" >> $GITHUB_OUTPUT
+        else
+          max_ver=$(sed -rn '/^MAX_VERSION =/s/^.*=\s*"([0-9](\.[0-9])*)(.*)/\1/p' setup.py)
+          if [[ -n ${max_ver} ]]; then
+            echo "pkgcraft-c-ref=pkgcraft-c-${max_ver}" >> $GITHUB_OUTPUT
+          else
+            exit 1
+          fi
+        fi
+
   build-sdist:
     runs-on: ubuntu-latest
     steps:
@@ -19,7 +47,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: '3.x'
 
     - name: Build sdist
       run: |
@@ -35,7 +63,7 @@ jobs:
         retention-days: 3
 
   build-wheels:
-    needs: ["build-sdist"]
+    needs: ["build-sdist", "setup"]
     strategy:
       matrix:
         include:
@@ -50,42 +78,24 @@ jobs:
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.macos-target }}
       CIBW_CONTAINER_ENGINE: 'docker'
       CIBW_PLATFORM: 'auto'
+      PKGCRAFT_C_REF: ${{ needs.setup.outputs.pkgcraft-c-ref }}
 
     steps:
-    - name: Checkout workspace
-      uses: actions/checkout@v3
-      with:
-        repository: pkgcraft/pkgcraft-workspace
-        submodules: recursive
-        # checkout full history to support tagged releases
-        fetch-depth: 0
-
-    - name: Pull submodule updates and checkout the latest tags if they exist
-      run: |
-        git submodule update --recursive --remote
-        git submodule foreach 'git fetch origin; git checkout $(git describe --tags `git rev-list --tags --max-count=1`);'
-
-    - name: Remove current repo from workspace
-      run: rm -rfv ${{ github.event.repository.name }}
-
     - name: Checkout code
       uses: actions/checkout@v3
       with:
-        # checkout full history for setuptools-scm
-        fetch-depth: 0
-        path: ${{ github.event.repository.name }}
         submodules: recursive
 
     - name: Download sdist artifact
       uses: actions/download-artifact@v3
       with:
         name: sdist
-        path: pkgcraft-python/dist
+        path: dist
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: '3.x'
 
     - name: Set up QEMU
       if: runner.os == 'Linux' && matrix.arch != 'x86_64'
@@ -94,18 +104,18 @@ jobs:
         platforms: ${{ matrix.arch }}
 
     - name: Build wheels
-      run: ./build-wheels ${{ matrix.arch }}
+      run: .github/build-wheels ${{ matrix.arch }}
 
     - name: Verify wheels
       run: |
         pip install twine
-        twine check pkgcraft-python/wheels/*
+        twine check wheels/*
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v3
       with:
         name: wheels
-        path: pkgcraft-python/wheels/
+        path: wheels/
         if-no-files-found: error
         retention-days: 3
 
