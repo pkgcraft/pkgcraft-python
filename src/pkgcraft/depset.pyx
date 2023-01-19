@@ -17,7 +17,7 @@ cdef class DepRestrict(_IndirectInit):
         return obj
 
     def __iter__(self):
-        return _IterFlatten(self, self.kind)
+        return _IntoIterFlatten(self, self.kind)
 
     def __lt__(self, DepRestrict other):
         return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) == -1
@@ -70,10 +70,10 @@ cdef class DepSet(_IndirectInit):
 
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSet."""
-        yield from _IterFlatten(self, self.kind)
+        yield from _IntoIterFlatten(self, self.kind)
 
     def __iter__(self):
-        return _Iter(self)
+        return _IntoIter(self)
 
     def __eq__(self, DepSet other):
         return C.pkgcraft_depset_eq(self.ptr, other.ptr)
@@ -96,34 +96,34 @@ cdef class DepSet(_IndirectInit):
         C.pkgcraft_depset_free(self.ptr)
 
 
-cdef class _Iter:
+cdef class _IntoIter:
     """Iterator over a DepSet."""
 
     def __cinit__(self, DepSet d):
-        self.ptr = C.pkgcraft_depset_iter(d.ptr)
+        self.ptr = C.pkgcraft_depset_into_iter(d.ptr)
         self.kind = d.kind
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        ptr = C.pkgcraft_depset_iter_next(self.ptr)
+        ptr = C.pkgcraft_depset_into_iter_next(self.ptr)
         if ptr is not NULL:
             return DepRestrict.from_ptr(ptr, self.kind)
         raise StopIteration
 
     def __dealloc__(self):
-        C.pkgcraft_depset_iter_free(self.ptr)
+        C.pkgcraft_depset_into_iter_free(self.ptr)
 
 
-cdef class _IterFlatten:
+cdef class _IntoIterFlatten:
     """Iterator over a flattened DepSet."""
 
     def __cinit__(self, object obj, DepSetKind kind):
         if isinstance(obj, DepSet):
-            self.ptr = C.pkgcraft_depset_flatten_iter((<DepSet>obj).ptr)
+            self.ptr = C.pkgcraft_depset_into_iter_flatten((<DepSet>obj).ptr)
         elif isinstance(obj, DepRestrict):
-            self.ptr = C.pkgcraft_deprestrict_flatten_iter((<DepRestrict>obj).ptr)
+            self.ptr = C.pkgcraft_deprestrict_into_iter_flatten((<DepRestrict>obj).ptr)
         else:  # pragma: no cover
             raise TypeError(f"{obj.__class__.__name__!r} unsupported depset type")
 
@@ -133,7 +133,7 @@ cdef class _IterFlatten:
         return self
 
     def __next__(self):
-        ptr = C.pkgcraft_depset_flatten_iter_next(self.ptr)
+        ptr = C.pkgcraft_depset_into_iter_flatten_next(self.ptr)
         if ptr is not NULL:
             if self.kind == DepSetAtom:
                 return Atom.from_ptr(<C.Atom *>ptr)
@@ -149,7 +149,7 @@ cdef class _IterFlatten:
         raise StopIteration
 
     def __dealloc__(self):
-        C.pkgcraft_depset_flatten_iter_free(self.ptr)
+        C.pkgcraft_depset_into_iter_flatten_free(self.ptr)
 
 
 @cython.final
