@@ -31,6 +31,13 @@ class TestDepSet:
             assert pkg.depend != pkg.rdepend, f'{dep} != {rdep}'
             assert len({pkg.depend, pkg.rdepend}) == 2
 
+    def test_ownership(self, ebuild_repo):
+        """Verify DepSet objects are independent of Pkg objects."""
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', depend='a/b')
+        depend = pkg.depend
+        del pkg
+        assert str(depend) == 'a/b'
+
 
 class TestDepRestrict:
 
@@ -78,3 +85,10 @@ class TestDepRestrict:
             d1, d2 = next(iter(pkg.depend)), next(iter(pkg.rdepend))
             assert d1 != d2
             assert len({d1, d2}) == 2
+
+    def test_ownership(self, ebuild_repo):
+        """Verify DepRestrict objects are independent of DepSet objects."""
+        pkg = ebuild_repo.create_pkg('cat/pkg-1', depend='a/b')
+        dep = next(iter(pkg.depend))
+        del pkg
+        assert str(dep) == 'a/b'
