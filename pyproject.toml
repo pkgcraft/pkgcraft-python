@@ -73,9 +73,9 @@ exclude_lines = [
 build = ["cp39-*", "cp310-*", "cp311-*"]
 build-frontend = "build"
 build-verbosity = 1
-before-all = "{package}/.github/buildlib"
+before-all = "{package}/.ci/buildlib"
 test-requires = "pytest"
-test-command = "{package}/.github/test {package}"
+test-command = "PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 pytest {package}/tests"
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64", "aarch64", "pp64le"]

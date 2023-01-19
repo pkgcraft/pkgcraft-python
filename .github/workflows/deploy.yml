@@ -104,7 +104,7 @@ jobs:
         platforms: ${{ matrix.arch }}
 
     - name: Build wheels
-      run: .github/build-wheels ${{ matrix.arch }}
+      run: .ci/build-wheels ${{ matrix.arch }}
 
     - name: Verify wheels
       run: |
