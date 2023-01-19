@@ -8,6 +8,7 @@ on:
       - "examples/**"
       - "src/**"
       - "tests/**"
+      - "setup.py"
       - "tox.ini"
       - ".github/workflows/lint.yml"
   pull_request:
@@ -17,6 +18,7 @@ on:
       - "examples/**"
       - "src/**"
       - "tests/**"
+      - "setup.py"
       - "tox.ini"
 
 jobs:
