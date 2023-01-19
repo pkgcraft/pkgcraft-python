@@ -29,7 +29,7 @@ cdef class _Iter:
 
 
 cdef class _IterFlatten:
-    cdef C.DepSetFlattenIter *ptr
+    cdef C.DepSetFlattenIntoIter *ptr
     cdef DepSetKind kind
 
 

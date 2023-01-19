@@ -60,7 +60,7 @@ cdef extern from "pkgcraft.h":
     cdef struct DepSet:
         pass
 
-    cdef struct DepSetFlattenIter:
+    cdef struct DepSetFlattenIntoIter:
         pass
 
     cdef struct DepSetIntoIter:
@@ -347,7 +347,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null DepRestrict pointer.
-    DepSetFlattenIter *pkgcraft_deprestrict_flatten_iter(DepRestrict *d);
+    DepSetFlattenIntoIter *pkgcraft_deprestrict_flatten_iter(DepRestrict *d);
 
     # Free a DepRestrict object.
     #
@@ -377,21 +377,21 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
-    DepSetFlattenIter *pkgcraft_depset_flatten_iter(DepSet *d);
+    DepSetFlattenIntoIter *pkgcraft_depset_flatten_iter(DepSet *d);
 
     # Free a flattened depset iterator.
     #
     # # Safety
     # The argument must be a non-null DepSetFlatten pointer or NULL.
-    void pkgcraft_depset_flatten_iter_free(DepSetFlattenIter *i);
+    void pkgcraft_depset_flatten_iter_free(DepSetFlattenIntoIter *i);
 
     # Return the next object from a flattened depset iterator.
     #
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null DepSetFlatten pointer.
-    void *pkgcraft_depset_flatten_iter_next(DepSetFlattenIter *i);
+    # The argument must be a non-null DepSetFlattenIntoIter pointer.
+    void *pkgcraft_depset_flatten_iter_next(DepSetFlattenIntoIter *i);
 
     # Free a DepSet.
     #
