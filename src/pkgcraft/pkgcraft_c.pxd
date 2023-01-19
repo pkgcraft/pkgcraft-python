@@ -63,7 +63,7 @@ cdef extern from "pkgcraft.h":
     cdef struct DepSetFlattenIter:
         pass
 
-    cdef struct DepSetIter:
+    cdef struct DepSetIntoIter:
         pass
 
     # EAPI object.
@@ -409,21 +409,21 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
-    DepSetIter *pkgcraft_depset_iter(DepSet *d);
+    DepSetIntoIter *pkgcraft_depset_iter(DepSet *d);
 
     # Free a depset iterator.
     #
     # # Safety
-    # The argument must be a non-null DepSetIter pointer or NULL.
-    void pkgcraft_depset_iter_free(DepSetIter *i);
+    # The argument must be a non-null DepSetIntoIter pointer or NULL.
+    void pkgcraft_depset_iter_free(DepSetIntoIter *i);
 
     # Return the next object from a depset iterator.
     #
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null DepSetIter pointer.
-    DepRestrict *pkgcraft_depset_iter_next(DepSetIter *i);
+    # The argument must be a non-null DepSetIntoIter pointer.
+    DepRestrict *pkgcraft_depset_iter_next(DepSetIntoIter *i);
 
     # Return the formatted string for a DepSet object.
     #
@@ -1212,13 +1212,13 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The version argument should be a non-null Version pointer.
-    void pkgcraft_version_free(AtomVersion *version);
+    void pkgcraft_version_free(AtomVersion *v);
 
     # Return the hash value for a version.
     #
     # # Safety
     # The version argument should be a non-null Version pointer.
-    uint64_t pkgcraft_version_hash(AtomVersion *version);
+    uint64_t pkgcraft_version_hash(AtomVersion *v);
 
     # Determine if two versions intersect.
     #
@@ -1232,25 +1232,25 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The version argument should point to a valid string.
-    AtomVersion *pkgcraft_version_new(const char *version);
+    AtomVersion *pkgcraft_version_new(const char *s);
 
     # Return a version's revision, e.g. the version "1-r2" has a revision of "2".
     #
     # # Safety
     # The version argument should be a non-null Version pointer.
-    char *pkgcraft_version_revision(AtomVersion *version);
+    char *pkgcraft_version_revision(AtomVersion *v);
 
-    # Return a version's string value.
+    # Return a version's string value without operator.
     #
     # # Safety
     # The version argument should be a non-null Version pointer.
-    char *pkgcraft_version_str(AtomVersion *version);
+    char *pkgcraft_version_str(AtomVersion *v);
 
-    # Return a version's string value including operator.
+    # Return a version's string value including the operator if it exists.
     #
     # # Safety
     # The version argument should be a non-null Version pointer.
-    char *pkgcraft_version_str_with_op(AtomVersion *version);
+    char *pkgcraft_version_str_with_op(AtomVersion *v);
 
     # Parse a string into a version with an operator.
     #
@@ -1258,4 +1258,4 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The version argument should point to a valid string.
-    AtomVersion *pkgcraft_version_with_op(const char *version);
+    AtomVersion *pkgcraft_version_with_op(const char *s);

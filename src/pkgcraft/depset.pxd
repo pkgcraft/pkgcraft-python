@@ -24,7 +24,7 @@ cdef class DepSet(_IndirectInit):
 
 
 cdef class _Iter:
-    cdef C.DepSetIter *ptr
+    cdef C.DepSetIntoIter *ptr
     cdef DepSetKind kind
 
 
