@@ -24,4 +24,4 @@ fi
 
 # build wheels
 pip install cibuildwheel
-cibuildwheel --output-dir wheels --archs ${ARCHES}
+cibuildwheel --output-dir wheels --archs ${ARCHES} dist/*.tar.gz
