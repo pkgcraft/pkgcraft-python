@@ -104,7 +104,7 @@ jobs:
         echo "LD_LIBRARY_PATH=${pkgcraft_dir}/lib" >> $GITHUB_ENV
         echo "DYLD_LIBRARY_PATH=${pkgcraft_dir}/lib" >> $GITHUB_ENV
 
-    - name: Run tests via tox
+    - name: Run tests
       run: tox -c tox.ini -e coverage
 
     - name: Upload coverage to Codecov

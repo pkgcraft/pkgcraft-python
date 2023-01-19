@@ -51,7 +51,7 @@ jobs:
         echo "LD_LIBRARY_PATH=${pkgcraft_dir}/lib" >> $GITHUB_ENV
         echo "DYLD_LIBRARY_PATH=${pkgcraft_dir}/lib" >> $GITHUB_ENV
 
-    - name: Run benchmarks via tox
+    - name: Run benchmarks
       run: |
         tox -e bench
         tox -e membench
