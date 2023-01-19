@@ -14,7 +14,6 @@ def lst():
 
 
 class TestOrderedFrozenSet:
-
     def test_add(self, lst):
         oset = OrderedFrozenSet(lst)
         with pytest.raises(AttributeError):
@@ -98,7 +97,6 @@ class TestOrderedFrozenSet:
 
 
 class TestOrderedSet:
-
     def test_add_new(self, lst):
         oset = OrderedSet(lst)
 
@@ -358,7 +356,7 @@ class TestOrderedSet:
                 o1 | o2
 
     def test_union_with_iterable(self):
-        oset1  = OrderedSet([1])
+        oset1 = OrderedSet([1])
 
         assert oset1 | [2, 1] == OrderedSet([1, 2])
         assert [2] | oset1 == OrderedSet([2, 1])
@@ -437,13 +435,13 @@ class TestOrderedSet:
         oset = OrderedSet(lst)
         it = iter(oset)
         assert it is iter(it)
-        oset.add('a')
+        oset.add("a")
 
         with pytest.raises(RuntimeError):
             next(it)
 
         it = reversed(oset)
-        oset.add('b')
+        oset.add("b")
 
         with pytest.raises(RuntimeError):
             next(it)

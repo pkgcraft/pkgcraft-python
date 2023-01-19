@@ -10,12 +10,12 @@ def make_repo(make_fake_repo):
 
 @pytest.fixture
 def repo(make_fake_repo):
-    return make_fake_repo(id='fake')
+    return make_fake_repo(id="fake")
 
 
 @pytest.fixture
 def pkg(repo):
-    return repo.create_pkg('cat/pkg-1')
+    return repo.create_pkg("cat/pkg-1")
 
 
 class TestFakePkg(BasePkgTests):

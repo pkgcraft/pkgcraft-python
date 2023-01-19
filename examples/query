@@ -32,11 +32,11 @@ from pkgcraft.restrict import Restrict
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--quiet', '-q', action='count', default=0)
-    parser.add_argument('--verbose', '-v', action='count', default=0)
-    parser.add_argument('--repo', '-r', metavar='REPO_PATH', dest='repos', action='append')
-    parser.add_argument('--restrict', metavar='RESTRICT', dest='restricts', action='append')
-    parser.add_argument('targets', metavar='TARGET', nargs='*')
+    parser.add_argument("--quiet", "-q", action="count", default=0)
+    parser.add_argument("--verbose", "-v", action="count", default=0)
+    parser.add_argument("--repo", "-r", metavar="REPO_PATH", dest="repos", action="append")
+    parser.add_argument("--restrict", metavar="RESTRICT", dest="restricts", action="append")
+    parser.add_argument("targets", metavar="TARGET", nargs="*")
     args = parser.parse_args()
 
     # set logging level, defaulting to warning
@@ -44,7 +44,7 @@ def main():
     logger.setLevel(level)
 
     if not (args.restricts or args.targets):
-        parser.error('restrictions and/or targets must be specified')
+        parser.error("restrictions and/or targets must be specified")
 
     def str_to_restrict(convert, combine, args):
         try:
@@ -55,11 +55,9 @@ def main():
     # convert strings to restrictions
     restricts = []
     if args.restricts:
-        restricts.append(str_to_restrict(
-            Restrict.pkg, lambda x, y: x & y, args.restricts))
+        restricts.append(str_to_restrict(Restrict.pkg, lambda x, y: x & y, args.restricts))
     if args.targets:
-        restricts.append(str_to_restrict(
-            Restrict.dep, lambda x, y: x | y, args.targets))
+        restricts.append(str_to_restrict(Restrict.dep, lambda x, y: x | y, args.targets))
 
     # combine pkg and target restrictions
     r = reduce(lambda x, y: x & y, restricts)
@@ -79,5 +77,5 @@ def main():
         print(pkg)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

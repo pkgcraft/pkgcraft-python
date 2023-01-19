@@ -9,7 +9,7 @@ def test_logging(caplog):
         logger.setLevel(level)
         name = logging.getLevelName(level)
         _pkgcraft_log_test(name, level)
-        assert caplog.record_tuples == [('pkgcraft', level, name)]
+        assert caplog.record_tuples == [("pkgcraft", level, name)]
         caplog.clear()
 
         # filter all log levels

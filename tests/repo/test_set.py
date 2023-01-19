@@ -9,13 +9,12 @@ from ..misc import OperatorMap
 
 
 class TestRepoSet:
-
     def test_attrs(self, make_fake_repo):
         r1 = make_fake_repo()
         r2 = make_fake_repo()
         s = RepoSet(r1, r2)
         assert str(s)
-        assert repr(s).startswith('<RepoSet ')
+        assert repr(s).startswith("<RepoSet ")
 
     def test_repos(self, make_fake_repo):
         r1 = make_fake_repo()
@@ -32,52 +31,52 @@ class TestRepoSet:
         # empty repo set
         s = RepoSet()
         assert not s.categories
-        assert not s.packages('cat')
-        assert not s.versions('cat', 'pkg')
+        assert not s.packages("cat")
+        assert not s.versions("cat", "pkg")
 
         # single pkg
-        r1 = make_fake_repo(['cat/pkg-1'])
+        r1 = make_fake_repo(["cat/pkg-1"])
         r2 = make_fake_repo()
         s = RepoSet(r1, r2)
-        assert s.categories == ('cat',)
-        assert s.packages('cat') == ('pkg',)
-        assert s.versions('cat', 'pkg') == ('1',)
+        assert s.categories == ("cat",)
+        assert s.packages("cat") == ("pkg",)
+        assert s.versions("cat", "pkg") == ("1",)
 
         # multiple new pkg version
-        r1 = make_fake_repo(['cat/pkg-1', 'cat/pkg-2'])
+        r1 = make_fake_repo(["cat/pkg-1", "cat/pkg-2"])
         r2 = make_fake_repo()
         s = RepoSet(r1, r2)
-        assert s.categories == ('cat',)
-        assert s.packages('cat') == ('pkg',)
-        assert s.versions('cat', 'pkg') == ('1', '2')
+        assert s.categories == ("cat",)
+        assert s.packages("cat") == ("pkg",)
+        assert s.versions("cat", "pkg") == ("1", "2")
 
         # matching pkg in other repo
-        r1 = make_fake_repo(['cat/pkg-1', 'cat/pkg-2'])
-        r2 = make_fake_repo(['cat/pkg-1'])
+        r1 = make_fake_repo(["cat/pkg-1", "cat/pkg-2"])
+        r2 = make_fake_repo(["cat/pkg-1"])
         s = RepoSet(r1, r2)
-        assert s.categories == ('cat',)
-        assert s.packages('cat') == ('pkg',)
-        assert s.versions('cat', 'pkg') == ('1', '2')
+        assert s.categories == ("cat",)
+        assert s.packages("cat") == ("pkg",)
+        assert s.versions("cat", "pkg") == ("1", "2")
 
         # new pkg in new category in other repo
-        r1 = make_fake_repo(['cat/pkg-1', 'cat/pkg-2'])
-        r2 = make_fake_repo(['cat/pkg-1', 'a/b-1'])
+        r1 = make_fake_repo(["cat/pkg-1", "cat/pkg-2"])
+        r2 = make_fake_repo(["cat/pkg-1", "a/b-1"])
         s = RepoSet(r1, r2)
-        assert s.categories == ('a', 'cat')
-        assert s.packages('a') == ('b',)
-        assert s.versions('a', 'b') == ('1',)
+        assert s.categories == ("a", "cat")
+        assert s.packages("a") == ("b",)
+        assert s.versions("a", "b") == ("1",)
 
     def test_cmp(self, make_fake_repo):
         for (r1, op, r2) in (
-                ({'id': 'a'}, '<', {'id': 'b'}),
-                ({'id': 'a', 'priority': 2}, '<=', {'id': 'b', 'priority': 1}),
-                ({'id': 'a'}, '!=', {'id': 'b'}),
-                ({'id': 'b', 'priority': 1}, '>=', {'id': 'a', 'priority': 2}),
-                ({'id': 'b'}, '>', {'id': 'a'}),
-                ):
+            ({"id": "a"}, "<", {"id": "b"}),
+            ({"id": "a", "priority": 2}, "<=", {"id": "b", "priority": 1}),
+            ({"id": "a"}, "!=", {"id": "b"}),
+            ({"id": "b", "priority": 1}, ">=", {"id": "a", "priority": 2}),
+            ({"id": "b"}, ">", {"id": "a"}),
+        ):
             config = Config()
             op_func = OperatorMap[op]
-            err = f'failed {r1} {op} {r2}'
+            err = f"failed {r1} {op} {r2}"
             s1 = RepoSet(make_fake_repo(config=config, **r1))
             s2 = RepoSet(make_fake_repo(config=config, **r2))
             assert op_func(s1, s2), err
@@ -99,24 +98,24 @@ class TestRepoSet:
     def test_contains(self, make_fake_repo):
         r1 = make_fake_repo()
         r2 = make_fake_repo()
-        pkg1 = r1.create_pkg('cat/pkg-1')
-        pkg2 = r2.create_pkg('cat/pkg-1')
+        pkg1 = r1.create_pkg("cat/pkg-1")
+        pkg2 = r2.create_pkg("cat/pkg-1")
         s = RepoSet(r1, r2)
 
         # Cpv strings
-        assert 'cat/pkg-1' in s
-        assert 'cat/pkg-2' not in s
+        assert "cat/pkg-1" in s
+        assert "cat/pkg-2" not in s
         # Cpv objects
-        assert Cpv('cat/pkg-1') in s
-        assert Cpv('cat/pkg-2') not in s
+        assert Cpv("cat/pkg-1") in s
+        assert Cpv("cat/pkg-2") not in s
         # Atom strings
-        assert 'cat/pkg' in s
-        assert 'cat/pkg2' not in s
-        assert '=cat/pkg-1' in s
-        assert '=cat/pkg-2' not in s
+        assert "cat/pkg" in s
+        assert "cat/pkg2" not in s
+        assert "=cat/pkg-1" in s
+        assert "=cat/pkg-2" not in s
         # Atom objects
-        assert Atom('=cat/pkg-1') in s
-        assert Atom('=cat/pkg-2') not in s
+        assert Atom("=cat/pkg-1") in s
+        assert Atom("=cat/pkg-2") not in s
         # Pkg objects
         assert pkg1 in s
         assert pkg2 in s
@@ -142,7 +141,7 @@ class TestRepoSet:
         assert not s
         assert len(s) == 0
 
-        repo = make_fake_repo(['cat/pkg-1'])
+        repo = make_fake_repo(["cat/pkg-1"])
         s = RepoSet(repo)
         assert s
         assert len(s) == 1
@@ -162,16 +161,16 @@ class TestRepoSet:
         assert not list(s)
 
         # single pkg
-        r1 = make_fake_repo(['cat/pkg-1'], id='r1', priority=1)
-        r2 = make_fake_repo(id='r2', priority=2)
+        r1 = make_fake_repo(["cat/pkg-1"], id="r1", priority=1)
+        r2 = make_fake_repo(id="r2", priority=2)
         s = RepoSet(r1, r2)
-        assert list(map(str, s)) == ['cat/pkg-1::r1']
+        assert list(map(str, s)) == ["cat/pkg-1::r1"]
 
         # multiple pkgs
-        r1 = make_fake_repo(['cat/pkg-1'], id='r1', priority=1)
-        r2 = make_fake_repo(['cat/pkg-2'], id='r2', priority=2)
+        r1 = make_fake_repo(["cat/pkg-1"], id="r1", priority=1)
+        r2 = make_fake_repo(["cat/pkg-2"], id="r2", priority=2)
         s = RepoSet(r1, r2)
-        assert list(map(str, s)) == ['cat/pkg-2::r2', 'cat/pkg-1::r1']
+        assert list(map(str, s)) == ["cat/pkg-2::r2", "cat/pkg-1::r1"]
 
     def test_iter_restrict(self, make_fake_repo):
         s = RepoSet()
@@ -184,34 +183,34 @@ class TestRepoSet:
         with pytest.raises(TypeError):
             list(s.iter_restrict(object()))
 
-        cpv = Cpv('cat/pkg-1')
+        cpv = Cpv("cat/pkg-1")
 
         # empty repo set -- no matches
         assert not list(s.iter_restrict(cpv))
 
-        r1 = make_fake_repo(['cat/pkg-1'], id='r1')
-        r2 = make_fake_repo(['cat/pkg-2'], id='r2')
-        r3 = make_fake_repo(['cat/pkg-1'], id='r3', priority=1)
+        r1 = make_fake_repo(["cat/pkg-1"], id="r1")
+        r2 = make_fake_repo(["cat/pkg-2"], id="r2")
+        r3 = make_fake_repo(["cat/pkg-1"], id="r3", priority=1)
         s = RepoSet(r1, r2, r3)
 
         # non-empty repo -- no matches
-        nonexistent = Cpv('nonexistent/pkg-1')
+        nonexistent = Cpv("nonexistent/pkg-1")
         assert not list(s.iter_restrict(nonexistent))
 
         # multiple matches via CPV
-        assert list(map(str, s.iter_restrict(cpv))) == ['cat/pkg-1::r3', 'cat/pkg-1::r1']
+        assert list(map(str, s.iter_restrict(cpv))) == ["cat/pkg-1::r3", "cat/pkg-1::r1"]
 
         # single match via package
         pkg = next(s.iter_restrict(cpv))
         assert list(s.iter_restrict(pkg)) == [pkg]
 
         # multiple matches via restriction glob
-        expected = ['cat/pkg-1::r3', 'cat/pkg-1::r1', 'cat/pkg-2::r2']
-        assert list(map(str, s.iter_restrict('cat/*'))) == expected
+        expected = ["cat/pkg-1::r3", "cat/pkg-1::r1", "cat/pkg-2::r2"]
+        assert list(map(str, s.iter_restrict("cat/*"))) == expected
 
         # invalid restriction string
         with pytest.raises(InvalidRestrict):
-            list(s.iter_restrict('-'))
+            list(s.iter_restrict("-"))
 
     def test_set_ops(self, make_fake_repo):
         r1 = make_fake_repo(priority=1)
@@ -253,7 +252,7 @@ class TestRepoSet:
         assert (s & RepoSet(r1, r2)).repos == (r2, r1)
         assert (s & r3).repos == (r3,)
         assert (r3 & s).repos == (r3,)
-        for (a, b) in [(None, s), ('s', s)]:
+        for (a, b) in [(None, s), ("s", s)]:
             for (x, y) in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
                     x & y
@@ -263,7 +262,7 @@ class TestRepoSet:
         assert (s | RepoSet(r2, r3)).repos == (r3, r2, r1)
         assert (s | r2).repos == (r2, r1)
         assert (r2 | s).repos == (r2, r1)
-        for (a, b) in [(None, s), ('s', s)]:
+        for (a, b) in [(None, s), ("s", s)]:
             for (x, y) in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
                     x | y
@@ -273,7 +272,7 @@ class TestRepoSet:
         assert (s ^ RepoSet(r2, r3)).repos == (r1,)
         assert (s ^ r3).repos == (r2, r1)
         assert (r3 ^ s).repos == (r2, r1)
-        for (a, b) in [(None, s), ('s', s)]:
+        for (a, b) in [(None, s), ("s", s)]:
             for (x, y) in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
                     x ^ y
@@ -283,7 +282,7 @@ class TestRepoSet:
         assert (s - RepoSet(r1, r2)).repos == ()
         assert (s - r3).repos == (r2, r1)
         assert (s - r2).repos == (r1,)
-        for (a, b) in [(None, s), ('s', s)]:
+        for (a, b) in [(None, s), ("s", s)]:
             for (x, y) in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
                     x - y

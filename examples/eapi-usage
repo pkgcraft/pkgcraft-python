@@ -14,9 +14,9 @@ from pkgcraft.logging import logger
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--quiet', '-q', action='count', default=0)
-    parser.add_argument('--verbose', '-v', action='count', default=0)
-    parser.add_argument('--repo', '-r', default='gentoo')
+    parser.add_argument("--quiet", "-q", action="count", default=0)
+    parser.add_argument("--verbose", "-v", action="count", default=0)
+    parser.add_argument("--repo", "-r", default="gentoo")
     args = parser.parse_args()
 
     # set logging level, defaulting to warning
@@ -41,8 +41,8 @@ def main():
 
     # output EAPI usage in descending order
     for (eapi, cpvs) in sorted(eapis.items(), key=lambda x: len(x[1]), reverse=True):
-        print(f'EAPI {eapi}: {len(cpvs)} pkgs')
+        print(f"EAPI {eapi}: {len(cpvs)} pkgs")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

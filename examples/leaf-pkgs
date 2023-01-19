@@ -15,9 +15,9 @@ from pkgcraft.logging import logger
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--quiet', '-q', action='count', default=0)
-    parser.add_argument('--verbose', '-v', action='count', default=0)
-    parser.add_argument('--repo', '-r', default='gentoo')
+    parser.add_argument("--quiet", "-q", action="count", default=0)
+    parser.add_argument("--verbose", "-v", action="count", default=0)
+    parser.add_argument("--repo", "-r", default="gentoo")
     args = parser.parse_args()
 
     # set logging level, defaulting to warning
@@ -56,5 +56,5 @@ def main():
             print(cpv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

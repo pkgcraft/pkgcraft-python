@@ -15,11 +15,11 @@ def test_globals():
 
 def test_eapi_from_obj():
     assert eapi_from_obj(EAPI0) is EAPI0
-    assert eapi_from_obj('0') is EAPI0
+    assert eapi_from_obj("0") is EAPI0
 
     # unknown EAPI
     with pytest.raises(ValueError):
-        assert eapi_from_obj('unknown')
+        assert eapi_from_obj("unknown")
 
     # invalid type
     with pytest.raises(TypeError):
@@ -27,10 +27,9 @@ def test_eapi_from_obj():
 
 
 class TestEapi:
-
     def test_has(self):
-        assert not EAPI1.has('nonexistent_feature')
-        assert EAPI1.has('slot_deps')
+        assert not EAPI1.has("nonexistent_feature")
+        assert EAPI1.has("slot_deps")
 
         # invalid feature param type
         for obj in (object(), None):
@@ -38,17 +37,17 @@ class TestEapi:
                 EAPI1.has(obj)
 
     def test_dep_keys(self):
-        assert 'DEPEND' in EAPI0.dep_keys
-        assert 'BDEPEND' not in EAPI0.dep_keys
-        assert 'BDEPEND' in EAPI_LATEST.dep_keys
+        assert "DEPEND" in EAPI0.dep_keys
+        assert "BDEPEND" not in EAPI0.dep_keys
+        assert "BDEPEND" in EAPI_LATEST.dep_keys
 
     def test_metadata_keys(self):
-        assert 'SLOT' in EAPI0.metadata_keys
-        assert 'REQUIRED_USE' not in EAPI0.metadata_keys
-        assert 'REQUIRED_USE' in EAPI_LATEST.metadata_keys
+        assert "SLOT" in EAPI0.metadata_keys
+        assert "REQUIRED_USE" not in EAPI0.metadata_keys
+        assert "REQUIRED_USE" in EAPI_LATEST.metadata_keys
 
     def test_methods(self):
-        assert str(EAPI0) == '0'
+        assert str(EAPI0) == "0"
         assert repr(EAPI0).startswith(f"<Eapi '0' at 0x")
 
     def test_cmp(self):

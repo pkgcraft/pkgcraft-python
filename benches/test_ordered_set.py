@@ -2,13 +2,13 @@ from random import randrange
 
 import pytest
 
-pytest_plugins = ('benchmark',)
+pytest_plugins = ("benchmark",)
 
 from ordered_set import OrderedSet as PyOrderedSet
 
 from pkgcraft.set import OrderedSet as CyOrderedSet
 
-set_types = [('cython', CyOrderedSet), ('python', PyOrderedSet), ('standard', set)]
+set_types = [("cython", CyOrderedSet), ("python", PyOrderedSet), ("standard", set)]
 
 
 @pytest.mark.parametrize("variant,cls", set_types)
