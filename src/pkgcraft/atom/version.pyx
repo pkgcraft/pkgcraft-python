@@ -89,7 +89,7 @@ cdef class Version:
         return C.pkgcraft_version_cmp(self.ptr, other.ptr) == 1
 
     def __str__(self):
-        c_str = C.pkgcraft_version_str_with_op(self.ptr)
+        c_str = C.pkgcraft_version_str(self.ptr)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
@@ -139,3 +139,9 @@ cdef class VersionWithOp(Version):
         self.ptr = C.pkgcraft_version_with_op(s.encode())
         if self.ptr is NULL:
             raise InvalidVersion
+
+    def __str__(self):
+        c_str = C.pkgcraft_version_str_with_op(self.ptr)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s

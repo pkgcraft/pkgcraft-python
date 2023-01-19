@@ -243,7 +243,7 @@ cdef class Atom(Cpv):
     >>> a.package
     'pkg'
     >>> str(a.version)
-    '=1-r2'
+    '1-r2'
     >>> a.revision
     '2'
     >>> a.slot
