@@ -1,0 +1,27 @@
+#!/bin/bash
+# Build pkgcraft wheels using cibuildwheel with podman or docker.
+
+ARCHES=${@:-x86_64}
+
+# default to using podman on linux
+if [[ ${OSTYPE} == "linux-"* ]]; then
+	: ${CIBW_CONTAINER_ENGINE:=podman}
+	export CIBW_CONTAINER_ENGINE
+fi
+
+: ${CIBW_PLATFORM:=linux}
+export CIBW_PLATFORM
+
+python -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+
+# build sdist if it doesn't exist
+if ! compgen -G "dist/*.tar.gz" >/dev/null; then
+	pip install tox
+	tox -e sdist
+fi
+
+# build wheels
+pip install cibuildwheel
+cibuildwheel --output-dir wheels --archs ${ARCHES}
