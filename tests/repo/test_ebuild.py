@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 
 from pkgcraft.error import InvalidRepo
-from pkgcraft.repo import EbuildRepo
+from pkgcraft.repo import EbuildRepo, Repo
 
 from .base import BaseRepoTests
 
@@ -53,6 +53,10 @@ class TestEbuildRepo(BaseRepoTests):
         assert len(r) == 2
         assert "cat/pkg-1" in r
         assert "cat/pkg-2" in r
+
+        # base repo type
+        r = Repo(path)
+        assert "cat/pkg-1" in r
 
     def test_contains_path(self, make_ebuild_repo):
         r1 = make_ebuild_repo()

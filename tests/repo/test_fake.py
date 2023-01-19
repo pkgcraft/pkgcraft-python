@@ -1,7 +1,7 @@
 import pytest
 
 from pkgcraft.error import InvalidRepo, PkgcraftError
-from pkgcraft.repo import FakeRepo, RepoSet
+from pkgcraft.repo import FakeRepo, Repo, RepoSet
 
 from .base import BaseRepoTests
 
@@ -70,6 +70,10 @@ class TestFakeRepo(BaseRepoTests):
         assert "a/b-1" in r
         assert "c/d-2" in r
         assert "cat/pkg-1" not in r
+
+        # base repo type
+        r = Repo(path)
+        assert "a/b-1" in r
 
     def test_extend(self, config, make_fake_repo):
         r = make_fake_repo(config=None)
