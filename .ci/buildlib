@@ -9,6 +9,7 @@ doecho() {
 	"$@"
 }
 
+: ${PKGCRAFT_C_REF:=main}
 echo Building pkgcraft-c on ${OSTYPE} for ${HOSTTYPE}
 
 # install rust
@@ -17,7 +18,10 @@ doecho source "${HOME}"/.cargo/env
 
 # install required libs on linux
 install_pkgs() {
-	local -a packages=( clang git )
+	local -a packages=( clang )
+	# git is required when not building against a tagged release
+	[[ ${PKGCRAFT_C_REF} == "main" ]] && packages+=( git )
+
 	# non-native targets require openssl headers to compile cargo-c
 	if [[ ${HOSTTYPE} != "x86_64" ]]; then
 		packages+=( openssl-devel )
@@ -56,8 +60,13 @@ fi
 # manually build cargo-c for arches without native binaries
 [[ -n ${SOURCE_CARGO_C} ]] && doecho cargo install cargo-c
 
-# clone the pkgcraft repo from a specific tag or branch
-doecho git clone -b ${PKGCRAFT_C_REF:-main} --recurse-submodules https://github.com/pkgcraft/pkgcraft.git
-
-# build and install C library
-doecho cargo cinstall --manifest-path pkgcraft/Cargo.toml -p pkgcraft-c --profile bundled
+if [[ ${PKGCRAFT_C_REF} == "main" ]]; then
+	# build and install C library from git
+	doecho git clone -b ${PKGCRAFT_C_REF} --recurse-submodules https://github.com/pkgcraft/pkgcraft.git
+	cd pkgcraft && doecho cargo cinstall -p pkgcraft-c
+else
+	PKGCRAFT_C_VERSION=${PKGCRAFT_C_REF##*-}
+	# build and install C library from crate
+	curl -L https://crates.io/api/v1/crates/pkgcraft-c/${PKGCRAFT_C_VERSION}/download | tar -zxf -
+	cd ${PKGCRAFT_C_REF} && doecho cargo cinstall
+fi
