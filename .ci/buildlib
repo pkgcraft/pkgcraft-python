@@ -60,13 +60,13 @@ fi
 # manually build cargo-c for arches without native binaries
 [[ -n ${SOURCE_CARGO_C} ]] && doecho cargo install cargo-c
 
-if [[ ${PKGCRAFT_C_REF} == "main" ]]; then
+if [[ ${PKGCRAFT_C_REF} =~ ^pkgcraft-c-* ]]; then
+	# build and install C library from crate
+	PKGCRAFT_C_VERSION=${PKGCRAFT_C_REF#pkgcraft-c-}
+	curl -L https://crates.io/api/v1/crates/pkgcraft-c/${PKGCRAFT_C_VERSION}/download | tar -zxf -
+	cd ${PKGCRAFT_C_REF} && doecho cargo cinstall
+else
 	# build and install C library from git
 	doecho git clone -b ${PKGCRAFT_C_REF} --recurse-submodules https://github.com/pkgcraft/pkgcraft.git
 	cd pkgcraft && doecho cargo cinstall -p pkgcraft-c
-else
-	PKGCRAFT_C_VERSION=${PKGCRAFT_C_REF##*-}
-	# build and install C library from crate
-	curl -L https://crates.io/api/v1/crates/pkgcraft-c/${PKGCRAFT_C_VERSION}/download | tar -zxf -
-	cd ${PKGCRAFT_C_REF} && doecho cargo cinstall
 fi
