@@ -17,7 +17,7 @@ doecho source "${HOME}"/.cargo/env
 
 # install required libs on linux
 install_pkgs() {
-	local -a packages=( clang )
+	local -a packages=( clang git )
 	# non-native targets require openssl headers to compile cargo-c
 	if [[ ${HOSTTYPE} != "x86_64" ]]; then
 		packages+=( openssl-devel )
@@ -53,17 +53,17 @@ elif [[ ${OSTYPE} == "darwin"* ]]; then
 	fi
 fi
 
+# clone the pkgcraft repo from a specific tag or branch
+doecho git clone -b ${PKGCRAFT_C_REF:-main} --recurse-submodules https://github.com/pkgcraft/pkgcraft.git
+
 if [[ -n ${SOURCE_CARGO_C} ]]; then
 	# avoid libgit2 usage due to memory problems when emulated under qemu
 	# https://users.rust-lang.org/t/cargo-uses-too-much-memory-being-run-in-qemu/76531
-	cargo --config net.git-fetch-with-cli=true update
+	doecho cargo --config net.git-fetch-with-cli=true update --manifest-path pkgcraft/Cargo.toml
 
 	# manually build cargo-c for arches without native binaries
-	cargo install cargo-c
+	doecho cargo install cargo-c
 fi
-
-# clone the pkgcraft repo from a specific tag or branch
-git clone -b ${PKGCRAFT_C_REF:-main} --recurse-submodules https://github.com/pkgcraft/pkgcraft.git
 
 # build and install C library
 doecho cargo cinstall --manifest-path pkgcraft/Cargo.toml -p pkgcraft-c --profile bundled
