@@ -153,6 +153,7 @@ class build_ext(dst_build_ext.build_ext):
             for attr, data in pkgcraft_opts.items():
                 getattr(ext, attr).extend(data)
 
+        print(f"Building against pkgcraft-c-{version}")
         super().run()
 
 
