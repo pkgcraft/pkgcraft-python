@@ -5,7 +5,7 @@ cdef class RepoSet:
     cdef C.RepoSet *ptr
 
     # cached fields
-    cdef tuple _repos
+    cdef object _repos
 
     @staticmethod
     cdef RepoSet from_ptr(C.RepoSet *)

@@ -8,6 +8,7 @@ from ..restrict cimport Restrict
 from . cimport Repo
 
 from .. import parse
+from ..set import OrderedFrozenSet
 
 
 @cython.final
@@ -45,8 +46,7 @@ cdef class RepoSet:
             repos = <C.Repo **>C.pkgcraft_repo_set_repos(self.ptr, &length)
             d = repos_to_dict(repos, length, True)
             C.pkgcraft_repos_free(repos, length)
-            # TODO: replace with ordered, immutable set
-            self._repos = tuple(d.values())
+            self._repos = OrderedFrozenSet(d.values())
         return self._repos
 
     @property
