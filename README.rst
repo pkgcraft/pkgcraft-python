@@ -1,4 +1,4 @@
-|CI| |coverage| |pypi|
+|ci| |coverage| |pypi|
 
 ===============
 pkgcraft-python
@@ -37,7 +37,7 @@ descriptions.
 .. _pkgcraft: https://github.com/pkgcraft/pkgcraft/tree/main/crates/pkgcraft
 .. _pkgcraft-c: https://github.com/pkgcraft/pkgcraft/tree/main/crates/pkgcraft-c
 
-.. |CI| image:: https://github.com/pkgcraft/pkgcraft-python/workflows/CI/badge.svg
+.. |ci| image:: https://github.com/pkgcraft/pkgcraft-python/workflows/ci/badge.svg
    :target: https://github.com/pkgcraft/pkgcraft-python/actions/workflows/ci.yml
 .. |coverage| image:: https://codecov.io/gh/pkgcraft/pkgcraft-python/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/pkgcraft/pkgcraft-python
