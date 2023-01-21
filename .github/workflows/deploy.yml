@@ -17,22 +17,36 @@ jobs:
     outputs:
       pkgcraft-c-ref: ${{ steps.vars.outputs.pkgcraft-c-ref }}
     steps:
-    - name: Checkout code
+    - name: Checkout pkgcraft code
       uses: actions/checkout@v3
+      with:
+        repository: pkgcraft/pkgcraft
+        # checkout full history for tags
+        fetch-depth: 0
+        submodules: true
 
     - name: Determine target pkgcraft-c version
       id: vars
       run: |
         if [[ -n "${{ inputs.pkgcraft-c-ref }}" ]]; then
-          echo "pkgcraft-c-ref=${{ inputs.pkgcraft-c-ref }}" >> $GITHUB_OUTPUT
+          pkgcraft_c_ref=${{ inputs.pkgcraft-c-ref }}
         else
-          max_ver=$(sed -rn '/^MAX_VERSION =/s/^.*=\s*"([0-9](\.[0-9])*)(.*)/\1/p' setup.py)
-          if [[ -n ${max_ver} ]]; then
-            echo "pkgcraft-c-ref=pkgcraft-c-${max_ver}" >> $GITHUB_OUTPUT
-          else
+          # get all pkgcraft-c tags in descending time created order
+          mapfile -t tags < <( git tag --list --sort=-taggerdate 'pkgcraft-c-*' )
+          pkgcraft_c_ref=${tags[0]}
+          if [[ -z ${pkgcraft_c_ref} ]]; then
+            echo "No tags matching: pkgcraft-c-*"
             exit 1
           fi
         fi
+
+        if [[ ${pkgcraft_c_ref} =~ ^pkgcraft-c-* ]]; then
+          echo "Building against pkgcraft-c tag: ${pkgcraft_c_ref}"
+        else
+          echo "Building against pkgcraft-c branch: ${pkgcraft_c_ref}"
+        fi
+
+        echo "pkgcraft-c-ref=${pkgcraft_c_ref}" >> $GITHUB_OUTPUT
 
   build-sdist:
     runs-on: ubuntu-latest
