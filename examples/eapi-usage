@@ -37,7 +37,7 @@ def main():
     # determine EAPI usage
     eapis = defaultdict(list)
     for pkg in repo:
-        eapis[pkg.eapi].append(pkg.atom)
+        eapis[pkg.eapi].append(pkg.cpv)
 
     # output EAPI usage in descending order
     for (eapi, cpvs) in sorted(eapis.items(), key=lambda x: len(x[1]), reverse=True):

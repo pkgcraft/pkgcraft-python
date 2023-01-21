@@ -83,11 +83,11 @@ class TestFakeRepo(BaseRepoTests):
 
         # single cpv
         r.extend(["cat/pkg-1"])
-        assert [str(pkg.atom) for pkg in r] == ["cat/pkg-1"]
+        assert [str(pkg.cpv) for pkg in r] == ["cat/pkg-1"]
 
         # multiple cpvs
         r.extend(["a/b-0", "cat/pkg-2"])
-        assert [str(pkg.atom) for pkg in r] == ["a/b-0", "cat/pkg-1", "cat/pkg-2"]
+        assert [str(pkg.cpv) for pkg in r] == ["a/b-0", "cat/pkg-1", "cat/pkg-2"]
 
         # mutability disabled after adding to a config
         config.add_repo(r)

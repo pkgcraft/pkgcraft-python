@@ -27,9 +27,9 @@ cdef class Pkg(_IndirectInit):
         return obj
 
     @property
-    def atom(self):
-        """Get a package's atom."""
-        return Cpv.from_ptr(C.pkgcraft_pkg_atom(self.ptr))
+    def cpv(self):
+        """Get a package's CPV."""
+        return Cpv.from_ptr(C.pkgcraft_pkg_cpv(self.ptr))
 
     @property
     def eapi(self):

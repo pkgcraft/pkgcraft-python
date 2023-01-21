@@ -579,18 +579,18 @@ cdef extern from "pkgcraft.h":
     # The argument should point to a UTF-8 string.
     const char *pkgcraft_parse_version(const char *s);
 
-    # Return a package's atom.
-    #
-    # # Safety
-    # The argument must be a non-null Pkg pointer.
-    Atom *pkgcraft_pkg_atom(Pkg *p);
-
     # Compare two packages returning -1, 0, or 1 if the first package is less than, equal to, or
     # greater than the second package, respectively.
     #
     # # Safety
     # The arguments must be non-null Pkg pointers.
     int pkgcraft_pkg_cmp(Pkg *p1, Pkg *p2);
+
+    # Return a package's CPV.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    Atom *pkgcraft_pkg_cpv(Pkg *p);
 
     # Return a package's EAPI.
     #

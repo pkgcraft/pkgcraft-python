@@ -5,7 +5,7 @@ from pkgcraft.restrict import Restrict
 
 class BasePkgTests:
     def test_atom_base(self, pkg):
-        assert pkg.atom == Cpv("cat/pkg-1")
+        assert pkg.cpv == Cpv("cat/pkg-1")
 
     def test_eapi_base(self, pkg):
         assert pkg.eapi is EAPI_LATEST
@@ -20,7 +20,7 @@ class BasePkgTests:
 
     def test_matches_base(self, pkg):
         pkg_restrict = Restrict(pkg)
-        cpv_restrict = Restrict(pkg.atom)
+        cpv_restrict = Restrict(pkg.cpv)
         assert pkg.matches(pkg_restrict)
         assert pkg.matches(cpv_restrict)
 

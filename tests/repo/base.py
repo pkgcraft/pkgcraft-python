@@ -88,8 +88,8 @@ class BaseRepoTests:
         assert pkg1 not in r2
         assert pkg2 in r2
         # Pkg atoms
-        assert pkg1.atom in r1
-        assert pkg2.atom in r1
+        assert pkg1.cpv in r1
+        assert pkg2.cpv in r1
 
         for obj in (object(), None):
             with pytest.raises(TypeError):

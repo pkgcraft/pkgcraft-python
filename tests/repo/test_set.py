@@ -120,8 +120,8 @@ class TestRepoSet:
         assert pkg1 in s
         assert pkg2 in s
         # Pkg atoms
-        assert pkg1.atom in s
-        assert pkg2.atom in s
+        assert pkg1.cpv in s
+        assert pkg2.cpv in s
         # Repo objects
         assert r1 in s
         assert r2 in s
