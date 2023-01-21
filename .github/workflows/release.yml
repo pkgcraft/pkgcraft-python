@@ -1,8 +1,8 @@
-name: Deploy
+name: release
 
 on:
   push:
-    branches: [deploy]
+    branches: [release]
     tags: [v*]
   workflow_dispatch:
     inputs:
