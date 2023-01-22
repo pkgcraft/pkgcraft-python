@@ -6,6 +6,13 @@ from . cimport pkgcraft_c as C
 from .repo cimport Repo, RepoSet
 from .error import ConfigError, PkgcraftError
 
+# default fallback paths when running Config.load_repos_conf() with no path argument.
+# TODO: determine paths based off install prefix?
+PORTAGE_REPOS_CONF_DEFAULTS = (
+    '/etc/portage/repos.conf',
+    '/usr/share/portage/config/repos.conf',
+)
+
 
 cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
     """Convert an array of repos to an (id, Repo) mapping."""
@@ -70,9 +77,7 @@ cdef class Config:
         cdef size_t length
 
         if path is None:
-            # TODO: determine default paths based off install prefix?
-            defaults = ('/etc/portage/repos.conf', '/usr/share/portage/config/repos.conf')
-            for path in defaults:
+            for path in PORTAGE_REPOS_CONF_DEFAULTS:
                 if os.path.exists(path):
                     break
             else:

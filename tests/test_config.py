@@ -1,4 +1,5 @@
 import textwrap
+from unittest.mock import patch
 
 import pytest
 
@@ -107,14 +108,20 @@ class TestConfig:
 
     def test_load_repos_conf(self, config, raw_ebuild_repo, tmp_path):
         repo_path = raw_ebuild_repo.path
+        f = tmp_path / "file"
 
         # nonexistent
-        f = "/path/to/nonexistent/file"
-        with pytest.raises(ConfigError, match=f'config error: .* "{f}": No such file or directory'):
+        with pytest.raises(
+            ConfigError, match=f'config error: .* "{str(f)}": No such file or directory'
+        ):
             config.load_repos_conf(f)
 
+        # nonexistent repos.conf path defaults
+        with patch("pkgcraft.config.PORTAGE_REPOS_CONF_DEFAULTS", (f,)):
+            with pytest.raises(ValueError):
+                config.load_repos_conf()
+
         # empty file
-        f = tmp_path / "file"
         f.touch()
         config.load_repos_conf(f)
         assert not config.repos
@@ -142,6 +149,19 @@ class TestConfig:
         with pytest.raises(ConfigError, match=f'config error: invalid repos.conf file: "{f}"'):
             config.load_repos_conf(f)
 
+        # repos.conf path default fallback
+        with patch("pkgcraft.config.PORTAGE_REPOS_CONF_DEFAULTS", (f,)):
+            f.write_text(
+                textwrap.dedent(
+                    f"""
+                [default]
+                location = {repo_path}
+            """
+                )
+            )
+            assert list(map(str, config.load_repos_conf())) == ["default"]
+            assert set(config.repos) == {"default"}
+
         # file path
         f.write_text(
             textwrap.dedent(
@@ -151,8 +171,8 @@ class TestConfig:
         """
             )
         )
-        config.load_repos_conf(f)
-        assert set(config.repos) == {"test"}
+        assert list(map(str, config.load_repos_conf(f))) == ["test"]
+        assert set(config.repos) == {"default", "test"}
 
         # reloading causes an existence error
         with pytest.raises(ConfigError, match="config error: existing repo: test"):
@@ -180,5 +200,5 @@ class TestConfig:
         """
             )
         )
-        config.load_repos_conf(dir_path)
-        assert set(config.repos) == {"test2", "test", "test1"}
+        assert list(map(str, config.load_repos_conf(dir_path))) == ["test2", "test1"]
+        assert set(config.repos) == {"default", "test2", "test", "test1"}
