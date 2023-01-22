@@ -26,10 +26,10 @@ def main():
     # load specified repo path or id
     config = Config()
     try:
+        config.load_repos_conf()
         if os.path.sep in args.repo:
             repo = config.add_repo(path)
         else:
-            config.load_repos_conf()
             repo = config.repos[args.repo]
     except PkgcraftError as e:
         parser.error(e)
