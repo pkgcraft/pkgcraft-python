@@ -191,7 +191,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The atom argument should be a UTF-8 string while eapi may be NULL to use the default EAPI.
-    Atom *pkgcraft_atom_new(const char *atom, const Eapi *eapi);
+    Atom *pkgcraft_atom_new(const char *s, const Eapi *eapi);
 
     # Return an atom's package, e.g. the atom "=cat/pkg-1-r2" has a package of "pkg".
     #
@@ -547,7 +547,7 @@ cdef extern from "pkgcraft.h":
     # The argument should point to a UTF-8 string.
     const char *pkgcraft_parse_category(const char *s);
 
-    # Parse an atom cpv string.
+    # Parse a CPV string.
     #
     # Returns NULL on error.
     #
@@ -619,6 +619,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Pkg pointer.
     DepSet *pkgcraft_pkg_ebuild_depend(Pkg *p);
+
+    # Return a package's dependencies for a given set of descriptors.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    DepSet *pkgcraft_pkg_ebuild_dependencies(Pkg *p, char **keys, uintptr_t len);
 
     # Return a package's description.
     #
