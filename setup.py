@@ -133,7 +133,10 @@ class build_ext(dst_build_ext.build_ext):
 
         try:
             p = subprocess.run(
-                ["pkg-config", "--modversion", "pkgcraft"], capture_output=True, text=True
+                ["pkg-config", "--modversion", "pkgcraft"],
+                capture_output=True,
+                check=True,
+                text=True,
             )
             version = p.stdout.strip()
         except subprocess.CalledProcessError:

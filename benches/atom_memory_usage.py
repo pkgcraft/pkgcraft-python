@@ -28,13 +28,13 @@ def test(atoms):
     eprint("{:<20} {:<10} time".format("implementation", "memory"))
     eprint("---------------------------------------")
     for (impl, func) in atom_funcs:
-        if pid := os.fork():
+        if _pid := os.fork():
             os.wait()
         else:
             proc = psutil.Process()
             base = proc.memory_info().rss
             start = time.time()
-            l = [func(x) for x in atoms]
+            _atoms = [func(x) for x in atoms]
             elapsed = time.time() - start
             size = humanize.naturalsize(proc.memory_info().rss - base)
             eprint(f"{impl:<20} {size:<10} {elapsed:.{2}f}s")

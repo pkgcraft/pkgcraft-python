@@ -69,6 +69,9 @@ exclude_lines = [
     "if __name__ == .__main__.:",
 ]
 
+[tool.pylint]
+disable = ["C0103", "C0114", "C0116", "E0401"]
+
 [tool.cibuildwheel]
 build = ["cp39-*", "cp310-*", "cp311-*"]
 build-frontend = "build"

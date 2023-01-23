@@ -8,8 +8,8 @@ from pkgcraft.atom import Atom
 from pkgcraft.repo import RepoSet
 
 
-@pytest.mark.parametrize("lib,func", (("pkgcraft", Atom), ("pkgcore", pkgcore_atom)))
-def test_bench_ebuild_repo_iter(benchmark, lib, func, ebuild_repo):
+@pytest.mark.parametrize("lib", ("pkgcraft", "pkgcore"))
+def test_bench_ebuild_repo_iter(benchmark, lib, ebuild_repo):
     # create ebuilds
     for i in range(100):
         ebuild_repo.create_ebuild(f"cat/pkg-{i}")

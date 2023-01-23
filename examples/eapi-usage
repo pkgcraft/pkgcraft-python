@@ -5,7 +5,6 @@ import argparse
 import logging
 import os
 from collections import defaultdict
-from operator import itemgetter
 
 from pkgcraft.config import Config
 from pkgcraft.error import PkgcraftError
@@ -28,7 +27,7 @@ def main():
     try:
         config.load_repos_conf()
         if os.path.sep in args.repo:
-            repo = config.add_repo(path)
+            repo = config.add_repo(args.repo)
         else:
             repo = config.repos[args.repo]
     except PkgcraftError as e:
