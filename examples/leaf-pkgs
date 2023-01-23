@@ -43,8 +43,7 @@ def main():
     for pkg in repo:
         cpv = pkg.cpv
         cpvs.append(cpv)
-        deps = (deps for k in dep_keys if (deps := getattr(pkg, k.lower())))
-        for dep in chain.from_iterable(d.iter_flatten() for d in deps):
+        for dep in pkg.dependencies().iter_flatten():
             cache[dep.cpn][dep].add(cpv)
 
     # find packages lacking revdeps
