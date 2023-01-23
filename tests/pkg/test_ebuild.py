@@ -72,22 +72,28 @@ class TestEbuildPkg(BasePkgTests):
         assert str(deps) == ""
         assert list(deps.iter_flatten()) == []
 
-        # single dep type
+        # single type
         pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="cat/pkg")
         deps = pkg.dependencies()
         assert str(deps) == "cat/pkg"
         assert list(deps.iter_flatten()) == [Atom("cat/pkg")]
 
-        # multiple dep types
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="cat/pkg", bdepend="a/b")
+        # multiple types -- output in lexical attr name order
+        pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="u? ( cat/pkg )", bdepend="a/b")
         deps = pkg.dependencies()
-        assert str(deps) == "cat/pkg a/b"
-        assert list(deps.iter_flatten()) == [Atom("cat/pkg"), Atom("a/b")]
+        assert str(deps) == "a/b u? ( cat/pkg )"
+        assert list(deps.iter_flatten()) == [Atom("a/b"), Atom("cat/pkg")]
 
-        # filter by dep type
+        # filter by type
         deps = pkg.dependencies(["bdepend"])
         assert str(deps) == "a/b"
         assert list(deps.iter_flatten()) == [Atom("a/b")]
+
+        # multiple types with overlapping deps
+        pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="u? ( cat/pkg )", bdepend="u? ( cat/pkg )")
+        deps = pkg.dependencies()
+        assert str(deps) == "u? ( cat/pkg )"
+        assert list(deps.iter_flatten()) == [Atom("cat/pkg")]
 
         # uppercase and lowercase keys work the same
         pkg.dependencies(["bdepend"]) == pkg.dependencies(["BDEPEND"])

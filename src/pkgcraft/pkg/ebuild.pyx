@@ -92,20 +92,20 @@ cdef class EbuildPkg(Pkg):
         return deps
 
     @property
-    def depend(self):
-        """Get a package's DEPEND."""
-        if self._depend is SENTINEL:
-            ptr = C.pkgcraft_pkg_ebuild_depend(self.ptr)
-            self._depend = DepSet.from_ptr(ptr, DepSetAtom)
-        return self._depend
-
-    @property
     def bdepend(self):
         """Get a package's BDEPEND."""
         if self._bdepend is SENTINEL:
             ptr = C.pkgcraft_pkg_ebuild_bdepend(self.ptr)
             self._bdepend = DepSet.from_ptr(ptr, DepSetAtom)
         return self._bdepend
+
+    @property
+    def depend(self):
+        """Get a package's DEPEND."""
+        if self._depend is SENTINEL:
+            ptr = C.pkgcraft_pkg_ebuild_depend(self.ptr)
+            self._depend = DepSet.from_ptr(ptr, DepSetAtom)
+        return self._depend
 
     @property
     def idepend(self):
