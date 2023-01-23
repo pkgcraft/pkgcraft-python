@@ -9,18 +9,14 @@ Python bindings for pkgcraft_.
 Install
 =======
 
-Install wheel from PyPI (comes with bundled pkgcraft-c library)::
+Install wheel from PyPI (comes with bundled pkgcraft-c_ library)::
 
     pip install pkgcraft
 
-Install from git (assumes pkgcraft-c from git is installed)::
+Install from git (assumes pkgcraft-c_ from git is installed)::
 
     git clone --recurse-submodules https://github.com/pkgcraft/pkgcraft-python.git
     pip install pkgcraft-python
-
-Install from release tarball (assumes required release of pkgcraft-c is installed)::
-
-    pip install path/to/release/tar.ball.gz
 
 Development
 ===========
