@@ -62,23 +62,35 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_dependencies(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
+
+        # invalid keys
+        with pytest.raises(PkgcraftError):
+            pkg.dependencies(["invalid"])
+
+        # empty deps
         deps = pkg.dependencies()
         assert str(deps) == ""
         assert list(deps.iter_flatten()) == []
 
+        # single dep type
         pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="cat/pkg")
         deps = pkg.dependencies()
         assert str(deps) == "cat/pkg"
         assert list(deps.iter_flatten()) == [Atom("cat/pkg")]
 
+        # multiple dep types
         pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="cat/pkg", bdepend="a/b")
         deps = pkg.dependencies()
         assert str(deps) == "cat/pkg a/b"
         assert list(deps.iter_flatten()) == [Atom("cat/pkg"), Atom("a/b")]
 
+        # filter by dep type
         deps = pkg.dependencies(["bdepend"])
         assert str(deps) == "a/b"
         assert list(deps.iter_flatten()) == [Atom("a/b")]
+
+        # uppercase and lowercase keys work the same
+        pkg.dependencies(["bdepend"]) == pkg.dependencies(["BDEPEND"])
 
     def test_dep_attrs(self, ebuild_repo):
         for attr in ("depend", "bdepend", "idepend", "pdepend", "rdepend"):
