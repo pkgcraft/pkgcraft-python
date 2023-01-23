@@ -63,11 +63,11 @@ class TestEbuildPkg(BasePkgTests):
     def test_dep_attrs(self, ebuild_repo):
         for attr in ("depend", "bdepend", "idepend", "pdepend", "rdepend"):
             pkg = ebuild_repo.create_pkg("cat/pkg-1")
-            assert not getattr(pkg, attr)
+            assert getattr(pkg, attr) is None
 
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: ""})
             val = getattr(pkg, attr)
-            assert not getattr(pkg, attr)
+            assert getattr(pkg, attr) is None
 
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: "cat/pkg"})
             val = getattr(pkg, attr)
@@ -93,7 +93,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_license(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert not pkg.license
+        assert pkg.license is None
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", license="BSD")
         assert str(pkg.license) == "BSD"
@@ -105,7 +105,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_properties(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert not pkg.properties
+        assert pkg.properties is None
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", properties="live")
         assert str(pkg.properties) == "live"
@@ -117,7 +117,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_required_use(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert not pkg.required_use
+        assert pkg.required_use is None
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", required_use="use")
         assert str(pkg.required_use) == "use"
@@ -129,7 +129,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_restrict(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert not pkg.restrict
+        assert pkg.restrict is None
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", restrict="fetch")
         assert str(pkg.restrict) == "fetch"
@@ -141,7 +141,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_src_uri(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert not pkg.src_uri
+        assert pkg.src_uri is None
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", src_uri="https://a.com/b.tar.gz")
         assert str(pkg.src_uri) == "https://a.com/b.tar.gz"
@@ -170,7 +170,7 @@ class TestEbuildPkg(BasePkgTests):
     def test_defined_phases(self, ebuild_repo):
         # none
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert not pkg.defined_phases
+        assert pkg.defined_phases == []
 
         # single
         data = "src_configure() { :; }"
@@ -191,7 +191,7 @@ class TestEbuildPkg(BasePkgTests):
     def test_homepage(self, ebuild_repo):
         # none
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert not pkg.homepage
+        assert pkg.homepage == []
 
         # single
         pkg = ebuild_repo.create_pkg("cat/pkg-1", homepage="https://a.com")
@@ -204,7 +204,7 @@ class TestEbuildPkg(BasePkgTests):
     def test_keywords(self, ebuild_repo):
         # empty
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert not pkg.keywords
+        assert pkg.keywords == []
 
         # multiple
         pkg = ebuild_repo.create_pkg("cat/pkg-1", keywords="amd64 ~arm64")
@@ -213,7 +213,7 @@ class TestEbuildPkg(BasePkgTests):
     def test_iuse(self, ebuild_repo):
         # empty
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert not pkg.iuse
+        assert pkg.iuse == []
 
         # multiple
         pkg = ebuild_repo.create_pkg("cat/pkg-1", iuse="a b c")
@@ -222,8 +222,8 @@ class TestEbuildPkg(BasePkgTests):
     def test_inherits(self, ebuild_repo):
         # empty
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert not pkg.inherit
-        assert not pkg.inherited
+        assert pkg.inherit == []
+        assert pkg.inherited == []
 
     def test_long_description(self, ebuild_repo):
         # none
@@ -283,7 +283,7 @@ class TestEbuildPkg(BasePkgTests):
     def test_maintainers(self, ebuild_repo):
         # none
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert not pkg.maintainers
+        assert pkg.maintainers == []
 
         # invalid
         path = ebuild_repo.create_ebuild("cat/a-1")
@@ -297,7 +297,7 @@ class TestEbuildPkg(BasePkgTests):
                 )
             )
         pkg = next(ebuild_repo.iter_restrict("cat/a-1"))
-        assert not pkg.maintainers
+        assert pkg.maintainers == []
 
         # multiple
         path = ebuild_repo.create_ebuild("cat/b-1")
@@ -342,7 +342,7 @@ class TestEbuildPkg(BasePkgTests):
     def test_upstreams(self, ebuild_repo):
         # none
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert not pkg.upstreams
+        assert pkg.upstreams == []
 
         # invalid
         path = ebuild_repo.create_ebuild("cat/a-1")
@@ -356,7 +356,7 @@ class TestEbuildPkg(BasePkgTests):
                 )
             )
         pkg = next(ebuild_repo.iter_restrict("cat/a-1"))
-        assert not pkg.upstreams
+        assert pkg.upstreams == []
 
         # multiple
         path = ebuild_repo.create_ebuild("cat/b-1")
