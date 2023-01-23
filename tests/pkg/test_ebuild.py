@@ -60,6 +60,26 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", slot="1/2")
         assert pkg.subslot == "2"
 
+    def test_dependencies(self, ebuild_repo):
+        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+        deps = pkg.dependencies()
+        assert str(deps) == ""
+        assert list(deps.iter_flatten()) == []
+
+        pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="cat/pkg")
+        deps = pkg.dependencies()
+        assert str(deps) == "cat/pkg"
+        assert list(deps.iter_flatten()) == [Atom("cat/pkg")]
+
+        pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="cat/pkg", bdepend="a/b")
+        deps = pkg.dependencies()
+        assert str(deps) == "cat/pkg a/b"
+        assert list(deps.iter_flatten()) == [Atom("cat/pkg"), Atom("a/b")]
+
+        deps = pkg.dependencies(["bdepend"])
+        assert str(deps) == "a/b"
+        assert list(deps.iter_flatten()) == [Atom("a/b")]
+
     def test_dep_attrs(self, ebuild_repo):
         for attr in ("depend", "bdepend", "idepend", "pdepend", "rdepend"):
             pkg = ebuild_repo.create_pkg("cat/pkg-1")
