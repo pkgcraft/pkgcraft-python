@@ -30,6 +30,9 @@ on:
       python-version:
         required: false
         type: string
+      event-type:
+        required: true
+        type: string
 
 jobs:
   setup:
@@ -69,8 +72,8 @@ jobs:
     - name: Set pkgcraft dir env var
       run: echo pkgcraft_dir=~/pkgcraft >> $GITHUB_ENV
 
-    - name: Download prebuilt pkgcraft-c library
-      id: download-artifact
+    - name: Download pkgcraft-c library from most recent run
+      if: ${{ inputs.event-type == '' }}
       uses: dawidd6/action-download-artifact@v2
       with:
         github_token: ${{ secrets.PKGCRAFT_CI_TOKEN }}
@@ -79,6 +82,13 @@ jobs:
         workflow: pkgcraft-c.yml
         workflow_conclusion: ""
         search_artifacts: true
+        name: pkgcraft-c-${{ runner.os }}
+        path: ${{ env.pkgcraft_dir }}
+
+    - name: Download pkgcraft-c library from running workflow
+      if: ${{ inputs.event-type != '' }}
+      uses: actions/download-artifact@v3
+      with:
         name: pkgcraft-c-${{ runner.os }}
         path: ${{ env.pkgcraft_dir }}
 
