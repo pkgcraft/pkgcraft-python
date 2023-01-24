@@ -255,7 +255,7 @@ class TestRepoSet:
         for (a, b) in [(None, s), ("s", s)]:
             for (x, y) in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
-                    x & y
+                    _ = x & y
 
         # | operator
         s = RepoSet(r1)
@@ -265,7 +265,7 @@ class TestRepoSet:
         for (a, b) in [(None, s), ("s", s)]:
             for (x, y) in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
-                    x | y
+                    _ = x | y
 
         # ^ operator
         s = RepoSet(r1, r2, r3)
@@ -275,7 +275,7 @@ class TestRepoSet:
         for (a, b) in [(None, s), ("s", s)]:
             for (x, y) in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
-                    x ^ y
+                    _ = x ^ y
 
         # - operator
         s = RepoSet(r1, r2)
@@ -285,4 +285,4 @@ class TestRepoSet:
         for (a, b) in [(None, s), ("s", s)]:
             for (x, y) in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
-                    x - y
+                    _ = x - y

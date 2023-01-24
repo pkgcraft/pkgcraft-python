@@ -48,7 +48,7 @@ class TestEapi:
 
     def test_methods(self):
         assert str(EAPI0) == "0"
-        assert repr(EAPI0).startswith(f"<Eapi '0' at 0x")
+        assert repr(EAPI0).startswith("<Eapi '0' at 0x")
 
     def test_cmp(self):
         assert EAPI0 < EAPI1

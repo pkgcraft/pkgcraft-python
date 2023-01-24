@@ -70,7 +70,7 @@ class TestEbuildPkg(BasePkgTests):
         # empty deps
         deps = pkg.dependencies()
         assert str(deps) == ""
-        assert list(deps.iter_flatten()) == []
+        assert not list(deps.iter_flatten())
 
         # single type
         pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="cat/pkg")
@@ -96,7 +96,7 @@ class TestEbuildPkg(BasePkgTests):
         assert list(deps.iter_flatten()) == [Atom("cat/pkg")]
 
         # uppercase and lowercase keys work the same
-        pkg.dependencies(["bdepend"]) == pkg.dependencies(["BDEPEND"])
+        assert pkg.dependencies(["bdepend"]) == pkg.dependencies(["BDEPEND"])
 
     def test_dep_attrs(self, ebuild_repo):
         for attr in ("depend", "bdepend", "idepend", "pdepend", "rdepend"):

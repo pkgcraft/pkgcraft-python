@@ -70,7 +70,7 @@ exclude_lines = [
 ]
 
 [tool.pylint]
-disable = ["C0103", "C0114", "C0116", "E0401"]
+disable = ["C0103", "C0114", "C0115", "C0116", "E0401", "R0902", "R0903", "R0904", "W0621"]
 
 [tool.cibuildwheel]
 build = ["cp39-*", "cp310-*", "cp311-*"]

@@ -97,6 +97,6 @@ class TestFakeRepo(BaseRepoTests):
         # mutability disabled after adding to a repo set
         r = make_fake_repo(config=None)
         r.extend(["cat/pkg-1"])
-        s = RepoSet(r)
+        _s = RepoSet(r)
         with pytest.raises(PkgcraftError, match="failed getting mutable repo ref"):
             r.extend(["cat/pkg-2"])

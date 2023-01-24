@@ -22,7 +22,7 @@ def test_atom():
             parse.atom(s)
 
     # unknown EAPI
-    with pytest.raises(ValueError, match=f"unknown EAPI"):
+    with pytest.raises(ValueError, match="unknown EAPI"):
         parse.atom("cat/pkg", "nonexistent")
 
     # invalid EAPI type

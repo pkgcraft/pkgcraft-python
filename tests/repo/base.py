@@ -57,7 +57,7 @@ class BaseRepoTests:
             r2 = make_repo(None, *r2_args, config=config)
             assert op_func(r1, r2), f"failed {r1_args} {op} {r2_args}"
 
-    def test_hash_base(self, config, make_repo):
+    def test_hash_base(self, make_repo):
         r1 = make_repo()
         r2 = make_repo()
         assert len({r1, r2}) == 2
@@ -102,7 +102,7 @@ class BaseRepoTests:
 
         for obj in ("cat/pkg-2", Cpv("cat/pkg-3")):
             with pytest.raises(KeyError):
-                repo[obj]
+                _ = repo[obj]
 
     def test_bool_and_len_base(self, repo):
         # empty repo

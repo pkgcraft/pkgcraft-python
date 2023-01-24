@@ -69,7 +69,7 @@ class TestAtom:
                 Atom("cat/pkg::repo", eapi)
 
         # unknown EAPI
-        with pytest.raises(ValueError, match=f"unknown EAPI"):
+        with pytest.raises(ValueError, match="unknown EAPI"):
             Atom("cat/pkg", "nonexistent")
 
         # invalid EAPI type
@@ -90,10 +90,10 @@ class TestAtom:
 
         # converters for toml data
         converters = {
-            "blocker": lambda x: Blocker.from_str(x),
-            "version": lambda x: VersionWithOp(x),
-            "slot_op": lambda x: SlotOperator.from_str(x),
-            "use": lambda x: tuple(x),
+            "blocker": Blocker.from_str,
+            "version": VersionWithOp,
+            "slot_op": SlotOperator.from_str,
+            "use": tuple,
         }
 
         for entry in toml_data["atom.toml"]["valid"]:

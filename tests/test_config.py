@@ -72,7 +72,7 @@ class TestConfig:
         f = tmp_path / "repo2"
         f.write_text(
             textwrap.dedent(
-                f"""
+                """
             cat/pkg-1
             cat/pkg-2
             a/b-0

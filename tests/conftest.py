@@ -18,8 +18,8 @@ TOMLDIR = DATADIR / "toml"
 @pytest.fixture(scope="session")
 def toml_data():
     """All toml test data presented as a dict using relative file paths as keys."""
-    d = dict()
-    for root, dirs, files in os.walk(TOMLDIR):
+    d = {}
+    for root, _dirs, files in os.walk(TOMLDIR):
         for f in (f for f in files if f.endswith(".toml")):
             path = Path(root, f)
             with open(path, "rb") as f:

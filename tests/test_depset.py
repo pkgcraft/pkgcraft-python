@@ -58,7 +58,7 @@ class TestDepRestrict:
             op_func = OperatorMap[op]
             pkg = ebuild_repo.create_pkg("cat/pkg-1", depend=dep, rdepend=rdep)
             d1, d2 = next(iter(pkg.depend)), next(iter(pkg.rdepend))
-            assert op_func(d1, d2), f"failed {r1_args} {op} {r2_args}"
+            assert op_func(d1, d2), f"failed {dep} {op} {rdep}"
 
     def test_eq_and_hash(self, ebuild_repo):
         # ordering that doesn't matter for equivalence and hashing
