@@ -3,6 +3,9 @@ language = "cython"
 tab_width = 4
 line_length = 110
 
+[export]
+include = ["Blocker", "SlotOperator"]
+
 [enum]
 rename_variants = "QualifiedScreamingSnakeCase"
 

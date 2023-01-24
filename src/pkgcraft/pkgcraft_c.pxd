@@ -8,6 +8,10 @@ cdef extern from *:
 
 cdef extern from "pkgcraft.h":
 
+    cdef enum Blocker:
+        BLOCKER_STRONG # = 1,
+        BLOCKER_WEAK,
+
     cdef enum ErrorKind:
         ERROR_KIND_GENERIC,
         ERROR_KIND_PKGCRAFT,
@@ -41,6 +45,10 @@ cdef extern from "pkgcraft.h":
     cdef enum RepoSetType:
         REPO_SET_TYPE_ALL,
         REPO_SET_TYPE_EBUILD,
+
+    cdef enum SlotOperator:
+        SLOT_OPERATOR_EQUAL # = 1,
+        SLOT_OPERATOR_STAR,
 
     # Package atom
     cdef struct Atom:
@@ -127,7 +135,7 @@ cdef extern from "pkgcraft.h":
 
     # Return an atom's blocker status, e.g. the atom "!cat/pkg" has a weak blocker.
     #
-    # Returns -1 on nonexistence.
+    # Returns 0 on nonexistence.
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
@@ -135,7 +143,7 @@ cdef extern from "pkgcraft.h":
 
     # Parse a string into a Blocker.
     #
-    # Returns -1 on error.
+    # Returns 0 on error.
     #
     # # Safety
     # The argument should be a UTF-8 string.
@@ -238,7 +246,7 @@ cdef extern from "pkgcraft.h":
     # Return an atom's slot operator, e.g. the atom "=cat/pkg-1-r2:0=" has an equal slot
     # operator.
     #
-    # Returns -1 on nonexistence.
+    # Returns 0 on nonexistence.
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
@@ -246,7 +254,7 @@ cdef extern from "pkgcraft.h":
 
     # Parse a string into a SlotOperator.
     #
-    # Returns -1 on error.
+    # Returns 0 on error.
     #
     # # Safety
     # The argument should be a UTF-8 string.

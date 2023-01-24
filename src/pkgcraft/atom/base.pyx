@@ -200,25 +200,25 @@ def _cached_atom(cls, atom, eapi=None):
 
 
 class Blocker(Enum):
-    Strong = 0
-    Weak = 1
+    Strong = C.BLOCKER_STRONG
+    Weak = C.BLOCKER_WEAK
 
     @staticmethod
     def from_str(str s not None):
         blocker = C.pkgcraft_atom_blocker_from_str(s.encode())
-        if blocker >= 0:
+        if blocker > 0:
             return Blocker(blocker)
         raise ValueError(f'invalid blocker: {s}')
 
 
 class SlotOperator(Enum):
-    Equal = 0
-    Star = 1
+    Equal = C.SLOT_OPERATOR_EQUAL
+    Star = C.SLOT_OPERATOR_STAR
 
     @staticmethod
     def from_str(str s not None):
         slot_op = C.pkgcraft_atom_slot_op_from_str(s.encode())
-        if slot_op >= 0:
+        if slot_op > 0:
             return SlotOperator(slot_op)
         raise ValueError(f'invalid slot operator: {s}')
 
@@ -302,7 +302,7 @@ cdef class Atom(Cpv):
         True
         """
         cdef int blocker = C.pkgcraft_atom_blocker(self.ptr)
-        if blocker >= 0:
+        if blocker > 0:
             return Blocker(blocker)
         return None
 
@@ -366,7 +366,7 @@ cdef class Atom(Cpv):
         True
         """
         cdef int slot_op = C.pkgcraft_atom_slot_op(self.ptr)
-        if slot_op >= 0:
+        if slot_op > 0:
             return SlotOperator(slot_op)
         return None
 
