@@ -1,13 +1,11 @@
 from random import randrange
 
 import pytest
-
-pytest_plugins = ("benchmark",)
-
 from ordered_set import OrderedSet as PyOrderedSet
 
 from pkgcraft.set import OrderedSet as CyOrderedSet
 
+pytest_plugins = ("benchmark",)
 set_types = [("cython", CyOrderedSet), ("python", PyOrderedSet), ("standard", set)]
 
 

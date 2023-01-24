@@ -1,11 +1,10 @@
 import pytest
-
-pytest_plugins = ("benchmark", "pkgcraft")
-
 from pkgcore.ebuild.atom import atom as pkgcore_atom
 
 from pkgcraft.atom import Atom
 from pkgcraft.repo import RepoSet
+
+pytest_plugins = ("benchmark", "pkgcraft")
 
 
 @pytest.mark.parametrize("lib", ("pkgcraft", "pkgcore"))
