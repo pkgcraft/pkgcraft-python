@@ -11,6 +11,7 @@ cdef class DepRestrict(_IndirectInit):
 
     @staticmethod
     cdef DepRestrict from_ptr(C.DepRestrict *ptr, DepSetKind kind):
+        """Create a DepRestrict from a pointer and type."""
         obj = <DepRestrict>DepRestrict.__new__(DepRestrict)
         obj.ptr = ptr
         obj.kind = kind

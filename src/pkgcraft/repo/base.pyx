@@ -17,7 +17,7 @@ cdef class Repo:
     format = None
 
     def __init__(self, path not None, id=None, int priority=0):
-        """Create a repo from a given path."""
+        """Create a Repo from a path."""
         path = str(path)
         id = str(id) if id is not None else path
 
@@ -35,7 +35,7 @@ cdef class Repo:
 
     @staticmethod
     cdef Repo from_ptr(C.Repo *ptr, bint ref, Repo obj=None):
-        """Convert a repo pointer to a repo object."""
+        """Create a Repo from a pointer."""
         if obj is None:
             format = C.pkgcraft_repo_format(ptr)
             if format == C.RepoFormat.REPO_FORMAT_EBUILD:

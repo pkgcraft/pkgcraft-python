@@ -43,7 +43,7 @@ cdef class Cpv:
 
     @staticmethod
     cdef Cpv from_ptr(C.Atom *ptr):
-        """Convert an Atom pointer to a Cpv object."""
+        """Create a Cpv from a pointer."""
         obj = <Cpv>Cpv.__new__(Cpv)
         obj.ptr = <C.Atom *>ptr
         return obj
@@ -276,7 +276,7 @@ cdef class Atom(Cpv):
 
     @staticmethod
     cdef Atom from_ptr(C.Atom *ptr):
-        """Convert an Atom pointer to a Atom object."""
+        """Create an Atom from a pointer."""
         obj = <Atom>Atom.__new__(Atom)
         obj.ptr = <C.Atom *>ptr
         return obj

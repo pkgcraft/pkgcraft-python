@@ -26,7 +26,7 @@ cdef class RepoSet:
 
     @staticmethod
     cdef RepoSet from_ptr(C.RepoSet *ptr):
-        """Create an instance from a pointer."""
+        """Create a RepoSet from a pointer."""
         obj = <RepoSet>RepoSet.__new__(RepoSet)
         obj.ptr = ptr
         return obj

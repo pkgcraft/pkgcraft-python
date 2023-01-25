@@ -12,7 +12,7 @@ cdef class Pkg(_IndirectInit):
 
     @staticmethod
     cdef Pkg from_ptr(C.Pkg *ptr):
-        """Convert a pkg pointer to a pkg object."""
+        """Create a Pkg from a pointer."""
         cdef Pkg obj
 
         format = C.pkgcraft_pkg_format(ptr)

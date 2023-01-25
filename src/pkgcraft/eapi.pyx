@@ -63,7 +63,7 @@ cdef class Eapi(_IndirectInit):
 
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *ptr):
-        """Convert a borrowed Eapi pointer into an Eapi object."""
+        """Create an Eapi from a pointer."""
         obj = <Eapi>Eapi.__new__(Eapi)
         obj.ptr = ptr
         c_str = C.pkgcraft_eapi_as_str(ptr)
