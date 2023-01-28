@@ -15,3 +15,8 @@ cdef class EbuildRepo(Repo):
             repos = C.pkgcraft_repo_ebuild_masters(self.ptr, &length)
             self._masters = tuple(EbuildRepo.from_ptr(repos[i], False) for i in range(length))
         return self._masters
+
+    @property
+    def eapi(self):
+        """Get an ebuild repo's EAPI."""
+        return Eapi.from_ptr(C.pkgcraft_repo_ebuild_eapi(self.ptr))

@@ -1,4 +1,5 @@
 from .. cimport pkgcraft_c as C
+from ..eapi cimport Eapi
 from . cimport Repo
 
 

@@ -2,6 +2,7 @@ from pathlib import Path
 
 import pytest
 
+from pkgcraft.eapi import EAPI0, EAPI_LATEST
 from pkgcraft.error import InvalidRepo
 from pkgcraft.repo import EbuildRepo, Repo
 
@@ -72,6 +73,27 @@ class TestEbuildRepo(BaseRepoTests):
         assert pkg2.path not in r1
         assert pkg1.path not in r2
         assert pkg2.path in r2
+
+    def test_eapi(self, make_raw_ebuild_repo):
+        # non-present defaults to EAPI 0
+        repo = make_raw_ebuild_repo(eapi=None)
+        r = EbuildRepo(repo.path)
+        assert r.eapi is EAPI0
+
+        # invalid EAPI
+        repo = make_raw_ebuild_repo(eapi="unknown")
+        with pytest.raises(InvalidRepo, match="invalid repo eapi"):
+            EbuildRepo(repo.path)
+
+        # defaults to latest EAPI
+        repo = make_raw_ebuild_repo()
+        r = EbuildRepo(repo.path)
+        assert r.eapi is EAPI_LATEST
+
+        # explicitly force latest EAPI
+        repo = make_raw_ebuild_repo(eapi=EAPI_LATEST)
+        r = EbuildRepo(repo.path)
+        assert r.eapi is EAPI_LATEST
 
     def test_masters(self, config, make_raw_ebuild_repo):
         # empty masters
