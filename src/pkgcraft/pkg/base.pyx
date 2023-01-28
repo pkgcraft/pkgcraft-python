@@ -1,10 +1,10 @@
 from .. cimport pkgcraft_c as C
 from ..atom cimport Cpv, Version
+from ..eapi cimport Eapi
 from ..error cimport _IndirectInit
 from ..repo cimport Repo
 from ..restrict cimport Restrict
 from . cimport EbuildPkg, FakePkg
-from ..eapi import EAPIS
 
 
 cdef class Pkg(_IndirectInit):
@@ -34,11 +34,7 @@ cdef class Pkg(_IndirectInit):
     @property
     def eapi(self):
         """Get a package's EAPI."""
-        eapi = C.pkgcraft_pkg_eapi(self.ptr)
-        c_str = C.pkgcraft_eapi_as_str(eapi)
-        id = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return EAPIS[id]
+        return Eapi.from_ptr(C.pkgcraft_pkg_eapi(self.ptr))
 
     @property
     def repo(self):
