@@ -19,4 +19,6 @@ cdef class EbuildRepo(Repo):
     @property
     def eapi(self):
         """Get an ebuild repo's EAPI."""
-        return Eapi.from_ptr(C.pkgcraft_repo_ebuild_eapi(self.ptr))
+        if self._eapi is None:
+            self._eapi = Eapi.from_ptr(C.pkgcraft_repo_ebuild_eapi(self.ptr))
+        return self._eapi
