@@ -34,7 +34,9 @@ cdef class Pkg(_IndirectInit):
     @property
     def eapi(self):
         """Get a package's EAPI."""
-        return Eapi.from_ptr(C.pkgcraft_pkg_eapi(self.ptr))
+        if self._eapi is None:
+            self._eapi = Eapi.from_ptr(C.pkgcraft_pkg_eapi(self.ptr))
+        return self._eapi
 
     @property
     def repo(self):
