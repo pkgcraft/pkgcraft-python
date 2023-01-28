@@ -70,8 +70,9 @@ class TempRawEbuildRepo:
             os.makedirs(self._path / 'profiles')
             with open(self._path / 'profiles' / 'repo_name', 'w') as f:
                 f.write(f'{self._repo_id}\n')
-            with open(self._path / 'profiles' / 'eapi', 'w') as f:
-                f.write(f'{eapi}\n')
+            if eapi:
+                with open(self._path / 'profiles' / 'eapi', 'w') as f:
+                    f.write(f'{eapi}\n')
             os.makedirs(self._path / 'metadata')
             with open(self._path / 'metadata' / 'layout.conf', 'w') as f:
                 f.write(textwrap.dedent(f"""\
@@ -124,7 +125,8 @@ class TempRawEbuildRepo:
                     # Copyright 1999-{self._today.year} Gentoo Authors
                     # Distributed under the terms of the GNU General Public License v2
                 """))
-            f.write(f'EAPI="{eapi}"\n')
+            if eapi:
+                f.write(f'EAPI="{eapi}"\n')
             f.write(f'DESCRIPTION="{desc}"\n')
             f.write(f'SLOT="{slot}"\n')
 
