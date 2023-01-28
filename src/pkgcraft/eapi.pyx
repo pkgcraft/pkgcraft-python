@@ -30,7 +30,7 @@ cdef list eapis_to_list(const C.Eapi **c_eapis, size_t length, int start=0):
     """Convert an array of Eapi pointers to a list of Eapi objects."""
     eapis = []
     for i in range(start, length):
-        eapis.append(Eapi.from_ptr(c_eapis[i]))
+        eapis.append(eapi_from_ptr(c_eapis[i]))
     return eapis
 
 
@@ -58,19 +58,27 @@ cdef object get_eapis():
     return MappingProxyType(d)
 
 
+cdef Eapi eapi_from_ptr(const C.Eapi *ptr):
+    """Create an Eapi from a pointer."""
+    obj = <Eapi>Eapi.__new__(Eapi)
+    obj.ptr = ptr
+    c_str = C.pkgcraft_eapi_as_str(ptr)
+    id = c_str.decode()
+    C.pkgcraft_str_free(c_str)
+    obj._id = id
+    return obj
+
+
 @cython.final
 cdef class Eapi(_IndirectInit):
 
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *ptr):
-        """Create an Eapi from a pointer."""
-        obj = <Eapi>Eapi.__new__(Eapi)
-        obj.ptr = ptr
+        """Return a known Eapi object for a given pointer."""
         c_str = C.pkgcraft_eapi_as_str(ptr)
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
-        obj._id = id
-        return obj
+        return EAPIS[id]
 
     @staticmethod
     def range(str s not None):
