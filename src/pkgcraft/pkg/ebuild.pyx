@@ -73,8 +73,8 @@ cdef class EbuildPkg(Pkg):
             C.pkgcraft_str_free(c_str)
         return self._subslot
 
-    def dependencies(self, keys=()):
-        """Get a package's dependencies for a given iterable of descriptors.
+    def dependencies(self, *keys):
+        """Get a package's dependencies for the given descriptors.
 
         Returns a DepSet encompassing all dependencies when no descriptors are passed.
         """
