@@ -325,7 +325,7 @@ cdef class _OrderedFrozenSet:
     def __reduce__(self):
         items = list(self)
         inst_dict = vars(self).copy()
-        return self.__class__, (items, ), inst_dict
+        return self.__class__, (items,), inst_dict
 
     def __repr__(self):
         if not self:
