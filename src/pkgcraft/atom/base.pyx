@@ -180,10 +180,7 @@ cdef class Cpv:
 
     def __reduce__(self):
         """Support pickling Cpv objects."""
-        c_str = C.pkgcraft_atom_str(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return (self.__class__, (s,))
+        return (self.__class__, (str(self),))
 
     # TODO: move to __del__() when migrating to >=cython-3 since it's not
     # supported in <cython-3 for cdef classes:
