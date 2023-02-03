@@ -1,5 +1,5 @@
 import functools
-from enum import Enum
+from enum import IntEnum
 
 cimport cython
 
@@ -196,7 +196,7 @@ def _cached_atom(cls, atom, eapi=None):
     return cls(atom, eapi)
 
 
-class Blocker(Enum):
+class Blocker(IntEnum):
     Strong = C.BLOCKER_STRONG
     Weak = C.BLOCKER_WEAK
 
@@ -207,8 +207,14 @@ class Blocker(Enum):
             return Blocker(blocker)
         raise ValueError(f'invalid blocker: {s}')
 
+    def __str__(self):
+        c_str = C.pkgcraft_atom_blocker_str(self)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
 
-class SlotOperator(Enum):
+
+class SlotOperator(IntEnum):
     Equal = C.SLOT_OPERATOR_EQUAL
     Star = C.SLOT_OPERATOR_STAR
 
@@ -218,6 +224,12 @@ class SlotOperator(Enum):
         if slot_op > 0:
             return SlotOperator(slot_op)
         raise ValueError(f'invalid slot operator: {s}')
+
+    def __str__(self):
+        c_str = C.pkgcraft_atom_slot_op_str(self)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
 
 
 @cython.final

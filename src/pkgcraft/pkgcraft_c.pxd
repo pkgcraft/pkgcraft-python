@@ -149,6 +149,9 @@ cdef extern from "pkgcraft.h":
     # The argument should be a UTF-8 string.
     int pkgcraft_atom_blocker_from_str(const char *s)
 
+    # Return the string for a Blocker.
+    char *pkgcraft_atom_blocker_str(Blocker b)
+
     # Return an atom's category, e.g. the atom "=cat/pkg-1-r2" has a category of "cat".
     #
     # # Safety
@@ -259,6 +262,9 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument should be a UTF-8 string.
     int pkgcraft_atom_slot_op_from_str(const char *s)
+
+    # Return the string for a SlotOperator.
+    char *pkgcraft_atom_slot_op_str(SlotOperator op)
 
     # Return the string for an atom.
     #
