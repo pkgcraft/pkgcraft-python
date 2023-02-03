@@ -213,6 +213,11 @@ class Blocker(IntEnum):
         C.pkgcraft_str_free(c_str)
         return s
 
+    def __eq__(self, object other):
+        if isinstance(other, str):
+            return str(self) == other
+        return self is other
+
 
 class SlotOperator(IntEnum):
     Equal = C.SLOT_OPERATOR_EQUAL
@@ -230,6 +235,11 @@ class SlotOperator(IntEnum):
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
+
+    def __eq__(self, object other):
+        if isinstance(other, str):
+            return str(self) == other
+        return self is other
 
 
 @cython.final

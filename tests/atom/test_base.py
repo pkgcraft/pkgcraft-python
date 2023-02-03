@@ -84,9 +84,11 @@ class TestAtom:
         assert a.category == "cat"
         assert a.package == "pkg"
         assert a.blocker is Blocker.Strong
+        assert a.blocker == "!!"
         assert a.slot == "0"
         assert a.subslot == "2"
         assert a.slot_op is SlotOperator.Equal
+        assert a.slot_op == "="
         assert a.use == ("a", "b", "c")
         assert a.repo == "repo"
         assert a.version == VersionWithOp("=1-r2")
