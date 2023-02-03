@@ -44,7 +44,7 @@ class BaseRepoTests:
         assert repo.packages("cat2") == ("pkga",)
 
     def test_cmp_base(self, make_repo):
-        for (r1_args, op, r2_args) in (
+        for r1_args, op, r2_args in (
             (["a"], "<", ["b"]),
             (["a", 2], "<=", ["b", 1]),
             (["a"], "!=", ["b"]),

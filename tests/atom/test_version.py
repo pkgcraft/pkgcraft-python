@@ -57,7 +57,7 @@ class TestVersion:
 
         for d in toml_data["version.toml"]["intersects"]:
             # test intersections between all pairs of distinct values
-            for (s1, s2) in itertools.permutations(d["vals"], 2):
+            for s1, s2 in itertools.permutations(d["vals"], 2):
                 (v1, v2) = (parse(s1), parse(s2))
 
                 # elements intersect themselves

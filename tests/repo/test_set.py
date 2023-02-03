@@ -67,7 +67,7 @@ class TestRepoSet:
         assert s.versions("a", "b") == ("1",)
 
     def test_cmp(self, make_fake_repo):
-        for (r1, op, r2) in (
+        for r1, op, r2 in (
             ({"id": "a"}, "<", {"id": "b"}),
             ({"id": "a", "priority": 2}, "<=", {"id": "b", "priority": 1}),
             ({"id": "a"}, "!=", {"id": "b"}),
@@ -252,8 +252,8 @@ class TestRepoSet:
         assert (s & RepoSet(r1, r2)).repos == [r2, r1]
         assert (s & r3).repos == [r3]
         assert (r3 & s).repos == [r3]
-        for (a, b) in [(None, s), ("s", s)]:
-            for (x, y) in [(a, b), (b, a)]:
+        for a, b in [(None, s), ("s", s)]:
+            for x, y in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
                     _ = x & y
 
@@ -262,8 +262,8 @@ class TestRepoSet:
         assert (s | RepoSet(r2, r3)).repos == [r3, r2, r1]
         assert (s | r2).repos == [r2, r1]
         assert (r2 | s).repos == [r2, r1]
-        for (a, b) in [(None, s), ("s", s)]:
-            for (x, y) in [(a, b), (b, a)]:
+        for a, b in [(None, s), ("s", s)]:
+            for x, y in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
                     _ = x | y
 
@@ -272,8 +272,8 @@ class TestRepoSet:
         assert (s ^ RepoSet(r2, r3)).repos == [r1]
         assert (s ^ r3).repos == [r2, r1]
         assert (r3 ^ s).repos == [r2, r1]
-        for (a, b) in [(None, s), ("s", s)]:
-            for (x, y) in [(a, b), (b, a)]:
+        for a, b in [(None, s), ("s", s)]:
+            for x, y in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
                     _ = x ^ y
 
@@ -282,7 +282,7 @@ class TestRepoSet:
         assert (s - RepoSet(r1, r2)).repos == []
         assert (s - r3).repos == [r2, r1]
         assert (s - r2).repos == [r1]
-        for (a, b) in [(None, s), ("s", s)]:
-            for (x, y) in [(a, b), (b, a)]:
+        for a, b in [(None, s), ("s", s)]:
+            for x, y in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
                     _ = x - y

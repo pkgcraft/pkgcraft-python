@@ -119,7 +119,7 @@ class TestAtom:
 
     def test_valid(self, toml_data):
         atom_attrs = []
-        for (attr, val) in inspect.getmembers(Atom):
+        for attr, val in inspect.getmembers(Atom):
             if inspect.isgetsetdescriptor(val):
                 atom_attrs.append(attr)
 
@@ -187,7 +187,7 @@ class TestAtom:
 
         for d in toml_data["atom.toml"]["intersects"]:
             # test intersections between all pairs of distinct values
-            for (s1, s2) in itertools.permutations(d["vals"], 2):
+            for s1, s2 in itertools.permutations(d["vals"], 2):
                 (v1, v2) = (parse(s1), parse(s2))
 
                 # elements intersect themselves

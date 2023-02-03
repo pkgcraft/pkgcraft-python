@@ -9,7 +9,7 @@ class TestDepSet:
 
     def test_eq_and_hash(self, ebuild_repo):
         # ordering that doesn't matter for equivalence and hashing
-        for (dep, rdep) in (
+        for dep, rdep in (
             # same deps
             ("a/dep", "a/dep"),
             ("use? ( a/dep )", "use? ( a/dep )"),
@@ -23,7 +23,7 @@ class TestDepSet:
             assert len({pkg.depend, pkg.rdepend}) == 1
 
         # ordering that matters for equivalence and hashing
-        for (dep, rdep) in (("|| ( a/b c/d )", "|| ( c/d a/b )"),):
+        for dep, rdep in (("|| ( a/b c/d )", "|| ( c/d a/b )"),):
             pkg = ebuild_repo.create_pkg("cat/pkg-1", depend=dep, rdepend=rdep)
             assert pkg.depend != pkg.rdepend, f"{dep} != {rdep}"
             assert len({pkg.depend, pkg.rdepend}) == 2
@@ -46,7 +46,7 @@ class TestDepRestrict:
         assert repr(d).startswith("<DepRestrict 'a/b' at 0x")
 
     def test_cmp(self, ebuild_repo):
-        for (dep, op, rdep) in (
+        for dep, op, rdep in (
             ("a/b", "<", "b/a"),
             ("a/b", "<=", "b/a"),
             ("b/a", "<=", "b/a"),
@@ -62,7 +62,7 @@ class TestDepRestrict:
 
     def test_eq_and_hash(self, ebuild_repo):
         # ordering that doesn't matter for equivalence and hashing
-        for (dep, rdep) in (
+        for dep, rdep in (
             # same deps
             ("a/dep", "a/dep"),
             ("use? ( a/dep )", "use? ( a/dep )"),
@@ -76,7 +76,7 @@ class TestDepRestrict:
             assert len({d1, d2}) == 1
 
         # ordering that matters for equivalence and hashing
-        for (dep, rdep) in (("|| ( a/b c/d )", "|| ( c/d a/b )"),):
+        for dep, rdep in (("|| ( a/b c/d )", "|| ( c/d a/b )"),):
             pkg = ebuild_repo.create_pkg("cat/pkg-1", depend=dep, rdepend=rdep)
             d1, d2 = next(iter(pkg.depend)), next(iter(pkg.rdepend))
             assert d1 != d2

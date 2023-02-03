@@ -27,7 +27,7 @@ def test(atoms):
     eprint("---------------------------------------")
     eprint("{:<20} {:<10} time".format("implementation", "memory"))
     eprint("---------------------------------------")
-    for (impl, func) in atom_funcs:
+    for impl, func in atom_funcs:
         if _pid := os.fork():
             os.wait()
         else:

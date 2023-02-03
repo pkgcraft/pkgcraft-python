@@ -39,7 +39,7 @@ def main():
         eapis[pkg.eapi].append(pkg.cpv)
 
     # output EAPI usage in descending order
-    for (eapi, cpvs) in sorted(eapis.items(), key=lambda x: len(x[1]), reverse=True):
+    for eapi, cpvs in sorted(eapis.items(), key=lambda x: len(x[1]), reverse=True):
         print(f"EAPI {eapi}: {len(cpvs)} pkgs")
 
 

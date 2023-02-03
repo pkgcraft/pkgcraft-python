@@ -8,7 +8,7 @@ from pkgcraft.eapi import EAPI0, EAPI1, EAPI_LATEST, EAPIS, EAPIS_OFFICIAL, eapi
 def test_globals():
     assert len(EAPIS) > len(EAPIS_OFFICIAL)
     # verify objects are shared between EAPIS_OFFICIAL and EAPIS
-    for (id, eapi) in EAPIS_OFFICIAL.items():
+    for id, eapi in EAPIS_OFFICIAL.items():
         assert EAPIS[id] is eapi
     assert EAPIS[str(EAPI_LATEST)] is EAPI_LATEST
 

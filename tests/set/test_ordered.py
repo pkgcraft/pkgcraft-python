@@ -206,7 +206,7 @@ class TestOrderedSet:
         assert not oset1
 
         # non-iterable objects raise TypeError
-        for (o1, o2) in ((oset1, object()), (object(), oset1)):
+        for o1, o2 in ((oset1, object()), (object(), oset1)):
             with pytest.raises(TypeError):
                 o1 - o2
 
@@ -231,7 +231,7 @@ class TestOrderedSet:
         assert oset1 == oset1
 
         # non-iterable objects raise TypeError
-        for (o1, o2) in ((oset1, object()), (object(), oset1)):
+        for o1, o2 in ((oset1, object()), (object(), oset1)):
             with pytest.raises(TypeError):
                 o1 & o2
 
@@ -322,7 +322,7 @@ class TestOrderedSet:
         assert not oset1
 
         # non-iterable objects raise TypeError
-        for (o1, o2) in ((oset1, object()), (object(), oset1)):
+        for o1, o2 in ((oset1, object()), (object(), oset1)):
             with pytest.raises(TypeError):
                 o1 ^ o2
 
@@ -351,7 +351,7 @@ class TestOrderedSet:
         assert oset1 == oset2 | "abc"
 
         # non-iterable objects raise TypeError
-        for (o1, o2) in ((oset1, object()), (object(), oset1)):
+        for o1, o2 in ((oset1, object()), (object(), oset1)):
             with pytest.raises(TypeError):
                 o1 | o2
 
