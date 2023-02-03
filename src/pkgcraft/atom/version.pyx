@@ -104,7 +104,7 @@ cdef class Version:
         return self._hash
 
     def __reduce__(self):
-        return (self.__class__, (str(self),))
+        return self.__class__, (str(self),)
 
     # TODO: move to __del__() when migrating to >=cython-3 since it's not
     # supported in <cython-3 for cdef classes:

@@ -178,4 +178,4 @@ cdef class Eapi(_IndirectInit):
         return self._hash
 
     def __reduce__(self):
-        return (eapi_from_obj, (self._id,))
+        return eapi_from_obj, (self._id,)
