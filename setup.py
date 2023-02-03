@@ -2,6 +2,7 @@ import os
 import subprocess
 from multiprocessing import cpu_count
 
+from Cython.Build import cythonize
 from setuptools import setup
 from setuptools.command import build_ext as dst_build_ext
 from setuptools.extension import Extension
@@ -12,11 +13,6 @@ PACKAGEDIR = os.path.dirname(MODULEDIR)
 # version requirements for pkgcraft C library
 MIN_VERSION = "0.0.5"
 MAX_VERSION = "0.0.5"
-
-# running against git repo
-GIT = os.path.exists(os.path.join(os.path.dirname(__file__), ".git"))
-
-compiler_directives = {"language_level": 3}
 
 
 def pkg_config(*packages, **kw):
@@ -73,18 +69,11 @@ def extensions(**build_opts):
     exts = []
 
     for ext in cython_pyx(MODULEDIR):
-        cythonized = os.path.splitext(ext)[0] + ".c"
-        # use pre-generated modules for releases
-        if not GIT and os.path.exists(cythonized):
-            ext_path = cythonized
-        else:
-            ext_path = ext
-
         # strip package dir
-        module = ext_path.rpartition(PACKAGEDIR)[-1].lstrip(os.path.sep)
+        module = ext.rpartition(PACKAGEDIR)[-1].lstrip(os.path.sep)
         # strip file extension and translate to module namespace
         module = os.path.splitext(module)[0].replace(os.path.sep, ".")
-        exts.append(Extension(name=module, sources=[ext_path], **build_opts))
+        exts.append(Extension(name=module, sources=[ext], **build_opts))
 
     return exts
 
@@ -103,29 +92,30 @@ class build_ext(dst_build_ext.build_ext):
     def finalize_options(self):
         self.cython_coverage = bool(self.cython_coverage)
 
-        if GIT:
-            ext_modules = self.distribution.ext_modules[:]
+        ext_modules = self.distribution.ext_modules[:]
+        # default cython compiler directives
+        compiler_directives = {"language_level": 3}
 
-            # optionally enable coverage support for cython modules
-            if self.cython_coverage:
-                compiler_directives["linetrace"] = True
-                trace_macros = [("CYTHON_TRACE", "1"), ("CYTHON_TRACE_NOGIL", "1")]
-                for ext in ext_modules:
-                    ext.define_macros.extend(trace_macros)
+        # optionally enable coverage support for cython modules
+        if self.cython_coverage:
+            compiler_directives["linetrace"] = True
+            trace_macros = [("CYTHON_TRACE", "1"), ("CYTHON_TRACE_NOGIL", "1")]
+            for ext in ext_modules:
+                ext.define_macros.extend(trace_macros)
 
-            from Cython.Build import cythonize
-
-            self.distribution.ext_modules[:] = cythonize(
-                ext_modules,
-                compiler_directives=compiler_directives,
-                annotate=False,
-            )
-
-        super().finalize_options()
+        # generate C modules
+        self.distribution.ext_modules[:] = cythonize(
+            ext_modules,
+            force=True,
+            compiler_directives=compiler_directives,
+            annotate=False,
+        )
 
         # default to parallelizing build across all cores
         if self.parallel is None:
             self.parallel = cpu_count()
+
+        super().finalize_options()
 
     def run(self):
         # delay pkg-config to avoid requiring library during sdist
