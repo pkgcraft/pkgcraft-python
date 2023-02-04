@@ -1,5 +1,35 @@
+from enum import IntEnum
+
 from .. cimport pkgcraft_c as C
 from ..error import InvalidVersion
+
+
+class Operator(IntEnum):
+    Less = C.OPERATOR_LESS
+    LessOrEqual = C.OPERATOR_LESS_OR_EQUAL
+    Equal = C.OPERATOR_EQUAL
+    EqualGlob = C.OPERATOR_EQUAL_GLOB
+    Approximate = C.OPERATOR_APPROXIMATE
+    GreaterOrEqual = C.OPERATOR_GREATER_OR_EQUAL
+    Greater = C.OPERATOR_GREATER
+
+    @staticmethod
+    def from_str(str s not None):
+        op = C.pkgcraft_version_op_from_str(s.encode())
+        if op > 0:
+            return Operator(op)
+        raise ValueError(f'invalid operator: {s}')
+
+    def __str__(self):
+        c_str = C.pkgcraft_version_op_str(self)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
+
+    def __eq__(self, object other):
+        if isinstance(other, str):
+            return str(self) == other
+        return self is other
 
 
 cdef class Version:
@@ -30,7 +60,7 @@ cdef class Version:
             raise InvalidVersion
 
     @staticmethod
-    cdef Version from_ptr(C.AtomVersion *ptr):
+    cdef Version from_ptr(C.Version *ptr):
         """Convert a Version pointer to a Version object."""
         if ptr is not NULL:
             obj = <Version>Version.__new__(Version)
@@ -54,6 +84,25 @@ cdef class Version:
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
+
+    @property
+    def op(self):
+        """Get a version's operator.
+
+        >>> from pkgcraft.atom import Operator, Version, VersionWithOp
+        >>> v = Version('1-r2')
+        >>> v.op is None
+        True
+        >>> v = VersionWithOp('>=1')
+        >>> v.op is Operator.GreaterOrEqual
+        True
+        >>> v.op == '>='
+        True
+        """
+        cdef int op = C.pkgcraft_version_op(self.ptr)
+        if op > 0:
+            return Operator(op)
+        return None
 
     def intersects(self, Version other):
         """Determine if two versions intersect.

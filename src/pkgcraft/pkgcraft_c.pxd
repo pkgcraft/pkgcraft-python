@@ -25,6 +25,15 @@ cdef extern from "pkgcraft.h":
         LOG_LEVEL_WARN,
         LOG_LEVEL_ERROR,
 
+    cdef enum Operator:
+        OPERATOR_LESS # = 1,
+        OPERATOR_LESS_OR_EQUAL,
+        OPERATOR_EQUAL,
+        OPERATOR_EQUAL_GLOB,
+        OPERATOR_APPROXIMATE,
+        OPERATOR_GREATER_OR_EQUAL,
+        OPERATOR_GREATER,
+
     cdef enum PkgFormat:
         PKG_FORMAT_EBUILD,
         PKG_FORMAT_FAKE,
@@ -52,10 +61,6 @@ cdef extern from "pkgcraft.h":
 
     # Package atom
     cdef struct Atom:
-        pass
-
-    # Opaque wrapper for AtomVersion objects.
-    cdef struct AtomVersion:
         pass
 
     # System config
@@ -108,6 +113,9 @@ cdef extern from "pkgcraft.h":
 
     # Uri object.
     cdef struct Uri:
+        pass
+
+    cdef struct Version:
         pass
 
     cdef struct PkgcraftError:
@@ -295,7 +303,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
-    AtomVersion *pkgcraft_atom_version(Atom *atom)
+    Version *pkgcraft_atom_version(Atom *atom)
 
     # Add an external Repo to the config.
     #
@@ -850,7 +858,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    AtomVersion *pkgcraft_pkg_version(Pkg *p)
+    Version *pkgcraft_pkg_version(Pkg *p)
 
     # Return a repo's categories.
     #
@@ -1237,26 +1245,26 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The version arguments should be non-null Version pointers.
-    int pkgcraft_version_cmp(AtomVersion *v1,
-                             AtomVersion *v2)
+    int pkgcraft_version_cmp(Version *v1,
+                             Version *v2)
 
     # Free a version.
     #
     # # Safety
     # The version argument should be a non-null Version pointer.
-    void pkgcraft_version_free(AtomVersion *v)
+    void pkgcraft_version_free(Version *v)
 
     # Return the hash value for a version.
     #
     # # Safety
     # The version argument should be a non-null Version pointer.
-    uint64_t pkgcraft_version_hash(AtomVersion *v)
+    uint64_t pkgcraft_version_hash(Version *v)
 
     # Determine if two versions intersect.
     #
     # # Safety
     # The version arguments should be non-null Version pointers.
-    bool pkgcraft_version_intersects(AtomVersion *v1, AtomVersion *v2)
+    bool pkgcraft_version_intersects(Version *v1, Version *v2)
 
     # Parse a string into a version.
     #
@@ -1264,25 +1272,44 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The version argument should point to a valid string.
-    AtomVersion *pkgcraft_version_new(const char *s)
+    Version *pkgcraft_version_new(const char *s)
+
+    # Return a version's operator.
+    #
+    # Returns 0 on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Version pointer.
+    int pkgcraft_version_op(Version *v)
+
+    # Parse a string into an Operator.
+    #
+    # Returns 0 on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    int pkgcraft_version_op_from_str(const char *s)
+
+    # Return the string for an Operator.
+    char *pkgcraft_version_op_str(Operator op)
 
     # Return a version's revision, e.g. the version "1-r2" has a revision of "2".
     #
     # # Safety
     # The version argument should be a non-null Version pointer.
-    char *pkgcraft_version_revision(AtomVersion *v)
+    char *pkgcraft_version_revision(Version *v)
 
     # Return a version's string value without operator.
     #
     # # Safety
     # The version argument should be a non-null Version pointer.
-    char *pkgcraft_version_str(AtomVersion *v)
+    char *pkgcraft_version_str(Version *v)
 
     # Return a version's string value including the operator if it exists.
     #
     # # Safety
     # The version argument should be a non-null Version pointer.
-    char *pkgcraft_version_str_with_op(AtomVersion *v)
+    char *pkgcraft_version_str_with_op(Version *v)
 
     # Parse a string into a version with an operator.
     #
@@ -1290,4 +1317,4 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The version argument should point to a valid string.
-    AtomVersion *pkgcraft_version_with_op(const char *s)
+    Version *pkgcraft_version_with_op(const char *s)

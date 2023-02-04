@@ -2,12 +2,12 @@ from pkgcraft cimport pkgcraft_c as C
 
 
 cdef class Version:
-    cdef C.AtomVersion *ptr
+    cdef C.Version *ptr
     # cached fields
     cdef int _hash
 
     @staticmethod
-    cdef Version from_ptr(C.AtomVersion *)
+    cdef Version from_ptr(C.Version *)
 
 
 cdef class VersionWithOp(Version):

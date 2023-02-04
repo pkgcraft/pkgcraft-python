@@ -326,6 +326,25 @@ cdef class Atom(Cpv):
         return None
 
     @property
+    def op(self):
+        """Get an atom's operator.
+
+        >>> from pkgcraft.atom import Atom, Operator
+        >>> a = Atom('cat/pkg')
+        >>> a.op is None
+        True
+        >>> a = Atom('>=cat/pkg-1')
+        >>> a.op is Operator.GreaterOrEqual
+        True
+        >>> a.op == '>='
+        True
+        """
+        version = self.version
+        if version is not None:
+            return version.op
+        return version
+
+    @property
     def slot(self):
         """Get an atom's slot.
 
