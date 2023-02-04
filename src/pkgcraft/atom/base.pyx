@@ -104,11 +104,9 @@ cdef class Cpv:
         >>> a.revision
         '0'
         """
-        c_str = C.pkgcraft_atom_revision(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
+        version = self.version
+        if version is not None:
+            return version.revision
         return None
 
     @property
@@ -342,7 +340,7 @@ cdef class Atom(Cpv):
         version = self.version
         if version is not None:
             return version.op
-        return version
+        return None
 
     @property
     def slot(self):

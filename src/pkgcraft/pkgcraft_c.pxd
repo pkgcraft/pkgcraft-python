@@ -238,14 +238,6 @@ cdef extern from "pkgcraft.h":
     # The arguments must be valid Restrict and Atom pointers.
     bool pkgcraft_atom_restrict_matches(Atom *atom, Restrict *r)
 
-    # Return an atom's revision, e.g. the atom "=cat/pkg-1-r2" has a revision of "2".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Atom pointer.
-    char *pkgcraft_atom_revision(Atom *atom)
-
     # Return an atom's slot, e.g. the atom "=cat/pkg-1-r2:3" has a slot of "3".
     #
     # Returns NULL on nonexistence.
