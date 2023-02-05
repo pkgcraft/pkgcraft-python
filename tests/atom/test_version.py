@@ -3,10 +3,22 @@ import pickle
 
 import pytest
 
-from pkgcraft.atom import Version, VersionWithOp
+from pkgcraft.atom import Operator, Version, VersionWithOp
 from pkgcraft.error import InvalidVersion
 
 from ..misc import OperatorIterMap
+
+
+class TestOperator:
+    def test_from_str(self):
+        # valid
+        assert Operator.from_str("=*") == Operator.EqualGlob
+        assert Operator.from_str("~") == Operator.Approximate
+
+        # invalid
+        for s in ("", "*", "><"):
+            with pytest.raises(ValueError):
+                Operator.from_str(s)
 
 
 class TestVersion:

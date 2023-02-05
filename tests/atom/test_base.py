@@ -5,7 +5,7 @@ import re
 
 import pytest
 
-from pkgcraft.atom import Atom, Blocker, Cpv, SlotOperator, Version, VersionWithOp
+from pkgcraft.atom import Atom, Blocker, Cpv, Operator, SlotOperator, Version, VersionWithOp
 from pkgcraft.eapi import EAPIS, Eapi
 from pkgcraft.error import InvalidAtom, InvalidCpv
 from pkgcraft.restrict import Restrict
@@ -80,23 +80,25 @@ class TestAtom:
         assert repr(a).startswith("<Atom 'cat/pkg' at 0x")
 
         # all fields -- extended EAPI default allows repo deps
-        a = Atom("!!=cat/pkg-1-r2:0/2=[a,b,c]::repo")
+        a = Atom("!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo")
         assert a.category == "cat"
         assert a.package == "pkg"
-        assert a.blocker is Blocker.Strong
+        assert a.blocker == Blocker.Strong
         assert a.blocker == "!!"
         assert a.slot == "0"
         assert a.subslot == "2"
-        assert a.slot_op is SlotOperator.Equal
+        assert a.slot_op == SlotOperator.Equal
         assert a.slot_op == "="
         assert a.use == ("a", "b", "c")
         assert a.repo == "repo"
-        assert a.version == VersionWithOp("=1-r2")
+        assert a.version == VersionWithOp(">=1-r2")
+        assert a.op == Operator.GreaterOrEqual
+        assert a.op == ">="
         assert a.revision == "2"
         assert a.cpn == "cat/pkg"
         assert a.cpv == "cat/pkg-1-r2"
-        assert str(a) == "!!=cat/pkg-1-r2:0/2=[a,b,c]::repo"
-        assert repr(a).startswith("<Atom '!!=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
+        assert str(a) == "!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo"
+        assert repr(a).startswith("<Atom '!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
 
         # explicitly specifying an official EAPI fails
         for eapi in ("8", EAPIS["8"]):
