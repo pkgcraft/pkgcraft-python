@@ -9,7 +9,8 @@ cdef extern from *:
 cdef extern from "pkgcraft.h":
 
     cdef enum Blocker:
-        BLOCKER_STRONG # = 1,
+        BLOCKER_NONE,
+        BLOCKER_STRONG,
         BLOCKER_WEAK,
 
     cdef enum ErrorKind:
@@ -26,7 +27,8 @@ cdef extern from "pkgcraft.h":
         LOG_LEVEL_ERROR,
 
     cdef enum Operator:
-        OPERATOR_LESS # = 1,
+        OPERATOR_NONE,
+        OPERATOR_LESS,
         OPERATOR_LESS_OR_EQUAL,
         OPERATOR_EQUAL,
         OPERATOR_EQUAL_GLOB,
@@ -56,7 +58,8 @@ cdef extern from "pkgcraft.h":
         REPO_SET_TYPE_EBUILD,
 
     cdef enum SlotOperator:
-        SLOT_OPERATOR_EQUAL # = 1,
+        SLOT_OPERATOR_NONE,
+        SLOT_OPERATOR_EQUAL,
         SLOT_OPERATOR_STAR,
 
     # Package atom
@@ -141,21 +144,17 @@ cdef extern from "pkgcraft.h":
         char *site
         char *name
 
-    # Return an atom's blocker status, e.g. the atom "!cat/pkg" has a weak blocker.
-    #
-    # Returns 0 on nonexistence.
+    # Return an atom's blocker, e.g. the atom "!cat/pkg" has a weak blocker.
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
-    int pkgcraft_atom_blocker(Atom *atom)
+    Blocker pkgcraft_atom_blocker(Atom *atom)
 
     # Parse a string into a Blocker.
     #
-    # Returns 0 on error.
-    #
     # # Safety
     # The argument should be a UTF-8 string.
-    int pkgcraft_atom_blocker_from_str(const char *s)
+    Blocker pkgcraft_atom_blocker_from_str(const char *s)
 
     # Return the string for a Blocker.
     char *pkgcraft_atom_blocker_str(Blocker b)
@@ -249,19 +248,15 @@ cdef extern from "pkgcraft.h":
     # Return an atom's slot operator, e.g. the atom "=cat/pkg-1-r2:0=" has an equal slot
     # operator.
     #
-    # Returns 0 on nonexistence.
-    #
     # # Safety
     # The argument must be a non-null Atom pointer.
-    int pkgcraft_atom_slot_op(Atom *atom)
+    SlotOperator pkgcraft_atom_slot_op(Atom *atom)
 
     # Parse a string into a SlotOperator.
     #
-    # Returns 0 on error.
-    #
     # # Safety
     # The argument should be a UTF-8 string.
-    int pkgcraft_atom_slot_op_from_str(const char *s)
+    SlotOperator pkgcraft_atom_slot_op_from_str(const char *s)
 
     # Return the string for a SlotOperator.
     char *pkgcraft_atom_slot_op_str(SlotOperator op)
@@ -1268,19 +1263,15 @@ cdef extern from "pkgcraft.h":
 
     # Return a version's operator.
     #
-    # Returns 0 on nonexistence.
-    #
     # # Safety
     # The argument must be a non-null Version pointer.
-    int pkgcraft_version_op(Version *v)
+    Operator pkgcraft_version_op(Version *v)
 
     # Parse a string into an Operator.
     #
-    # Returns 0 on error.
-    #
     # # Safety
     # The argument should be a UTF-8 string.
-    int pkgcraft_version_op_from_str(const char *s)
+    Operator pkgcraft_version_op_from_str(const char *s)
 
     # Return the string for an Operator.
     char *pkgcraft_version_op_str(Operator op)

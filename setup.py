@@ -11,8 +11,8 @@ MODULEDIR = "src/pkgcraft"
 PACKAGEDIR = os.path.dirname(MODULEDIR)
 
 # version requirements for pkgcraft C library
-MIN_VERSION = "0.0.5"
-MAX_VERSION = "0.0.5"
+MIN_VERSION = "0.0.6"
+MAX_VERSION = "0.0.6"
 
 
 def pkg_config(*packages, **kw):
