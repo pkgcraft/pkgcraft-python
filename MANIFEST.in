@@ -1,8 +1,6 @@
 # all vcs-tracked files are auto-included by setuptools_scm
 # include bundled test data
 recursive-include testdata *
-# exclude cython-generated files
-recursive-exclude src/pkgcraft *.c
 # drop git-related files
 global-exclude .git*
 prune .github

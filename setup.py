@@ -92,25 +92,6 @@ class build_ext(dst_build_ext.build_ext):
     def finalize_options(self):
         self.cython_coverage = bool(self.cython_coverage)
 
-        ext_modules = self.distribution.ext_modules[:]
-        # default cython compiler directives
-        compiler_directives = {"language_level": 3}
-
-        # optionally enable coverage support for cython modules
-        if self.cython_coverage:
-            compiler_directives["linetrace"] = True
-            trace_macros = [("CYTHON_TRACE", "1"), ("CYTHON_TRACE_NOGIL", "1")]
-            for ext in ext_modules:
-                ext.define_macros.extend(trace_macros)
-
-        # generate C modules
-        self.distribution.ext_modules[:] = cythonize(
-            ext_modules,
-            force=True,
-            compiler_directives=compiler_directives,
-            annotate=False,
-        )
-
         # default to parallelizing build across all cores
         if self.parallel is None:
             self.parallel = cpu_count()
@@ -118,6 +99,30 @@ class build_ext(dst_build_ext.build_ext):
         super().finalize_options()
 
     def run(self):
+        # default cython compiler directives
+        compiler_directives = {"language_level": 3}
+
+        # optionally enable coverage support for cython modules
+        if self.cython_coverage:
+            compiler_directives["linetrace"] = True
+            trace_macros = [("CYTHON_TRACE", "1"), ("CYTHON_TRACE_NOGIL", "1")]
+            for ext in self.extensions:
+                ext.define_macros.extend(trace_macros)
+
+        # generate C modules with cython
+        self.extensions[:] = cythonize(
+            self.extensions,
+            force=True,
+            compiler_directives=compiler_directives,
+            annotate=False,
+        )
+
+        # HACK: Force setuptools to reinject its private attributes to
+        # extension objects that were overridden by `cythonize`, otherwise the
+        # build fails when it tries to access them.
+        build_ext = self.reinitialize_command("build_ext")
+        build_ext.ensure_finalized()
+
         # delay pkg-config to avoid requiring library during sdist
         pkgcraft_opts = pkg_config("pkgcraft")
 
