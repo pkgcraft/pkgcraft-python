@@ -43,7 +43,7 @@ cdef class OrderedSetIterator:
 
         item = self.curr.next
         if item == self.oset.end:
-            raise StopIteration()
+            raise StopIteration
         self.curr = item
         return item.key
 
@@ -72,7 +72,7 @@ cdef class OrderedSetReverseIterator:
 
         item = self.curr.prev
         if item is self.oset.end:
-            raise StopIteration()
+            raise StopIteration
         self.curr = item
         return item.key
 
