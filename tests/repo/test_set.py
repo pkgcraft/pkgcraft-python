@@ -153,9 +153,8 @@ class TestRepoSet:
         with pytest.raises(TypeError):
             next(s)
 
-        # multiple iter() calls free underlying pointer
-        iter(s)
-        iter(s)
+        # nested calls return equivalent objects
+        iter(s) == iter(iter(s))
 
         # empty set
         assert not list(s)

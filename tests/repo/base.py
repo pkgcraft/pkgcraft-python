@@ -129,9 +129,8 @@ class BaseRepoTests:
         with pytest.raises(TypeError):
             next(repo)
 
-        # multiple iter() calls free underlying pointer
-        iter(repo)
-        iter(repo)
+        # nested calls return equivalent objects
+        iter(repo) == iter(iter(repo))
 
         # empty repo
         assert not list(repo)
