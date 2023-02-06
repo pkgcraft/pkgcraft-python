@@ -47,7 +47,7 @@ cdef C.Restrict *obj_to_restrict(object obj) except NULL:
 cdef class Restrict:
     """Generic restriction."""
 
-    def __init__(self, obj):
+    def __init__(self, obj not None):
         self.ptr = obj_to_restrict(obj)
 
     @staticmethod
@@ -73,7 +73,7 @@ cdef class Restrict:
             raise InvalidRestrict
         return Restrict.from_ptr(ptr)
 
-    def matches(self, obj):
+    def matches(self, obj not None):
         """Determine if a restriction matches a given object.
 
         Returns True if the restriction matches a given object, otherwise False.

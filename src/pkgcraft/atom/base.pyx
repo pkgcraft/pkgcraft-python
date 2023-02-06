@@ -123,11 +123,11 @@ cdef class Cpv:
         C.pkgcraft_str_free(c_str)
         return s
 
-    def matches(self, Restrict r):
+    def matches(self, Restrict r not None):
         """Determine if a restriction matches an atom."""
         return C.pkgcraft_atom_restrict_matches(self.ptr, r.ptr)
 
-    def intersects(self, Cpv other):
+    def intersects(self, Cpv other not None):
         """Determine if two atoms intersect.
 
         >>> from pkgcraft.atom import Atom, Cpv
@@ -299,7 +299,7 @@ cdef class Atom(Cpv):
         return obj
 
     @classmethod
-    def cached(cls, s, eapi=None):
+    def cached(cls, str s not None, eapi=None):
         """Return a cached Atom if one exists, otherwise return a new instance."""
         return _cached_atom(cls, s, eapi)
 

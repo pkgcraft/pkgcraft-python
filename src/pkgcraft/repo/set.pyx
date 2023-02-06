@@ -222,7 +222,7 @@ cdef class RepoSet:
 cdef class _Iter:
     """Iterator over a repo set."""
 
-    def __cinit__(self, RepoSet s):
+    def __cinit__(self, RepoSet s not None):
         self.ptr = C.pkgcraft_repo_set_iter(s.ptr, NULL)
 
     def __iter__(self):
@@ -241,7 +241,7 @@ cdef class _Iter:
 cdef class _IterRestrict:
     """Iterator that applies a restriction over a repo set iterator."""
 
-    def __cinit__(self, RepoSet s, object obj):
+    def __cinit__(self, RepoSet s not None, object obj not None):
         cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
         self.ptr = C.pkgcraft_repo_set_iter(s.ptr, r.ptr)
 

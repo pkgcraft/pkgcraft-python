@@ -104,7 +104,7 @@ cdef class Version:
             return Operator(op)
         return None
 
-    def intersects(self, Version other):
+    def intersects(self, Version other not None):
         """Determine if two versions intersect.
 
         >>> from pkgcraft.atom import Version, VersionWithOp

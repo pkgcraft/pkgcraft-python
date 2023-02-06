@@ -100,7 +100,7 @@ cdef class DepSet(_IndirectInit):
 cdef class _IntoIter:
     """Iterator over a DepSet."""
 
-    def __cinit__(self, DepSet d):
+    def __cinit__(self, DepSet d not None):
         self.ptr = C.pkgcraft_depset_into_iter(d.ptr)
         self.kind = d.kind
 
@@ -120,7 +120,7 @@ cdef class _IntoIter:
 cdef class _IntoIterFlatten:
     """Iterator over a flattened DepSet."""
 
-    def __cinit__(self, object obj, DepSetKind kind):
+    def __cinit__(self, object obj not None, DepSetKind kind):
         if isinstance(obj, DepSet):
             self.ptr = C.pkgcraft_depset_into_iter_flatten((<DepSet>obj).ptr)
         elif isinstance(obj, DepRestrict):
