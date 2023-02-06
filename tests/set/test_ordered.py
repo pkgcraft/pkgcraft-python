@@ -468,6 +468,7 @@ class TestOrderedSet:
         oset2 = OrderedSet(lst)
 
         assert oset1 is not None
+        assert oset1 != None
 
         assert oset1 == oset2
         assert oset1 == set(lst)
