@@ -86,22 +86,33 @@ cdef class Restrict:
             return C.pkgcraft_pkg_restrict_matches((<Pkg>obj).ptr, self.ptr)
         raise TypeError(f"{obj.__class__.__name__!r} unsupported restriction matches type")
 
-    def __eq__(self, Restrict other):
-        return C.pkgcraft_restrict_eq(self.ptr, other.ptr)
+    def __eq__(self, other):
+        if isinstance(other, Restrict):
+            return C.pkgcraft_restrict_eq(self.ptr, (<Restrict>other).ptr)
+        return NotImplemented
 
     def __hash__(self):
         return C.pkgcraft_restrict_hash(self.ptr)
 
-    def __and__(Restrict self, Restrict other):
-        return Restrict.from_ptr(C.pkgcraft_restrict_and(self.ptr, other.ptr))
+    def __and__(self, other):
+        if isinstance(self, Restrict) and isinstance(other, Restrict):
+            ptr = C.pkgcraft_restrict_and((<Restrict>self).ptr, (<Restrict>other).ptr)
+            return Restrict.from_ptr(ptr)
+        return NotImplemented
 
-    def __or__(Restrict self, Restrict other):
-        return Restrict.from_ptr(C.pkgcraft_restrict_or(self.ptr, other.ptr))
+    def __or__(self, other):
+        if isinstance(self, Restrict) and isinstance(other, Restrict):
+            ptr = C.pkgcraft_restrict_or((<Restrict>self).ptr, (<Restrict>other).ptr)
+            return Restrict.from_ptr(ptr)
+        return NotImplemented
 
-    def __xor__(Restrict self, Restrict other):
-        return Restrict.from_ptr(C.pkgcraft_restrict_xor(self.ptr, other.ptr))
+    def __xor__(self, other):
+        if isinstance(self, Restrict) and isinstance(other, Restrict):
+            ptr = C.pkgcraft_restrict_xor((<Restrict>self).ptr, (<Restrict>other).ptr)
+            return Restrict.from_ptr(ptr)
+        return NotImplemented
 
-    def __invert__(Restrict self):
+    def __invert__(self):
         return Restrict.from_ptr(C.pkgcraft_restrict_not(self.ptr))
 
     def __dealloc__(self):

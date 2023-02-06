@@ -87,23 +87,35 @@ cdef class RepoSet:
             return obj in self.repos
         return any((obj in r) for r in self.repos)
 
-    def __lt__(self, RepoSet other):
-        return C.pkgcraft_repo_set_cmp(self.ptr, other.ptr) == -1
+    def __lt__(self, other):
+        if isinstance(other, RepoSet):
+            return C.pkgcraft_repo_set_cmp(self.ptr, (<RepoSet>other).ptr) == -1
+        return NotImplemented
 
-    def __le__(self, RepoSet other):
-        return C.pkgcraft_repo_set_cmp(self.ptr, other.ptr) <= 0
+    def __le__(self, other):
+        if isinstance(other, RepoSet):
+            return C.pkgcraft_repo_set_cmp(self.ptr, (<RepoSet>other).ptr) <= 0
+        return NotImplemented
 
-    def __eq__(self, RepoSet other):
-        return C.pkgcraft_repo_set_cmp(self.ptr, other.ptr) == 0
+    def __eq__(self, other):
+        if isinstance(other, RepoSet):
+            return C.pkgcraft_repo_set_cmp(self.ptr, (<RepoSet>other).ptr) == 0
+        return NotImplemented
 
-    def __ne__(self, RepoSet other):
-        return C.pkgcraft_repo_set_cmp(self.ptr, other.ptr) != 0
+    def __ne__(self, other):
+        if isinstance(other, RepoSet):
+            return C.pkgcraft_repo_set_cmp(self.ptr, (<RepoSet>other).ptr) != 0
+        return NotImplemented
 
-    def __ge__(self, RepoSet other):
-        return C.pkgcraft_repo_set_cmp(self.ptr, other.ptr) >= 0
+    def __ge__(self, other):
+        if isinstance(other, RepoSet):
+            return C.pkgcraft_repo_set_cmp(self.ptr, (<RepoSet>other).ptr) >= 0
+        return NotImplemented
 
-    def __gt__(self, RepoSet other):
-        return C.pkgcraft_repo_set_cmp(self.ptr, other.ptr) == 1
+    def __gt__(self, other):
+        if isinstance(other, RepoSet):
+            return C.pkgcraft_repo_set_cmp(self.ptr, (<RepoSet>other).ptr) == 1
+        return NotImplemented
 
     def __hash__(self):
         return C.pkgcraft_repo_set_hash(self.ptr)

@@ -142,23 +142,35 @@ cdef class Cpv:
         """
         return C.pkgcraft_atom_intersects(self.ptr, other.ptr)
 
-    def __lt__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) == -1
+    def __lt__(self, other):
+        if isinstance(other, Cpv):
+            return C.pkgcraft_atom_cmp(self.ptr, (<Cpv>other).ptr) == -1
+        return NotImplemented
 
-    def __le__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) <= 0
+    def __le__(self, other):
+        if isinstance(other, Cpv):
+            return C.pkgcraft_atom_cmp(self.ptr, (<Cpv>other).ptr) <= 0
+        return NotImplemented
 
-    def __eq__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) == 0
+    def __eq__(self, other):
+        if isinstance(other, Cpv):
+            return C.pkgcraft_atom_cmp(self.ptr, (<Cpv>other).ptr) == 0
+        return NotImplemented
 
-    def __ne__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) != 0
+    def __ne__(self, other):
+        if isinstance(other, Cpv):
+            return C.pkgcraft_atom_cmp(self.ptr, (<Cpv>other).ptr) != 0
+        return NotImplemented
 
-    def __ge__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) >= 0
+    def __ge__(self, other):
+        if isinstance(other, Cpv):
+            return C.pkgcraft_atom_cmp(self.ptr, (<Cpv>other).ptr) >= 0
+        return NotImplemented
 
-    def __gt__(self, Cpv other):
-        return C.pkgcraft_atom_cmp(self.ptr, other.ptr) == 1
+    def __gt__(self, other):
+        if isinstance(other, Cpv):
+            return C.pkgcraft_atom_cmp(self.ptr, (<Cpv>other).ptr) == 1
+        return NotImplemented
 
     def __str__(self):
         c_str = C.pkgcraft_atom_str(self.ptr)
@@ -211,10 +223,10 @@ class Blocker(IntEnum):
         C.pkgcraft_str_free(c_str)
         return s
 
-    def __eq__(self, object other):
+    def __eq__(self, other):
         if isinstance(other, str):
             return str(self) == other
-        return self is other
+        return int(self) == other
 
 
 class SlotOperator(IntEnum):
@@ -234,10 +246,10 @@ class SlotOperator(IntEnum):
         C.pkgcraft_str_free(c_str)
         return s
 
-    def __eq__(self, object other):
+    def __eq__(self, other):
         if isinstance(other, str):
             return str(self) == other
-        return self is other
+        return int(self) == other
 
 
 @cython.final

@@ -26,10 +26,10 @@ class Operator(IntEnum):
         C.pkgcraft_str_free(c_str)
         return s
 
-    def __eq__(self, object other):
+    def __eq__(self, other):
         if isinstance(other, str):
             return str(self) == other
-        return self is other
+        return int(self) == other
 
 
 cdef class Version:
@@ -119,23 +119,35 @@ cdef class Version:
         """
         return C.pkgcraft_version_intersects(self.ptr, other.ptr)
 
-    def __lt__(self, Version other):
-        return C.pkgcraft_version_cmp(self.ptr, other.ptr) == -1
+    def __lt__(self, other):
+        if isinstance(other, Version):
+            return C.pkgcraft_version_cmp(self.ptr, (<Version>other).ptr) == -1
+        return NotImplemented
 
-    def __le__(self, Version other):
-        return C.pkgcraft_version_cmp(self.ptr, other.ptr) <= 0
+    def __le__(self, other):
+        if isinstance(other, Version):
+            return C.pkgcraft_version_cmp(self.ptr, (<Version>other).ptr) <= 0
+        return NotImplemented
 
-    def __eq__(self, Version other):
-        return C.pkgcraft_version_cmp(self.ptr, other.ptr) == 0
+    def __eq__(self, other):
+        if isinstance(other, Version):
+            return C.pkgcraft_version_cmp(self.ptr, (<Version>other).ptr) == 0
+        return NotImplemented
 
-    def __ne__(self, Version other):
-        return C.pkgcraft_version_cmp(self.ptr, other.ptr) != 0
+    def __ne__(self, other):
+        if isinstance(other, Version):
+            return C.pkgcraft_version_cmp(self.ptr, (<Version>other).ptr) != 0
+        return NotImplemented
 
-    def __ge__(self, Version other):
-        return C.pkgcraft_version_cmp(self.ptr, other.ptr) >= 0
+    def __ge__(self, other):
+        if isinstance(other, Version):
+            return C.pkgcraft_version_cmp(self.ptr, (<Version>other).ptr) >= 0
+        return NotImplemented
 
-    def __gt__(self, Version other):
-        return C.pkgcraft_version_cmp(self.ptr, other.ptr) == 1
+    def __gt__(self, other):
+        if isinstance(other, Version):
+            return C.pkgcraft_version_cmp(self.ptr, (<Version>other).ptr) == 1
+        return NotImplemented
 
     def __str__(self):
         c_str = C.pkgcraft_version_str(self.ptr)

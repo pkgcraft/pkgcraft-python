@@ -20,23 +20,35 @@ cdef class DepRestrict(_IndirectInit):
     def __iter__(self):
         return _IntoIterFlatten(self, self.kind)
 
-    def __lt__(self, DepRestrict other):
-        return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) == -1
+    def __lt__(self, other):
+        if isinstance(other, DepRestrict):
+            return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) == -1
+        return NotImplemented
 
-    def __le__(self, DepRestrict other):
-        return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) <= 0
+    def __le__(self, other):
+        if isinstance(other, DepRestrict):
+            return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) <= 0
+        return NotImplemented
 
-    def __eq__(self, DepRestrict other):
-        return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) == 0
+    def __eq__(self, other):
+        if isinstance(other, DepRestrict):
+            return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) == 0
+        return NotImplemented
 
-    def __ne__(self, DepRestrict other):
-        return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) != 0
+    def __ne__(self, other):
+        if isinstance(other, DepRestrict):
+            return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) != 0
+        return NotImplemented
 
-    def __ge__(self, DepRestrict other):
-        return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) >= 0
+    def __ge__(self, other):
+        if isinstance(other, DepRestrict):
+            return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) >= 0
+        return NotImplemented
 
-    def __gt__(self, DepRestrict other):
-        return C.pkgcraft_deprestrict_cmp(self.ptr, other.ptr) == 1
+    def __gt__(self, other):
+        if isinstance(other, DepRestrict):
+            return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) == 1
+        return NotImplemented
 
     def __hash__(self):
         return C.pkgcraft_deprestrict_hash(self.ptr)
@@ -76,8 +88,10 @@ cdef class DepSet(_IndirectInit):
     def __iter__(self):
         return _IntoIter(self)
 
-    def __eq__(self, DepSet other):
-        return C.pkgcraft_depset_eq(self.ptr, other.ptr)
+    def __eq__(self, other):
+        if isinstance(other, DepSet):
+            return C.pkgcraft_depset_eq(self.ptr, (<DepSet>other).ptr)
+        return NotImplemented
 
     def __hash__(self):
         return C.pkgcraft_depset_hash(self.ptr)

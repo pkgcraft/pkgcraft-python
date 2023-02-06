@@ -146,23 +146,35 @@ cdef class Eapi(_IndirectInit):
             C.pkgcraft_str_array_free(c_keys, length)
         return self._metadata_keys
 
-    def __lt__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) == -1
+    def __lt__(self, other):
+        if isinstance(other, Eapi):
+            return C.pkgcraft_eapi_cmp(self.ptr, (<Eapi>other).ptr) == -1
+        return NotImplemented
 
-    def __le__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) <= 0
+    def __le__(self, other):
+        if isinstance(other, Eapi):
+            return C.pkgcraft_eapi_cmp(self.ptr, (<Eapi>other).ptr) <= 0
+        return NotImplemented
 
-    def __eq__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) == 0
+    def __eq__(self, other):
+        if isinstance(other, Eapi):
+            return C.pkgcraft_eapi_cmp(self.ptr, (<Eapi>other).ptr) == 0
+        return NotImplemented
 
-    def __ne__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) != 0
+    def __ne__(self, other):
+        if isinstance(other, Eapi):
+            return C.pkgcraft_eapi_cmp(self.ptr, (<Eapi>other).ptr) != 0
+        return NotImplemented
 
-    def __ge__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) >= 0
+    def __ge__(self, other):
+        if isinstance(other, Eapi):
+            return C.pkgcraft_eapi_cmp(self.ptr, (<Eapi>other).ptr) >= 0
+        return NotImplemented
 
-    def __gt__(self, Eapi other):
-        return C.pkgcraft_eapi_cmp(self.ptr, other.ptr) == 1
+    def __gt__(self, other):
+        if isinstance(other, Eapi):
+            return C.pkgcraft_eapi_cmp(self.ptr, (<Eapi>other).ptr) == 1
+        return NotImplemented
 
     def __str__(self):
         return self._id

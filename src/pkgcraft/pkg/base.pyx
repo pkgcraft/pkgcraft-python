@@ -54,23 +54,35 @@ cdef class Pkg(_IndirectInit):
         """Determine if a restriction matches a package."""
         return C.pkgcraft_pkg_restrict_matches(self.ptr, r.ptr)
 
-    def __lt__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) == -1
+    def __lt__(self, other):
+        if isinstance(other, Pkg):
+            return C.pkgcraft_pkg_cmp(self.ptr, (<Pkg>other).ptr) == -1
+        return NotImplemented
 
-    def __le__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) <= 0
+    def __le__(self, other):
+        if isinstance(other, Pkg):
+            return C.pkgcraft_pkg_cmp(self.ptr, (<Pkg>other).ptr) <= 0
+        return NotImplemented
 
-    def __eq__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) == 0
+    def __eq__(self, other):
+        if isinstance(other, Pkg):
+            return C.pkgcraft_pkg_cmp(self.ptr, (<Pkg>other).ptr) == 0
+        return NotImplemented
 
-    def __ne__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) != 0
+    def __ne__(self, other):
+        if isinstance(other, Pkg):
+            return C.pkgcraft_pkg_cmp(self.ptr, (<Pkg>other).ptr) != 0
+        return NotImplemented
 
-    def __ge__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) >= 0
+    def __ge__(self, other):
+        if isinstance(other, Pkg):
+            return C.pkgcraft_pkg_cmp(self.ptr, (<Pkg>other).ptr) >= 0
+        return NotImplemented
 
-    def __gt__(self, Pkg other):
-        return C.pkgcraft_pkg_cmp(self.ptr, other.ptr) == 1
+    def __gt__(self, other):
+        if isinstance(other, Pkg):
+            return C.pkgcraft_pkg_cmp(self.ptr, (<Pkg>other).ptr) == 1
+        return NotImplemented
 
     def __str__(self):
         c_str = C.pkgcraft_pkg_str(self.ptr)

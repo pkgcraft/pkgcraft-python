@@ -119,23 +119,35 @@ cdef class Repo:
         """Iterate over a repo's packages while applying a restriction."""
         yield from _IterRestrict(self, restrict)
 
-    def __lt__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) == -1
+    def __lt__(self, other):
+        if isinstance(other, Repo):
+            return C.pkgcraft_repo_cmp(self.ptr, (<Repo>other).ptr) == -1
+        return NotImplemented
 
-    def __le__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) <= 0
+    def __le__(self, other):
+        if isinstance(other, Repo):
+            return C.pkgcraft_repo_cmp(self.ptr, (<Repo>other).ptr) <= 0
+        return NotImplemented
 
-    def __eq__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) == 0
+    def __eq__(self, other):
+        if isinstance(other, Repo):
+            return C.pkgcraft_repo_cmp(self.ptr, (<Repo>other).ptr) == 0
+        return NotImplemented
 
-    def __ne__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) != 0
+    def __ne__(self, other):
+        if isinstance(other, Repo):
+            return C.pkgcraft_repo_cmp(self.ptr, (<Repo>other).ptr) != 0
+        return NotImplemented
 
-    def __ge__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) >= 0
+    def __ge__(self, other):
+        if isinstance(other, Repo):
+            return C.pkgcraft_repo_cmp(self.ptr, (<Repo>other).ptr) >= 0
+        return NotImplemented
 
-    def __gt__(self, Repo other):
-        return C.pkgcraft_repo_cmp(self.ptr, other.ptr) == 1
+    def __gt__(self, other):
+        if isinstance(other, Repo):
+            return C.pkgcraft_repo_cmp(self.ptr, (<Repo>other).ptr) == 1
+        return NotImplemented
 
     def __str__(self):
         return self.id
