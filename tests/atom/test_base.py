@@ -10,7 +10,7 @@ from pkgcraft.eapi import EAPIS, Eapi
 from pkgcraft.error import InvalidAtom, InvalidCpv
 from pkgcraft.restrict import Restrict
 
-from ..misc import OperatorIterMap
+from ..misc import OperatorIterMap, OperatorMap
 
 
 class TestCpv:
@@ -178,6 +178,17 @@ class TestAtom:
             a2 = Atom(f"=cat/pkg-{v2}")
             for op_func in OperatorIterMap[op]:
                 assert op_func(a1, a2), f"failed comparison: {s}"
+
+        # verify incompatible type comparisons
+        obj = Atom("=cat/pkg-1")
+        for op, op_func in OperatorMap.items():
+            if op == "==":
+                assert not op_func(obj, None)
+            elif op == "!=":
+                assert op_func(obj, None)
+            else:
+                with pytest.raises(TypeError):
+                    op_func(obj, None)
 
     def test_intersects(self, toml_data):
         def parse(s):

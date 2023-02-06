@@ -57,6 +57,17 @@ class BaseRepoTests:
             r2 = make_repo(None, *r2_args, config=config)
             assert op_func(r1, r2), f"failed {r1_args} {op} {r2_args}"
 
+        # verify incompatible type comparisons
+        obj = make_repo()
+        for op, op_func in OperatorMap.items():
+            if op == "==":
+                assert not op_func(obj, None)
+            elif op == "!=":
+                assert op_func(obj, None)
+            else:
+                with pytest.raises(TypeError):
+                    op_func(obj, None)
+
     def test_hash_base(self, make_repo):
         r1 = make_repo()
         r2 = make_repo()

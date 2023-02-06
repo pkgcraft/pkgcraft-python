@@ -6,7 +6,7 @@ import pytest
 from pkgcraft.atom import Operator, Version, VersionWithOp
 from pkgcraft.error import InvalidVersion
 
-from ..misc import OperatorIterMap
+from ..misc import OperatorIterMap, OperatorMap
 
 
 class TestOperator:
@@ -58,6 +58,17 @@ class TestVersion:
             v2 = Version(b)
             for op_func in OperatorIterMap[op]:
                 assert op_func(v1, v2), f"failed comparison: {s}"
+
+        # verify incompatible type comparisons
+        obj = Version("0")
+        for op, op_func in OperatorMap.items():
+            if op == "==":
+                assert not op_func(obj, None)
+            elif op == "!=":
+                assert op_func(obj, None)
+            else:
+                with pytest.raises(TypeError):
+                    op_func(obj, None)
 
     def test_intersects(self, toml_data):
         def parse(s):

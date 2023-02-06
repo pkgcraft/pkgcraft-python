@@ -81,6 +81,17 @@ class TestRepoSet:
             s2 = RepoSet(make_fake_repo(config=config, **r2))
             assert op_func(s1, s2), err
 
+        # verify incompatible type comparisons
+        obj = RepoSet(make_fake_repo())
+        for op, op_func in OperatorMap.items():
+            if op == "==":
+                assert not op_func(obj, None)
+            elif op == "!=":
+                assert op_func(obj, None)
+            else:
+                with pytest.raises(TypeError):
+                    op_func(obj, None)
+
     def test_hash(self, make_fake_repo):
         r1 = make_fake_repo()
         r2 = make_fake_repo()

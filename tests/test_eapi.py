@@ -4,6 +4,8 @@ import pytest
 
 from pkgcraft.eapi import EAPI0, EAPI1, EAPI_LATEST, EAPIS, EAPIS_OFFICIAL, eapi_from_obj
 
+from .misc import OperatorMap
+
 
 def test_globals():
     assert len(EAPIS) > len(EAPIS_OFFICIAL)
@@ -59,6 +61,17 @@ class TestEapi:
         assert EAPI1 >= EAPI1
         assert EAPI1 >= EAPI0
         assert EAPI1 > EAPI0
+
+        # verify incompatible type comparisons
+        obj = EAPI0
+        for op, op_func in OperatorMap.items():
+            if op == "==":
+                assert not op_func(obj, None)
+            elif op == "!=":
+                assert op_func(obj, None)
+            else:
+                with pytest.raises(TypeError):
+                    op_func(obj, None)
 
     def test_hash(self):
         s = {EAPI0, EAPI1}

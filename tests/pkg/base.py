@@ -1,6 +1,10 @@
+import pytest
+
 from pkgcraft.atom import Cpv, Version
 from pkgcraft.eapi import EAPI_LATEST
 from pkgcraft.restrict import Restrict
+
+from ..misc import OperatorMap
 
 
 class BasePkgTests:
@@ -36,6 +40,17 @@ class BasePkgTests:
         assert pkg2 >= pkg2
         assert pkg2 >= pkg1
         assert pkg2 > pkg1
+
+        # verify incompatible type comparisons
+        obj = pkg1
+        for op, op_func in OperatorMap.items():
+            if op == "==":
+                assert not op_func(obj, None)
+            elif op == "!=":
+                assert op_func(obj, None)
+            else:
+                with pytest.raises(TypeError):
+                    op_func(obj, None)
 
     def test_str_base(self, pkg):
         assert str(pkg) == "cat/pkg-1::fake"

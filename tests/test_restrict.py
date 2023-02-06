@@ -85,6 +85,11 @@ class TestRestrict:
         assert r2 != r3
         assert len({r2, r3}) == 2
 
+        # verify incompatible type comparisons
+        r = Restrict("cat/pkg-1")
+        assert not r == None
+        assert r != None
+
     def test_logic_ops(self, fake_repo):
         pkg1 = fake_repo.create_pkg("cat/pkg-1")
         pkg2 = fake_repo.create_pkg("cat/pkg-2")
@@ -101,6 +106,14 @@ class TestRestrict:
         assert list(fake_repo.iter_restrict(~(r1 & r2))) == [pkg1, pkg2]
         assert not list(fake_repo.iter_restrict(~(r1 | r2)))
         assert not list(fake_repo.iter_restrict(~(r1 ^ r2)))
+
+        # verify incompatible types for boolean combinations
+        with pytest.raises(TypeError):
+            r1 & None
+        with pytest.raises(TypeError):
+            r1 | None
+        with pytest.raises(TypeError):
+            r1 ^ None
 
         r1 = Restrict("cat/pkg")
         r2 = Restrict("cat/pkg-2")
