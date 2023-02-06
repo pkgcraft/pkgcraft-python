@@ -30,10 +30,13 @@ class TestConfig:
             Config(repos_conf="/path/to/nonexistent/file")
 
     def test_repos(self, config, raw_ebuild_repo):
-        path = raw_ebuild_repo.path
+        path = str(raw_ebuild_repo.path)
         assert not config.repos
         r = config.add_repo(path)
-        assert r == config.repos[str(path)]
+        assert config.repos[path] == r
+        assert config.repos.get(path) == r
+        assert path in config.repos
+        assert config.repos.get("nonexistent") is None
 
         d = {x: config.repos[x] for x in config.repos}
         assert repr(config.repos) == repr(d)

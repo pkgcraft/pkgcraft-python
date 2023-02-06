@@ -130,8 +130,14 @@ cdef class Repos:
     def __eq__(self, other):
         return self._repos == other
 
+    def __contains__(self, obj):
+        return obj in self._repos
+
     def __getitem__(self, key):
         return self._repos[key]
+
+    def get(self, key, default=None):
+        return self._repos.get(key, default)
 
     def __str__(self):
         return str(self._repos)
