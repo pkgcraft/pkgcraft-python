@@ -866,6 +866,18 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Repo pointer.
     bool pkgcraft_repo_contains_path(Repo *r, const char *path)
 
+    # Return an ebuild repo's metadata arches.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    char **pkgcraft_repo_ebuild_arches(Repo *r, uintptr_t *len)
+
+    # Return an ebuild repo's metadata categories.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    char **pkgcraft_repo_ebuild_categories(Repo *r, uintptr_t *len)
+
     # Return an ebuild repo's EAPI.
     #
     # # Safety

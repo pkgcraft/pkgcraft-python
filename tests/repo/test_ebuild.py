@@ -105,3 +105,23 @@ class TestEbuildRepo(BaseRepoTests):
         overlay = make_raw_ebuild_repo(masters=[r.path])
         o = config.add_repo(overlay.path)
         assert o.masters == (r,)
+
+
+class TestEbuildRepoMetadata:
+    def test_arches(self, make_ebuild_repo):
+        # empty
+        repo = make_ebuild_repo()
+        assert repo.metadata.arches == []
+
+        # existing
+        repo = make_ebuild_repo(arches=["amd64", "arm64"])
+        assert repo.metadata.arches == ["amd64", "arm64"]
+
+    def test_categories(self, make_ebuild_repo):
+        # empty
+        repo = make_ebuild_repo()
+        assert repo.metadata.categories == []
+
+        # existing
+        repo = make_ebuild_repo(categories=["cat1", "cat2"])
+        assert repo.metadata.categories == ["cat1", "cat2"]
