@@ -71,23 +71,27 @@ class TestEbuildPkg(BasePkgTests):
         deps = pkg.dependencies()
         assert str(deps) == ""
         assert not list(deps.iter_flatten())
+        assert not list(deps.iter_recursive())
 
         # single type
         pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="cat/pkg")
         deps = pkg.dependencies()
         assert str(deps) == "cat/pkg"
         assert list(deps.iter_flatten()) == [Atom("cat/pkg")]
+        assert list(map(str, deps.iter_recursive())) == ["cat/pkg"]
 
         # multiple types -- output in lexical attr name order
         pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="u? ( cat/pkg )", bdepend="a/b")
         deps = pkg.dependencies()
         assert str(deps) == "a/b u? ( cat/pkg )"
         assert list(deps.iter_flatten()) == [Atom("a/b"), Atom("cat/pkg")]
+        assert list(map(str, deps.iter_recursive())) == ["a/b", "u? ( cat/pkg )", "cat/pkg"]
 
         # filter by type
         deps = pkg.dependencies("bdepend")
         assert str(deps) == "a/b"
         assert list(deps.iter_flatten()) == [Atom("a/b")]
+        assert list(map(str, deps.iter_recursive())) == ["a/b"]
 
         # multiple types with overlapping deps
         pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="u? ( cat/pkg )", bdepend="u? ( cat/pkg )")
@@ -95,6 +99,7 @@ class TestEbuildPkg(BasePkgTests):
         assert deps == pkg.dependencies("depend", "bdepend")
         assert str(deps) == "u? ( cat/pkg )"
         assert list(deps.iter_flatten()) == [Atom("cat/pkg")]
+        assert list(map(str, deps.iter_recursive())) == ["u? ( cat/pkg )", "cat/pkg"]
 
         # uppercase and lowercase keys work the same
         assert pkg.dependencies("bdepend") == pkg.dependencies("BDEPEND")
@@ -112,12 +117,20 @@ class TestEbuildPkg(BasePkgTests):
             val = getattr(pkg, attr)
             assert str(val) == "cat/pkg"
             assert list(val.iter_flatten()) == [Atom("cat/pkg")]
+            assert list(map(str, val.iter_recursive())) == ["cat/pkg"]
             assert list(map(str, val)) == ["cat/pkg"]
 
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: "u? ( cat/pkg ) || ( a/b c/d )"})
             val = getattr(pkg, attr)
             assert str(val) == "u? ( cat/pkg ) || ( a/b c/d )"
             assert list(val.iter_flatten()) == [Atom("cat/pkg"), Atom("a/b"), Atom("c/d")]
+            assert list(map(str, val.iter_recursive())) == [
+                "u? ( cat/pkg )",
+                "cat/pkg",
+                "|| ( a/b c/d )",
+                "a/b",
+                "c/d",
+            ]
             dep_restricts = list(val)
             assert list(map(str, dep_restricts)) == ["u? ( cat/pkg )", "|| ( a/b c/d )"]
             assert list(dep_restricts[1]) == [Atom("a/b"), Atom("c/d")]
@@ -126,6 +139,7 @@ class TestEbuildPkg(BasePkgTests):
             val = getattr(pkg, attr)
             assert str(val) == "u? ( a/b ) c/d"
             assert list(val.iter_flatten()) == [Atom("a/b"), Atom("c/d")]
+            assert list(map(str, val.iter_recursive())) == ["u? ( a/b )", "a/b", "c/d"]
             dep_restricts = list(val)
             assert list(map(str, dep_restricts)) == ["u? ( a/b )", "c/d"]
             assert list(dep_restricts[1]) == [Atom("c/d")]
@@ -137,10 +151,12 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", license="BSD")
         assert str(pkg.license) == "BSD"
         assert list(pkg.license.iter_flatten()) == ["BSD"]
+        assert list(map(str, pkg.license.iter_recursive())) == ["BSD"]
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", license="u? ( BSD )")
         assert str(pkg.license) == "u? ( BSD )"
         assert list(pkg.license.iter_flatten()) == ["BSD"]
+        assert list(map(str, pkg.license.iter_recursive())) == ["u? ( BSD )", "BSD"]
 
     def test_properties(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
@@ -149,10 +165,12 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", properties="live")
         assert str(pkg.properties) == "live"
         assert list(pkg.properties.iter_flatten()) == ["live"]
+        assert list(map(str, pkg.properties.iter_recursive())) == ["live"]
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", properties="u? ( live )")
         assert str(pkg.properties) == "u? ( live )"
         assert list(pkg.properties.iter_flatten()) == ["live"]
+        assert list(map(str, pkg.properties.iter_recursive())) == ["u? ( live )", "live"]
 
     def test_required_use(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
@@ -161,10 +179,12 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", required_use="use")
         assert str(pkg.required_use) == "use"
         assert list(pkg.required_use.iter_flatten()) == ["use"]
+        assert list(map(str, pkg.required_use.iter_recursive())) == ["use"]
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", required_use="u1? ( u2 )")
         assert str(pkg.required_use) == "u1? ( u2 )"
         assert list(pkg.required_use.iter_flatten()) == ["u2"]
+        assert list(map(str, pkg.required_use.iter_recursive())) == ["u1? ( u2 )", "u2"]
 
     def test_restrict(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
@@ -173,10 +193,12 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", restrict="fetch")
         assert str(pkg.restrict) == "fetch"
         assert list(pkg.restrict.iter_flatten()) == ["fetch"]
+        assert list(map(str, pkg.restrict.iter_recursive())) == ["fetch"]
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", restrict="u? ( fetch )")
         assert str(pkg.restrict) == "u? ( fetch )"
         assert list(pkg.restrict.iter_flatten()) == ["fetch"]
+        assert list(map(str, pkg.restrict.iter_recursive())) == ["u? ( fetch )", "fetch"]
 
     def test_src_uri(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
@@ -187,12 +209,14 @@ class TestEbuildPkg(BasePkgTests):
         u = next(pkg.src_uri.iter_flatten())
         assert u.uri == "https://a.com/b.tar.gz"
         assert u.rename is None
+        assert list(map(str, pkg.src_uri.iter_recursive())) == ["https://a.com/b.tar.gz"]
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", src_uri="https://a.com/z -> z.tar.xz")
         assert str(pkg.src_uri) == "https://a.com/z -> z.tar.xz"
         u = next(pkg.src_uri.iter_flatten())
         assert u.uri == "https://a.com/z"
         assert u.rename == "z.tar.xz"
+        assert list(map(str, pkg.src_uri.iter_recursive())) == ["https://a.com/z -> z.tar.xz"]
 
         pkg = ebuild_repo.create_pkg(
             "cat/pkg-1",
@@ -203,6 +227,12 @@ class TestEbuildPkg(BasePkgTests):
         )
         assert list(map(str, pkg.src_uri.iter_flatten())) == [
             "https://a.com/b.tar.gz",
+            "https://a.com/z -> z.tar.xz",
+        ]
+        assert list(map(str, pkg.src_uri.iter_recursive())) == [
+            "u1? ( https://a.com/b.tar.gz )",
+            "https://a.com/b.tar.gz",
+            "u2? ( https://a.com/z -> z.tar.xz )",
             "https://a.com/z -> z.tar.xz",
         ]
 

@@ -82,6 +82,9 @@ cdef extern from "pkgcraft.h":
     cdef struct DepSetIntoIterFlatten:
         pass
 
+    cdef struct DepSetIntoIterRecursive:
+        pass
+
     # EAPI object.
     cdef struct Eapi:
         pass
@@ -367,11 +370,17 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepRestrict pointer.
     uint64_t pkgcraft_deprestrict_hash(DepRestrict *d)
 
-    # Return an iterator for a flattened DepRestrict.
+    # Return a flattened iterator for a DepRestrict.
     #
     # # Safety
     # The argument must be a non-null DepRestrict pointer.
     DepSetIntoIterFlatten *pkgcraft_deprestrict_into_iter_flatten(DepRestrict *d)
+
+    # Return a recursive iterator for a DepRestrict.
+    #
+    # # Safety
+    # The argument must be a non-null DepRestrict pointer.
+    DepSetIntoIterRecursive *pkgcraft_deprestrict_into_iter_recursive(DepRestrict *d)
 
     # Return the formatted string for a DepRestrict object.
     #
@@ -403,7 +412,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSet pointer.
     DepSetIntoIter *pkgcraft_depset_into_iter(DepSet *d)
 
-    # Return an iterator for a flattened DepSet.
+    # Return a flattened iterator for a DepSet.
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
@@ -436,6 +445,26 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null DepSetIntoIter pointer.
     DepRestrict *pkgcraft_depset_into_iter_next(DepSetIntoIter *i)
+
+    # Return a recursive iterator for a DepSet.
+    #
+    # # Safety
+    # The argument must be a non-null DepSet pointer.
+    DepSetIntoIterRecursive *pkgcraft_depset_into_iter_recursive(DepSet *d)
+
+    # Free a recursive depset iterator.
+    #
+    # # Safety
+    # The argument must be a non-null DepSetIntoIterFlatten pointer or NULL.
+    void pkgcraft_depset_into_iter_recursive_free(DepSetIntoIterRecursive *i)
+
+    # Return the next object from a recursive depset iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a non-null DepSetIntoIterRecursive pointer.
+    DepRestrict *pkgcraft_depset_into_iter_recursive_next(DepSetIntoIterRecursive *i)
 
     # Return the formatted string for a DepSet object.
     #

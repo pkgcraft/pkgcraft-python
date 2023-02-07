@@ -33,6 +33,11 @@ cdef class _IntoIterFlatten:
     cdef DepSetKind kind
 
 
+cdef class _IntoIterRecursive:
+    cdef C.DepSetIntoIterRecursive *ptr
+    cdef DepSetKind kind
+
+
 cdef class Uri(_IndirectInit):
     cdef C.Uri *ptr
     # cached fields

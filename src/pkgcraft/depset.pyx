@@ -20,6 +20,10 @@ cdef class DepRestrict(_IndirectInit):
     def __iter__(self):
         return _IntoIterFlatten(self, self.kind)
 
+    def iter_recursive(self):
+        """Recursively iterate over all DepRestrict objects of a DepRestrict."""
+        yield from _IntoIterRecursive(self, self.kind)
+
     def __lt__(self, other):
         if isinstance(other, DepRestrict):
             return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) == -1
@@ -85,6 +89,10 @@ cdef class DepSet(_IndirectInit):
         """Iterate over the objects of a flattened DepSet."""
         yield from _IntoIterFlatten(self, self.kind)
 
+    def iter_recursive(self):
+        """Recursively iterate over all DepRestrict objects of a DepSet."""
+        yield from _IntoIterRecursive(self, self.kind)
+
     def __iter__(self):
         return _IntoIter(self)
 
@@ -132,7 +140,7 @@ cdef class _IntoIter:
 
 
 cdef class _IntoIterFlatten:
-    """Iterator over a flattened DepSet."""
+    """Flattened iterator over a DepSet or DepRestrict object."""
 
     def __cinit__(self, object obj not None, DepSetKind kind):
         if isinstance(obj, DepSet):
@@ -165,6 +173,32 @@ cdef class _IntoIterFlatten:
 
     def __dealloc__(self):
         C.pkgcraft_depset_into_iter_flatten_free(self.ptr)
+
+
+cdef class _IntoIterRecursive:
+    """Recursive iterator over a DepSet or DepRestrict object."""
+
+    def __cinit__(self, object obj not None, DepSetKind kind):
+        if isinstance(obj, DepSet):
+            self.ptr = C.pkgcraft_depset_into_iter_recursive((<DepSet>obj).ptr)
+        elif isinstance(obj, DepRestrict):
+            self.ptr = C.pkgcraft_deprestrict_into_iter_recursive((<DepRestrict>obj).ptr)
+        else:  # pragma: no cover
+            raise TypeError(f"{obj.__class__.__name__!r} unsupported depset type")
+
+        self.kind = kind
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        ptr = C.pkgcraft_depset_into_iter_recursive_next(self.ptr)
+        if ptr is not NULL:
+            return DepRestrict.from_ptr(ptr, self.kind)
+        raise StopIteration
+
+    def __dealloc__(self):
+        C.pkgcraft_depset_into_iter_recursive_free(self.ptr)
 
 
 @cython.final
