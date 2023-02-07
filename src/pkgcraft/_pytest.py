@@ -62,10 +62,11 @@ class _FileSet(MutableSet):
 class TempRawEbuildRepo:
     """Class for creating and manipulating raw ebuild repos."""
 
-    def __init__(self, path, id='fake', eapi=EAPI_LATEST, masters=(), arches=()):
+    def __init__(self, path, id='fake', eapi=EAPI_LATEST, masters=(), arches=(), categories=()):
         self._path = Path(path)
         self._repo_id = id
         self._arches = _FileSet(self._path / 'profiles' / 'arch.list')
+        self._categories = _FileSet(self._path / 'profiles' / 'categories')
         self._today = datetime.today()
         try:
             os.makedirs(self._path / 'profiles')
@@ -83,6 +84,8 @@ class TempRawEbuildRepo:
                 """))
             if arches:
                 self._arches.update(arches)
+            if categories:
+                self._categories.update(categories)
             os.makedirs(self._path / 'eclass')
         except FileExistsError:
             pass
