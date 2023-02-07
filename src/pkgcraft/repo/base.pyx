@@ -152,7 +152,7 @@ cdef class Repo:
     def __str__(self):
         # Avoid panics due to pytest coercing objects to strings after failures
         # during __init__().
-        if self.ptr is NULL:
+        if self.ptr is NULL:  # pragma: no cover
             raise ValueError("repo not initialized")
         return self.id
 
