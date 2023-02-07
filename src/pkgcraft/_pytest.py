@@ -11,6 +11,7 @@ from pkgcraft.atom import Cpv
 from pkgcraft.config import Config
 from pkgcraft.eapi import EAPI_LATEST
 from pkgcraft.repo import EbuildRepo, FakeRepo
+from pkgcraft.set import OrderedSet
 
 
 class _FileSet(MutableSet):
@@ -18,7 +19,7 @@ class _FileSet(MutableSet):
 
     def __init__(self, path):
         self._path = path
-        self._set = set()
+        self._set = OrderedSet()
 
     def _sync(self):
         with open(self._path, 'w') as f:
