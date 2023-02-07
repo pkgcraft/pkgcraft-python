@@ -150,6 +150,10 @@ cdef class Repo:
         return NotImplemented
 
     def __str__(self):
+        # Avoid panics due to pytest coercing objects to strings after failures
+        # during __init__().
+        if self.ptr is NULL:
+            raise ValueError("repo not initialized")
         return self.id
 
     def __repr__(self):
