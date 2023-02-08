@@ -138,7 +138,9 @@ class TestEbuildPkg(BasePkgTests):
             ]
             dep_restricts = list(val)
             assert list(map(str, dep_restricts)) == ["u? ( cat/pkg )", "|| ( a/b c/d )"]
-            assert list(dep_restricts[1]) == [Atom("a/b"), Atom("c/d")]
+            dep_restrict = dep_restricts[1]
+            assert list(dep_restrict.iter_flatten()) == [Atom("a/b"), Atom("c/d")]
+            assert list(map(str, dep_restrict.iter_recursive())) == ["|| ( a/b c/d )", "a/b", "c/d"]
 
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: "u? ( a/b ) c/d"})
             val = getattr(pkg, attr)
@@ -147,7 +149,9 @@ class TestEbuildPkg(BasePkgTests):
             assert list(map(str, val.iter_recursive())) == ["u? ( a/b )", "a/b", "c/d"]
             dep_restricts = list(val)
             assert list(map(str, dep_restricts)) == ["u? ( a/b )", "c/d"]
-            assert list(dep_restricts[1]) == [Atom("c/d")]
+            dep_restrict = dep_restricts[1]
+            assert list(dep_restrict.iter_flatten()) == [Atom("c/d")]
+            assert list(map(str, dep_restrict.iter_recursive())) == ["c/d"]
 
     def test_license(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")

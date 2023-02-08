@@ -17,8 +17,8 @@ cdef class DepRestrict(_IndirectInit):
         obj.kind = kind
         return obj
 
-    def __iter__(self):
-        return _IntoIterFlatten(self, self.kind)
+    def iter_flatten(self):
+        yield from _IntoIterFlatten(self, self.kind)
 
     def iter_recursive(self):
         """Recursively iterate over all DepRestrict objects of a DepRestrict."""
