@@ -70,6 +70,7 @@ class TestEbuildPkg(BasePkgTests):
         # empty deps
         deps = pkg.dependencies()
         assert str(deps) == ""
+        assert list(iter(deps)) == list(iter(iter(deps)))
         assert not list(deps.iter_flatten())
         assert not list(deps.iter_recursive())
 
@@ -77,6 +78,7 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="cat/pkg")
         deps = pkg.dependencies()
         assert str(deps) == "cat/pkg"
+        assert list(iter(deps)) == list(iter(iter(deps)))
         assert list(deps.iter_flatten()) == [Atom("cat/pkg")]
         assert list(map(str, deps.iter_recursive())) == ["cat/pkg"]
 
@@ -84,12 +86,14 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="u? ( cat/pkg )", bdepend="a/b")
         deps = pkg.dependencies()
         assert str(deps) == "a/b u? ( cat/pkg )"
+        assert list(iter(deps)) == list(iter(iter(deps)))
         assert list(deps.iter_flatten()) == [Atom("a/b"), Atom("cat/pkg")]
         assert list(map(str, deps.iter_recursive())) == ["a/b", "u? ( cat/pkg )", "cat/pkg"]
 
         # filter by type
         deps = pkg.dependencies("bdepend")
         assert str(deps) == "a/b"
+        assert list(iter(deps)) == list(iter(iter(deps)))
         assert list(deps.iter_flatten()) == [Atom("a/b")]
         assert list(map(str, deps.iter_recursive())) == ["a/b"]
 
@@ -98,6 +102,7 @@ class TestEbuildPkg(BasePkgTests):
         deps = pkg.dependencies()
         assert deps == pkg.dependencies("depend", "bdepend")
         assert str(deps) == "u? ( cat/pkg )"
+        assert list(iter(deps)) == list(iter(iter(deps)))
         assert list(deps.iter_flatten()) == [Atom("cat/pkg")]
         assert list(map(str, deps.iter_recursive())) == ["u? ( cat/pkg )", "cat/pkg"]
 

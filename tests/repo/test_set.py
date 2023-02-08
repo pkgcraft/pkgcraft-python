@@ -165,7 +165,7 @@ class TestRepoSet:
             next(s)
 
         # nested calls return equivalent objects
-        iter(s) == iter(iter(s))
+        assert list(iter(s)) == list(iter(iter(s)))
 
         # empty set
         assert not list(s)

@@ -141,7 +141,7 @@ class BaseRepoTests:
             next(repo)
 
         # nested calls return equivalent objects
-        iter(repo) == iter(iter(repo))
+        assert list(iter(repo)) == list(iter(iter(repo)))
 
         # empty repo
         assert not list(repo)
