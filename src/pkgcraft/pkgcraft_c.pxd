@@ -13,6 +13,21 @@ cdef extern from "pkgcraft.h":
         BLOCKER_STRONG,
         BLOCKER_WEAK,
 
+    cdef enum DepKind:
+        DEP_KIND_ENABLED,
+        DEP_KIND_DISABLED,
+        DEP_KIND_ALL_OF,
+        DEP_KIND_ANY_OF,
+        DEP_KIND_EXACTLY_ONE_OF,
+        DEP_KIND_AT_MOST_ONE_OF,
+        DEP_KIND_USE_ENABLED,
+        DEP_KIND_USE_DISABLED,
+
+    cdef enum DepSetKind:
+        DEP_SET_KIND_ATOM,
+        DEP_SET_KIND_STRING,
+        DEP_SET_KIND_URI,
+
     cdef enum ErrorKind:
         ERROR_KIND_GENERIC,
         ERROR_KIND_PKGCRAFT,
@@ -70,10 +85,8 @@ cdef extern from "pkgcraft.h":
     cdef struct Config:
         pass
 
-    cdef struct DepRestrict:
-        pass
-
-    cdef struct DepSet:
+    # Opaque wrapper for DepRestrict objects.
+    cdef struct DepRestrictW:
         pass
 
     cdef struct DepSetIntoIter:
@@ -83,6 +96,10 @@ cdef extern from "pkgcraft.h":
         pass
 
     cdef struct DepSetIntoIterRecursive:
+        pass
+
+    # Opaque wrapper for DepSet objects.
+    cdef struct DepSetW:
         pass
 
     # EAPI object.
@@ -123,6 +140,15 @@ cdef extern from "pkgcraft.h":
 
     cdef struct Version:
         pass
+
+    cdef struct DepRestrict:
+        DepSetKind kind
+        DepKind kind_dep
+        DepRestrictW *dep
+
+    cdef struct DepSet:
+        DepSetKind kind
+        DepSetW *dep
 
     cdef struct PkgcraftError:
         char *message
