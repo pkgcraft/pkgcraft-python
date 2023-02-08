@@ -50,7 +50,7 @@ class TestDepRestrict:
         pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="a/b")
         d = next(iter(pkg.depend))
         assert str(d) == "a/b"
-        assert repr(d).startswith("<DepRestrict 'a/b' at 0x")
+        assert repr(d).startswith("<Enabled 'a/b' at 0x")
 
     def test_cmp(self, ebuild_repo):
         for dep, op, rdep in (
