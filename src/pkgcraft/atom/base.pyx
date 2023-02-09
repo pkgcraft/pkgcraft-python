@@ -82,10 +82,13 @@ cdef class Cpv:
     def version(self):
         """Get an atom's version.
 
-        >>> from pkgcraft.atom import Cpv
+        >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
         >>> str(a.version)
         '1-r2'
+        >>> a = Atom('cat/pkg')
+        >>> a.version is None
+        True
         """
         if self._version is SENTINEL:
             ptr = C.pkgcraft_atom_version(self.ptr)
@@ -96,7 +99,7 @@ cdef class Cpv:
     def revision(self):
         """Get an atom's revision.
 
-        >>> from pkgcraft.atom import Cpv
+        >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
         >>> a.revision
         '2'
@@ -104,6 +107,9 @@ cdef class Cpv:
         >>> a.revision
         '0'
         >>> a = Cpv('cat/pkg-1')
+        >>> a.revision is None
+        True
+        >>> a = Atom('cat/pkg')
         >>> a.revision is None
         True
         """
@@ -116,10 +122,13 @@ cdef class Cpv:
     def p(self):
         """Get the concatenated string of an atom's package and version.
 
-        >>> from pkgcraft.atom import Cpv
+        >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
         >>> a.p
         'pkg-1'
+        >>> a = Atom('cat/pkg')
+        >>> a.p
+        'pkg'
         """
         c_str = C.pkgcraft_atom_p(self.ptr)
         s = c_str.decode()
@@ -130,7 +139,7 @@ cdef class Cpv:
     def pf(self):
         """Get the concatenated string of an atom's package, version, and revision.
 
-        >>> from pkgcraft.atom import Cpv
+        >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
         >>> a.pf
         'pkg-1-r2'
@@ -140,6 +149,9 @@ cdef class Cpv:
         >>> a = Cpv('cat/pkg-1')
         >>> a.pf
         'pkg-1'
+        >>> a = Atom('cat/pkg')
+        >>> a.pf
+        'pkg'
         """
         c_str = C.pkgcraft_atom_pf(self.ptr)
         s = c_str.decode()
@@ -150,7 +162,7 @@ cdef class Cpv:
     def pr(self):
         """Get concatenated string of an atom's revision.
 
-        >>> from pkgcraft.atom import Cpv
+        >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
         >>> a.pr
         'r2'
@@ -160,6 +172,9 @@ cdef class Cpv:
         >>> a = Cpv('cat/pkg-1')
         >>> a.pr
         'r0'
+        >>> a = Atom('cat/pkg')
+        >>> a.pr
+        ''
         """
         c_str = C.pkgcraft_atom_pr(self.ptr)
         s = c_str.decode()
@@ -170,7 +185,7 @@ cdef class Cpv:
     def pv(self):
         """Get the string for an atom's version.
 
-        >>> from pkgcraft.atom import Cpv
+        >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
         >>> a.pv
         '1'
@@ -180,6 +195,9 @@ cdef class Cpv:
         >>> a = Cpv('cat/pkg-1')
         >>> a.pv
         '1'
+        >>> a = Atom('cat/pkg')
+        >>> a.pv
+        ''
         """
         c_str = C.pkgcraft_atom_pv(self.ptr)
         s = c_str.decode()
@@ -190,7 +208,7 @@ cdef class Cpv:
     def pvr(self):
         """Get the string for an atom's version and revision.
 
-        >>> from pkgcraft.atom import Cpv
+        >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
         >>> a.pvr
         '1-r2'
@@ -200,6 +218,9 @@ cdef class Cpv:
         >>> a = Cpv('cat/pkg-1')
         >>> a.pvr
         '1'
+        >>> a = Atom('cat/pkg')
+        >>> a.pvr
+        ''
         """
         c_str = C.pkgcraft_atom_pvr(self.ptr)
         s = c_str.decode()
@@ -210,8 +231,11 @@ cdef class Cpv:
     def cpn(self):
         """Get the concatenated string of an atom's category and package.
 
-        >>> from pkgcraft.atom import Cpv
+        >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
+        >>> a.cpn
+        'cat/pkg'
+        >>> a = Atom('cat/pkg')
         >>> a.cpn
         'cat/pkg'
         """
@@ -224,10 +248,16 @@ cdef class Cpv:
     def cpv(self):
         """Get the concatenated string of an atom's category, package, and version.
 
-        >>> from pkgcraft.atom import Atom
+        >>> from pkgcraft.atom import Atom, Cpv
+        >>> a = Cpv('cat/pkg-1-r2')
+        >>> a.cpv
+        'cat/pkg-1-r2'
         >>> a = Atom('=cat/pkg-1-r2:3/4[u1,!u2?]')
         >>> a.cpv
         'cat/pkg-1-r2'
+        >>> a = Atom('cat/pkg')
+        >>> a.cpv
+        'cat/pkg'
         """
         c_str = C.pkgcraft_atom_cpv(self.ptr)
         s = c_str.decode()
