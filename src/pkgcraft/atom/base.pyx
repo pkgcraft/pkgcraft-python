@@ -574,4 +574,3 @@ cdef class Atom(Cpv):
             C.pkgcraft_str_free(c_str)
             return s
         return None
-
