@@ -257,11 +257,41 @@ cdef extern from "pkgcraft.h":
     # The atom argument should be a UTF-8 string while eapi may be NULL to use the default EAPI.
     Atom *pkgcraft_atom_new(const char *s, const Eapi *eapi)
 
+    # Return an atom's P, e.g. the atom "=cat/pkg-1-r2" has a P of "pkg-1".
+    #
+    # # Safety
+    # The argument must be a non-null Atom pointer.
+    char *pkgcraft_atom_p(Atom *atom)
+
     # Return an atom's package, e.g. the atom "=cat/pkg-1-r2" has a package of "pkg".
     #
     # # Safety
     # The argument must be a non-null Atom pointer.
     char *pkgcraft_atom_package(Atom *atom)
+
+    # Return an atom's PF, e.g. the atom "=cat/pkg-1-r2" has a PF of "pkg-1-r2".
+    #
+    # # Safety
+    # The argument must be a non-null Atom pointer.
+    char *pkgcraft_atom_pf(Atom *atom)
+
+    # Return an atom's PR, e.g. the atom "=cat/pkg-1-r2" has a PR of "r2".
+    #
+    # # Safety
+    # The argument must be a non-null Atom pointer.
+    char *pkgcraft_atom_pr(Atom *atom)
+
+    # Return an atom's PV, e.g. the atom "=cat/pkg-1-r2" has a PV of "1".
+    #
+    # # Safety
+    # The argument must be a non-null Atom pointer.
+    char *pkgcraft_atom_pv(Atom *atom)
+
+    # Return an atom's PVR, e.g. the atom "=cat/pkg-1-r2" has a PVR of "1-r2".
+    #
+    # # Safety
+    # The argument must be a non-null Atom pointer.
+    char *pkgcraft_atom_pvr(Atom *atom)
 
     # Return an atom's repo, e.g. the atom "=cat/pkg-1-r2:3/4::repo" has a repo of "repo".
     #
