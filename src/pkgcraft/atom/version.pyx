@@ -69,6 +69,42 @@ cdef class Version:
         return None
 
     @property
+    def op(self):
+        """Get a version's operator.
+
+        >>> from pkgcraft.atom import Operator, Version, VersionWithOp
+        >>> v = Version('1-r2')
+        >>> v.op is None
+        True
+        >>> v = VersionWithOp('>=1')
+        >>> v.op is Operator.GreaterOrEqual
+        True
+        >>> v.op == '>='
+        True
+        """
+        cdef int op = C.pkgcraft_version_op(self.ptr)
+        if op > 0:
+            return Operator(op)
+        return None
+
+    @property
+    def base(self):
+        """Get a version's base.
+
+        >>> from pkgcraft.atom import Version, VersionWithOp
+        >>> v = Version('1-r2')
+        >>> v.base
+        '1'
+        >>> v = VersionWithOp('>=1.2_alpha3')
+        >>> v.base
+        '1.2_alpha3'
+        """
+        c_str = C.pkgcraft_version_base(self.ptr)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
+
+    @property
     def revision(self):
         """Get a version's revision.
 
@@ -88,25 +124,6 @@ cdef class Version:
             s = c_str.decode()
             C.pkgcraft_str_free(c_str)
             return s
-        return None
-
-    @property
-    def op(self):
-        """Get a version's operator.
-
-        >>> from pkgcraft.atom import Operator, Version, VersionWithOp
-        >>> v = Version('1-r2')
-        >>> v.op is None
-        True
-        >>> v = VersionWithOp('>=1')
-        >>> v.op is Operator.GreaterOrEqual
-        True
-        >>> v.op == '>='
-        True
-        """
-        cdef int op = C.pkgcraft_version_op(self.ptr)
-        if op > 0:
-            return Operator(op)
         return None
 
     def intersects(self, Version other not None):

@@ -1391,6 +1391,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a Uri pointer.
     char *pkgcraft_uri_uri(Uri *u)
 
+    # Return a version's base, e.g. the version "1-r2" has a base of "1".
+    #
+    # # Safety
+    # The version argument should be a non-null Version pointer.
+    char *pkgcraft_version_base(Version *v)
+
     # Compare two versions returning -1, 0, or 1 if the first version is less than, equal to, or greater
     # than the second version, respectively.
     #
@@ -1441,6 +1447,8 @@ cdef extern from "pkgcraft.h":
     char *pkgcraft_version_op_str(Operator op)
 
     # Return a version's revision, e.g. the version "1-r2" has a revision of "2".
+    #
+    # Returns NULL on nonexistence.
     #
     # # Safety
     # The version argument should be a non-null Version pointer.
