@@ -25,7 +25,7 @@ class TestVersion:
     def test_creation(self):
         # no revision
         v = Version("1")
-        assert v.revision == "0"
+        assert v.revision is None
         assert str(v) == "1"
         assert repr(v).startswith("<Version '1' at 0x")
 

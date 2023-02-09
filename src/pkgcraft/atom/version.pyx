@@ -39,8 +39,8 @@ cdef class Version:
 
     Simple version
     >>> v = Version('1')
-    >>> v.revision
-    '0'
+    >>> v.revision is None
+    True
 
     Revisioned version
     >>> v = Version('1-r2')
@@ -77,13 +77,18 @@ cdef class Version:
         >>> v.revision
         '2'
         >>> v = Version('1')
+        >>> v.revision is None
+        True
+        >>> v = Version('1-r0')
         >>> v.revision
         '0'
         """
         c_str = C.pkgcraft_version_revision(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        if c_str is not NULL:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+            return s
+        return None
 
     @property
     def op(self):
@@ -177,10 +182,9 @@ cdef class Version:
 cdef class VersionWithOp(Version):
     """Atom version with an operator.
 
-    Simple version
     >>> v = VersionWithOp('=1')
-    >>> v.revision
-    '0'
+    >>> v.op == "="
+    True
 
     Missing operator
     >>> VersionWithOp('1')
