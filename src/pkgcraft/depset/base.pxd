@@ -7,7 +7,7 @@ cdef class DepSet(_IndirectInit):
     cdef C.DepSetUnit unit
 
     @staticmethod
-    cdef DepSet from_ptr(C.DepSet *)
+    cdef DepSet from_ptr(C.DepSet *, DepSet obj=*)
 
 
 cdef class PkgDep(DepSet):

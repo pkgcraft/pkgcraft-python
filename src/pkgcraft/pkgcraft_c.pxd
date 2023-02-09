@@ -509,6 +509,54 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSetIntoIterRecursive pointer.
     DepRestrict *pkgcraft_depset_into_iter_recursive_next(DepSetIntoIterRecursive *i)
 
+    # Parse a string into a License DepSet.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DepSet *pkgcraft_depset_license(const char *s)
+
+    # Parse a string into a PkgDep DepSet.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DepSet *pkgcraft_depset_pkg_dep(const char *s, const Eapi *eapi)
+
+    # Parse a string into a Properties DepSet.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DepSet *pkgcraft_depset_properties(const char *s)
+
+    # Parse a string into a RequiredUse DepSet.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DepSet *pkgcraft_depset_required_use(const char *s, const Eapi *eapi)
+
+    # Parse a string into a Restrict DepSet.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DepSet *pkgcraft_depset_restrict(const char *s)
+
+    # Parse a string into a SrcUri DepSet.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DepSet *pkgcraft_depset_src_uri(const char *s, const Eapi *eapi)
+
     # Return the formatted string for a DepSet object.
     #
     # # Safety

@@ -2,32 +2,35 @@ cimport cython
 
 from .. cimport pkgcraft_c as C
 from ..atom cimport Atom
+from ..eapi cimport eapi_from_obj
 from ..error cimport _IndirectInit
 from .deprestrict cimport DepRestrict
 
+from ..error import PkgcraftError
 
-@cython.final
+
 cdef class DepSet(_IndirectInit):
     """Dependency set of objects."""
 
     @staticmethod
-    cdef DepSet from_ptr(C.DepSet *ptr):
+    cdef DepSet from_ptr(C.DepSet *ptr, DepSet obj=None):
         if ptr is not NULL:
-            kind = ptr.kind
-            if kind == C.DEP_SET_KIND_PKG_DEP:
-                obj = <PkgDep>PkgDep.__new__(PkgDep)
-            elif kind == C.DEP_SET_KIND_RESTRICT:
-                obj = <Restrict>Restrict.__new__(Restrict)
-            elif kind == C.DEP_SET_KIND_REQUIRED_USE:
-                obj = <RequiredUse>RequiredUse.__new__(RequiredUse)
-            elif kind == C.DEP_SET_KIND_PROPERTIES:
-                obj = <Properties>Properties.__new__(Properties)
-            elif kind == C.DEP_SET_KIND_SRC_URI:
-                obj = <SrcUri>SrcUri.__new__(SrcUri)
-            elif kind == C.DEP_SET_KIND_LICENSE:
-                obj = <License>License.__new__(License)
-            else:  # pragma: no cover
-                raise TypeError(f'unknown DepSet kind: {kind}')
+            if obj is None:
+                kind = ptr.kind
+                if kind == C.DEP_SET_KIND_PKG_DEP:
+                    obj = <PkgDep>PkgDep.__new__(PkgDep)
+                elif kind == C.DEP_SET_KIND_RESTRICT:
+                    obj = <Restrict>Restrict.__new__(Restrict)
+                elif kind == C.DEP_SET_KIND_REQUIRED_USE:
+                    obj = <RequiredUse>RequiredUse.__new__(RequiredUse)
+                elif kind == C.DEP_SET_KIND_PROPERTIES:
+                    obj = <Properties>Properties.__new__(Properties)
+                elif kind == C.DEP_SET_KIND_SRC_URI:
+                    obj = <SrcUri>SrcUri.__new__(SrcUri)
+                elif kind == C.DEP_SET_KIND_LICENSE:
+                    obj = <License>License.__new__(License)
+                else:  # pragma: no cover
+                    raise TypeError(f'unknown DepSet kind: {kind}')
 
             obj.ptr = ptr
             obj.unit = ptr.unit
@@ -66,6 +69,78 @@ cdef class DepSet(_IndirectInit):
 
     def __dealloc__(self):
         C.pkgcraft_depset_free(self.ptr)
+
+
+@cython.final
+cdef class PkgDep(DepSet):
+
+    def __init__(self, str s="", eapi=None):
+        cdef const C.Eapi *eapi_ptr = NULL
+        if eapi is not None:
+            eapi_ptr = eapi_from_obj(eapi).ptr
+
+        ptr = C.pkgcraft_depset_pkg_dep(s.encode(), eapi_ptr)
+        if ptr is NULL:
+            raise PkgcraftError
+        DepSet.from_ptr(ptr, self)
+
+
+@cython.final
+cdef class Restrict(DepSet):
+
+    def __init__(self, str s=""):
+        ptr = C.pkgcraft_depset_restrict(s.encode())
+        if ptr is NULL:
+            raise PkgcraftError
+        DepSet.from_ptr(ptr, self)
+
+
+@cython.final
+cdef class RequiredUse(DepSet):
+
+    def __init__(self, str s="", eapi=None):
+        cdef const C.Eapi *eapi_ptr = NULL
+        if eapi is not None:
+            eapi_ptr = eapi_from_obj(eapi).ptr
+
+        ptr = C.pkgcraft_depset_required_use(s.encode(), eapi_ptr)
+        if ptr is NULL:
+            raise PkgcraftError
+        DepSet.from_ptr(ptr, self)
+
+
+@cython.final
+cdef class Properties(DepSet):
+
+    def __init__(self, str s=""):
+        ptr = C.pkgcraft_depset_properties(s.encode())
+        if ptr is NULL:
+            raise PkgcraftError
+        DepSet.from_ptr(ptr, self)
+
+
+@cython.final
+cdef class SrcUri(DepSet):
+
+    def __init__(self, str s="", eapi=None):
+        cdef const C.Eapi *eapi_ptr = NULL
+        if eapi is not None:
+            eapi_ptr = eapi_from_obj(eapi).ptr
+
+        ptr = C.pkgcraft_depset_src_uri(s.encode(), eapi_ptr)
+        if ptr is NULL:
+            raise PkgcraftError
+        DepSet.from_ptr(ptr, self)
+
+
+@cython.final
+cdef class License(DepSet):
+
+    def __init__(self, str s=""):
+        ptr = C.pkgcraft_depset_license(s.encode())
+        if ptr is NULL:
+            raise PkgcraftError
+        DepSet.from_ptr(ptr, self)
 
 
 cdef class _IntoIter:
