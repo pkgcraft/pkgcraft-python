@@ -29,7 +29,9 @@ cdef class Pkg(_IndirectInit):
     @property
     def cpv(self):
         """Get a package's CPV."""
-        return Cpv.from_ptr(C.pkgcraft_pkg_cpv(self.ptr))
+        if self._cpv is None:
+            self._cpv = Cpv.from_ptr(C.pkgcraft_pkg_cpv(self.ptr))
+        return self._cpv
 
     @property
     def eapi(self):
@@ -47,8 +49,9 @@ cdef class Pkg(_IndirectInit):
     @property
     def version(self):
         """Get a package's version."""
-        ptr = C.pkgcraft_pkg_version(self.ptr)
-        return Version.from_ptr(ptr)
+        if self._version is None:
+            self._version = Version.from_ptr(C.pkgcraft_pkg_version(self.ptr))
+        return self._version
 
     def matches(self, Restrict r not None):
         """Determine if a restriction matches a package."""
