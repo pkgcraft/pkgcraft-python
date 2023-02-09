@@ -4,7 +4,7 @@ from ..error cimport _IndirectInit
 
 cdef class DepRestrict(_IndirectInit):
     cdef C.DepRestrict *ptr
-    cdef C.DepSetKind kind
+    cdef C.DepSetUnit unit
 
     @staticmethod
     cdef DepRestrict from_ptr(C.DepRestrict *)

@@ -7,7 +7,7 @@ class TestDepSet:
     def test_attrs(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="a/b")
         assert str(pkg.depend) == "a/b"
-        assert repr(pkg.depend).startswith("<DepSet 'a/b' at 0x")
+        assert repr(pkg.depend).startswith("<PkgDep 'a/b' at 0x")
 
     def test_eq_and_hash(self, ebuild_repo):
         # ordering that doesn't matter for equivalence and hashing

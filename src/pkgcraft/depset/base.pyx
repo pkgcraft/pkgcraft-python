@@ -13,9 +13,24 @@ cdef class DepSet(_IndirectInit):
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *ptr):
         if ptr is not NULL:
-            obj = <DepSet>DepSet.__new__(DepSet)
+            kind = ptr.kind
+            if kind == C.DEP_SET_KIND_PKG_DEP:
+                obj = <PkgDep>PkgDep.__new__(PkgDep)
+            elif kind == C.DEP_SET_KIND_RESTRICT:
+                obj = <Restrict>Restrict.__new__(Restrict)
+            elif kind == C.DEP_SET_KIND_REQUIRED_USE:
+                obj = <RequiredUse>RequiredUse.__new__(RequiredUse)
+            elif kind == C.DEP_SET_KIND_PROPERTIES:
+                obj = <Properties>Properties.__new__(Properties)
+            elif kind == C.DEP_SET_KIND_SRC_URI:
+                obj = <SrcUri>SrcUri.__new__(SrcUri)
+            elif kind == C.DEP_SET_KIND_LICENSE:
+                obj = <License>License.__new__(License)
+            else:  # pragma: no cover
+                raise TypeError(f'unknown DepSet kind: {kind}')
+
             obj.ptr = ptr
-            obj.kind = ptr.kind
+            obj.unit = ptr.unit
             return obj
         return None
 
@@ -58,7 +73,7 @@ cdef class _IntoIter:
 
     def __cinit__(self, DepSet d not None):
         self.ptr = C.pkgcraft_depset_into_iter(d.ptr)
-        self.kind = d.kind
+        self.unit = d.unit
 
     def __iter__(self):
         return self
@@ -80,11 +95,11 @@ cdef class _IntoIterFlatten:
         if isinstance(obj, DepSet):
             deps = <DepSet>obj
             self.ptr = C.pkgcraft_depset_into_iter_flatten(deps.ptr)
-            self.kind = deps.kind
+            self.unit = deps.unit
         elif isinstance(obj, DepRestrict):
             dep = <DepRestrict>obj
             self.ptr = C.pkgcraft_deprestrict_into_iter_flatten(dep.ptr)
-            self.kind = dep.kind
+            self.unit = dep.unit
         else:  # pragma: no cover
             raise TypeError(f"{obj.__class__.__name__!r} unsupported depset type")
 
@@ -94,17 +109,17 @@ cdef class _IntoIterFlatten:
     def __next__(self):
         ptr = C.pkgcraft_depset_into_iter_flatten_next(self.ptr)
         if ptr is not NULL:
-            if self.kind == C.DEP_SET_KIND_ATOM:
+            if self.unit == C.DEP_SET_UNIT_ATOM:
                 return Atom.from_ptr(<C.Atom *>ptr)
-            elif self.kind == C.DEP_SET_KIND_STRING:
+            elif self.unit == C.DEP_SET_UNIT_STRING:
                 c_str = <char *>ptr
                 s = c_str.decode()
                 C.pkgcraft_str_free(c_str)
                 return s
-            elif self.kind == C.DEP_SET_KIND_URI:
+            elif self.unit == C.DEP_SET_UNIT_URI:
                 return Uri.from_ptr(<C.Uri *>ptr)
             else:  # pragma: no cover
-                raise TypeError(f'unknown DepSet kind: {self.kind}')
+                raise TypeError(f'unknown DepSet unit: {self.unit}')
         raise StopIteration
 
     def __dealloc__(self):
@@ -118,11 +133,11 @@ cdef class _IntoIterRecursive:
         if isinstance(obj, DepSet):
             deps = <DepSet>obj
             self.ptr = C.pkgcraft_depset_into_iter_recursive(deps.ptr)
-            self.kind = deps.kind
+            self.unit = deps.unit
         elif isinstance(obj, DepRestrict):
             dep = <DepRestrict>obj
             self.ptr = C.pkgcraft_deprestrict_into_iter_recursive(dep.ptr)
-            self.kind = dep.kind
+            self.unit = dep.unit
         else:  # pragma: no cover
             raise TypeError(f"{obj.__class__.__name__!r} unsupported depset type")
 

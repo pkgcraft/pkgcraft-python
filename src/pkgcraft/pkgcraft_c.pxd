@@ -13,6 +13,7 @@ cdef extern from "pkgcraft.h":
         BLOCKER_STRONG,
         BLOCKER_WEAK,
 
+    # DepRestrict variants.
     cdef enum DepKind:
         DEP_KIND_ENABLED,
         DEP_KIND_DISABLED,
@@ -23,10 +24,20 @@ cdef extern from "pkgcraft.h":
         DEP_KIND_USE_ENABLED,
         DEP_KIND_USE_DISABLED,
 
+    # DepSet variants.
     cdef enum DepSetKind:
-        DEP_SET_KIND_ATOM,
-        DEP_SET_KIND_STRING,
-        DEP_SET_KIND_URI,
+        DEP_SET_KIND_PKG_DEP,
+        DEP_SET_KIND_RESTRICT,
+        DEP_SET_KIND_REQUIRED_USE,
+        DEP_SET_KIND_PROPERTIES,
+        DEP_SET_KIND_SRC_URI,
+        DEP_SET_KIND_LICENSE,
+
+    # DepSet flattened unit variants.
+    cdef enum DepSetUnit:
+        DEP_SET_UNIT_ATOM,
+        DEP_SET_UNIT_STRING,
+        DEP_SET_UNIT_URI,
 
     cdef enum ErrorKind:
         ERROR_KIND_GENERIC,
@@ -89,12 +100,15 @@ cdef extern from "pkgcraft.h":
     cdef struct DepRestrictW:
         pass
 
+    # Opaque wrapper for DepSet iterators.
     cdef struct DepSetIntoIter:
         pass
 
+    # Opaque wrapper for flattened DepSet iterators.
     cdef struct DepSetIntoIterFlatten:
         pass
 
+    # Opaque wrapper for recursive DepSet iterators.
     cdef struct DepSetIntoIterRecursive:
         pass
 
@@ -141,12 +155,15 @@ cdef extern from "pkgcraft.h":
     cdef struct Version:
         pass
 
+    # C-compatible wrapper for DepRestrict objects.
     cdef struct DepRestrict:
-        DepSetKind kind
-        DepKind kind_dep
+        DepSetUnit unit
+        DepKind kind
         DepRestrictW *dep
 
+    # C-compatible wrapper for DepSet objects.
     cdef struct DepSet:
+        DepSetUnit unit
         DepSetKind kind
         DepSetW *dep
 
@@ -689,6 +706,8 @@ cdef extern from "pkgcraft.h":
     DepSet *pkgcraft_pkg_ebuild_depend(Pkg *p)
 
     # Return a package's dependencies for a given set of descriptors.
+    #
+    # Returns NULL on error.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.

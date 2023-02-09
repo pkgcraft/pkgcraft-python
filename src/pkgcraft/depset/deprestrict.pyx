@@ -12,7 +12,7 @@ cdef class DepRestrict(_IndirectInit):
     @staticmethod
     cdef DepRestrict from_ptr(C.DepRestrict *ptr):
         """Create a DepRestrict from a pointer and type."""
-        kind = ptr.kind_dep
+        kind = ptr.kind
         if kind == C.DEP_KIND_ENABLED:
             obj = <Enabled>Enabled.__new__(Enabled)
         elif kind == C.DEP_KIND_DISABLED:
@@ -33,7 +33,7 @@ cdef class DepRestrict(_IndirectInit):
             raise TypeError(f'unknown DepRestrict kind: {kind}')
 
         obj.ptr = ptr
-        obj.kind = ptr.kind
+        obj.unit = ptr.unit
         return obj
 
     def iter_flatten(self):
