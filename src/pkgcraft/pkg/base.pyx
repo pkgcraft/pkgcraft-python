@@ -29,36 +29,36 @@ cdef class Pkg(_IndirectInit):
     @property
     def p(self):
         """Get a package's package and version."""
-        return self._cpv.p
+        return self.cpv.p
 
     @property
     def pf(self):
         """Get a package's package, version, and revision."""
-        return self._cpv.pf
+        return self.cpv.pf
 
     @property
     def pr(self):
         """Get a package's revision or "r0" if no revision exists."""
-        return self._cpv.pr
+        return self.cpv.pr
 
     @property
     def pv(self):
         """Get a package's version."""
-        return self._cpv.pv
+        return self.cpv.pv
 
     @property
     def pvr(self):
         """Get a package's version and revision."""
-        return self._cpv.pvr
+        return self.cpv.pvr
 
     @property
     def cpn(self):
         """Get a package's category and package."""
-        return self._cpv.cpn
+        return self.cpv.cpn
 
     @property
     def cpv(self):
-        """Get a package's category, package, and version."""
+        """Get a package's Cpv object."""
         if self._cpv is None:
             self._cpv = Cpv.from_ptr(C.pkgcraft_pkg_cpv(self.ptr))
         return self._cpv

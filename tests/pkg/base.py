@@ -8,8 +8,15 @@ from ..misc import OperatorMap
 
 
 class BasePkgTests:
-    def test_atom_base(self, pkg):
-        assert pkg.cpv == Cpv("cat/pkg-1")
+    def test_atom_base(self, repo):
+        pkg = repo.create_pkg("cat/pkg-1-r2")
+        assert pkg.p == "pkg-1"
+        assert pkg.pf == "pkg-1-r2"
+        assert pkg.pr == "r2"
+        assert pkg.pv == "1"
+        assert pkg.pvr == "1-r2"
+        assert pkg.cpn == "cat/pkg"
+        assert pkg.cpv == Cpv("cat/pkg-1-r2")
 
     def test_eapi_base(self, pkg):
         assert pkg.eapi is EAPI_LATEST
