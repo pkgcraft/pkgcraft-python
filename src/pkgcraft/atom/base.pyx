@@ -173,13 +173,15 @@ cdef class Cpv:
         >>> a.pr
         'r0'
         >>> a = Atom('cat/pkg')
-        >>> a.pr
-        ''
+        >>> a.pr is None
+        True
         """
         c_str = C.pkgcraft_atom_pr(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        if c_str is not NULL:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+            return s
+        return None
 
     @property
     def pv(self):
@@ -196,13 +198,15 @@ cdef class Cpv:
         >>> a.pv
         '1'
         >>> a = Atom('cat/pkg')
-        >>> a.pv
-        ''
+        >>> a.pv is None
+        True
         """
         c_str = C.pkgcraft_atom_pv(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        if c_str is not NULL:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+            return s
+        return None
 
     @property
     def pvr(self):
@@ -219,13 +223,15 @@ cdef class Cpv:
         >>> a.pvr
         '1'
         >>> a = Atom('cat/pkg')
-        >>> a.pvr
-        ''
+        >>> a.pvr is None
+        True
         """
         c_str = C.pkgcraft_atom_pvr(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        if c_str is not NULL:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+            return s
+        return None
 
     @property
     def cpn(self):
