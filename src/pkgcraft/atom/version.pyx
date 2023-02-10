@@ -179,7 +179,8 @@ cdef class Version:
 
     def __repr__(self):
         addr = <size_t>&self.ptr
-        return f"<Version '{self}' at 0x{addr:0x}>"
+        name = self.__class__.__name__
+        return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
         if not self._hash:

@@ -25,18 +25,24 @@ class TestVersion:
     def test_creation(self):
         # no revision
         v = Version("1")
+        assert v.op is None
+        assert v.base == "1"
         assert v.revision is None
         assert str(v) == "1"
         assert repr(v).startswith("<Version '1' at 0x")
 
         # revisioned
         v = Version("1-r1")
+        assert v.op is None
+        assert v.base == "1"
         assert v.revision == "1"
         assert str(v) == "1-r1"
         assert repr(v).startswith("<Version '1-r1' at 0x")
 
         # explicit '0' revision
         v = Version("1-r0")
+        assert v.op is None
+        assert v.base == "1"
         assert v.revision == "0"
         assert str(v) == "1-r0"
         assert repr(v).startswith("<Version '1-r0' at 0x")
@@ -115,6 +121,23 @@ class TestVersion:
 
 
 class TestVersionWithOp:
+    def test_creation(self):
+        # no revision
+        v = VersionWithOp("<1_alpha")
+        assert v.op == "<"
+        assert v.base == "1_alpha"
+        assert v.revision is None
+        assert str(v) == "<1_alpha"
+        assert repr(v).startswith("<VersionWithOp '<1_alpha' at 0x")
+
+        # revisioned
+        v = VersionWithOp(">=1_beta2-r3")
+        assert v.op == ">="
+        assert v.base == "1_beta2"
+        assert v.revision == "3"
+        assert str(v) == ">=1_beta2-r3"
+        assert repr(v).startswith("<VersionWithOp '>=1_beta2-r3' at 0x")
+
     def test_invalid(self):
         for s in ("1-r2",):
             with pytest.raises(InvalidVersion, match=f"invalid version: {s}"):
