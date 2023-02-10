@@ -20,7 +20,13 @@ class TestCpv:
         assert a.package == "pkg"
         assert a.version == Version("1-r2")
         assert a.revision == "2"
+        assert a.p == "pkg-1"
+        assert a.pf == "pkg-1-r2"
+        assert a.pr == "r2"
+        assert a.pv == "1"
+        assert a.pvr == "1-r2"
         assert a.cpn == "cat/pkg"
+        assert a.cpv == "cat/pkg-1-r2"
         assert str(a) == "cat/pkg-1-r2"
         assert repr(a).startswith("<Cpv 'cat/pkg-1-r2' at 0x")
 
@@ -74,6 +80,11 @@ class TestAtom:
         assert a.repo is None
         assert a.version is None
         assert a.revision is None
+        assert a.p == "pkg"
+        assert a.pf == "pkg"
+        assert a.pr is None
+        assert a.pv is None
+        assert a.pvr is None
         assert a.cpn == "cat/pkg"
         assert a.cpv == "cat/pkg"
         assert str(a) == "cat/pkg"
@@ -95,6 +106,11 @@ class TestAtom:
         assert a.op == Operator.GreaterOrEqual
         assert a.op == ">="
         assert a.revision == "2"
+        assert a.p == "pkg-1"
+        assert a.pf == "pkg-1-r2"
+        assert a.pr == "r2"
+        assert a.pv == "1"
+        assert a.pvr == "1-r2"
         assert a.cpn == "cat/pkg"
         assert a.cpv == "cat/pkg-1-r2"
         assert str(a) == "!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo"
