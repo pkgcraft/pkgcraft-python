@@ -120,7 +120,7 @@ cdef class Cpv:
 
     @property
     def p(self):
-        """Get the concatenated string of an atom's package and version.
+        """Get an atom's package and version.
 
         >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
@@ -137,7 +137,7 @@ cdef class Cpv:
 
     @property
     def pf(self):
-        """Get the concatenated string of an atom's package, version, and revision.
+        """Get an atom's package, version, and revision.
 
         >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
@@ -160,7 +160,7 @@ cdef class Cpv:
 
     @property
     def pr(self):
-        """Get concatenated string of an atom's revision.
+        """Get an atom's revision.
 
         >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
@@ -185,7 +185,7 @@ cdef class Cpv:
 
     @property
     def pv(self):
-        """Get the string for an atom's version.
+        """Get an atom's version.
 
         >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
@@ -210,7 +210,7 @@ cdef class Cpv:
 
     @property
     def pvr(self):
-        """Get the string for an atom's version and revision.
+        """Get an atom's version and revision.
 
         >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
@@ -235,7 +235,7 @@ cdef class Cpv:
 
     @property
     def cpn(self):
-        """Get the concatenated string of an atom's category and package.
+        """Get an atom's category and package.
 
         >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')
@@ -252,7 +252,7 @@ cdef class Cpv:
 
     @property
     def cpv(self):
-        """Get the concatenated string of an atom's category, package, and version.
+        """Get an atom's category, package, and version.
 
         >>> from pkgcraft.atom import Atom, Cpv
         >>> a = Cpv('cat/pkg-1-r2')

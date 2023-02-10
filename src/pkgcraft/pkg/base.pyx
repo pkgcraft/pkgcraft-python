@@ -28,7 +28,7 @@ cdef class Pkg(_IndirectInit):
 
     @property
     def cpv(self):
-        """Get a package's CPV."""
+        """Get a package's category, package, and version."""
         if self._cpv is None:
             self._cpv = Cpv.from_ptr(C.pkgcraft_pkg_cpv(self.ptr))
         return self._cpv
