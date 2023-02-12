@@ -3,7 +3,7 @@ import pickle
 
 import pytest
 
-from pkgcraft.atom import Operator, Version, VersionWithOp
+from pkgcraft.dep import Operator, Version, VersionWithOp
 from pkgcraft.error import InvalidVersion
 
 from ..misc import OperatorIterMap, OperatorMap

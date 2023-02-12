@@ -47,7 +47,7 @@ class TestFakeRepo(BaseRepoTests):
             FakeRepo("/path/to/nonexistent/repo")
 
         # empty repo
-        path = tmp_path / "atoms"
+        path = tmp_path / "pkgs"
         path.touch()
         r = FakeRepo(path)
         assert len(r) == 0

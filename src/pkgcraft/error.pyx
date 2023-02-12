@@ -74,13 +74,13 @@ class InvalidCpv(PkgcraftError, ValueError):
     kinds = ()
 
 
-class InvalidAtom(PkgcraftError, ValueError):
-    """Package atom doesn't meet required specifications."""
+class InvalidPkgDep(PkgcraftError, ValueError):
+    """Package dependency doesn't meet required specifications."""
     kinds = ()
 
 
 class InvalidVersion(PkgcraftError, ValueError):
-    """Atom version doesn't meet required specifications."""
+    """Package version doesn't meet required specifications."""
     kinds = ()
 
 

@@ -1,7 +1,7 @@
 import pytest
 
-from pkgcraft.atom import Atom, Cpv
 from pkgcraft.config import Config
+from pkgcraft.dep import Cpv, PkgDep
 from pkgcraft.error import InvalidRestrict
 from pkgcraft.repo import RepoSet
 
@@ -119,18 +119,18 @@ class TestRepoSet:
         # Cpv objects
         assert Cpv("cat/pkg-1") in s
         assert Cpv("cat/pkg-2") not in s
-        # Atom strings
+        # dep strings
         assert "cat/pkg" in s
         assert "cat/pkg2" not in s
         assert "=cat/pkg-1" in s
         assert "=cat/pkg-2" not in s
-        # Atom objects
-        assert Atom("=cat/pkg-1") in s
-        assert Atom("=cat/pkg-2") not in s
+        # PkgDep objects
+        assert PkgDep("=cat/pkg-1") in s
+        assert PkgDep("=cat/pkg-2") not in s
         # Pkg objects
         assert pkg1 in s
         assert pkg2 in s
-        # Pkg atoms
+        # Cpv objects
         assert pkg1.cpv in s
         assert pkg2.cpv in s
         # Repo objects

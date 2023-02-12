@@ -3,24 +3,24 @@ from .eapi cimport eapi_from_obj
 from .error import PkgcraftError
 
 
-def atom(str s not None, eapi=None):
-    """Parse an atom string.
+def pkgdep(str s not None, eapi=None):
+    """Parse a package dependency string.
 
     >>> from pkgcraft import parse
-    >>> parse.atom('=cat/pkg-1')
+    >>> parse.pkgdep('=cat/pkg-1')
     True
     """
     cdef const C.Eapi *eapi_ptr = NULL
     if eapi is not None:
         eapi_ptr = eapi_from_obj(eapi).ptr
 
-    if C.pkgcraft_parse_atom(s.encode(), eapi_ptr) is NULL:
+    if C.pkgcraft_parse_pkgdep(s.encode(), eapi_ptr) is NULL:
         raise PkgcraftError
     return True
 
 
 def category(str s not None):
-    """Parse an atom category string.
+    """Parse a category string.
 
     >>> from pkgcraft import parse
     >>> parse.category('cat')
@@ -32,7 +32,7 @@ def category(str s not None):
 
 
 def package(str s not None):
-    """Parse an atom package string.
+    """Parse a package name string.
 
     >>> from pkgcraft import parse
     >>> parse.package('pkg')
@@ -44,7 +44,7 @@ def package(str s not None):
 
 
 def version(str s not None):
-    """Parse an atom version string.
+    """Parse a version string.
 
     >>> from pkgcraft import parse
     >>> parse.version('1-r2')
@@ -56,7 +56,7 @@ def version(str s not None):
 
 
 def repo(str s not None):
-    """Parse an atom repo string.
+    """Parse a repo string.
 
     >>> from pkgcraft import parse
     >>> parse.repo('repo')
@@ -68,7 +68,7 @@ def repo(str s not None):
 
 
 def cpv(str s not None):
-    """Parse an atom cpv string.
+    """Parse a package CPV string.
 
     >>> from pkgcraft import parse
     >>> parse.cpv('cat/pkg-1')

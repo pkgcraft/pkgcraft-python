@@ -4,13 +4,13 @@ from ..error cimport _IndirectInit
 
 cdef class DepSet(_IndirectInit):
     cdef C.DepSet *ptr
-    cdef C.DepSetUnit unit
+    cdef C.DepUnit unit
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *, DepSet obj=*)
 
 
-cdef class PkgDep(DepSet):
+cdef class Dependencies(DepSet):
     pass
 
 
@@ -36,17 +36,17 @@ cdef class License(DepSet):
 
 cdef class _IntoIter:
     cdef C.DepSetIntoIter *ptr
-    cdef C.DepSetUnit unit
+    cdef C.DepUnit unit
 
 
 cdef class _IntoIterFlatten:
     cdef C.DepSetIntoIterFlatten *ptr
-    cdef C.DepSetUnit unit
+    cdef C.DepUnit unit
 
 
 cdef class _IntoIterRecursive:
     cdef C.DepSetIntoIterRecursive *ptr
-    cdef C.DepSetUnit unit
+    cdef C.DepUnit unit
 
 
 cdef class Uri(_IndirectInit):

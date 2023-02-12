@@ -3,7 +3,7 @@ import textwrap
 
 import pytest
 
-from pkgcraft.atom import Atom
+from pkgcraft.dep import PkgDep
 from pkgcraft.eapi import EAPIS
 from pkgcraft.error import PkgcraftError
 
@@ -79,7 +79,7 @@ class TestEbuildPkg(BasePkgTests):
         deps = pkg.dependencies()
         assert str(deps) == "cat/pkg"
         assert list(iter(deps)) == list(iter(iter(deps)))
-        assert list(deps.iter_flatten()) == [Atom("cat/pkg")]
+        assert list(deps.iter_flatten()) == [PkgDep("cat/pkg")]
         assert list(map(str, deps.iter_recursive())) == ["cat/pkg"]
 
         # multiple types -- output in lexical attr name order
@@ -87,14 +87,14 @@ class TestEbuildPkg(BasePkgTests):
         deps = pkg.dependencies()
         assert str(deps) == "a/b u? ( cat/pkg )"
         assert list(iter(deps)) == list(iter(iter(deps)))
-        assert list(deps.iter_flatten()) == [Atom("a/b"), Atom("cat/pkg")]
+        assert list(deps.iter_flatten()) == [PkgDep("a/b"), PkgDep("cat/pkg")]
         assert list(map(str, deps.iter_recursive())) == ["a/b", "u? ( cat/pkg )", "cat/pkg"]
 
         # filter by type
         deps = pkg.dependencies("bdepend")
         assert str(deps) == "a/b"
         assert list(iter(deps)) == list(iter(iter(deps)))
-        assert list(deps.iter_flatten()) == [Atom("a/b")]
+        assert list(deps.iter_flatten()) == [PkgDep("a/b")]
         assert list(map(str, deps.iter_recursive())) == ["a/b"]
 
         # multiple types with overlapping deps
@@ -103,7 +103,7 @@ class TestEbuildPkg(BasePkgTests):
         assert deps == pkg.dependencies("depend", "bdepend")
         assert str(deps) == "u? ( cat/pkg )"
         assert list(iter(deps)) == list(iter(iter(deps)))
-        assert list(deps.iter_flatten()) == [Atom("cat/pkg")]
+        assert list(deps.iter_flatten()) == [PkgDep("cat/pkg")]
         assert list(map(str, deps.iter_recursive())) == ["u? ( cat/pkg )", "cat/pkg"]
 
         # uppercase and lowercase keys work the same
@@ -121,14 +121,14 @@ class TestEbuildPkg(BasePkgTests):
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: "cat/pkg"})
             val = getattr(pkg, attr)
             assert str(val) == "cat/pkg"
-            assert list(val.iter_flatten()) == [Atom("cat/pkg")]
+            assert list(val.iter_flatten()) == [PkgDep("cat/pkg")]
             assert list(map(str, val.iter_recursive())) == ["cat/pkg"]
             assert list(map(str, val)) == ["cat/pkg"]
 
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: "u? ( cat/pkg ) || ( a/b c/d )"})
             val = getattr(pkg, attr)
             assert str(val) == "u? ( cat/pkg ) || ( a/b c/d )"
-            assert list(val.iter_flatten()) == [Atom("cat/pkg"), Atom("a/b"), Atom("c/d")]
+            assert list(val.iter_flatten()) == [PkgDep("cat/pkg"), PkgDep("a/b"), PkgDep("c/d")]
             assert list(map(str, val.iter_recursive())) == [
                 "u? ( cat/pkg )",
                 "cat/pkg",
@@ -139,18 +139,18 @@ class TestEbuildPkg(BasePkgTests):
             dep_restricts = list(val)
             assert list(map(str, dep_restricts)) == ["u? ( cat/pkg )", "|| ( a/b c/d )"]
             dep_restrict = dep_restricts[1]
-            assert list(dep_restrict.iter_flatten()) == [Atom("a/b"), Atom("c/d")]
+            assert list(dep_restrict.iter_flatten()) == [PkgDep("a/b"), PkgDep("c/d")]
             assert list(map(str, dep_restrict.iter_recursive())) == ["|| ( a/b c/d )", "a/b", "c/d"]
 
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: "u? ( a/b ) c/d"})
             val = getattr(pkg, attr)
             assert str(val) == "u? ( a/b ) c/d"
-            assert list(val.iter_flatten()) == [Atom("a/b"), Atom("c/d")]
+            assert list(val.iter_flatten()) == [PkgDep("a/b"), PkgDep("c/d")]
             assert list(map(str, val.iter_recursive())) == ["u? ( a/b )", "a/b", "c/d"]
             dep_restricts = list(val)
             assert list(map(str, dep_restricts)) == ["u? ( a/b )", "c/d"]
             dep_restrict = dep_restricts[1]
-            assert list(dep_restrict.iter_flatten()) == [Atom("c/d")]
+            assert list(dep_restrict.iter_flatten()) == [PkgDep("c/d")]
             assert list(map(str, dep_restrict.iter_recursive())) == ["c/d"]
 
     def test_license(self, ebuild_repo):

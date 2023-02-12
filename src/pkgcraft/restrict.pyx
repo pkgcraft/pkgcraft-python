@@ -1,10 +1,10 @@
 cimport cython
 
 from . cimport pkgcraft_c as C
-from .atom cimport Atom, Cpv
+from .dep cimport Cpv, PkgDep
 from .pkg cimport Pkg
 
-from .error import InvalidAtom, InvalidCpv, InvalidRestrict
+from .error import InvalidCpv, InvalidPkgDep, InvalidRestrict
 
 
 cdef C.Restrict *str_to_restrict(str s) except NULL:
@@ -12,13 +12,13 @@ cdef C.Restrict *str_to_restrict(str s) except NULL:
     cdef C.Restrict *r
 
     try:
-        return C.pkgcraft_atom_restrict(Cpv(s).ptr)
+        return C.pkgcraft_pkgdep_restrict(Cpv(s).ptr)
     except InvalidCpv:
         pass
 
     try:
-        return C.pkgcraft_atom_restrict(Atom(s).ptr)
-    except InvalidAtom:
+        return C.pkgcraft_pkgdep_restrict(PkgDep(s).ptr)
+    except InvalidPkgDep:
         pass
 
     restrict_bytes = s.encode()
@@ -34,7 +34,7 @@ cdef C.Restrict *str_to_restrict(str s) except NULL:
 cdef C.Restrict *obj_to_restrict(object obj) except NULL:
     """Try to convert an object to a restriction pointer."""
     if isinstance(obj, Cpv):
-        return C.pkgcraft_atom_restrict((<Cpv>obj).ptr)
+        return C.pkgcraft_pkgdep_restrict((<Cpv>obj).ptr)
     elif isinstance(obj, Pkg):
         return C.pkgcraft_pkg_restrict((<Pkg>obj).ptr)
     elif isinstance(obj, str):
@@ -81,7 +81,7 @@ cdef class Restrict:
         Raises TypeError for object types not supporting matches.
         """
         if isinstance(obj, Cpv):
-            return C.pkgcraft_atom_restrict_matches((<Cpv>obj).ptr, self.ptr)
+            return C.pkgcraft_pkgdep_restrict_matches((<Cpv>obj).ptr, self.ptr)
         elif isinstance(obj, Pkg):
             return C.pkgcraft_pkg_restrict_matches((<Pkg>obj).ptr, self.ptr)
         raise TypeError(f"{obj.__class__.__name__!r} unsupported restriction matches type")

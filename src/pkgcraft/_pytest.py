@@ -7,8 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from pkgcraft.atom import Cpv
 from pkgcraft.config import Config
+from pkgcraft.dep import Cpv
 from pkgcraft.eapi import EAPI_LATEST
 from pkgcraft.repo import EbuildRepo, FakeRepo
 from pkgcraft.set import OrderedSet

@@ -1,6 +1,6 @@
 import pytest
 
-from pkgcraft.atom import Cpv, Version
+from pkgcraft.dep import Cpv, Version
 from pkgcraft.eapi import EAPI_LATEST
 from pkgcraft.restrict import Restrict
 
@@ -8,7 +8,7 @@ from ..misc import OperatorMap
 
 
 class BasePkgTests:
-    def test_atom_base(self, repo):
+    def test_cpv_base(self, repo):
         pkg = repo.create_pkg("cat/pkg-1-r2")
         assert pkg.p == "pkg-1"
         assert pkg.pf == "pkg-1-r2"

@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from .. cimport pkgcraft_c as C
-from ..atom cimport Cpv
+from ..dep cimport Cpv
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport EbuildRepo, FakeRepo

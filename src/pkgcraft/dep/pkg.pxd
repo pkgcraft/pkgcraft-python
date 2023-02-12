@@ -2,7 +2,7 @@ from .. cimport pkgcraft_c as C
 
 
 cdef class Cpv:
-    cdef C.Atom *ptr
+    cdef C.PkgDep *ptr
     # cached fields
     cdef str _category
     cdef str _package
@@ -10,12 +10,12 @@ cdef class Cpv:
     cdef int _hash
 
     @staticmethod
-    cdef Cpv from_ptr(C.Atom *)
+    cdef Cpv from_ptr(C.PkgDep *)
 
 
-cdef class Atom(Cpv):
+cdef class PkgDep(Cpv):
     # cached fields
     cdef object _use
 
     @staticmethod
-    cdef Atom from_ptr(C.Atom *)
+    cdef PkgDep from_ptr(C.PkgDep *)

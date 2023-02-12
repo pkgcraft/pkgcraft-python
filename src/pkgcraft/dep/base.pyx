@@ -2,16 +2,16 @@ cimport cython
 
 from .. cimport pkgcraft_c as C
 from ..error cimport _IndirectInit
-from .base cimport _IntoIterFlatten, _IntoIterRecursive
+from .set cimport _IntoIterFlatten, _IntoIterRecursive
 
 
 @cython.final
-cdef class DepRestrict(_IndirectInit):
+cdef class Dep(_IndirectInit):
     """Dependency restriction."""
 
     @staticmethod
-    cdef DepRestrict from_ptr(C.DepRestrict *ptr):
-        """Create a DepRestrict from a pointer and type."""
+    cdef Dep from_ptr(C.Dep *ptr):
+        """Create a Dep from a pointer and type."""
         kind = ptr.kind
         if kind == C.DEP_KIND_ENABLED:
             obj = <Enabled>Enabled.__new__(Enabled)
@@ -30,7 +30,7 @@ cdef class DepRestrict(_IndirectInit):
         elif kind == C.DEP_KIND_USE_DISABLED:
             obj = <UseDisabled>UseDisabled.__new__(UseDisabled)
         else:  # pragma: no cover
-            raise TypeError(f'unknown DepRestrict kind: {kind}')
+            raise TypeError(f'unknown Dep kind: {kind}')
 
         obj.ptr = ptr
         obj.unit = ptr.unit
@@ -40,44 +40,44 @@ cdef class DepRestrict(_IndirectInit):
         yield from _IntoIterFlatten(self)
 
     def iter_recursive(self):
-        """Recursively iterate over all DepRestrict objects of a DepRestrict."""
+        """Recursively iterate over all Dep objects of a Dep."""
         yield from _IntoIterRecursive(self)
 
     def __lt__(self, other):
-        if isinstance(other, DepRestrict):
-            return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) == -1
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_cmp(self.ptr, (<Dep>other).ptr) == -1
         return NotImplemented
 
     def __le__(self, other):
-        if isinstance(other, DepRestrict):
-            return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) <= 0
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_cmp(self.ptr, (<Dep>other).ptr) <= 0
         return NotImplemented
 
     def __eq__(self, other):
-        if isinstance(other, DepRestrict):
-            return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) == 0
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_cmp(self.ptr, (<Dep>other).ptr) == 0
         return NotImplemented
 
     def __ne__(self, other):
-        if isinstance(other, DepRestrict):
-            return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) != 0
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_cmp(self.ptr, (<Dep>other).ptr) != 0
         return NotImplemented
 
     def __ge__(self, other):
-        if isinstance(other, DepRestrict):
-            return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) >= 0
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_cmp(self.ptr, (<Dep>other).ptr) >= 0
         return NotImplemented
 
     def __gt__(self, other):
-        if isinstance(other, DepRestrict):
-            return C.pkgcraft_deprestrict_cmp(self.ptr, (<DepRestrict>other).ptr) == 1
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_cmp(self.ptr, (<Dep>other).ptr) == 1
         return NotImplemented
 
     def __hash__(self):
-        return C.pkgcraft_deprestrict_hash(self.ptr)
+        return C.pkgcraft_dep_hash(self.ptr)
 
     def __str__(self):
-        c_str = C.pkgcraft_deprestrict_str(self.ptr)
+        c_str = C.pkgcraft_dep_str(self.ptr)
         s = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return s
@@ -88,4 +88,4 @@ cdef class DepRestrict(_IndirectInit):
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __dealloc__(self):
-        C.pkgcraft_deprestrict_free(self.ptr)
+        C.pkgcraft_dep_free(self.ptr)

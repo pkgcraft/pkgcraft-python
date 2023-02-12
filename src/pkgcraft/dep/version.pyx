@@ -33,9 +33,9 @@ class Operator(IntEnum):
 
 
 cdef class Version:
-    """Atom version.
+    """Package version.
 
-    >>> from pkgcraft.atom import Version
+    >>> from pkgcraft.dep import Version
 
     Simple version
     >>> v = Version('1')
@@ -72,7 +72,7 @@ cdef class Version:
     def op(self):
         """Get a version's operator.
 
-        >>> from pkgcraft.atom import Operator, Version, VersionWithOp
+        >>> from pkgcraft.dep import Operator, Version, VersionWithOp
         >>> v = Version('1-r2')
         >>> v.op is None
         True
@@ -91,7 +91,7 @@ cdef class Version:
     def base(self):
         """Get a version's base.
 
-        >>> from pkgcraft.atom import Version, VersionWithOp
+        >>> from pkgcraft.dep import Version, VersionWithOp
         >>> v = Version('1-r2')
         >>> v.base
         '1'
@@ -108,7 +108,7 @@ cdef class Version:
     def revision(self):
         """Get a version's revision.
 
-        >>> from pkgcraft.atom import Version
+        >>> from pkgcraft.dep import Version
         >>> v = Version('1-r2')
         >>> v.revision
         '2'
@@ -129,7 +129,7 @@ cdef class Version:
     def intersects(self, Version other not None):
         """Determine if two versions intersect.
 
-        >>> from pkgcraft.atom import Version, VersionWithOp
+        >>> from pkgcraft.dep import Version, VersionWithOp
         >>> v1 = VersionWithOp('>1')
         >>> v2 = Version('2-r1')
         >>> v1.intersects(v2) and v2.intersects(v1)
@@ -198,7 +198,7 @@ cdef class Version:
 
 
 cdef class VersionWithOp(Version):
-    """Atom version with an operator.
+    """Package version with an operator.
 
     >>> v = VersionWithOp('=1')
     >>> v.op == "="
