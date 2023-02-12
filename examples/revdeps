@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Find revdeps for a given atom, assumes environment is a native Gentoo system.
+# Find revdeps for a given dep, assumes environment is a native Gentoo system.
 
 import argparse
 import logging
