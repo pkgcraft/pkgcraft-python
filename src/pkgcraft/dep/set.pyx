@@ -33,7 +33,6 @@ cdef class DepSet(_IndirectInit):
                     raise TypeError(f'unknown DepSet kind: {kind}')
 
             obj.ptr = ptr
-            obj.unit = ptr.unit
             return obj
         return None
 
@@ -148,7 +147,7 @@ cdef class _IntoIter:
 
     def __cinit__(self, DepSet d not None):
         self.ptr = C.pkgcraft_depset_into_iter(d.ptr)
-        self.unit = d.unit
+        self.unit = d.ptr.unit
 
     def __iter__(self):
         return self
@@ -170,11 +169,11 @@ cdef class _IntoIterFlatten:
         if isinstance(obj, DepSet):
             deps = <DepSet>obj
             self.ptr = C.pkgcraft_depset_into_iter_flatten(deps.ptr)
-            self.unit = deps.unit
+            self.unit = deps.ptr.unit
         elif isinstance(obj, Dep):
             dep = <Dep>obj
             self.ptr = C.pkgcraft_dep_into_iter_flatten(dep.ptr)
-            self.unit = dep.unit
+            self.unit = dep.ptr.unit
         else:  # pragma: no cover
             raise TypeError(f"{obj.__class__.__name__!r} unsupported depset type")
 
@@ -208,11 +207,11 @@ cdef class _IntoIterRecursive:
         if isinstance(obj, DepSet):
             deps = <DepSet>obj
             self.ptr = C.pkgcraft_depset_into_iter_recursive(deps.ptr)
-            self.unit = deps.unit
+            self.unit = deps.ptr.unit
         elif isinstance(obj, Dep):
             dep = <Dep>obj
             self.ptr = C.pkgcraft_dep_into_iter_recursive(dep.ptr)
-            self.unit = dep.unit
+            self.unit = dep.ptr.unit
         else:  # pragma: no cover
             raise TypeError(f"{obj.__class__.__name__!r} unsupported depset type")
 

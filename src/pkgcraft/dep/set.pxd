@@ -4,7 +4,6 @@ from ..error cimport _IndirectInit
 
 cdef class DepSet(_IndirectInit):
     cdef C.DepSet *ptr
-    cdef C.DepUnit unit
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *, DepSet obj=*)

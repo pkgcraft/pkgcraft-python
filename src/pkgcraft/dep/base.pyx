@@ -33,7 +33,6 @@ cdef class Dep(_IndirectInit):
             raise TypeError(f'unknown Dep kind: {kind}')
 
         obj.ptr = ptr
-        obj.unit = ptr.unit
         return obj
 
     def iter_flatten(self):
