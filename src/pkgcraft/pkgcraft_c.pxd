@@ -116,7 +116,7 @@ cdef extern from "pkgcraft.h":
     cdef struct Eapi:
         pass
 
-    # Opaque wrapper for Pkg objects.
+    # Opaque wrapper for pkgcraft::pkg::Pkg objects.
     cdef struct Pkg:
         pass
 
@@ -124,27 +124,27 @@ cdef extern from "pkgcraft.h":
     cdef struct PkgDep:
         pass
 
-    # Opaque wrapper for Repo objects.
+    # Opaque wrapper for pkgcraft::repo::Repo objects.
     cdef struct Repo:
         pass
 
-    # Opaque wrapper for PkgIter objects.
-    cdef struct RepoPkgIter:
+    # Opaque wrapper for pkgcraft::repo::Iter objects.
+    cdef struct RepoIter:
         pass
 
-    # Opaque wrapper for RestrictPkgIter objects.
-    cdef struct RepoRestrictPkgIter:
+    # Opaque wrapper for pkgcraft::repo::IterRestrict objects.
+    cdef struct RepoIterRestrict:
         pass
 
     # Ordered set of repos
     cdef struct RepoSet:
         pass
 
-    # Opaque wrapper for RepoSetPkgIter objects.
-    cdef struct RepoSetPkgIter:
+    # Opaque wrapper for pkgcraft::repo::set::Iter objects.
+    cdef struct RepoSetIter:
         pass
 
-    # Opaque wrapper for Restrict objects.
+    # Opaque wrapper for pkgcraft::restrict::Restrict objects.
     cdef struct Restrict:
         pass
 
@@ -1141,21 +1141,21 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Repo pointer.
-    RepoPkgIter *pkgcraft_repo_iter(Repo *r)
+    RepoIter *pkgcraft_repo_iter(Repo *r)
 
     # Free a repo iterator.
     #
     # # Safety
-    # The argument must be a non-null RepoPkgIter pointer or NULL.
-    void pkgcraft_repo_iter_free(RepoPkgIter *i)
+    # The argument must be a non-null RepoIter pointer or NULL.
+    void pkgcraft_repo_iter_free(RepoIter *i)
 
     # Return the next package from a package iterator.
     #
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null RepoPkgIter pointer.
-    Pkg *pkgcraft_repo_iter_next(RepoPkgIter *i)
+    # The argument must be a non-null RepoIter pointer.
+    Pkg *pkgcraft_repo_iter_next(RepoIter *i)
 
     # Return a repo's length.
     #
@@ -1182,21 +1182,21 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The repo argument must be a non-null Repo pointer and the restrict argument must be a non-null
     # Restrict pointer.
-    RepoRestrictPkgIter *pkgcraft_repo_restrict_iter(Repo *repo, Restrict *restrict)
+    RepoIterRestrict *pkgcraft_repo_restrict_iter(Repo *repo, Restrict *restrict)
 
     # Free a repo restriction iterator.
     #
     # # Safety
-    # The argument must be a non-null RepoRestrictPkgIter pointer or NULL.
-    void pkgcraft_repo_restrict_iter_free(RepoRestrictPkgIter *i)
+    # The argument must be a non-null RepoIterRestrict pointer or NULL.
+    void pkgcraft_repo_restrict_iter_free(RepoIterRestrict *i)
 
     # Return the next package from a restriction package iterator.
     #
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null RepoRestrictPkgIter pointer.
-    Pkg *pkgcraft_repo_restrict_iter_next(RepoRestrictPkgIter *i)
+    # The argument must be a non-null RepoIterRestrict pointer.
+    Pkg *pkgcraft_repo_restrict_iter_next(RepoIterRestrict *i)
 
     # Perform a set operation on a repo set and repo, assigning to the set.
     #
@@ -1247,21 +1247,21 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The repo argument must be a non-null Repo pointer and the restrict argument can be a
     # Restrict pointer or NULL to iterate over all packages.
-    RepoSetPkgIter *pkgcraft_repo_set_iter(RepoSet *repo, Restrict *restrict)
+    RepoSetIter *pkgcraft_repo_set_iter(RepoSet *repo, Restrict *restrict)
 
     # Free a repo set iterator.
     #
     # # Safety
-    # The argument must be a non-null RepoSetPkgIter pointer or NULL.
-    void pkgcraft_repo_set_iter_free(RepoSetPkgIter *i)
+    # The argument must be a non-null RepoSetIter pointer or NULL.
+    void pkgcraft_repo_set_iter_free(RepoSetIter *i)
 
     # Return the next package from a repo set package iterator.
     #
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null RepoSetPkgIter pointer.
-    Pkg *pkgcraft_repo_set_iter_next(RepoSetPkgIter *i)
+    # The argument must be a non-null RepoSetIter pointer.
+    Pkg *pkgcraft_repo_set_iter_next(RepoSetIter *i)
 
     # Return a repo set's length.
     #

@@ -17,8 +17,8 @@ cdef class Repo:
 
 
 cdef class _Iter:
-    cdef C.RepoPkgIter *ptr
+    cdef C.RepoIter *ptr
 
 
 cdef class _IterRestrict:
-    cdef C.RepoRestrictPkgIter *ptr
+    cdef C.RepoIterRestrict *ptr
