@@ -7,7 +7,7 @@ from .set cimport _IntoIterFlatten, _IntoIterRecursive
 
 @cython.final
 cdef class Dep(_IndirectInit):
-    """Dependency restriction."""
+    """Dependency object."""
 
     @staticmethod
     cdef Dep from_ptr(C.Dep *ptr):

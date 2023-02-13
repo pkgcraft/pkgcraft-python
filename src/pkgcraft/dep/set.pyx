@@ -10,7 +10,7 @@ from ..error import PkgcraftError
 
 
 cdef class DepSet(_IndirectInit):
-    """Dependency set of objects."""
+    """Set of dependency objects."""
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *ptr, DepSet obj=None):
