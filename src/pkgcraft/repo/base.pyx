@@ -195,16 +195,16 @@ cdef class _IterRestrict:
 
     def __cinit__(self, Repo repo not None, object obj not None):
         cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
-        self.ptr = C.pkgcraft_repo_restrict_iter(repo.ptr, r.ptr)
+        self.ptr = C.pkgcraft_repo_iter_restrict(repo.ptr, r.ptr)
 
     def __iter__(self):
         return self
 
     def __next__(self):
-        ptr = C.pkgcraft_repo_restrict_iter_next(self.ptr)
+        ptr = C.pkgcraft_repo_iter_restrict_next(self.ptr)
         if ptr is not NULL:
             return Pkg.from_ptr(ptr)
         raise StopIteration
 
     def __dealloc__(self):
-        C.pkgcraft_repo_restrict_iter_free(self.ptr)
+        C.pkgcraft_repo_iter_restrict_free(self.ptr)

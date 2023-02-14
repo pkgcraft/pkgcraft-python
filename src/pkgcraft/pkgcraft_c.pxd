@@ -1157,6 +1157,27 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null RepoIter pointer.
     Pkg *pkgcraft_repo_iter_next(RepoIter *i)
 
+    # Return a restriction package iterator for a repo.
+    #
+    # # Safety
+    # The repo argument must be a non-null Repo pointer and the restrict argument must be a non-null
+    # Restrict pointer.
+    RepoIterRestrict *pkgcraft_repo_iter_restrict(Repo *repo, Restrict *restrict)
+
+    # Free a repo restriction iterator.
+    #
+    # # Safety
+    # The argument must be a non-null RepoIterRestrict pointer or NULL.
+    void pkgcraft_repo_iter_restrict_free(RepoIterRestrict *i)
+
+    # Return the next package from a restriction package iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a non-null RepoIterRestrict pointer.
+    Pkg *pkgcraft_repo_iter_restrict_next(RepoIterRestrict *i)
+
     # Return a repo's length.
     #
     # # Safety
@@ -1176,27 +1197,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Repo pointer.
     char *pkgcraft_repo_path(Repo *r)
-
-    # Return a restriction package iterator for a repo.
-    #
-    # # Safety
-    # The repo argument must be a non-null Repo pointer and the restrict argument must be a non-null
-    # Restrict pointer.
-    RepoIterRestrict *pkgcraft_repo_restrict_iter(Repo *repo, Restrict *restrict)
-
-    # Free a repo restriction iterator.
-    #
-    # # Safety
-    # The argument must be a non-null RepoIterRestrict pointer or NULL.
-    void pkgcraft_repo_restrict_iter_free(RepoIterRestrict *i)
-
-    # Return the next package from a restriction package iterator.
-    #
-    # Returns NULL when the iterator is empty.
-    #
-    # # Safety
-    # The argument must be a non-null RepoIterRestrict pointer.
-    Pkg *pkgcraft_repo_restrict_iter_next(RepoIterRestrict *i)
 
     # Perform a set operation on a repo set and repo, assigning to the set.
     #
