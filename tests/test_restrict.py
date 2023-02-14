@@ -1,6 +1,6 @@
 import pytest
 
-from pkgcraft.dep import Cpv, PkgDep
+from pkgcraft.dep import Cpv, Dep
 from pkgcraft.error import InvalidRestrict
 from pkgcraft.restrict import Restrict
 
@@ -28,8 +28,8 @@ class TestRestrict:
         # dep string
         r = Restrict("cat/pkg")
         assert list(fake_repo.iter_restrict(r)) == [pkg1, pkg2]
-        # PkgDep object
-        r = Restrict(PkgDep("cat/pkg"))
+        # Dep object
+        r = Restrict(Dep("cat/pkg"))
         assert list(fake_repo.iter_restrict(r)) == [pkg1, pkg2]
 
     def test_dep(self, fake_repo):
@@ -56,9 +56,9 @@ class TestRestrict:
         # Cpv objects
         assert r.matches(Cpv("cat/pkg-1"))
         assert not r.matches(Cpv("a/b-1"))
-        # PkgDep objects
-        assert r.matches(PkgDep(">=cat/pkg-1"))
-        assert not r.matches(PkgDep("<a/b-1"))
+        # Dep objects
+        assert r.matches(Dep(">=cat/pkg-1"))
+        assert not r.matches(Dep("<a/b-1"))
         # Pkg objects
         assert r.matches(pkg1)
         assert not r.matches(pkg2)

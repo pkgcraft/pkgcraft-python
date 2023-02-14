@@ -34,18 +34,18 @@ cdef class License(DepSet):
 
 
 cdef class _IntoIter:
-    cdef C.DepSetIntoIter *ptr
-    cdef C.DepUnit unit
+    cdef C.DepSpecIntoIter *ptr
+    cdef C.DepSpecUnit unit
 
 
 cdef class _IntoIterFlatten:
-    cdef C.DepSetIntoIterFlatten *ptr
-    cdef C.DepUnit unit
+    cdef C.DepSpecIntoIterFlatten *ptr
+    cdef C.DepSpecUnit unit
 
 
 cdef class _IntoIterRecursive:
-    cdef C.DepSetIntoIterRecursive *ptr
-    cdef C.DepUnit unit
+    cdef C.DepSpecIntoIterRecursive *ptr
+    cdef C.DepSpecUnit unit
 
 
 cdef class Uri(_IndirectInit):

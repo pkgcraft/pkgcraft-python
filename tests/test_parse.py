@@ -5,29 +5,29 @@ from pkgcraft.eapi import EAPIS
 from pkgcraft.error import PkgcraftError
 
 
-def test_pkgdep():
-    assert parse.pkgdep("cat/pkg")
+def test_dep():
+    assert parse.dep("cat/pkg")
 
     # extended EAPI default allows repo deps
-    assert parse.pkgdep("=cat/pkg-1-r2:3/4[a,b,c]::repo")
+    assert parse.dep("=cat/pkg-1-r2:3/4[a,b,c]::repo")
 
     # explicitly specifying an official EAPI fails
     for eapi in ("8", EAPIS["8"]):
         with pytest.raises(PkgcraftError):
-            parse.pkgdep("=cat/pkg-1-r2:3/4[a,b,c]::repo", eapi)
+            parse.dep("=cat/pkg-1-r2:3/4[a,b,c]::repo", eapi)
 
     # invalid
     for s in ("cat", "=cat/pkg"):
         with pytest.raises(PkgcraftError, match=f"invalid dep: {s}"):
-            parse.pkgdep(s)
+            parse.dep(s)
 
     # unknown EAPI
     with pytest.raises(ValueError, match="unknown EAPI"):
-        parse.pkgdep("cat/pkg", "nonexistent")
+        parse.dep("cat/pkg", "nonexistent")
 
     # invalid EAPI type
     with pytest.raises(TypeError):
-        parse.pkgdep("cat/pkg", object())
+        parse.dep("cat/pkg", object())
 
 
 def test_category():

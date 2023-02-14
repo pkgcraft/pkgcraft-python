@@ -3,18 +3,18 @@ from .eapi cimport eapi_from_obj
 from .error import PkgcraftError
 
 
-def pkgdep(str s not None, eapi=None):
+def dep(str s not None, eapi=None):
     """Parse a package dependency string.
 
     >>> from pkgcraft import parse
-    >>> parse.pkgdep('=cat/pkg-1')
+    >>> parse.dep('=cat/pkg-1')
     True
     """
     cdef const C.Eapi *eapi_ptr = NULL
     if eapi is not None:
         eapi_ptr = eapi_from_obj(eapi).ptr
 
-    if C.pkgcraft_parse_pkgdep(s.encode(), eapi_ptr) is NULL:
+    if C.pkgcraft_parse_dep(s.encode(), eapi_ptr) is NULL:
         raise PkgcraftError
     return True
 

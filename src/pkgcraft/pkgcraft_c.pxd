@@ -13,17 +13,6 @@ cdef extern from "pkgcraft.h":
         BLOCKER_STRONG,
         BLOCKER_WEAK,
 
-    # Dep variants.
-    cdef enum DepKind:
-        DEP_KIND_ENABLED,
-        DEP_KIND_DISABLED,
-        DEP_KIND_ALL_OF,
-        DEP_KIND_ANY_OF,
-        DEP_KIND_EXACTLY_ONE_OF,
-        DEP_KIND_AT_MOST_ONE_OF,
-        DEP_KIND_USE_ENABLED,
-        DEP_KIND_USE_DISABLED,
-
     # DepSet variants.
     cdef enum DepSetKind:
         DEP_SET_KIND_DEPENDENCIES,
@@ -33,11 +22,22 @@ cdef extern from "pkgcraft.h":
         DEP_SET_KIND_SRC_URI,
         DEP_SET_KIND_LICENSE,
 
-    # DepSet flattened unit variants.
-    cdef enum DepUnit:
-        DEP_UNIT_PKG_DEP,
-        DEP_UNIT_STRING,
-        DEP_UNIT_URI,
+    # DepSpec variants.
+    cdef enum DepSpecKind:
+        DEP_SPEC_KIND_ENABLED,
+        DEP_SPEC_KIND_DISABLED,
+        DEP_SPEC_KIND_ALL_OF,
+        DEP_SPEC_KIND_ANY_OF,
+        DEP_SPEC_KIND_EXACTLY_ONE_OF,
+        DEP_SPEC_KIND_AT_MOST_ONE_OF,
+        DEP_SPEC_KIND_USE_ENABLED,
+        DEP_SPEC_KIND_USE_DISABLED,
+
+    # DepSpec unit variants.
+    cdef enum DepSpecUnit:
+        DEP_SPEC_UNIT_DEP,
+        DEP_SPEC_UNIT_STRING,
+        DEP_SPEC_UNIT_URI,
 
     cdef enum ErrorKind:
         ERROR_KIND_GENERIC,
@@ -92,24 +92,28 @@ cdef extern from "pkgcraft.h":
     cdef struct Config:
         pass
 
-    # Opaque wrapper for DepSet iterators.
-    cdef struct DepSetIntoIter:
+    # Package dependency.
+    cdef struct Dep:
         pass
 
-    # Opaque wrapper for flattened DepSet iterators.
-    cdef struct DepSetIntoIterFlatten:
-        pass
-
-    # Opaque wrapper for recursive DepSet iterators.
-    cdef struct DepSetIntoIterRecursive:
-        pass
-
-    # Opaque wrapper for DepSet objects.
+    # Opaque wrapper for pkgcraft::dep::DepSet.
     cdef struct DepSetW:
         pass
 
-    # Opaque wrapper for Dep objects.
-    cdef struct DepW:
+    # Opaque wrapper for pkgcraft::dep::spec::IntoIter<T>.
+    cdef struct DepSpecIntoIter:
+        pass
+
+    # Opaque wrapper for pkgcraft::dep::spec::IntoIterFlatten<T>.
+    cdef struct DepSpecIntoIterFlatten:
+        pass
+
+    # Opaque wrapper for pkgcraft::dep::spec::IntoIterRecursive<T>.
+    cdef struct DepSpecIntoIterRecursive:
+        pass
+
+    # Opaque wrapper for pkgcraft::dep::DepSpec.
+    cdef struct DepSpecW:
         pass
 
     # EAPI object.
@@ -118,10 +122,6 @@ cdef extern from "pkgcraft.h":
 
     # Opaque wrapper for pkgcraft::pkg::Pkg objects.
     cdef struct Pkg:
-        pass
-
-    # Package dependency
-    cdef struct PkgDep:
         pass
 
     # Opaque wrapper for pkgcraft::repo::Repo objects.
@@ -155,17 +155,17 @@ cdef extern from "pkgcraft.h":
     cdef struct Version:
         pass
 
-    # C-compatible wrapper for Dep objects.
-    cdef struct Dep:
-        DepUnit unit
-        DepKind kind
-        DepW *dep
-
-    # C-compatible wrapper for DepSet objects.
+    # C-compatible wrapper for pkgcraft::dep::DepSet.
     cdef struct DepSet:
-        DepUnit unit
+        DepSpecUnit unit
         DepSetKind kind
         DepSetW *dep
+
+    # C-compatible wrapper for pkgcraft::dep::DepSpec.
+    cdef struct DepSpec:
+        DepSpecUnit unit
+        DepSpecKind kind
+        DepSpecW *dep
 
     cdef struct PkgcraftError:
         char *message
@@ -244,44 +244,157 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument should be a UTF-8 string.
-    PkgDep *pkgcraft_cpv_new(const char *s)
+    Dep *pkgcraft_cpv_new(const char *s)
 
-    # Compare two Deps returning -1, 0, or 1 if the first is less than, equal to, or greater
-    # than the second, respectively.
+    # Get the blocker of a package dependency.
+    # For example, the package dependency "!cat/pkg" has a weak blocker.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    Blocker pkgcraft_dep_blocker(Dep *d)
+
+    # Parse a string into a Blocker.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    Blocker pkgcraft_dep_blocker_from_str(const char *s)
+
+    # Return the string for a Blocker.
+    char *pkgcraft_dep_blocker_str(Blocker b)
+
+    # Get the category of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2" returns "cat".
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_category(Dep *d)
+
+    # Compare two package dependencies returning -1, 0, or 1 if the first is less than, equal to, or
+    # greater than the second, respectively.
     #
     # # Safety
     # The arguments must be non-null Dep pointers.
     int pkgcraft_dep_cmp(Dep *d1, Dep *d2)
 
-    # Free a Dep object.
+    # Get the category and package of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2" returns "cat/pkg".
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_cpn(Dep *d)
+
+    # Get the category, package, and version of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2" returns "cat/pkg-1-r2".
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_cpv(Dep *d)
+
+    # Free a package dependency.
     #
     # # Safety
     # The argument must be a Dep pointer or NULL.
-    void pkgcraft_dep_free(Dep *r)
+    void pkgcraft_dep_free(Dep *d)
 
-    # Return the hash value for a Dep.
+    # Return the hash value for a package dependency.
     #
     # # Safety
     # The argument must be a non-null Dep pointer.
     uint64_t pkgcraft_dep_hash(Dep *d)
 
-    # Return a flattened iterator for a Dep.
+    # Determine if two package dependencies intersect.
     #
     # # Safety
-    # The argument must be a non-null Dep pointer.
-    DepSetIntoIterFlatten *pkgcraft_dep_into_iter_flatten(Dep *d)
+    # The arguments must be non-null Dep pointers.
+    bool pkgcraft_dep_intersects(Dep *d1, Dep *d2)
 
-    # Return a recursive iterator for a Dep.
+    # Parse a string into a package dependency using a specific EAPI. Pass NULL for the eapi argument
+    # in order to parse using the latest EAPI with extensions (e.g. support for repo deps).
+    #
+    # Returns NULL on error.
     #
     # # Safety
-    # The argument must be a non-null Dep pointer.
-    DepSetIntoIterRecursive *pkgcraft_dep_into_iter_recursive(Dep *d)
+    # The eapi argument may be NULL to use the default EAPI.
+    Dep *pkgcraft_dep_new(const char *s,
+                          const Eapi *eapi)
 
-    # Return the formatted string for a Dep object.
+    # Get the package and revision of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2" returns "pkg-1".
     #
     # # Safety
     # The argument must be a non-null Dep pointer.
-    char *pkgcraft_dep_str(Dep *d)
+    char *pkgcraft_dep_p(Dep *d)
+
+    # Get the package name of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2" returns "pkg".
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_package(Dep *d)
+
+    # Get the package, version, and revision of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2" returns "pkg-1-r2".
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_pf(Dep *d)
+
+    # Get the revision of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2" returns "r2".
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_pr(Dep *d)
+
+    # Get the version of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2" returns "1".
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_pv(Dep *d)
+
+    # Get the version and revision of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2" returns "1-r2".
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_pvr(Dep *d)
+
+    # Get the repo of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2:3/4::repo" returns "repo".
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_repo(Dep *d)
+
+    # Return the restriction for a package dependency.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    Restrict *pkgcraft_dep_restrict(Dep *d)
+
+    # Determine if a restriction matches a package dependency.
+    #
+    # # Safety
+    # The arguments must be valid Restrict and Dep pointers.
+    bool pkgcraft_dep_restrict_matches(Dep *d, Restrict *r)
+
+    # Get the revision of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2" returns "2".
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_revision(Dep *d)
 
     # Parse a string into a Dependencies DepSet.
     #
@@ -289,85 +402,85 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument should be a UTF-8 string.
-    DepSet *pkgcraft_depset_dependencies(const char *s, const Eapi *eapi)
+    DepSet *pkgcraft_dep_set_dependencies(const char *s, const Eapi *eapi)
 
     # Determine if two DepSets are equal.
     #
     # # Safety
     # The arguments must be non-null DepSet pointers.
-    bool pkgcraft_depset_eq(DepSet *d1, DepSet *d2)
+    bool pkgcraft_dep_set_eq(DepSet *d1, DepSet *d2)
 
     # Free a DepSet.
     #
     # # Safety
     # The argument must be a DepSet pointer or NULL.
-    void pkgcraft_depset_free(DepSet *d)
+    void pkgcraft_dep_set_free(DepSet *d)
 
     # Return the hash value for a DepSet.
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
-    uint64_t pkgcraft_depset_hash(DepSet *d)
+    uint64_t pkgcraft_dep_set_hash(DepSet *d)
 
     # Return an iterator for a depset.
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
-    DepSetIntoIter *pkgcraft_depset_into_iter(DepSet *d)
+    DepSpecIntoIter *pkgcraft_dep_set_into_iter(DepSet *d)
 
     # Return a flattened iterator for a DepSet.
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
-    DepSetIntoIterFlatten *pkgcraft_depset_into_iter_flatten(DepSet *d)
+    DepSpecIntoIterFlatten *pkgcraft_dep_set_into_iter_flatten(DepSet *d)
 
     # Free a flattened depset iterator.
     #
     # # Safety
-    # The argument must be a non-null DepSetIntoIterFlatten pointer or NULL.
-    void pkgcraft_depset_into_iter_flatten_free(DepSetIntoIterFlatten *i)
+    # The argument must be a non-null DepSpecIntoIterFlatten pointer or NULL.
+    void pkgcraft_dep_set_into_iter_flatten_free(DepSpecIntoIterFlatten *i)
 
     # Return the next object from a flattened depset iterator.
     #
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null DepSetIntoIterFlatten pointer.
-    void *pkgcraft_depset_into_iter_flatten_next(DepSetIntoIterFlatten *i)
+    # The argument must be a non-null DepSpecIntoIterFlatten pointer.
+    void *pkgcraft_dep_set_into_iter_flatten_next(DepSpecIntoIterFlatten *i)
 
     # Free a depset iterator.
     #
     # # Safety
-    # The argument must be a non-null DepSetIntoIter pointer or NULL.
-    void pkgcraft_depset_into_iter_free(DepSetIntoIter *i)
+    # The argument must be a non-null DepSpecIntoIter pointer or NULL.
+    void pkgcraft_dep_set_into_iter_free(DepSpecIntoIter *i)
 
     # Return the next object from a depset iterator.
     #
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null DepSetIntoIter pointer.
-    Dep *pkgcraft_depset_into_iter_next(DepSetIntoIter *i)
+    # The argument must be a non-null DepSpecIntoIter pointer.
+    DepSpec *pkgcraft_dep_set_into_iter_next(DepSpecIntoIter *i)
 
     # Return a recursive iterator for a DepSet.
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
-    DepSetIntoIterRecursive *pkgcraft_depset_into_iter_recursive(DepSet *d)
+    DepSpecIntoIterRecursive *pkgcraft_dep_set_into_iter_recursive(DepSet *d)
 
     # Free a recursive depset iterator.
     #
     # # Safety
-    # The argument must be a non-null DepSetIntoIterFlatten pointer or NULL.
-    void pkgcraft_depset_into_iter_recursive_free(DepSetIntoIterRecursive *i)
+    # The argument must be a non-null DepSpecIntoIterFlatten pointer or NULL.
+    void pkgcraft_dep_set_into_iter_recursive_free(DepSpecIntoIterRecursive *i)
 
     # Return the next object from a recursive depset iterator.
     #
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null DepSetIntoIterRecursive pointer.
-    Dep *pkgcraft_depset_into_iter_recursive_next(DepSetIntoIterRecursive *i)
+    # The argument must be a non-null DepSpecIntoIterRecursive pointer.
+    DepSpec *pkgcraft_dep_set_into_iter_recursive_next(DepSpecIntoIterRecursive *i)
 
     # Parse a string into a License DepSet.
     #
@@ -375,7 +488,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument should be a UTF-8 string.
-    DepSet *pkgcraft_depset_license(const char *s)
+    DepSet *pkgcraft_dep_set_license(const char *s)
 
     # Parse a string into a Properties DepSet.
     #
@@ -383,7 +496,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument should be a UTF-8 string.
-    DepSet *pkgcraft_depset_properties(const char *s)
+    DepSet *pkgcraft_dep_set_properties(const char *s)
 
     # Parse a string into a RequiredUse DepSet.
     #
@@ -391,7 +504,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument should be a UTF-8 string.
-    DepSet *pkgcraft_depset_required_use(const char *s, const Eapi *eapi)
+    DepSet *pkgcraft_dep_set_required_use(const char *s, const Eapi *eapi)
 
     # Parse a string into a Restrict DepSet.
     #
@@ -399,7 +512,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument should be a UTF-8 string.
-    DepSet *pkgcraft_depset_restrict(const char *s)
+    DepSet *pkgcraft_dep_set_restrict(const char *s)
 
     # Parse a string into a SrcUri DepSet.
     #
@@ -407,13 +520,108 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument should be a UTF-8 string.
-    DepSet *pkgcraft_depset_src_uri(const char *s, const Eapi *eapi)
+    DepSet *pkgcraft_dep_set_src_uri(const char *s, const Eapi *eapi)
 
     # Return the formatted string for a DepSet object.
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
-    char *pkgcraft_depset_str(DepSet *d)
+    char *pkgcraft_dep_set_str(DepSet *d)
+
+    # Get the slot of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2:3" returns "3".
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_slot(Dep *d)
+
+    # Get the slot operator of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2:0=" has an equal slot operator.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    SlotOperator pkgcraft_dep_slot_op(Dep *d)
+
+    # Parse a string into a SlotOperator.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    SlotOperator pkgcraft_dep_slot_op_from_str(const char *s)
+
+    # Return the string for a SlotOperator.
+    char *pkgcraft_dep_slot_op_str(SlotOperator op)
+
+    # Compare two DepSpecs returning -1, 0, or 1 if the first is less than, equal to, or greater
+    # than the second, respectively.
+    #
+    # # Safety
+    # The arguments must be non-null DepSpec pointers.
+    int pkgcraft_dep_spec_cmp(DepSpec *d1, DepSpec *d2)
+
+    # Free a DepSpec object.
+    #
+    # # Safety
+    # The argument must be a DepSpec pointer or NULL.
+    void pkgcraft_dep_spec_free(DepSpec *r)
+
+    # Return the hash value for a DepSpec.
+    #
+    # # Safety
+    # The argument must be a non-null DepSpec pointer.
+    uint64_t pkgcraft_dep_spec_hash(DepSpec *d)
+
+    # Return a flattened iterator for a DepSpec.
+    #
+    # # Safety
+    # The argument must be a non-null DepSpec pointer.
+    DepSpecIntoIterFlatten *pkgcraft_dep_spec_into_iter_flatten(DepSpec *d)
+
+    # Return a recursive iterator for a DepSpec.
+    #
+    # # Safety
+    # The argument must be a non-null DepSpec pointer.
+    DepSpecIntoIterRecursive *pkgcraft_dep_spec_into_iter_recursive(DepSpec *d)
+
+    # Return the formatted string for a DepSpec object.
+    #
+    # # Safety
+    # The argument must be a non-null DepSpec pointer.
+    char *pkgcraft_dep_spec_str(DepSpec *d)
+
+    # Return the string for a package dependency.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_str(Dep *d)
+
+    # Get the subslot of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2:3/4" returns "4".
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char *pkgcraft_dep_subslot(Dep *d)
+
+    # Get the USE dependencies of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2[a,b,c]" has USE dependencies of "a, b, c".
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char **pkgcraft_dep_use_deps(Dep *d, uintptr_t *len)
+
+    # Get the version of a package dependency.
+    # For example, the package dependency "=cat/pkg-1-r2" returns "1-r2".
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    Version *pkgcraft_dep_version(Dep *d)
 
     # Return an EAPI's identifier.
     #
@@ -531,6 +739,14 @@ cdef extern from "pkgcraft.h":
     # The argument should point to a UTF-8 string.
     const char *pkgcraft_parse_cpv(const char *s)
 
+    # Parse a package dependency.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The eapi argument may be NULL to use the default EAPI.
+    const char *pkgcraft_parse_dep(const char *s, const Eapi *eapi)
+
     # Parse a package name.
     #
     # Returns NULL on error.
@@ -538,14 +754,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument should point to a UTF-8 string.
     const char *pkgcraft_parse_package(const char *s)
-
-    # Parse a package dependency.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The eapi argument may be NULL to use the default EAPI.
-    const char *pkgcraft_parse_pkgdep(const char *s, const Eapi *eapi)
 
     # Parse a package repo.
     #
@@ -574,7 +782,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    PkgDep *pkgcraft_pkg_cpv(Pkg *p)
+    Dep *pkgcraft_pkg_cpv(Pkg *p)
 
     # Return a package's EAPI.
     #
@@ -819,214 +1027,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Pkg pointer.
     Version *pkgcraft_pkg_version(Pkg *p)
-
-    # Get the blocker of a package dependency.
-    # For example, the package dependency "!cat/pkg" has a weak blocker.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    Blocker pkgcraft_pkgdep_blocker(PkgDep *d)
-
-    # Parse a string into a Blocker.
-    #
-    # # Safety
-    # The argument should be a UTF-8 string.
-    Blocker pkgcraft_pkgdep_blocker_from_str(const char *s)
-
-    # Return the string for a Blocker.
-    char *pkgcraft_pkgdep_blocker_str(Blocker b)
-
-    # Get the category of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "cat".
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_category(PkgDep *d)
-
-    # Compare two package dependencies returning -1, 0, or 1 if the first is less than, equal to, or
-    # greater than the second, respectively.
-    #
-    # # Safety
-    # The arguments must be non-null PkgDep pointers.
-    int pkgcraft_pkgdep_cmp(PkgDep *d1, PkgDep *d2)
-
-    # Get the category and package of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "cat/pkg".
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_cpn(PkgDep *d)
-
-    # Get the category, package, and version of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "cat/pkg-1-r2".
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_cpv(PkgDep *d)
-
-    # Free a package dependency.
-    #
-    # # Safety
-    # The argument must be a PkgDep pointer or NULL.
-    void pkgcraft_pkgdep_free(PkgDep *d)
-
-    # Return the hash value for a package dependency.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    uint64_t pkgcraft_pkgdep_hash(PkgDep *d)
-
-    # Determine if two package dependencies intersect.
-    #
-    # # Safety
-    # The arguments must be non-null PkgDep pointers.
-    bool pkgcraft_pkgdep_intersects(PkgDep *d1, PkgDep *d2)
-
-    # Parse a string into a package dependency using a specific EAPI. Pass NULL for the eapi argument
-    # in order to parse using the latest EAPI with extensions (e.g. support for repo deps).
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The eapi argument may be NULL to use the default EAPI.
-    PkgDep *pkgcraft_pkgdep_new(const char *s,
-                                const Eapi *eapi)
-
-    # Get the package and revision of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "pkg-1".
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_p(PkgDep *d)
-
-    # Get the package name of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "pkg".
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_package(PkgDep *d)
-
-    # Get the package, version, and revision of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "pkg-1-r2".
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_pf(PkgDep *d)
-
-    # Get the revision of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "r2".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_pr(PkgDep *d)
-
-    # Get the version of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "1".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_pv(PkgDep *d)
-
-    # Get the version and revision of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "1-r2".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_pvr(PkgDep *d)
-
-    # Get the repo of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2:3/4::repo" returns "repo".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_repo(PkgDep *d)
-
-    # Return the restriction for a package dependency.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    Restrict *pkgcraft_pkgdep_restrict(PkgDep *d)
-
-    # Determine if a restriction matches a package dependency.
-    #
-    # # Safety
-    # The arguments must be valid Restrict and PkgDep pointers.
-    bool pkgcraft_pkgdep_restrict_matches(PkgDep *d, Restrict *r)
-
-    # Get the revision of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "2".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_revision(PkgDep *d)
-
-    # Get the slot of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2:3" returns "3".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_slot(PkgDep *d)
-
-    # Get the slot operator of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2:0=" has an equal slot operator.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    SlotOperator pkgcraft_pkgdep_slot_op(PkgDep *d)
-
-    # Parse a string into a SlotOperator.
-    #
-    # # Safety
-    # The argument should be a UTF-8 string.
-    SlotOperator pkgcraft_pkgdep_slot_op_from_str(const char *s)
-
-    # Return the string for a SlotOperator.
-    char *pkgcraft_pkgdep_slot_op_str(SlotOperator op)
-
-    # Return the string for a package dependency.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_str(PkgDep *d)
-
-    # Get the subslot of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2:3/4" returns "4".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char *pkgcraft_pkgdep_subslot(PkgDep *d)
-
-    # Get the USE dependencies of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2[a,b,c]" has USE dependencies of "a, b, c".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    char **pkgcraft_pkgdep_use_deps(PkgDep *d, uintptr_t *len)
-
-    # Get the version of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "1-r2".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null PkgDep pointer.
-    Version *pkgcraft_pkgdep_version(PkgDep *d)
 
     # Return a repo's categories.
     #

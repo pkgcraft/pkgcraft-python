@@ -1,7 +1,7 @@
 import pytest
 
 from pkgcraft.config import Config
-from pkgcraft.dep import Cpv, PkgDep
+from pkgcraft.dep import Cpv, Dep
 from pkgcraft.error import InvalidRestrict
 
 from ..misc import OperatorMap
@@ -90,9 +90,9 @@ class BaseRepoTests:
         assert "cat/pkg2" not in r1
         assert "=cat/pkg-1" in r1
         assert "=cat/pkg-2" not in r1
-        # PkgDep objects
-        assert PkgDep("=cat/pkg-1") in r1
-        assert PkgDep("=cat/pkg-2") not in r1
+        # Dep objects
+        assert Dep("=cat/pkg-1") in r1
+        assert Dep("=cat/pkg-2") not in r1
         # Pkg objects
         assert pkg1 in r1
         assert pkg2 not in r1

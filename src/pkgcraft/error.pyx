@@ -74,7 +74,7 @@ class InvalidCpv(PkgcraftError, ValueError):
     kinds = ()
 
 
-class InvalidPkgDep(PkgcraftError, ValueError):
+class InvalidDep(PkgcraftError, ValueError):
     """Package dependency doesn't meet required specifications."""
     kinds = ()
 

@@ -1,7 +1,7 @@
 import pytest
 from pkgcore.ebuild.atom import atom as pkgcore_dep
 
-from pkgcraft.dep import PkgDep as pkgcraft_dep
+from pkgcraft.dep import Dep as pkgcraft_dep
 from pkgcraft.repo import RepoSet
 
 pytest_plugins = ("benchmark", "pkgcraft")

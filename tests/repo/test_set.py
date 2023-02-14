@@ -1,7 +1,7 @@
 import pytest
 
 from pkgcraft.config import Config
-from pkgcraft.dep import Cpv, PkgDep
+from pkgcraft.dep import Cpv, Dep
 from pkgcraft.error import InvalidRestrict
 from pkgcraft.repo import RepoSet
 
@@ -124,9 +124,9 @@ class TestRepoSet:
         assert "cat/pkg2" not in s
         assert "=cat/pkg-1" in s
         assert "=cat/pkg-2" not in s
-        # PkgDep objects
-        assert PkgDep("=cat/pkg-1") in s
-        assert PkgDep("=cat/pkg-2") not in s
+        # Dep objects
+        assert Dep("=cat/pkg-1") in s
+        assert Dep("=cat/pkg-2") not in s
         # Pkg objects
         assert pkg1 in s
         assert pkg2 in s
