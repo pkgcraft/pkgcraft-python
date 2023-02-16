@@ -33,15 +33,14 @@ def main():
     except PkgcraftError as e:
         parser.error(e)
 
-    cache = defaultdict(lambda: defaultdict(set))
+    cache = defaultdict(set)
     cpvs = []
 
     # create revdeps cache
     for pkg in repo:
-        cpv = pkg.cpv
-        cpvs.append(cpv)
+        cpvs.append(pkg.cpv)
         for dep in pkg.dependencies().iter_flatten():
-            cache[dep.cpn][dep].add(cpv)
+            cache[dep.cpn].add(dep)
 
     # find packages lacking revdeps
     for cpv in cpvs:
