@@ -97,7 +97,7 @@ cdef extern from "pkgcraft.h":
         pass
 
     # Opaque wrapper for pkgcraft::dep::DepSet.
-    cdef struct DepSetW:
+    cdef struct DepSetWrapper:
         pass
 
     # Opaque wrapper for pkgcraft::dep::spec::IntoIter<T>.
@@ -113,7 +113,7 @@ cdef extern from "pkgcraft.h":
         pass
 
     # Opaque wrapper for pkgcraft::dep::DepSpec.
-    cdef struct DepSpecW:
+    cdef struct DepSpecWrapper:
         pass
 
     # EAPI object.
@@ -159,13 +159,13 @@ cdef extern from "pkgcraft.h":
     cdef struct DepSet:
         DepSpecUnit unit
         DepSetKind kind
-        DepSetW *dep
+        DepSetWrapper *dep
 
     # C-compatible wrapper for pkgcraft::dep::DepSpec.
     cdef struct DepSpec:
         DepSpecUnit unit
         DepSpecKind kind
-        DepSpecW *dep
+        DepSpecWrapper *dep
 
     cdef struct PkgcraftError:
         char *message
