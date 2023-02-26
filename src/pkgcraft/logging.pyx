@@ -43,4 +43,4 @@ def _pkgcraft_log_test(str message not None, int level):
 
 
 # progagate pkgcraft log messages to python on module import
-C.pkgcraft_logging_enable(pkgcraft_logger)
+C.pkgcraft_logging_enable(<C.LogCallback>pkgcraft_logger)
