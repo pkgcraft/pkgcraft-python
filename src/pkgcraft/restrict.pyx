@@ -95,20 +95,20 @@ cdef class Restrict:
         return C.pkgcraft_restrict_hash(self.ptr)
 
     def __and__(self, other):
-        if isinstance(self, Restrict) and isinstance(other, Restrict):
-            ptr = C.pkgcraft_restrict_and((<Restrict>self).ptr, (<Restrict>other).ptr)
+        if isinstance(other, Restrict):
+            ptr = C.pkgcraft_restrict_and(self.ptr, (<Restrict>other).ptr)
             return Restrict.from_ptr(ptr)
         return NotImplemented
 
     def __or__(self, other):
-        if isinstance(self, Restrict) and isinstance(other, Restrict):
-            ptr = C.pkgcraft_restrict_or((<Restrict>self).ptr, (<Restrict>other).ptr)
+        if isinstance(other, Restrict):
+            ptr = C.pkgcraft_restrict_or(self.ptr, (<Restrict>other).ptr)
             return Restrict.from_ptr(ptr)
         return NotImplemented
 
     def __xor__(self, other):
-        if isinstance(self, Restrict) and isinstance(other, Restrict):
-            ptr = C.pkgcraft_restrict_xor((<Restrict>self).ptr, (<Restrict>other).ptr)
+        if isinstance(other, Restrict):
+            ptr = C.pkgcraft_restrict_xor(self.ptr, (<Restrict>other).ptr)
             return Restrict.from_ptr(ptr)
         return NotImplemented
 
