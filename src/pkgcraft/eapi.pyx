@@ -37,9 +37,10 @@ cdef list eapis_to_list(const C.Eapi **c_eapis, size_t length, int start=0):
 cdef object get_official_eapis():
     """Get the mapping of all official EAPIs."""
     cdef size_t length
-    eapis = C.pkgcraft_eapis_official(&length)
-    d = {str(eapi): eapi for eapi in eapis_to_list(eapis, length)}
-    C.pkgcraft_eapis_free(eapis, length)
+    c_eapis = C.pkgcraft_eapis_official(&length)
+    eapis = eapis_to_list(c_eapis, length)
+    d = {str(eapi): eapi for eapi in eapis}
+    C.pkgcraft_eapis_free(c_eapis, length)
 
     # set global variables for each official EAPI, e.g. EAPI0, EAPI1, ...
     for k, v in d.items():
@@ -52,9 +53,10 @@ cdef object get_eapis():
     """Get the mapping of all known EAPIs."""
     cdef size_t length
     d = EAPIS_OFFICIAL.copy()
-    eapis = C.pkgcraft_eapis(&length)
-    d.update((str(eapi), eapi) for eapi in eapis_to_list(eapis, length, start=len(d)))
-    C.pkgcraft_eapis_free(eapis, length)
+    c_eapis = C.pkgcraft_eapis(&length)
+    eapis = eapis_to_list(c_eapis, length, start=len(d))
+    d.update((str(eapi), eapi) for eapi in eapis)
+    C.pkgcraft_eapis_free(c_eapis, length)
     return MappingProxyType(d)
 
 
