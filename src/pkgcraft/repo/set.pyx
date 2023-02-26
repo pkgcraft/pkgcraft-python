@@ -128,102 +128,91 @@ cdef class RepoSet:
         name = self.__class__.__name__
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
-    def __iand__(RepoSet self, other):
+    def __iand__(self, other):
         op = C.RepoSetOp.REPO_SET_OP_AND
         if isinstance(other, RepoSet):
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
+        elif isinstance(other, Repo):
+            C.pkgcraft_repo_set_assign_op_repo(op, self.ptr, (<Repo>other).ptr)
         else:
-            C.pkgcraft_repo_set_assign_op_repo(op, self.ptr, (<Repo?>other).ptr)
+            return NotImplemented
+
         # force repos refresh
         self._repos = None
         return self
 
-    def __ior__(RepoSet self, other):
+    def __ior__(self, other):
         op = C.RepoSetOp.REPO_SET_OP_OR
         if isinstance(other, RepoSet):
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
+        elif isinstance(other, Repo):
+            C.pkgcraft_repo_set_assign_op_repo(op, self.ptr, (<Repo>other).ptr)
         else:
-            C.pkgcraft_repo_set_assign_op_repo(op, self.ptr, (<Repo?>other).ptr)
+            return NotImplemented
+
         # force repos refresh
         self._repos = None
         return self
 
-    def __ixor__(RepoSet self, other):
+    def __ixor__(self, other):
         op = C.RepoSetOp.REPO_SET_OP_XOR
         if isinstance(other, RepoSet):
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
+        elif isinstance(other, Repo):
+            C.pkgcraft_repo_set_assign_op_repo(op, self.ptr, (<Repo>other).ptr)
         else:
-            C.pkgcraft_repo_set_assign_op_repo(op, self.ptr, (<Repo?>other).ptr)
+            return NotImplemented
+
         # force repos refresh
         self._repos = None
         return self
 
-    def __isub__(RepoSet self, other):
+    def __isub__(self, other):
         op = C.RepoSetOp.REPO_SET_OP_SUB
         if isinstance(other, RepoSet):
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
+        elif isinstance(other, Repo):
+            C.pkgcraft_repo_set_assign_op_repo(op, self.ptr, (<Repo>other).ptr)
         else:
-            C.pkgcraft_repo_set_assign_op_repo(op, self.ptr, (<Repo?>other).ptr)
+            return NotImplemented
+
         # force repos refresh
         self._repos = None
         return self
 
     def __and__(self, other):
-        if isinstance(self, RepoSet):
-            ptr = (<RepoSet>self).ptr
-        else:
-            ptr = (<RepoSet>other).ptr
-            other = self
-
         op = C.RepoSetOp.REPO_SET_OP_AND
         if isinstance(other, RepoSet):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, ptr, (<RepoSet>other).ptr))
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
         elif isinstance(other, Repo):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, ptr, (<Repo>other).ptr))
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
         else:
             return NotImplemented
 
     def __or__(self, other):
-        if isinstance(self, RepoSet):
-            ptr = (<RepoSet>self).ptr
-        else:
-            ptr = (<RepoSet>other).ptr
-            other = self
-
         op = C.RepoSetOp.REPO_SET_OP_OR
         if isinstance(other, RepoSet):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, ptr, (<RepoSet>other).ptr))
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
         elif isinstance(other, Repo):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, ptr, (<Repo>other).ptr))
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
         else:
             return NotImplemented
 
     def __xor__(self, other):
-        if isinstance(self, RepoSet):
-            ptr = (<RepoSet>self).ptr
-        else:
-            ptr = (<RepoSet>other).ptr
-            other = self
-
         op = C.RepoSetOp.REPO_SET_OP_XOR
         if isinstance(other, RepoSet):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, ptr, (<RepoSet>other).ptr))
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
         elif isinstance(other, Repo):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, ptr, (<Repo>other).ptr))
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
         else:
             return NotImplemented
 
     def __sub__(self, other):
-        if isinstance(self, RepoSet):
-            ptr = (<RepoSet>self).ptr
-        else:
-            return NotImplemented
-
         op = C.RepoSetOp.REPO_SET_OP_SUB
         if isinstance(other, RepoSet):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, ptr, (<RepoSet>other).ptr))
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
         elif isinstance(other, Repo):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, ptr, (<Repo>other).ptr))
+            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
         else:
             return NotImplemented
 
