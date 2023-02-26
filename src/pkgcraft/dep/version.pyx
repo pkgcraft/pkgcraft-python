@@ -190,9 +190,6 @@ cdef class Version:
     def __reduce__(self):
         return self.__class__, (str(self),)
 
-    # TODO: move to __del__() when migrating to >=cython-3 since it's not
-    # supported in <cython-3 for cdef classes:
-    # https://github.com/cython/cython/pull/3804
     def __dealloc__(self):
         C.pkgcraft_version_free(self.ptr)
 
