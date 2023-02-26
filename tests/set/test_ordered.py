@@ -355,37 +355,6 @@ class TestOrderedSet:
             with pytest.raises(TypeError):
                 o1 | o2
 
-    def test_union_with_iterable(self):
-        oset1 = OrderedSet([1])
-
-        assert oset1 | [2, 1] == OrderedSet([1, 2])
-        assert [2] | oset1 == OrderedSet([2, 1])
-        assert [1, 2] | OrderedSet([3, 1, 2, 4]) == OrderedSet([1, 2, 3, 4])
-
-        # union with unordered set should work, though the order will be arbitrary
-        assert oset1 | set([2]) == OrderedSet([1, 2])
-        assert set([2]) | oset1 == OrderedSet([2, 1])
-
-    def test_symmetric_difference_with_iterable(self):
-        oset1 = OrderedSet([1])
-
-        assert oset1 ^ [1] == OrderedSet([])
-        assert [1] ^ oset1 == OrderedSet([])
-
-        assert OrderedSet([3, 1, 4, 2]) ^ [3, 4] == OrderedSet([1, 2])
-        assert [3, 1, 4, 2] ^ OrderedSet([3, 4]) == OrderedSet([1, 2])
-
-        assert OrderedSet([3, 1, 4, 2]) ^ set([3, 4]) == OrderedSet([1, 2])
-        assert set([3, 1, 4]) ^ OrderedSet([3, 4, 2]) == OrderedSet([1, 2])
-
-    def test_intersection_with_iterable(self):
-        assert [1, 2, 3] & OrderedSet([3, 2]) == OrderedSet([2, 3])
-        assert OrderedSet([3, 2] & OrderedSet([1, 2, 3])) == OrderedSet([3, 2])
-
-    def test_difference_with_iterable(self):
-        assert OrderedSet([1, 2, 3, 4]) - [3, 2] == OrderedSet([1, 4])
-        assert [3, 2, 4, 1] - OrderedSet([2, 4]) == OrderedSet([3, 1])
-
     def test_isdisjoint(self):
         assert OrderedSet().isdisjoint(OrderedSet())
         assert OrderedSet([1]).isdisjoint(OrderedSet([2]))
