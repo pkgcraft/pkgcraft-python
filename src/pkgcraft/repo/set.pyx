@@ -189,6 +189,9 @@ cdef class RepoSet:
         else:
             return NotImplemented
 
+    def __rand__(self, other):
+        return self.__and__(other)
+
     def __or__(self, other):
         op = C.RepoSetOp.REPO_SET_OP_OR
         if isinstance(other, RepoSet):
@@ -197,6 +200,9 @@ cdef class RepoSet:
             return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
         else:
             return NotImplemented
+
+    def __ror__(self, other):
+        return self.__or__(other)
 
     def __xor__(self, other):
         op = C.RepoSetOp.REPO_SET_OP_XOR
@@ -207,6 +213,9 @@ cdef class RepoSet:
         else:
             return NotImplemented
 
+    def __rxor__(self, other):
+        return self.__xor__(other)
+
     def __sub__(self, other):
         op = C.RepoSetOp.REPO_SET_OP_SUB
         if isinstance(other, RepoSet):
@@ -215,6 +224,9 @@ cdef class RepoSet:
             return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
         else:
             return NotImplemented
+
+    def __rsub__(self, other):
+        return self.__sub__(other)
 
     def __dealloc__(self):
         C.pkgcraft_repo_set_free(self.ptr)
