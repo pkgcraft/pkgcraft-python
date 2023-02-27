@@ -127,14 +127,11 @@ cdef class _OrderedFrozenSet:
         """
         :rtype: OrderedSet
         """
-        ostyp = type(self if isinstance(self, OrderedSet) else other)
-
-        if not (isinstance(self, Iterable) and isinstance(other, Iterable)):
-            return NotImplemented
-        if not isinstance(other, Set):
-            other = ostyp._from_iterable(other)
-
-        return ostyp._from_iterable(value for value in self if value not in other)
+        if isinstance(other, Iterable):
+            if not isinstance(other, Set):
+                other = self.__class__._from_iterable(other)
+            return self.__class__._from_iterable(value for value in self if value not in other)
+        return NotImplemented
 
     def intersection(self, other):
         """``OrderedSet & other``
@@ -148,14 +145,14 @@ cdef class _OrderedFrozenSet:
         """
         :rtype: OrderedSet
         """
-        ostyp = type(self if isinstance(self, OrderedSet) else other)
+        if isinstance(other, Iterable):
+            if not isinstance(other, Set):
+                other = self.__class__._from_iterable(other)
+            return self.__class__._from_iterable(value for value in self if value in other)
+        return NotImplemented
 
-        if not (isinstance(self, Iterable) and isinstance(other, Iterable)):
-            return NotImplemented
-        if not isinstance(other, Set):
-            other = ostyp._from_iterable(other)
-
-        return ostyp._from_iterable(value for value in self if value in other)
+    def __rand__(self, other):
+        return self.__and__(other)
 
     def isdisjoint(self, other):
         """
@@ -208,6 +205,9 @@ cdef class _OrderedFrozenSet:
         """
         return (self - other) | (other - self)
 
+    def __rxor__(self, other):
+        return self.__xor__(other)
+
     def union(self, other):
         """``OrderedSet | other``
 
@@ -220,11 +220,13 @@ cdef class _OrderedFrozenSet:
         """
         :rtype: OrderedSet
         """
-        ostyp = type(self if isinstance(self, OrderedSet) else other)
-        if not (isinstance(self, Iterable) and isinstance(other, Iterable)):
-            return NotImplemented
-        chain = (e for s in (self, other) for e in s)
-        return ostyp._from_iterable(chain)
+        if isinstance(other, Iterable):
+            chain = (e for s in (self, other) for e in s)
+            return self.__class__._from_iterable(chain)
+        return NotImplemented
+
+    def __ror__(self, other):
+        return self.__or__(other)
 
     ##
     # list methods
