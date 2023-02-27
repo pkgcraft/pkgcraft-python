@@ -129,7 +129,7 @@ cdef class _OrderedFrozenSet:
         """
         if isinstance(other, Iterable):
             if not isinstance(other, Set):
-                other = self.__class__._from_iterable(other)
+                other = set(other)
             return self.__class__._from_iterable(value for value in self if value not in other)
         return NotImplemented
 
@@ -147,7 +147,7 @@ cdef class _OrderedFrozenSet:
         """
         if isinstance(other, Iterable):
             if not isinstance(other, Set):
-                other = self.__class__._from_iterable(other)
+                other = set(other)
             return self.__class__._from_iterable(value for value in self if value in other)
         return NotImplemented
 
@@ -477,7 +477,7 @@ cdef class _OrderedSet(_OrderedFrozenSet):
             self.clear()
         else:
             if not isinstance(other, Set):
-                other = self._from_iterable(other)
+                other = set(other)
             for value in other:
                 if value in self:
                     self.discard(value)
