@@ -38,7 +38,7 @@ cdef class OrderedSetIterator:
         if self.si_used != self.oset.os_used:
             # make this state sticky
             self.si_used = -1
-            set_type = type(self.oset).__name__
+            set_type = self.oset.__class__.__name__
             raise RuntimeError(f'{set_type} changed size during iteration')
 
         item = self.curr.next
@@ -67,7 +67,7 @@ cdef class OrderedSetReverseIterator:
         if self.si_used != self.oset.os_used:
             # make this state sticky
             self.si_used = -1
-            set_type = type(self.oset).__name__
+            set_type = self.oset.__class__.__name__
             raise RuntimeError(f'{set_type} changed size during iteration')
 
         item = self.curr.prev
@@ -251,7 +251,7 @@ cdef class _OrderedFrozenSet:
         cdef _OrderedSet result
         PySlice_GetIndicesEx(item, len(self), &start, &stop, &step, &slicelength)
 
-        result = type(self)()
+        result = self.__class__()
         place = start
         curr = self.end
 
@@ -305,7 +305,7 @@ cdef class _OrderedFrozenSet:
         if isinstance(item, slice):
             return self._getslice(item)
         if not PyIndex_Check(item):
-            set_type, item_type = self.__class__.__name__, type(item).__name__
+            set_type, item_type = self.__class__.__name__, item.__class__.__name__
             raise TypeError(f'{set_type} indices must be integers, not {item_type}')
         return self._getindex(item)
 
