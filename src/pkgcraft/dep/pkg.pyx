@@ -7,340 +7,10 @@ from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL
 from ..eapi cimport eapi_from_obj
 from ..restrict cimport Restrict
+from . cimport Cpv
 from .version cimport Version
 
-from ..error import InvalidCpv, InvalidDep
-
-
-cdef class Cpv:
-    """CPV string parsing.
-
-    >>> from pkgcraft.dep import Cpv
-
-    Valid CPV
-    >>> cpv = Cpv('cat/pkg-1-r2')
-    >>> cpv.category
-    'cat'
-    >>> cpv.package
-    'pkg'
-    >>> str(cpv.version)
-    '1-r2'
-
-    Invalid CPV
-    >>> Cpv('>cat/pkg-1')
-    Traceback (most recent call last):
-        ...
-    pkgcraft.error.InvalidCpv: parsing failure: invalid cpv: >cat/pkg-1
-    ...
-    """
-    def __cinit__(self):
-        self._version = SENTINEL
-
-    def __init__(self, str s not None):
-        self.ptr = C.pkgcraft_cpv_new(s.encode())
-        if self.ptr is NULL:
-            raise InvalidCpv
-
-    @staticmethod
-    cdef Cpv from_ptr(C.Dep *ptr):
-        """Create a Cpv from a pointer."""
-        obj = <Cpv>Cpv.__new__(Cpv)
-        obj.ptr = <C.Dep *>ptr
-        return obj
-
-    @property
-    def category(self):
-        """Get the category of a package dependency.
-
-        >>> from pkgcraft.dep import Cpv
-        >>> a = Cpv('cat/pkg-1-r2')
-        >>> a.category
-        'cat'
-        """
-        if self._category is None:
-            c_str = C.pkgcraft_dep_category(self.ptr)
-            self._category = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-        return self._category
-
-    @property
-    def package(self):
-        """Get the package name of a package dependency.
-
-        >>> from pkgcraft.dep import Cpv
-        >>> a = Cpv('cat/pkg-1-r2')
-        >>> a.package
-        'pkg'
-        """
-        if self._package is None:
-            c_str = C.pkgcraft_dep_package(self.ptr)
-            self._package = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-        return self._package
-
-    @property
-    def version(self):
-        """Get the version of a package dependency.
-
-        >>> from pkgcraft.dep import Cpv, Dep
-        >>> a = Cpv('cat/pkg-1-r2')
-        >>> str(a.version)
-        '1-r2'
-        >>> a = Dep('cat/pkg')
-        >>> a.version is None
-        True
-        """
-        if self._version is SENTINEL:
-            ptr = C.pkgcraft_dep_version(self.ptr)
-            self._version = Version.from_ptr(ptr)
-        return self._version
-
-    @property
-    def revision(self):
-        """Get the revision of a package dependency.
-
-        >>> from pkgcraft.dep import Cpv, Dep
-        >>> a = Cpv('cat/pkg-1-r2')
-        >>> a.revision
-        '2'
-        >>> a = Cpv('cat/pkg-1-r0')
-        >>> a.revision
-        '0'
-        >>> a = Cpv('cat/pkg-1')
-        >>> a.revision is None
-        True
-        >>> a = Dep('cat/pkg')
-        >>> a.revision is None
-        True
-        """
-        version = self.version
-        if version is not None:
-            return version.revision
-        return None
-
-    @property
-    def p(self):
-        """Get the package and revision of a package dependency.
-
-        >>> from pkgcraft.dep import Cpv, Dep
-        >>> a = Cpv('cat/pkg-1-r2')
-        >>> a.p
-        'pkg-1'
-        >>> a = Dep('cat/pkg')
-        >>> a.p
-        'pkg'
-        """
-        c_str = C.pkgcraft_dep_p(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
-
-    @property
-    def pf(self):
-        """Get the package, version, and revision of a package dependency.
-
-        >>> from pkgcraft.dep import Cpv, Dep
-        >>> a = Cpv('cat/pkg-1-r2')
-        >>> a.pf
-        'pkg-1-r2'
-        >>> a = Cpv('cat/pkg-1-r0')
-        >>> a.pf
-        'pkg-1-r0'
-        >>> a = Cpv('cat/pkg-1')
-        >>> a.pf
-        'pkg-1'
-        >>> a = Dep('cat/pkg')
-        >>> a.pf
-        'pkg'
-        """
-        c_str = C.pkgcraft_dep_pf(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
-
-    @property
-    def pr(self):
-        """Get the revision of a package dependency.
-
-        >>> from pkgcraft.dep import Cpv, Dep
-        >>> a = Cpv('cat/pkg-1-r2')
-        >>> a.pr
-        'r2'
-        >>> a = Cpv('cat/pkg-1-r0')
-        >>> a.pr
-        'r0'
-        >>> a = Cpv('cat/pkg-1')
-        >>> a.pr
-        'r0'
-        >>> a = Dep('cat/pkg')
-        >>> a.pr is None
-        True
-        """
-        c_str = C.pkgcraft_dep_pr(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
-
-    @property
-    def pv(self):
-        """Get the version of a package dependency.
-
-        >>> from pkgcraft.dep import Cpv, Dep
-        >>> a = Cpv('cat/pkg-1-r2')
-        >>> a.pv
-        '1'
-        >>> a = Cpv('cat/pkg-1-r0')
-        >>> a.pv
-        '1'
-        >>> a = Cpv('cat/pkg-1')
-        >>> a.pv
-        '1'
-        >>> a = Dep('cat/pkg')
-        >>> a.pv is None
-        True
-        """
-        c_str = C.pkgcraft_dep_pv(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
-
-    @property
-    def pvr(self):
-        """Get the version and revision of a package dependency.
-
-        >>> from pkgcraft.dep import Cpv, Dep
-        >>> a = Cpv('cat/pkg-1-r2')
-        >>> a.pvr
-        '1-r2'
-        >>> a = Cpv('cat/pkg-1-r0')
-        >>> a.pvr
-        '1-r0'
-        >>> a = Cpv('cat/pkg-1')
-        >>> a.pvr
-        '1'
-        >>> a = Dep('cat/pkg')
-        >>> a.pvr is None
-        True
-        """
-        c_str = C.pkgcraft_dep_pvr(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
-
-    @property
-    def cpn(self):
-        """Get the category and package of a package dependency.
-
-        >>> from pkgcraft.dep import Cpv, Dep
-        >>> a = Cpv('cat/pkg-1-r2')
-        >>> a.cpn
-        'cat/pkg'
-        >>> a = Dep('cat/pkg')
-        >>> a.cpn
-        'cat/pkg'
-        """
-        c_str = C.pkgcraft_dep_cpn(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
-
-    @property
-    def cpv(self):
-        """Get the category, package, and version of a package dependency.
-
-        >>> from pkgcraft.dep import Cpv, Dep
-        >>> a = Cpv('cat/pkg-1-r2')
-        >>> a.cpv
-        'cat/pkg-1-r2'
-        >>> a = Dep('=cat/pkg-1-r2:3/4[u1,!u2?]')
-        >>> a.cpv
-        'cat/pkg-1-r2'
-        >>> a = Dep('cat/pkg')
-        >>> a.cpv
-        'cat/pkg'
-        """
-        c_str = C.pkgcraft_dep_cpv(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
-
-    def matches(self, Restrict r not None):
-        """Determine if a restriction matches a package dependency."""
-        return C.pkgcraft_dep_restrict_matches(self.ptr, r.ptr)
-
-    def intersects(self, Cpv other not None):
-        """Determine if two package dependencies intersect.
-
-        >>> from pkgcraft.dep import Cpv, Dep
-        >>> dep = Dep('>cat/pkg-1')
-        >>> cpv = Cpv('cat/pkg-2-r1')
-        >>> dep.intersects(cpv) and cpv.intersects(dep)
-        True
-        >>> d1 = Dep('>cat/pkg-1-r1')
-        >>> d2 = Dep('=cat/pkg-1-r1')
-        >>> d1.intersects(d2) or d2.intersects(d1)
-        False
-        """
-        return C.pkgcraft_dep_intersects(self.ptr, other.ptr)
-
-    def __lt__(self, other):
-        if isinstance(other, Cpv):
-            return C.pkgcraft_dep_cmp(self.ptr, (<Cpv>other).ptr) == -1
-        return NotImplemented
-
-    def __le__(self, other):
-        if isinstance(other, Cpv):
-            return C.pkgcraft_dep_cmp(self.ptr, (<Cpv>other).ptr) <= 0
-        return NotImplemented
-
-    def __eq__(self, other):
-        if isinstance(other, Cpv):
-            return C.pkgcraft_dep_cmp(self.ptr, (<Cpv>other).ptr) == 0
-        return NotImplemented
-
-    def __ne__(self, other):
-        if isinstance(other, Cpv):
-            return C.pkgcraft_dep_cmp(self.ptr, (<Cpv>other).ptr) != 0
-        return NotImplemented
-
-    def __ge__(self, other):
-        if isinstance(other, Cpv):
-            return C.pkgcraft_dep_cmp(self.ptr, (<Cpv>other).ptr) >= 0
-        return NotImplemented
-
-    def __gt__(self, other):
-        if isinstance(other, Cpv):
-            return C.pkgcraft_dep_cmp(self.ptr, (<Cpv>other).ptr) == 1
-        return NotImplemented
-
-    def __str__(self):
-        c_str = C.pkgcraft_dep_str(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
-
-    def __repr__(self):
-        addr = <size_t>&self.ptr
-        name = self.__class__.__name__
-        return f"<{name} '{self}' at 0x{addr:0x}>"
-
-    def __hash__(self):
-        if not self._hash:
-            self._hash = C.pkgcraft_dep_hash(self.ptr)
-        return self._hash
-
-    def __reduce__(self):
-        """Support pickling Cpv objects."""
-        return self.__class__, (str(self),)
-
-    def __dealloc__(self):
-        C.pkgcraft_dep_free(self.ptr)
+from ..error import InvalidDep
 
 
 # TODO: merge with Dep.cached function when cython bug is fixed
@@ -397,35 +67,35 @@ class SlotOperator(IntEnum):
 
 
 @cython.final
-cdef class Dep(Cpv):
+cdef class Dep:
     """Package dependency parsing.
 
     >>> from pkgcraft.dep import Dep
 
     Unversioned package dependency
-    >>> a = Dep('cat/pkg')
-    >>> a.category
+    >>> dep = Dep('cat/pkg')
+    >>> dep.category
     'cat'
-    >>> a.package
+    >>> dep.package
     'pkg'
 
     Complex package dependency
-    >>> a = Dep('=cat/pkg-1-r2:0/2[a,b]::repo')
-    >>> a.category
+    >>> dep = Dep('=cat/pkg-1-r2:0/2[a,b]::repo')
+    >>> dep.category
     'cat'
-    >>> a.package
+    >>> dep.package
     'pkg'
-    >>> str(a.version)
+    >>> str(dep.version)
     '1-r2'
-    >>> a.revision
+    >>> dep.revision
     '2'
-    >>> a.slot
+    >>> dep.slot
     '0'
-    >>> a.subslot
+    >>> dep.subslot
     '2'
-    >>> a.use
+    >>> dep.use
     ('a', 'b')
-    >>> a.repo
+    >>> dep.repo
     'repo'
 
     Invalid package dependency
@@ -436,6 +106,7 @@ cdef class Dep(Cpv):
     ...
     """
     def __cinit__(self):
+        self._version = SENTINEL
         self._use = SENTINEL
 
     def __init__(self, str s not None, eapi=None):
@@ -464,14 +135,14 @@ cdef class Dep(Cpv):
         """Get the blocker of a package dependency.
 
         >>> from pkgcraft.dep import Blocker, Dep
-        >>> a = Dep('cat/pkg')
-        >>> a.blocker is None
+        >>> dep = Dep('cat/pkg')
+        >>> dep.blocker is None
         True
-        >>> a = Dep('!cat/pkg')
-        >>> a.blocker is Blocker.Weak
+        >>> dep = Dep('!cat/pkg')
+        >>> dep.blocker is Blocker.Weak
         True
-        >>> a = Dep('!!cat/pkg')
-        >>> a.blocker is Blocker.Strong
+        >>> dep = Dep('!!cat/pkg')
+        >>> dep.blocker is Blocker.Strong
         True
         """
         cdef int blocker = C.pkgcraft_dep_blocker(self.ptr)
@@ -480,17 +151,84 @@ cdef class Dep(Cpv):
         return None
 
     @property
+    def category(self):
+        """Get the category of a package dependency.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.category
+        'cat'
+        """
+        if self._category is None:
+            c_str = C.pkgcraft_dep_category(self.ptr)
+            self._category = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+        return self._category
+
+    @property
+    def package(self):
+        """Get the package name of a package dependency.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.package
+        'pkg'
+        """
+        if self._package is None:
+            c_str = C.pkgcraft_dep_package(self.ptr)
+            self._package = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+        return self._package
+
+    @property
+    def version(self):
+        """Get the version of a package dependency.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> str(dep.version)
+        '1-r2'
+        >>> dep = Dep('cat/pkg')
+        >>> dep.version is None
+        True
+        """
+        if self._version is SENTINEL:
+            ptr = C.pkgcraft_dep_version(self.ptr)
+            self._version = Version.from_ptr(ptr)
+        return self._version
+
+    @property
+    def revision(self):
+        """Get the revision of a package dependency.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.revision
+        '2'
+        >>> dep = Dep('=cat/pkg-1-r0')
+        >>> dep.revision
+        '0'
+        >>> dep = Dep('cat/pkg')
+        >>> dep.revision is None
+        True
+        """
+        version = self.version
+        if version is not None:
+            return version.revision
+        return None
+
+    @property
     def op(self):
         """Get the version operator of a package dependency.
 
         >>> from pkgcraft.dep import Operator, Dep
-        >>> a = Dep('cat/pkg')
-        >>> a.op is None
+        >>> dep = Dep('cat/pkg')
+        >>> dep.op is None
         True
-        >>> a = Dep('>=cat/pkg-1')
-        >>> a.op is Operator.GreaterOrEqual
+        >>> dep = Dep('>=cat/pkg-1')
+        >>> dep.op is Operator.GreaterOrEqual
         True
-        >>> a.op == '>='
+        >>> dep.op == '>='
         True
         """
         version = self.version
@@ -503,11 +241,11 @@ cdef class Dep(Cpv):
         """Get the slot of a package dependency.
 
         >>> from pkgcraft.dep import Dep
-        >>> a = Dep('=cat/pkg-1-r2:3/4')
-        >>> a.slot
+        >>> dep = Dep('=cat/pkg-1-r2:3/4')
+        >>> dep.slot
         '3'
-        >>> a = Dep('=cat/pkg-1-r2')
-        >>> a.slot is None
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.slot is None
         True
         """
         c_str = C.pkgcraft_dep_slot(self.ptr)
@@ -522,14 +260,14 @@ cdef class Dep(Cpv):
         """Get the subslot of a package dependency.
 
         >>> from pkgcraft.dep import Dep
-        >>> a = Dep('=cat/pkg-1-r2:3/4')
-        >>> a.subslot
+        >>> dep = Dep('=cat/pkg-1-r2:3/4')
+        >>> dep.subslot
         '4'
-        >>> a = Dep('=cat/pkg-1-r2:3')
-        >>> a.subslot is None
+        >>> dep = Dep('=cat/pkg-1-r2:3')
+        >>> dep.subslot is None
         True
-        >>> a = Dep('=cat/pkg-1-r2')
-        >>> a.subslot is None
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.subslot is None
         True
         """
         c_str = C.pkgcraft_dep_subslot(self.ptr)
@@ -544,17 +282,17 @@ cdef class Dep(Cpv):
         """Get the slot operator of a package dependency.
 
         >>> from pkgcraft.dep import Dep
-        >>> a = Dep('=cat/pkg-1-r2')
-        >>> a.slot_op is None
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.slot_op is None
         True
-        >>> a = Dep('=cat/pkg-1-r2:=')
-        >>> a.slot_op is SlotOperator.Equal
+        >>> dep = Dep('=cat/pkg-1-r2:=')
+        >>> dep.slot_op is SlotOperator.Equal
         True
-        >>> a = Dep('=cat/pkg-1-r2:0=')
-        >>> a.slot_op is SlotOperator.Equal
+        >>> dep = Dep('=cat/pkg-1-r2:0=')
+        >>> dep.slot_op is SlotOperator.Equal
         True
-        >>> a = Dep('=cat/pkg-1-r2:*')
-        >>> a.slot_op is SlotOperator.Star
+        >>> dep = Dep('=cat/pkg-1-r2:*')
+        >>> dep.slot_op is SlotOperator.Star
         True
         """
         cdef int slot_op = C.pkgcraft_dep_slot_op(self.ptr)
@@ -567,14 +305,14 @@ cdef class Dep(Cpv):
         """Get the USE dependencies of a package dependency.
 
         >>> from pkgcraft.dep import Dep
-        >>> a = Dep('=cat/pkg-1-r2[a,b,c]')
-        >>> a.use
+        >>> dep = Dep('=cat/pkg-1-r2[a,b,c]')
+        >>> dep.use
         ('a', 'b', 'c')
-        >>> a = Dep('=cat/pkg-1-r2[-a(-),b(+)=,!c(-)?]')
-        >>> a.use
+        >>> dep = Dep('=cat/pkg-1-r2[-a(-),b(+)=,!c(-)?]')
+        >>> dep.use
         ('-a(-)', 'b(+)=', '!c(-)?')
-        >>> a = Dep('=cat/pkg-1-r2')
-        >>> a.use is None
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.use is None
         True
         """
         cdef char **use
@@ -594,11 +332,11 @@ cdef class Dep(Cpv):
         """Get the repo of a package dependency.
 
         >>> from pkgcraft.dep import Dep
-        >>> a = Dep('=cat/pkg-1-r2::repo')
-        >>> a.repo
+        >>> dep = Dep('=cat/pkg-1-r2::repo')
+        >>> dep.repo
         'repo'
-        >>> a = Dep('=cat/pkg-1-r2')
-        >>> a.repo is None
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.repo is None
         True
         """
         c_str = C.pkgcraft_dep_repo(self.ptr)
@@ -607,3 +345,213 @@ cdef class Dep(Cpv):
             C.pkgcraft_str_free(c_str)
             return s
         return None
+
+    @property
+    def p(self):
+        """Get the package and revision of a package dependency.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.p
+        'pkg-1'
+        >>> dep = Dep('cat/pkg')
+        >>> dep.p
+        'pkg'
+        """
+        c_str = C.pkgcraft_dep_p(self.ptr)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
+
+    @property
+    def pf(self):
+        """Get the package, version, and revision of a package dependency.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.pf
+        'pkg-1-r2'
+        >>> dep = Dep('=cat/pkg-1-r0')
+        >>> dep.pf
+        'pkg-1-r0'
+        >>> dep = Dep('cat/pkg')
+        >>> dep.pf
+        'pkg'
+        """
+        c_str = C.pkgcraft_dep_pf(self.ptr)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
+
+    @property
+    def pr(self):
+        """Get the revision of a package dependency.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.pr
+        'r2'
+        >>> dep = Dep('=cat/pkg-1-r0')
+        >>> dep.pr
+        'r0'
+        >>> dep = Dep('cat/pkg')
+        >>> dep.pr is None
+        True
+        """
+        c_str = C.pkgcraft_dep_pr(self.ptr)
+        if c_str is not NULL:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+            return s
+        return None
+
+    @property
+    def pv(self):
+        """Get the version of a package dependency.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.pv
+        '1'
+        >>> dep = Dep('=cat/pkg-1-r0')
+        >>> dep.pv
+        '1'
+        >>> dep = Dep('cat/pkg')
+        >>> dep.pv is None
+        True
+        """
+        c_str = C.pkgcraft_dep_pv(self.ptr)
+        if c_str is not NULL:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+            return s
+        return None
+
+    @property
+    def pvr(self):
+        """Get the version and revision of a package dependency.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.pvr
+        '1-r2'
+        >>> dep = Dep('=cat/pkg-1-r0')
+        >>> dep.pvr
+        '1-r0'
+        >>> dep = Dep('cat/pkg')
+        >>> dep.pvr is None
+        True
+        """
+        c_str = C.pkgcraft_dep_pvr(self.ptr)
+        if c_str is not NULL:
+            s = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+            return s
+        return None
+
+    @property
+    def cpn(self):
+        """Get the category and package of a package dependency.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2')
+        >>> dep.cpn
+        'cat/pkg'
+        >>> dep = Dep('cat/pkg')
+        >>> dep.cpn
+        'cat/pkg'
+        """
+        c_str = C.pkgcraft_dep_cpn(self.ptr)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
+
+    @property
+    def cpv(self):
+        """Get the category, package, and version of a package dependency.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2:3/4[u1,!u2?]')
+        >>> dep.cpv
+        'cat/pkg-1-r2'
+        >>> dep = Dep('cat/pkg')
+        >>> dep.cpv
+        'cat/pkg'
+        """
+        c_str = C.pkgcraft_dep_cpv(self.ptr)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
+
+    def matches(self, Restrict r not None):
+        """Determine if a restriction matches a package dependency."""
+        return C.pkgcraft_dep_restrict_matches(self.ptr, r.ptr)
+
+    def intersects(self, other):
+        """Determine intersection between two Cpv or Dep objects.
+
+        >>> from pkgcraft.dep import Cpv, Dep
+        >>> cpv = Cpv('cat/pkg-2-r1')
+        >>> dep = Dep('>cat/pkg-1')
+        >>> cpv.intersects(dep) and dep.intersects(cpv)
+        True
+        """
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_intersects(self.ptr, (<Dep>other).ptr)
+        if isinstance(other, Cpv):
+            return C.pkgcraft_dep_intersects_cpv(self.ptr, (<Cpv>other).ptr)
+        else:
+            raise TypeError(f"{other.__class__.__name__!r} unsupported type")
+
+    def __lt__(self, other):
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_cmp(self.ptr, (<Dep>other).ptr) == -1
+        return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_cmp(self.ptr, (<Dep>other).ptr) <= 0
+        return NotImplemented
+
+    def __eq__(self, other):
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_cmp(self.ptr, (<Dep>other).ptr) == 0
+        return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_cmp(self.ptr, (<Dep>other).ptr) != 0
+        return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_cmp(self.ptr, (<Dep>other).ptr) >= 0
+        return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, Dep):
+            return C.pkgcraft_dep_cmp(self.ptr, (<Dep>other).ptr) == 1
+        return NotImplemented
+
+    def __str__(self):
+        c_str = C.pkgcraft_dep_str(self.ptr)
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
+
+    def __repr__(self):
+        addr = <size_t>&self.ptr
+        name = self.__class__.__name__
+        return f"<{name} '{self}' at 0x{addr:0x}>"
+
+    def __hash__(self):
+        if not self._hash:
+            self._hash = C.pkgcraft_dep_hash(self.ptr)
+        return self._hash
+
+    def __reduce__(self):
+        """Support pickling Dep objects."""
+        return self.__class__, (str(self),)
+
+    def __dealloc__(self):
+        C.pkgcraft_dep_free(self.ptr)

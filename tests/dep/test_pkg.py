@@ -5,51 +5,12 @@ import re
 
 import pytest
 
-from pkgcraft.dep import Blocker, Cpv, Dep, Operator, SlotOperator, Version, VersionWithOp
+from pkgcraft.dep import Blocker, Cpv, Dep, Operator, SlotOperator, VersionWithOp
 from pkgcraft.eapi import EAPIS, Eapi
 from pkgcraft.error import InvalidCpv, InvalidDep
 from pkgcraft.restrict import Restrict
 
 from ..misc import OperatorIterMap, OperatorMap
-
-
-class TestCpv:
-    def test_init(self):
-        a = Cpv("cat/pkg-1-r2")
-        assert a.category == "cat"
-        assert a.package == "pkg"
-        assert a.version == Version("1-r2")
-        assert a.revision == "2"
-        assert a.p == "pkg-1"
-        assert a.pf == "pkg-1-r2"
-        assert a.pr == "r2"
-        assert a.pv == "1"
-        assert a.pvr == "1-r2"
-        assert a.cpn == "cat/pkg"
-        assert a.cpv == "cat/pkg-1-r2"
-        assert str(a) == "cat/pkg-1-r2"
-        assert repr(a).startswith("<Cpv 'cat/pkg-1-r2' at 0x")
-
-    def test_matches(self):
-        a = Cpv("cat/pkg-1")
-        r = Restrict(a)
-        assert a.matches(r)
-        assert not a.matches(~r)
-
-    def test_invalid(self):
-        for s in ("invalid", "cat-1", "cat/pkg", "=cat/pkg-1"):
-            with pytest.raises(InvalidCpv, match=f"invalid cpv: {s}"):
-                Cpv(s)
-
-    def test_invalid_arg_type(self):
-        for obj in (object(), None):
-            with pytest.raises(TypeError):
-                Cpv(obj)
-
-    def test_pickle(self):
-        a = Cpv("cat/pkg-1-r2")
-        b = pickle.loads(pickle.dumps(a))
-        assert a == b
 
 
 class TestBlocker:
@@ -217,17 +178,17 @@ class TestDep:
         for d in toml_data["dep.toml"]["intersects"]:
             # test intersections between all pairs of distinct values
             for s1, s2 in itertools.permutations(d["vals"], 2):
-                (v1, v2) = (parse(s1), parse(s2))
+                (obj1, obj2) = (parse(s1), parse(s2))
 
                 # elements intersect themselves
-                assert v1.intersects(v1)
-                assert v2.intersects(v2)
+                assert obj1.intersects(obj1)
+                assert obj2.intersects(obj2)
 
                 # intersect or not depending on status
                 if d["status"]:
-                    assert v1.intersects(v2)
+                    assert obj1.intersects(obj2)
                 else:
-                    assert not v1.intersects(v2)
+                    assert not obj1.intersects(obj2)
 
     def test_sort(self, toml_data):
         for d in toml_data["dep.toml"]["sorting"]:

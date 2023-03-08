@@ -12,7 +12,7 @@ cdef C.Restrict *str_to_restrict(str s) except NULL:
     cdef C.Restrict *r
 
     try:
-        return C.pkgcraft_dep_restrict(Cpv(s).ptr)
+        return C.pkgcraft_cpv_restrict(Cpv(s).ptr)
     except InvalidCpv:
         pass
 
@@ -34,7 +34,9 @@ cdef C.Restrict *str_to_restrict(str s) except NULL:
 cdef C.Restrict *obj_to_restrict(object obj) except NULL:
     """Try to convert an object to a restriction pointer."""
     if isinstance(obj, Cpv):
-        return C.pkgcraft_dep_restrict((<Cpv>obj).ptr)
+        return C.pkgcraft_cpv_restrict((<Cpv>obj).ptr)
+    if isinstance(obj, Dep):
+        return C.pkgcraft_dep_restrict((<Dep>obj).ptr)
     elif isinstance(obj, Pkg):
         return C.pkgcraft_pkg_restrict((<Pkg>obj).ptr)
     elif isinstance(obj, str):
@@ -81,7 +83,9 @@ cdef class Restrict:
         Raises TypeError for object types not supporting matches.
         """
         if isinstance(obj, Cpv):
-            return C.pkgcraft_dep_restrict_matches((<Cpv>obj).ptr, self.ptr)
+            return C.pkgcraft_cpv_restrict_matches((<Cpv>obj).ptr, self.ptr)
+        if isinstance(obj, Dep):
+            return C.pkgcraft_dep_restrict_matches((<Dep>obj).ptr, self.ptr)
         elif isinstance(obj, Pkg):
             return C.pkgcraft_pkg_restrict_matches((<Pkg>obj).ptr, self.ptr)
         raise TypeError(f"{obj.__class__.__name__!r} unsupported restriction matches type")

@@ -92,6 +92,10 @@ cdef extern from "pkgcraft.h":
     cdef struct Config:
         pass
 
+    # Package identifier.
+    cdef struct Cpv:
+        pass
+
     # Package dependency.
     cdef struct Dep:
         pass
@@ -238,13 +242,126 @@ cdef extern from "pkgcraft.h":
     # The config argument must be a non-null Config pointer.
     RepoSet *pkgcraft_config_repos_set(Config *config, RepoSetType set_type)
 
-    # Parse a CPV string into a package dependency.
+    # Get the category of a Cpv object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    char *pkgcraft_cpv_category(Cpv *c)
+
+    # Compare two Cpvs returning -1, 0, or 1 if the first is less than, equal to, or
+    # greater than the second, respectively.
+    #
+    # # Safety
+    # The arguments must be non-null Cpv pointers.
+    int pkgcraft_cpv_cmp(Cpv *c1, Cpv *c2)
+
+    # Get the category and package of a Cpv object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    char *pkgcraft_cpv_cpn(Cpv *c)
+
+    # Free a Cpv.
+    #
+    # # Safety
+    # The argument must be a Cpv pointer or NULL.
+    void pkgcraft_cpv_free(Cpv *c)
+
+    # Return the hash value for a Cpv object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    uint64_t pkgcraft_cpv_hash(Cpv *c)
+
+    # Determine if two Cpv objects intersect.
+    #
+    # # Safety
+    # The arguments must be non-null Cpv pointers.
+    bool pkgcraft_cpv_intersects(Cpv *c1, Cpv *c2)
+
+    # Determine if a Cpv intersects with a package dependency.
+    #
+    # # Safety
+    # The arguments must be non-null Cpv and Dep pointers.
+    bool pkgcraft_cpv_intersects_dep(Cpv *c, Dep *d)
+
+    # Parse a CPV string into a Cpv object.
     #
     # Returns NULL on error.
     #
     # # Safety
     # The argument should be a UTF-8 string.
-    Dep *pkgcraft_cpv_new(const char *s)
+    Cpv *pkgcraft_cpv_new(const char *s)
+
+    # Get the package and revision of a Cpv object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    char *pkgcraft_cpv_p(Cpv *c)
+
+    # Get the package name of a Cpv object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    char *pkgcraft_cpv_package(Cpv *c)
+
+    # Get the package, version, and revision of a Cpv object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    char *pkgcraft_cpv_pf(Cpv *c)
+
+    # Get the revision of a Cpv object.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    char *pkgcraft_cpv_pr(Cpv *c)
+
+    # Get the version of a Cpv object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    char *pkgcraft_cpv_pv(Cpv *c)
+
+    # Get the version and revision of a Cpv object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    char *pkgcraft_cpv_pvr(Cpv *c)
+
+    # Return the restriction for a Cpv object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    Restrict *pkgcraft_cpv_restrict(Cpv *c)
+
+    # Determine if a restriction matches a Cpv object.
+    #
+    # # Safety
+    # The arguments must be valid Restrict and Cpv pointers.
+    bool pkgcraft_cpv_restrict_matches(Cpv *c, Restrict *r)
+
+    # Get the revision of a Cpv object.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    char *pkgcraft_cpv_revision(Cpv *c)
+
+    # Return the string for a Cpv object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    char *pkgcraft_cpv_str(Cpv *c)
+
+    # Get the version of a Cpv object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    Version *pkgcraft_cpv_version(Cpv *c)
 
     # Get the blocker of a package dependency.
     # For example, the package dependency "!cat/pkg" has a weak blocker.
@@ -307,6 +424,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The arguments must be non-null Dep pointers.
     bool pkgcraft_dep_intersects(Dep *d1, Dep *d2)
+
+    # Determine if a package dependency intersects with a Cpv.
+    #
+    # # Safety
+    # The arguments must be non-null Cpv and Dep pointers.
+    bool pkgcraft_dep_intersects_cpv(Dep *d, Cpv *c)
 
     # Parse a string into a package dependency using a specific EAPI. Pass NULL for the eapi argument
     # in order to parse using the latest EAPI with extensions (e.g. support for repo deps).
@@ -782,7 +905,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    Dep *pkgcraft_pkg_cpv(Pkg *p)
+    Cpv *pkgcraft_pkg_cpv(Pkg *p)
 
     # Return a package's EAPI.
     #
