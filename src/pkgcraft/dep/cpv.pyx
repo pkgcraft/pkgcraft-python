@@ -101,10 +101,7 @@ cdef class Cpv:
         >>> cpv.revision is None
         True
         """
-        version = self.version
-        if version is not None:
-            return version.revision
-        return None
+        return self.version.revision
 
     @property
     def p(self):
@@ -156,11 +153,9 @@ cdef class Cpv:
         'r0'
         """
         c_str = C.pkgcraft_cpv_pr(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
 
     @property
     def pv(self):
@@ -178,11 +173,9 @@ cdef class Cpv:
         '1'
         """
         c_str = C.pkgcraft_cpv_pv(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
 
     @property
     def pvr(self):
@@ -200,11 +193,9 @@ cdef class Cpv:
         '1'
         """
         c_str = C.pkgcraft_cpv_pvr(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
+        s = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        return s
 
     @property
     def cpn(self):
