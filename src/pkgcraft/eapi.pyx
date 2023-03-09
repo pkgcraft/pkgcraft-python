@@ -9,8 +9,9 @@ from .error import PkgcraftError
 from .set import OrderedFrozenSet
 
 EAPIS_OFFICIAL = get_official_eapis()
-EAPI_LATEST = next(reversed(EAPIS_OFFICIAL.values()))
+EAPI_LATEST_OFFICIAL = next(reversed(EAPIS_OFFICIAL.values()))
 EAPIS = get_eapis()
+EAPI_LATEST = next(reversed(EAPIS.values()))
 
 
 cpdef Eapi eapi_from_obj(object obj):

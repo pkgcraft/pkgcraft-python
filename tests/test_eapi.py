@@ -2,7 +2,15 @@ import pickle
 
 import pytest
 
-from pkgcraft.eapi import EAPI0, EAPI1, EAPI_LATEST, EAPIS, EAPIS_OFFICIAL, eapi_from_obj
+from pkgcraft.eapi import (
+    EAPI0,
+    EAPI1,
+    EAPI_LATEST,
+    EAPI_LATEST_OFFICIAL,
+    EAPIS,
+    EAPIS_OFFICIAL,
+    eapi_from_obj,
+)
 
 from .misc import OperatorMap
 
@@ -12,7 +20,9 @@ def test_globals():
     # verify objects are shared between EAPIS_OFFICIAL and EAPIS
     for id, eapi in EAPIS_OFFICIAL.items():
         assert EAPIS[id] is eapi
+    assert EAPIS[str(EAPI_LATEST_OFFICIAL)] is EAPI_LATEST_OFFICIAL
     assert EAPIS[str(EAPI_LATEST)] is EAPI_LATEST
+    assert EAPI_LATEST_OFFICIAL is not EAPI_LATEST
 
 
 def test_eapi_from_obj():

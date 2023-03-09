@@ -1,7 +1,7 @@
 import pytest
 
 from pkgcraft.dep import Cpv, Version
-from pkgcraft.eapi import EAPI_LATEST
+from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 from pkgcraft.restrict import Restrict
 
 from ..misc import OperatorMap
@@ -19,7 +19,7 @@ class BasePkgTests:
         assert pkg.cpv == Cpv("cat/pkg-1-r2")
 
     def test_eapi_base(self, pkg):
-        assert pkg.eapi is EAPI_LATEST
+        assert pkg.eapi is EAPI_LATEST_OFFICIAL
 
     def test_repo(self, pkg, repo):
         assert pkg.repo == repo

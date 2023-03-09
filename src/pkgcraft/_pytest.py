@@ -9,7 +9,7 @@ import pytest
 
 from pkgcraft.config import Config
 from pkgcraft.dep import Cpv
-from pkgcraft.eapi import EAPI_LATEST
+from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 from pkgcraft.repo import EbuildRepo, FakeRepo
 from pkgcraft.set import OrderedSet
 
@@ -62,7 +62,7 @@ class _FileSet(MutableSet):
 class TempRawEbuildRepo:
     """Class for creating and manipulating raw ebuild repos."""
 
-    def __init__(self, path, id='fake', eapi=EAPI_LATEST, masters=(), arches=(), categories=()):
+    def __init__(self, path, id='fake', eapi=EAPI_LATEST_OFFICIAL, masters=(), arches=(), categories=()):
         self._path = Path(path)
         self._repo_id = id
         self._arches = _FileSet(self._path / 'profiles' / 'arch.list')
@@ -118,7 +118,7 @@ class TempRawEbuildRepo:
         os.makedirs(ebuild_dir, exist_ok=True)
 
         # use defaults for some ebuild metadata if unset
-        eapi = kwargs.pop('eapi', EAPI_LATEST)
+        eapi = kwargs.pop('eapi', EAPI_LATEST_OFFICIAL)
         slot = kwargs.pop('slot', '0')
         desc = kwargs.pop('description', 'stub package description')
 

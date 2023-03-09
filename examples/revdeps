@@ -5,7 +5,7 @@ import argparse
 import logging
 
 from pkgcraft.config import Config
-from pkgcraft.eapi import EAPI_LATEST
+from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 from pkgcraft.error import InvalidRestrict, PkgcraftError
 from pkgcraft.logging import logger
 from pkgcraft.restrict import Restrict
@@ -39,7 +39,7 @@ def main():
     except PkgcraftError as e:
         parser.error(e)
 
-    dep_keys = sorted(EAPI_LATEST.dep_keys)
+    dep_keys = sorted(EAPI_LATEST_OFFICIAL.dep_keys)
     for pkg in config.repos.ebuild:
         for attr, deps in ((k, deps) for k in dep_keys if (deps := getattr(pkg, k.lower()))):
             for a in filter(restrict.matches, deps.iter_flatten()):
