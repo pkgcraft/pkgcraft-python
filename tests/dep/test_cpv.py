@@ -39,6 +39,35 @@ class TestCpv:
             with pytest.raises(TypeError):
                 Cpv(obj)
 
+    def test_cmp(self, toml_data):
+        cpv1 = Cpv("cat/pkg-1")
+        cpv2 = Cpv("cat/pkg-2")
+        obj = object()
+
+        assert cpv1 < cpv2
+        with pytest.raises(TypeError):
+            assert cpv1 < obj
+
+        assert cpv1 <= cpv2
+        assert cpv2 <= cpv2
+        with pytest.raises(TypeError):
+            assert cpv1 <= obj
+
+        assert cpv1 == cpv1
+        assert not cpv1 == obj
+
+        assert cpv1 != cpv2
+        assert cpv1 != obj
+
+        assert cpv2 >= cpv1
+        assert cpv2 >= cpv2
+        with pytest.raises(TypeError):
+            assert cpv2 >= obj
+
+        assert cpv2 > cpv1
+        with pytest.raises(TypeError):
+            assert cpv2 > obj
+
     def test_intersects(self):
         cpv1 = Cpv("cat/pkg-1")
         cpv2 = Cpv("cat/pkg-2")
