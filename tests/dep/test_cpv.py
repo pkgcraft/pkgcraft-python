@@ -2,7 +2,7 @@ import pickle
 
 import pytest
 
-from pkgcraft.dep import Cpv, Version
+from pkgcraft.dep import Cpv, Dep, Version
 from pkgcraft.error import InvalidCpv
 from pkgcraft.restrict import Restrict
 
@@ -38,6 +38,30 @@ class TestCpv:
         for obj in (object(), None):
             with pytest.raises(TypeError):
                 Cpv(obj)
+
+    def test_intersects(self):
+        cpv1 = Cpv("cat/pkg-1")
+        cpv2 = Cpv("cat/pkg-2")
+
+        # objects intersect themselves
+        assert cpv1.intersects(cpv1)
+        assert cpv2.intersects(cpv2)
+
+        # unequal Cpvs
+        assert not cpv1.intersects(cpv2)
+
+        # unversioned Dep
+        assert cpv1.intersects(Dep("cat/pkg"))
+
+        # invalid type
+        with pytest.raises(TypeError):
+            cpv1.intersects(object())
+
+    def test_hash(self, toml_data):
+        for d in toml_data["version.toml"]["hashing"]:
+            s = {Cpv(f"cat/pkg-{x}") for x in d["versions"]}
+            length = 1 if d["equal"] else len(d["versions"])
+            assert len(s) == length
 
     def test_pickle(self):
         a = Cpv("cat/pkg-1-r2")

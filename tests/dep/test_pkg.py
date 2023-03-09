@@ -180,7 +180,7 @@ class TestDep:
             for s1, s2 in itertools.permutations(d["vals"], 2):
                 (obj1, obj2) = (parse(s1), parse(s2))
 
-                # elements intersect themselves
+                # objects intersect themselves
                 assert obj1.intersects(obj1)
                 assert obj2.intersects(obj2)
 
@@ -189,6 +189,10 @@ class TestDep:
                     assert obj1.intersects(obj2)
                 else:
                     assert not obj1.intersects(obj2)
+
+        # invalid type
+        with pytest.raises(TypeError):
+            Dep("cat/pkg").intersects(object())
 
     def test_sort(self, toml_data):
         for d in toml_data["dep.toml"]["sorting"]:
