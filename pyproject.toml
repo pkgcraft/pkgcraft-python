@@ -69,6 +69,11 @@ exclude_lines = [
     "if __name__ == .__main__.:",
 ]
 
+[tool.isort]
+line_length = 100
+multi_line_output = 3
+include_trailing_comma = true
+
 [tool.pylint]
 disable = ["C0103", "C0114", "C0115", "C0116", "E0401", "R0902", "R0903", "R0904", "W0621"]
 

@@ -39,7 +39,7 @@ class TestCpv:
             with pytest.raises(TypeError):
                 Cpv(obj)
 
-    def test_cmp(self, toml_data):
+    def test_cmp(self):
         cpv1 = Cpv("cat/pkg-1")
         cpv2 = Cpv("cat/pkg-2")
         obj = object()
