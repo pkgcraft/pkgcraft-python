@@ -10,6 +10,7 @@ from ..restrict cimport Restrict
 from . cimport Cpv
 from .version cimport Version
 
+from ..eapi import EAPI_LATEST
 from ..error import InvalidDep
 
 
@@ -108,13 +109,13 @@ cdef class Dep:
     def __cinit__(self):
         self._version = SENTINEL
         self._use = SENTINEL
+        self.eapi = EAPI_LATEST
 
     def __init__(self, str s not None, eapi=None):
-        cdef const C.Eapi *eapi_ptr = NULL
         if eapi is not None:
-            eapi_ptr = eapi_from_obj(eapi).ptr
+            self.eapi = eapi_from_obj(eapi)
 
-        self.ptr = C.pkgcraft_dep_new(s.encode(), eapi_ptr)
+        self.ptr = C.pkgcraft_dep_new(s.encode(), self.eapi.ptr)
         if self.ptr is NULL:
             raise InvalidDep
 
@@ -551,7 +552,7 @@ cdef class Dep:
 
     def __reduce__(self):
         """Support pickling Dep objects."""
-        return self.__class__, (str(self),)
+        return self.__class__, (str(self), self.eapi)
 
     def __dealloc__(self):
         C.pkgcraft_dep_free(self.ptr)
