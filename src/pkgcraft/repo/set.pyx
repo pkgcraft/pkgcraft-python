@@ -8,7 +8,7 @@ from ..restrict cimport Restrict
 from . cimport Repo
 
 from .. import parse
-from ..set import OrderedFrozenSet
+from ..types import OrderedFrozenSet
 
 
 @cython.final

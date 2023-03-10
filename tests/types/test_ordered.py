@@ -5,7 +5,7 @@ import weakref
 
 import pytest
 
-from pkgcraft.set import OrderedFrozenSet, OrderedSet
+from pkgcraft.types import OrderedFrozenSet, OrderedSet
 
 
 @pytest.fixture

@@ -9,7 +9,7 @@ from ..dep cimport Dependencies, License, Properties, RequiredUse, Restrict, Src
 from . cimport Pkg
 
 from ..error import PkgcraftError
-from ..set import OrderedFrozenSet
+from ..types import OrderedFrozenSet
 
 
 @cython.final

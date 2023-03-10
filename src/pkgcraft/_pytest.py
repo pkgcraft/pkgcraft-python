@@ -11,7 +11,7 @@ from pkgcraft.config import Config
 from pkgcraft.dep import Cpv
 from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 from pkgcraft.repo import EbuildRepo, FakeRepo
-from pkgcraft.set import OrderedSet
+from pkgcraft.types import OrderedSet
 
 
 class _FileSet(MutableSet):

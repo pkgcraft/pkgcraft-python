@@ -2,7 +2,7 @@ from .. cimport pkgcraft_c as C
 from ..error cimport _IndirectInit
 from . cimport Repo
 
-from ..set import OrderedFrozenSet
+from ..types import OrderedFrozenSet
 
 
 cdef class EbuildRepo(Repo):

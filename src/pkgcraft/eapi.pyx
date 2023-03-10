@@ -6,7 +6,7 @@ from . cimport pkgcraft_c as C
 from .error cimport _IndirectInit
 
 from .error import PkgcraftError
-from .set import OrderedFrozenSet
+from .types import OrderedFrozenSet
 
 EAPIS_OFFICIAL = get_official_eapis()
 EAPI_LATEST_OFFICIAL = next(reversed(EAPIS_OFFICIAL.values()))
