@@ -169,11 +169,11 @@ class TestDep:
 
     def test_intersects(self, toml_data):
         def parse(s):
-            """Convert string to Cpv falling back to regular Dep."""
+            """Convert string to Dep falling back to Cpv."""
             try:
-                return Cpv(s)
-            except InvalidCpv:
                 return Dep(s)
+            except InvalidDep:
+                return Cpv(s)
 
         for d in toml_data["dep.toml"]["intersects"]:
             # test intersections between all pairs of distinct values
