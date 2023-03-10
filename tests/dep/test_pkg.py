@@ -7,7 +7,7 @@ import pytest
 
 from pkgcraft.dep import Blocker, Cpv, Dep, Operator, SlotOperator, VersionWithOp
 from pkgcraft.eapi import EAPIS, Eapi
-from pkgcraft.error import InvalidCpv, InvalidDep
+from pkgcraft.error import InvalidDep
 from pkgcraft.restrict import Restrict
 
 from ..misc import OperatorIterMap, OperatorMap
