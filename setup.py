@@ -85,16 +85,19 @@ class build_ext(dst_build_ext.build_ext):
     user_options = dst_build_ext.build_ext.user_options + [
         ("cython-coverage", None, "enable cython coverage support"),
         ("develop", None, "convert cythonize and compile-time warnings into errors"),
+        ("doc", None, "support API doc generation"),
     ]
 
     def initialize_options(self):
         self.cython_coverage = False
         self.develop = False
+        self.doc = False
         super().initialize_options()
 
     def finalize_options(self):
         self.cython_coverage = bool(self.cython_coverage)
         self.develop = bool(self.develop)
+        self.doc = bool(self.doc)
 
         # default to parallelizing build across all cores
         if self.parallel is None:
@@ -106,17 +109,19 @@ class build_ext(dst_build_ext.build_ext):
         # default cython compiler directives
         compiler_directives = {"language_level": 3}
 
-        # optionally enable coverage support for cython modules
         if self.cython_coverage:
             compiler_directives["linetrace"] = True
             trace_macros = [("CYTHON_TRACE", "1"), ("CYTHON_TRACE_NOGIL", "1")]
             for ext in self.extensions:
                 ext.define_macros.extend(trace_macros)
 
-        # optionally convert warnings into errors
         if self.develop:
             Options.warning_errors = True
             os.environ["CFLAGS"] = os.environ.get("CFLAGS", "") + " -Werror"
+
+        if self.doc:
+            compiler_directives["binding"] = True
+            compiler_directives["embedsignature"] = True
 
         # generate C modules with cython
         self.extensions[:] = cythonize(
