@@ -3,6 +3,7 @@ import subprocess
 from multiprocessing import cpu_count
 
 from Cython.Build import cythonize
+from Cython.Compiler import Options
 from setuptools import setup
 from setuptools.command import build_ext as dst_build_ext
 from setuptools.extension import Extension
@@ -82,15 +83,18 @@ class build_ext(dst_build_ext.build_ext):
     """Enable building cython extensions with coverage support."""
 
     user_options = dst_build_ext.build_ext.user_options + [
-        ("cython-coverage", None, "enable cython coverage support")
+        ("cython-coverage", None, "enable cython coverage support"),
+        ("cython-warnings-to-errors", None, "convert cython warnings into errors"),
     ]
 
     def initialize_options(self):
         self.cython_coverage = False
+        self.cython_warnings_to_errors = False
         super().initialize_options()
 
     def finalize_options(self):
         self.cython_coverage = bool(self.cython_coverage)
+        self.cython_warnings_to_errors = bool(self.cython_warnings_to_errors)
 
         # default to parallelizing build across all cores
         if self.parallel is None:
@@ -108,6 +112,10 @@ class build_ext(dst_build_ext.build_ext):
             trace_macros = [("CYTHON_TRACE", "1"), ("CYTHON_TRACE_NOGIL", "1")]
             for ext in self.extensions:
                 ext.define_macros.extend(trace_macros)
+
+        # optionally convert warnings into errors
+        if self.cython_warnings_to_errors:
+            Options.warning_errors = True
 
         # generate C modules with cython
         self.extensions[:] = cythonize(
