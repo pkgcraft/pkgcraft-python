@@ -42,8 +42,8 @@ def pkg_config(*packages, **kw):
         tokens = subprocess.check_output(
             ["pkg-config", "--libs", "--cflags"] + list(packages)
         ).split()
-    except OSError as e:
-        raise SystemExit(f"running pkg-config failed: {e.strerror}")
+    except subprocess.CalledProcessError:
+        raise SystemExit(f"running pkg-config failed")
 
     for token in tokens:
         token = token.decode()
