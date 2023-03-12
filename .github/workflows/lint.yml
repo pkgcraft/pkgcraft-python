@@ -19,7 +19,6 @@ on:
       - "src/**"
       - "tests/**"
       - "setup.py"
-      - "tox.ini"
 
 jobs:
   lint:

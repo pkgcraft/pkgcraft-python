@@ -19,7 +19,6 @@ on:
       - "tests/**"
       - "pyproject.toml"
       - "setup.py"
-      - "tox.ini"
   workflow_dispatch:
     inputs:
       python-version:
