@@ -27,6 +27,22 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Set pkgcraft dir env var
+      run: echo pkgcraft_dir=~/pkgcraft >> $GITHUB_ENV
+
+    - name: Download pkgcraft-c library from most recent run
+      if: ${{ inputs.event-type == '' }}
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        github_token: ${{ secrets.PKGCRAFT_CI_TOKEN }}
+        repo: pkgcraft/pkgcraft
+        branch: main
+        workflow: pkgcraft-c.yml
+        workflow_conclusion: ""
+        search_artifacts: true
+        name: pkgcraft-c-${{ runner.os }}
+        path: ${{ env.pkgcraft_dir }}
+
     - name: Checkout code
       uses: actions/checkout@v3
 
@@ -37,6 +53,12 @@ jobs:
 
     - name: Install dependencies
       run: pip install tox
+
+    - name: Override build variables
+      run: |
+        echo "PKG_CONFIG_PATH=${pkgcraft_dir}" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=${pkgcraft_dir}/lib" >> $GITHUB_ENV
+        echo "DYLD_LIBRARY_PATH=${pkgcraft_dir}/lib" >> $GITHUB_ENV
 
     - name: Build documentation
       run: |
