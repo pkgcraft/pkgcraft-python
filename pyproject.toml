@@ -69,6 +69,9 @@ exclude_lines = [
     "if __name__ == .__main__.:",
 ]
 
+[tool.black]
+line_length = 100
+
 [tool.isort]
 line_length = 100
 multi_line_output = 3
