@@ -106,7 +106,14 @@ cdef class Eapi(_IndirectInit):
         c_eapis = C.pkgcraft_eapis_range(s.encode(), &length)
         if c_eapis is NULL:
             raise PkgcraftError
-        eapis = eapis_to_list(c_eapis, length)
+
+        eapis = []
+        for i in range(0, length):
+            c_str = C.pkgcraft_eapi_as_str(c_eapis[i])
+            id = c_str.decode()
+            C.pkgcraft_str_free(c_str)
+            eapis.append(EAPIS[id])
+
         C.pkgcraft_eapis_free(c_eapis, length)
         return OrderedFrozenSet(eapis)
 
