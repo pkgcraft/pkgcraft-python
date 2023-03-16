@@ -149,12 +149,19 @@ class TestDep:
                 Dep(obj)
 
     def test_cmp(self, toml_data):
-        for s in toml_data["version.toml"]["compares"]:
-            v1, op, v2 = s.split()
-            a1 = Dep(f"=cat/pkg-{v1}")
-            a2 = Dep(f"=cat/pkg-{v2}")
+        for s in toml_data["dep.toml"]["compares"]:
+            s1, op, s2 = s.split()
+            d1 = Dep(s1)
+            d2 = Dep(s2)
             for op_func in OperatorIterMap[op]:
-                assert op_func(a1, a2), f"failed comparison: {s}"
+                assert op_func(d1, d2), f"failed comparison: {s}"
+
+        for s in toml_data["version.toml"]["compares"]:
+            s1, op, s2 = s.split()
+            d1 = Dep(f"=cat/pkg-{s1}")
+            d2 = Dep(f"=cat/pkg-{s2}")
+            for op_func in OperatorIterMap[op]:
+                assert op_func(d1, d2), f"failed comparison: {s}"
 
         # verify incompatible type comparisons
         obj = Dep("=cat/pkg-1")
