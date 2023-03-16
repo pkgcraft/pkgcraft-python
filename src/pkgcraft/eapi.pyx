@@ -9,9 +9,7 @@ from .error import PkgcraftError
 from .types import OrderedFrozenSet
 
 EAPIS_OFFICIAL = get_official_eapis()
-EAPI_LATEST_OFFICIAL = next(reversed(EAPIS_OFFICIAL.values()))
 EAPIS = get_eapis()
-EAPI_LATEST = next(reversed(EAPIS.values()))
 
 
 cpdef Eapi eapi_from_obj(object obj):
@@ -43,7 +41,8 @@ cdef object get_official_eapis():
     d = {str(eapi): eapi for eapi in eapis}
     C.pkgcraft_eapis_free(c_eapis, length)
 
-    # set global variables for each official EAPI, e.g. EAPI0, EAPI1, ...
+    # set global variables for each official EAPIs
+    globals()['EAPI_LATEST_OFFICIAL'] = eapis[-1]
     for k, v in d.items():
         globals()[f'EAPI{k}'] = v
 
@@ -56,6 +55,7 @@ cdef object get_eapis():
     d = EAPIS_OFFICIAL.copy()
     c_eapis = C.pkgcraft_eapis(&length)
     eapis = eapis_to_list(c_eapis, length, start=len(d))
+    globals()['EAPI_LATEST'] = eapis[-1]
     d.update((str(eapi), eapi) for eapi in eapis)
     C.pkgcraft_eapis_free(c_eapis, length)
     return MappingProxyType(d)
