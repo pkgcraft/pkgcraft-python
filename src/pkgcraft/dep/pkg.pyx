@@ -121,7 +121,7 @@ cdef class Dep:
 
     @staticmethod
     cdef Dep from_ptr(C.Dep *ptr):
-        """Create an Dep from a pointer."""
+        """Create a Dep from a pointer."""
         obj = <Dep>Dep.__new__(Dep)
         obj.ptr = <C.Dep *>ptr
         return obj
