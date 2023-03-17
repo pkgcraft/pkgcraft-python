@@ -499,10 +499,9 @@ cdef class Dep:
         """
         if isinstance(other, Dep):
             return C.pkgcraft_dep_intersects(self.ptr, (<Dep>other).ptr)
-        if isinstance(other, Cpv):
+        elif isinstance(other, Cpv):
             return C.pkgcraft_dep_intersects_cpv(self.ptr, (<Cpv>other).ptr)
-        else:
-            raise TypeError(f"{other.__class__.__name__!r} unsupported type")
+        raise TypeError(f"{other.__class__.__name__!r} unsupported type")
 
     def __lt__(self, other):
         if isinstance(other, Dep):
