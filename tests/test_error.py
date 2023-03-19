@@ -10,7 +10,7 @@ class TestPkgcraftError:
             raise PkgcraftError("error message")
 
     def test_no_c_error(self):
-        with pytest.raises(RuntimeError, match="no pkgcraft-c error occurred"):
+        with pytest.raises(RuntimeError, match="no pkgcraft error occurred"):
             raise PkgcraftError
 
 
