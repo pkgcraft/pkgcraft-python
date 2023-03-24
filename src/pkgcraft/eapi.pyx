@@ -73,6 +73,40 @@ cdef Eapi eapi_from_ptr(const C.Eapi *ptr):
     return obj
 
 
+def eapi_range(str s not None):
+    """Convert EAPI range into an ordered set of Eapi objects.
+
+    >>> from pkgcraft.eapi import eapi_range, EAPI3, EAPI4, EAPIS, EAPIS_OFFICIAL
+
+    >>> eapi_range('..') == set(EAPIS.values())
+    True
+    >>> eapi_range('..2') == {EAPI0, EAPI1}
+    True
+    >>> eapi_range('3..4') == {EAPI3}
+    True
+    >>> eapi_range('3..=4') == {EAPI3, EAPI4}
+    True
+    >>> eapi_range('..9999')
+    Traceback (most recent call last):
+        ...
+    pkgcraft.error.PkgcraftError: invalid EAPI range: ..9999
+    """
+    cdef size_t length
+    c_eapis = C.pkgcraft_eapis_range(s.encode(), &length)
+    if c_eapis is NULL:
+        raise PkgcraftError
+
+    eapis = []
+    for i in range(0, length):
+        c_str = C.pkgcraft_eapi_as_str(c_eapis[i])
+        id = c_str.decode()
+        C.pkgcraft_str_free(c_str)
+        eapis.append(EAPIS[id])
+
+    C.pkgcraft_eapis_free(c_eapis, length)
+    return OrderedFrozenSet(eapis)
+
+
 @cython.final
 cdef class Eapi(_IndirectInit):
 
@@ -83,40 +117,6 @@ cdef class Eapi(_IndirectInit):
         id = c_str.decode()
         C.pkgcraft_str_free(c_str)
         return EAPIS[id]
-
-    @staticmethod
-    def range(str s not None):
-        """Convert EAPI range into an ordered set of Eapi objects.
-
-        >>> from pkgcraft.eapi import Eapi, EAPI3, EAPI4, EAPIS, EAPIS_OFFICIAL
-
-        >>> Eapi.range('..') == set(EAPIS.values())
-        True
-        >>> Eapi.range('..2') == {EAPI0, EAPI1}
-        True
-        >>> Eapi.range('3..4') == {EAPI3}
-        True
-        >>> Eapi.range('3..=4') == {EAPI3, EAPI4}
-        True
-        >>> Eapi.range('..9999')
-        Traceback (most recent call last):
-            ...
-        pkgcraft.error.PkgcraftError: invalid EAPI range: ..9999
-        """
-        cdef size_t length
-        c_eapis = C.pkgcraft_eapis_range(s.encode(), &length)
-        if c_eapis is NULL:
-            raise PkgcraftError
-
-        eapis = []
-        for i in range(0, length):
-            c_str = C.pkgcraft_eapi_as_str(c_eapis[i])
-            id = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            eapis.append(EAPIS[id])
-
-        C.pkgcraft_eapis_free(c_eapis, length)
-        return OrderedFrozenSet(eapis)
 
     def has(self, str s not None):
         """Check if an EAPI has a given feature.

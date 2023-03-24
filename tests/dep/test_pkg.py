@@ -6,7 +6,7 @@ import re
 import pytest
 
 from pkgcraft.dep import Blocker, Cpv, Dep, Operator, SlotOperator, VersionWithOp
-from pkgcraft.eapi import EAPIS, Eapi
+from pkgcraft.eapi import EAPIS, eapi_range
 from pkgcraft.error import InvalidDep
 from pkgcraft.restrict import Restrict
 
@@ -118,7 +118,7 @@ class TestDep:
                 if val := entry.get(k):
                     entry[k] = converters[k](val)
 
-            passing_eapis = Eapi.range(entry["eapis"])
+            passing_eapis = eapi_range(entry["eapis"])
             for eapi in EAPIS.values():
                 if eapi in passing_eapis:
                     a = Dep(s, eapi)
