@@ -68,8 +68,8 @@ cdef Eapi eapi_from_ptr(const C.Eapi *ptr):
     c_str = C.pkgcraft_eapi_as_str(ptr)
     id = c_str.decode()
     C.pkgcraft_str_free(c_str)
-    obj._id = id
-    obj._hash = C.pkgcraft_eapi_hash(ptr)
+    obj.id = id
+    obj.hash = C.pkgcraft_eapi_hash(ptr)
     return obj
 
 
@@ -141,21 +141,21 @@ cdef class Eapi(_IndirectInit):
     def dep_keys(self):
         """Get an EAPI's dependency keys."""
         cdef size_t length
-        if self._dep_keys is None:
+        if self.dep_keys is None:
             c_keys = C.pkgcraft_eapi_dep_keys(self.ptr, &length)
-            self._dep_keys = frozenset(c_keys[i].decode() for i in range(length))
+            self.dep_keys = frozenset(c_keys[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(c_keys, length)
-        return self._dep_keys
+        return self.dep_keys
 
     @property
     def metadata_keys(self):
         """Get an EAPI's metadata keys."""
         cdef size_t length
-        if self._metadata_keys is None:
+        if self.metadata_keys is None:
             c_keys = C.pkgcraft_eapi_metadata_keys(self.ptr, &length)
-            self._metadata_keys = frozenset(c_keys[i].decode() for i in range(length))
+            self.metadata_keys = frozenset(c_keys[i].decode() for i in range(length))
             C.pkgcraft_str_array_free(c_keys, length)
-        return self._metadata_keys
+        return self.metadata_keys
 
     def __lt__(self, other):
         if isinstance(other, Eapi):
@@ -188,7 +188,7 @@ cdef class Eapi(_IndirectInit):
         return NotImplemented
 
     def __str__(self):
-        return self._id
+        return self.id
 
     def __repr__(self):
         addr = <size_t>&self.ptr
@@ -196,7 +196,7 @@ cdef class Eapi(_IndirectInit):
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
-        return self._hash
+        return self.hash
 
     def __reduce__(self):
-        return eapi_from_obj, (self._id,)
+        return eapi_from_obj, (self.id,)
