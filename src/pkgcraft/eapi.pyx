@@ -69,6 +69,7 @@ cdef Eapi eapi_from_ptr(const C.Eapi *ptr):
     id = c_str.decode()
     C.pkgcraft_str_free(c_str)
     obj._id = id
+    obj._hash = C.pkgcraft_eapi_hash(ptr)
     return obj
 
 
@@ -195,8 +196,6 @@ cdef class Eapi(_IndirectInit):
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
-        if not self._hash:
-            self._hash = C.pkgcraft_eapi_hash(self.ptr)
         return self._hash
 
     def __reduce__(self):
