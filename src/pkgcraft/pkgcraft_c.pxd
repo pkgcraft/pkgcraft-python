@@ -152,6 +152,10 @@ cdef extern from "pkgcraft.h":
     cdef struct Restrict:
         pass
 
+    # Opaque wrapper for pkgcraft::repo::temp::Repo objects.
+    cdef struct TempRepo:
+        pass
+
     # Uri object.
     cdef struct Uri:
         pass
@@ -208,16 +212,13 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The path argument should be a valid path on the system.
-    Repo *pkgcraft_config_add_repo_path(Config *config,
-                                        const char *id,
-                                        int priority,
-                                        const char *path)
+    Repo *pkgcraft_config_add_repo_path(Config *c, const char *id, int priority, const char *path)
 
     # Free a config.
     #
     # # Safety
     # The argument must be a Config pointer or NULL.
-    void pkgcraft_config_free(Config *config)
+    void pkgcraft_config_free(Config *c)
 
     # Load repos from a path to a portage-compatible repos.conf directory or file.
     #
@@ -225,7 +226,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The path argument should be a valid path on the system.
-    Repo **pkgcraft_config_load_repos_conf(Config *config, const char *path, uintptr_t *len)
+    Repo **pkgcraft_config_load_repos_conf(Config *c, const char *path, uintptr_t *len)
 
     # Create an empty pkgcraft config.
     Config *pkgcraft_config_new()
@@ -234,13 +235,13 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The config argument must be a non-null Config pointer.
-    const Repo **pkgcraft_config_repos(Config *config, uintptr_t *len)
+    const Repo **pkgcraft_config_repos(Config *c, uintptr_t *len)
 
     # Return the RepoSet for a given set type.
     #
     # # Safety
     # The config argument must be a non-null Config pointer.
-    RepoSet *pkgcraft_config_repos_set(Config *config, RepoSetType set_type)
+    RepoSet *pkgcraft_config_repos_set(Config *c, RepoSetType set_type)
 
     # Get the category of a Cpv object.
     #
@@ -1137,7 +1138,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The arguments must be valid Restrict and Pkg pointers.
-    bool pkgcraft_pkg_restrict_matches(Pkg *pkg, Restrict *r)
+    bool pkgcraft_pkg_restrict_matches(Pkg *p, Restrict *r)
 
     # Return the string for a package.
     #
@@ -1193,6 +1194,35 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Repo pointer.
     char **pkgcraft_repo_ebuild_metadata_categories(Repo *r, uintptr_t *len)
+
+    # Free a temporary repo.
+    #
+    # Freeing a temporary repo removes the related directory from the filesystem.
+    #
+    # # Safety
+    # The argument must be a TempRepo pointer or NULL.
+    void pkgcraft_repo_ebuild_temp_free(TempRepo *r)
+
+    # Create a temporary ebuild repository.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The id argument should be a valid, unicode string and the eapi parameter can optionally be
+    # NULL.
+    TempRepo *pkgcraft_repo_ebuild_temp_new(const char *id, const Eapi *eapi)
+
+    # Return a temporary repo's path.
+    #
+    # # Safety
+    # The argument must be a non-null TempRepo pointer.
+    char *pkgcraft_repo_ebuild_temp_path(TempRepo *r)
+
+    # Persist a temporary repo to disk, returning its path.
+    #
+    # # Safety
+    # The related TempRepo pointer is invalid on function completion and should not be used.
+    char *pkgcraft_repo_ebuild_temp_persist(TempRepo *r, const char *path)
 
     # Add pkgs to an existing fake repo from an array of CPV strings.
     #
@@ -1309,8 +1339,6 @@ cdef extern from "pkgcraft.h":
 
     # Return a repo's packages for a category.
     #
-    # Returns NULL on error.
-    #
     # # Safety
     # The arguments must be a non-null Repo pointer and category.
     char **pkgcraft_repo_packages(Repo *r, const char *cat, uintptr_t *len)
@@ -1370,7 +1398,7 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The repo argument must be a non-null Repo pointer and the restrict argument can be a
     # Restrict pointer or NULL to iterate over all packages.
-    RepoSetIter *pkgcraft_repo_set_iter(RepoSet *repo, Restrict *restrict)
+    RepoSetIter *pkgcraft_repo_set_iter(RepoSet *s, Restrict *restrict)
 
     # Free a repo set iterator.
     #
@@ -1412,8 +1440,6 @@ cdef extern from "pkgcraft.h":
 
     # Return a repo set's packages for a category.
     #
-    # Returns NULL on error.
-    #
     # # Safety
     # The arguments must be a non-null RepoSet pointer and category.
     char **pkgcraft_repo_set_packages(RepoSet *s, const char *cat, uintptr_t *len)
@@ -1426,15 +1452,11 @@ cdef extern from "pkgcraft.h":
 
     # Return a repo set's versions for a package.
     #
-    # Returns NULL on error.
-    #
     # # Safety
     # The arguments must be a non-null RepoSet pointer, category, and package.
     char **pkgcraft_repo_set_versions(RepoSet *s, const char *cat, const char *pkg, uintptr_t *len)
 
     # Return a repo's versions for a package.
-    #
-    # Returns NULL on error.
     #
     # # Safety
     # The arguments must be a non-null Repo pointer, category, and package.
