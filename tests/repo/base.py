@@ -164,9 +164,11 @@ class BaseRepoTests:
             list(repo.iter_restrict(object()))
 
         cpv = Cpv("cat/pkg-1")
+        dep = Dep(">=cat/pkg-1")
 
         # empty repo -- no matches
         assert not list(repo.iter_restrict(cpv))
+        assert not list(repo.iter_restrict(dep))
 
         pkg1 = repo.create_pkg("cat/pkg-1")
         pkg2 = repo.create_pkg("cat/pkg-2")
@@ -183,6 +185,9 @@ class BaseRepoTests:
 
         # multiple matches via restriction glob
         assert list(repo.iter_restrict("cat/*")) == [pkg1, pkg2]
+
+        # multiple matches via Dep
+        assert list(repo.iter_restrict(dep)) == [pkg1, pkg2]
 
         # invalid restriction string
         with pytest.raises(InvalidRestrict):
