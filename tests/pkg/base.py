@@ -4,7 +4,7 @@ from pkgcraft.dep import Cpv, Version
 from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 from pkgcraft.restrict import Restrict
 
-from ..misc import OperatorMap
+from ..misc import OperatorIterMap, OperatorMap
 
 
 class BasePkgTests:
@@ -35,21 +35,25 @@ class BasePkgTests:
         assert pkg.matches(pkg_restrict)
         assert pkg.matches(cpv_restrict)
 
-    def test_cmp_base(self, repo):
+    def test_cmp_base(self, repo, toml_data):
+        # version-based comparisons
+        for s in toml_data["version.toml"]["compares"]:
+            a, op, b = s.split()
+            pkg1 = repo.create_pkg(f"cat/pkg-{a}")
+            pkg2 = repo.create_pkg(f"cat/pkg-{b}")
+            for op_func in OperatorIterMap[op]:
+                assert op_func(pkg1, pkg2), f"failed comparison: {s}"
+
+        # category and package take priority over version comparisons
         pkg1 = repo.create_pkg("cat/pkg-1")
-        pkg2 = repo.create_pkg("cat/pkg-2")
-        assert pkg1 == pkg1
-        assert pkg2 == pkg2
-        assert pkg1 < pkg2
-        assert pkg1 <= pkg2
-        assert pkg2 <= pkg2
-        assert pkg1 != pkg2
-        assert pkg2 >= pkg2
-        assert pkg2 >= pkg1
-        assert pkg2 > pkg1
+        pkg2 = repo.create_pkg("Cat/pkg-2")
+        assert pkg2 < pkg1
+        pkg1 = repo.create_pkg("cat/pkg-1")
+        pkg2 = repo.create_pkg("cat/Pkg-2")
+        assert pkg2 < pkg1
 
         # verify incompatible type comparisons
-        obj = pkg1
+        obj = repo.create_pkg("cat/pkg-1")
         for op, op_func in OperatorMap.items():
             if op == "==":
                 assert not op_func(obj, None)
