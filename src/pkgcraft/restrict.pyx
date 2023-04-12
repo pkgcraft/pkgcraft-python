@@ -7,50 +7,12 @@ from .pkg cimport Pkg
 from .error import InvalidCpv, InvalidDep, InvalidRestrict
 
 
-cdef C.Restrict *str_to_restrict(str s) except NULL:
-    """Try to convert a string to a restriction pointer."""
-    cdef C.Restrict *r
-
-    try:
-        return C.pkgcraft_cpv_restrict(Cpv(s).ptr)
-    except InvalidCpv:
-        pass
-
-    try:
-        return C.pkgcraft_dep_restrict(Dep(s).ptr)
-    except InvalidDep:
-        pass
-
-    restrict_bytes = s.encode()
-    r = C.pkgcraft_restrict_parse_dep(restrict_bytes)
-    if r is NULL:
-        r = C.pkgcraft_restrict_parse_pkg(restrict_bytes)
-    if r is NULL:
-        raise InvalidRestrict(f'invalid restriction string: {s}')
-
-    return r
-
-
-cdef C.Restrict *obj_to_restrict(object obj) except NULL:
-    """Try to convert an object to a restriction pointer."""
-    if isinstance(obj, Cpv):
-        return C.pkgcraft_cpv_restrict((<Cpv>obj).ptr)
-    if isinstance(obj, Dep):
-        return C.pkgcraft_dep_restrict((<Dep>obj).ptr)
-    elif isinstance(obj, Pkg):
-        return C.pkgcraft_pkg_restrict((<Pkg>obj).ptr)
-    elif isinstance(obj, str):
-        return str_to_restrict(obj)
-    else:
-        raise TypeError(f"{obj.__class__.__name__!r} unsupported restriction type")
-
-
 @cython.final
 cdef class Restrict:
     """Generic restriction."""
 
     def __init__(self, obj not None):
-        self.ptr = obj_to_restrict(obj)
+        Restrict.from_obj(obj, self)
 
     @staticmethod
     cdef Restrict from_ptr(C.Restrict *ptr):
@@ -58,6 +20,55 @@ cdef class Restrict:
         obj = <Restrict>Restrict.__new__(Restrict)
         obj.ptr = ptr
         return obj
+
+    @staticmethod
+    cdef Restrict from_obj(object obj, Restrict r=None):
+        """Try to convert an object to a Restrict."""
+        if r is None:
+            r = <Restrict>Restrict.__new__(Restrict)
+
+        if isinstance(obj, Cpv):
+            r.ptr = C.pkgcraft_cpv_restrict((<Cpv>obj).ptr)
+        elif isinstance(obj, Dep):
+            r.ptr = C.pkgcraft_dep_restrict((<Dep>obj).ptr)
+        elif isinstance(obj, Pkg):
+            r.ptr = C.pkgcraft_pkg_restrict((<Pkg>obj).ptr)
+        elif isinstance(obj, str):
+            Restrict.from_str(obj, r)
+        else:
+            raise TypeError(f"{obj.__class__.__name__!r} unsupported restriction type")
+
+        return r
+
+    @staticmethod
+    cdef Restrict from_str(str s, Restrict r=None):
+        """Try to convert a string to a Restrict."""
+        cdef C.Restrict *ptr = NULL
+
+        if r is None:
+            r = <Restrict>Restrict.__new__(Restrict)
+
+        try:
+            ptr = C.pkgcraft_cpv_restrict(Cpv(s).ptr)
+        except InvalidCpv:
+            pass
+
+        if ptr is NULL:
+            try:
+                ptr = C.pkgcraft_dep_restrict(Dep(s).ptr)
+            except InvalidDep:
+                pass
+
+        restrict_bytes = s.encode()
+        if ptr is NULL:
+            ptr = C.pkgcraft_restrict_parse_dep(restrict_bytes)
+        if ptr is NULL:
+            ptr = C.pkgcraft_restrict_parse_pkg(restrict_bytes)
+        if ptr is NULL:
+            raise InvalidRestrict(f'invalid restriction string: {s}')
+
+        r.ptr = ptr
+        return r
 
     @staticmethod
     def dep(str s not None):
