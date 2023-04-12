@@ -66,8 +66,8 @@ class BasePkgTests:
         cls = pkg.__class__.__name__
         assert repr(pkg).startswith(f"<{cls} 'cat/pkg-1::fake' at 0x")
 
-    def test_hash_base(self, repo):
-        pkg1 = repo.create_pkg("cat/pkg-1")
-        pkg2 = repo.create_pkg("cat/pkg-2")
-        assert len({pkg1, pkg1}) == 1
-        assert len({pkg1, pkg2}) == 2
+    def test_hash_base(self, repo, toml_data):
+        for d in toml_data["version.toml"]["hashing"]:
+            pkgs = {repo.create_pkg(f"cat/pkg-{x}") for x in d["versions"]}
+            length = 1 if d["equal"] else len(d["versions"])
+            assert len(pkgs) == length
