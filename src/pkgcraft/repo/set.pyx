@@ -34,9 +34,12 @@ cdef class RepoSet:
     def __iter__(self):
         return _Iter(self)
 
-    def iter_restrict(self, restrict not None):
-        """Iterate over a repo set's packages while applying a restriction."""
-        yield from _IterRestrict(self, restrict)
+    def iter(self, restrict=None):
+        """Iterate over a repo set's packages, optionally applying a restriction."""
+        if restrict is None:
+            yield from _Iter(self)
+        else:
+            yield from _IterRestrict(self, restrict)
 
     @property
     def repos(self):
@@ -82,7 +85,7 @@ cdef class RepoSet:
     def __bool__(self):
         return not C.pkgcraft_repo_set_is_empty(self.ptr)
 
-    def __contains__(self, obj):
+    def __contains__(self, obj not None):
         if isinstance(obj, Repo):
             return obj in self.repos
         return any((obj in r) for r in self.repos)

@@ -322,7 +322,7 @@ class TestEbuildPkg(BasePkgTests):
             """
                 )
             )
-        pkg = next(ebuild_repo.iter_restrict("cat/a-1"))
+        pkg = next(ebuild_repo.iter("cat/a-1"))
         assert pkg.long_description is None
 
         # empty
@@ -338,7 +338,7 @@ class TestEbuildPkg(BasePkgTests):
             """
                 )
             )
-        pkg = next(ebuild_repo.iter_restrict("cat/b-1"))
+        pkg = next(ebuild_repo.iter("cat/b-1"))
         assert pkg.long_description == ""
 
         # exists
@@ -355,7 +355,7 @@ class TestEbuildPkg(BasePkgTests):
             """
                 )
             )
-        pkg = next(ebuild_repo.iter_restrict("cat/c-1"))
+        pkg = next(ebuild_repo.iter("cat/c-1"))
         assert pkg.long_description == "long description"
 
     def test_maintainers(self, ebuild_repo):
@@ -374,7 +374,7 @@ class TestEbuildPkg(BasePkgTests):
             """
                 )
             )
-        pkg = next(ebuild_repo.iter_restrict("cat/a-1"))
+        pkg = next(ebuild_repo.iter("cat/a-1"))
         assert pkg.maintainers == []
 
         # multiple
@@ -400,7 +400,7 @@ class TestEbuildPkg(BasePkgTests):
             """
                 )
             )
-        pkg = next(ebuild_repo.iter_restrict("cat/b-1"))
+        pkg = next(ebuild_repo.iter("cat/b-1"))
         assert len(pkg.maintainers) == 3
         assert str(pkg.maintainers[0]) == "A Person <a.person@email.com>"
         assert repr(pkg.maintainers[0]) == "<Maintainer 'a.person@email.com'>"
@@ -433,7 +433,7 @@ class TestEbuildPkg(BasePkgTests):
             """
                 )
             )
-        pkg = next(ebuild_repo.iter_restrict("cat/a-1"))
+        pkg = next(ebuild_repo.iter("cat/a-1"))
         assert pkg.upstreams == []
 
         # multiple
@@ -451,7 +451,7 @@ class TestEbuildPkg(BasePkgTests):
             """
                 )
             )
-        pkg = next(ebuild_repo.iter_restrict("cat/b-1"))
+        pkg = next(ebuild_repo.iter("cat/b-1"))
         assert len(pkg.upstreams) == 2
         assert str(pkg.upstreams[0]) == "github: pkgcraft/pkgcraft"
         assert repr(pkg.upstreams[0]) == "<Upstream 'github: pkgcraft/pkgcraft'>"

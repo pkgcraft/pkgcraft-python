@@ -100,24 +100,27 @@ cdef class Repo:
     def __bool__(self):
         return not C.pkgcraft_repo_is_empty(self.ptr)
 
-    def __contains__(self, obj):
+    def __contains__(self, obj not None):
         if isinstance(obj, os.PathLike):
             return C.pkgcraft_repo_contains_path(self.ptr, str(obj).encode())
-        return bool(next(self.iter_restrict(obj), None))
+        return bool(next(self.iter(obj), None))
 
     def __getitem__(self, obj):
         try:
             cpv = Cpv(obj) if isinstance(obj, str) else <Cpv?>obj
-            return next(self.iter_restrict(cpv))
+            return next(self.iter(cpv))
         except StopIteration:
             raise KeyError(obj)
 
     def __iter__(self):
         return _Iter(self)
 
-    def iter_restrict(self, restrict not None):
-        """Iterate over a repo's packages while applying a restriction."""
-        yield from _IterRestrict(self, restrict)
+    def iter(self, restrict=None):
+        """Iterate over a repo's packages, optionally applying a restriction."""
+        if restrict is None:
+            yield from _Iter(self)
+        else:
+            yield from _IterRestrict(self, restrict)
 
     def __lt__(self, other):
         if isinstance(other, Repo):

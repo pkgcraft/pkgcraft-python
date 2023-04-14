@@ -73,7 +73,7 @@ def main():
     except PkgcraftError as e:
         parser.error(e)
 
-    for pkg in config.repos.ebuild.iter_restrict(r):
+    for pkg in config.repos.ebuild.iter(r):
         print(pkg)
 
 

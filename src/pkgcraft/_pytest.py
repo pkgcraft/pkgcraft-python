@@ -161,7 +161,7 @@ class TempEbuildRepo(TempRawEbuildRepo, EbuildRepo):
     def create_pkg(self, cpv, *args, **kwargs):
         """Create an ebuild for a given CPV and return the related package object."""
         self.create_ebuild(cpv, *args, **kwargs)
-        return next(iter(self.iter_restrict(cpv)))
+        return next(iter(self.iter(cpv)))
 
 
 @pytest.fixture(scope="function")
@@ -197,7 +197,7 @@ class TempFakeRepo(FakeRepo):
     def create_pkg(self, cpv):
         """Insert a given CPV and return the related package object."""
         self.extend([cpv])
-        return next(iter(self.iter_restrict(cpv)))
+        return next(iter(self.iter(cpv)))
 
 
 @pytest.fixture

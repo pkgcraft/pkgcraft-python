@@ -185,18 +185,14 @@ class TestRepoSet:
     def test_iter_restrict(self, make_fake_repo):
         s = RepoSet()
 
-        # non-None argument required
-        with pytest.raises(TypeError):
-            s.iter_restrict(None)
-
         # unsupported object type
         with pytest.raises(TypeError):
-            list(s.iter_restrict(object()))
+            list(s.iter(object()))
 
         cpv = Cpv("cat/pkg-1")
 
         # empty repo set -- no matches
-        assert not list(s.iter_restrict(cpv))
+        assert not list(s.iter(cpv))
 
         r1 = make_fake_repo(["cat/pkg-1"], id="r1")
         r2 = make_fake_repo(["cat/pkg-2"], id="r2")
@@ -205,22 +201,22 @@ class TestRepoSet:
 
         # non-empty repo -- no matches
         nonexistent = Cpv("nonexistent/pkg-1")
-        assert not list(s.iter_restrict(nonexistent))
+        assert not list(s.iter(nonexistent))
 
         # multiple matches via CPV
-        assert list(map(str, s.iter_restrict(cpv))) == ["cat/pkg-1::r3", "cat/pkg-1::r1"]
+        assert list(map(str, s.iter(cpv))) == ["cat/pkg-1::r3", "cat/pkg-1::r1"]
 
         # single match via package
-        pkg = next(s.iter_restrict(cpv))
-        assert list(s.iter_restrict(pkg)) == [pkg]
+        pkg = next(s.iter(cpv))
+        assert list(s.iter(pkg)) == [pkg]
 
         # multiple matches via restriction glob
         expected = ["cat/pkg-1::r3", "cat/pkg-1::r1", "cat/pkg-2::r2"]
-        assert list(map(str, s.iter_restrict("cat/*"))) == expected
+        assert list(map(str, s.iter("cat/*"))) == expected
 
         # invalid restriction string
         with pytest.raises(InvalidRestrict):
-            list(s.iter_restrict("-"))
+            list(s.iter("-"))
 
     def test_set_ops(self, make_fake_repo):
         r1 = make_fake_repo(priority=1)

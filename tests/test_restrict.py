@@ -21,16 +21,16 @@ class TestRestrict:
 
         # cpv string
         r = Restrict("cat/pkg-1")
-        assert list(fake_repo.iter_restrict(r)) == [pkg1]
+        assert list(fake_repo.iter(r)) == [pkg1]
         # Cpv object
         r = Restrict(Cpv("cat/pkg-1"))
-        assert list(fake_repo.iter_restrict(r)) == [pkg1]
+        assert list(fake_repo.iter(r)) == [pkg1]
         # dep string
         r = Restrict("cat/pkg")
-        assert list(fake_repo.iter_restrict(r)) == [pkg1, pkg2]
+        assert list(fake_repo.iter(r)) == [pkg1, pkg2]
         # Dep object
         r = Restrict(Dep("cat/pkg"))
-        assert list(fake_repo.iter_restrict(r)) == [pkg1, pkg2]
+        assert list(fake_repo.iter(r)) == [pkg1, pkg2]
 
     def test_dep(self, fake_repo):
         with pytest.raises(InvalidRestrict):
@@ -96,16 +96,16 @@ class TestRestrict:
 
         r1 = Restrict("cat/pkg-1")
         r2 = Restrict("cat/pkg-2")
-        assert list(fake_repo.iter_restrict(r1)) == [pkg1]
-        assert list(fake_repo.iter_restrict(r2)) == [pkg2]
-        assert list(fake_repo.iter_restrict(~r1)) == [pkg2]
-        assert list(fake_repo.iter_restrict(~r2)) == [pkg1]
-        assert not list(fake_repo.iter_restrict(r1 & r2))
-        assert list(fake_repo.iter_restrict(r1 | r2)) == [pkg1, pkg2]
-        assert list(fake_repo.iter_restrict(r1 ^ r2)) == [pkg1, pkg2]
-        assert list(fake_repo.iter_restrict(~(r1 & r2))) == [pkg1, pkg2]
-        assert not list(fake_repo.iter_restrict(~(r1 | r2)))
-        assert not list(fake_repo.iter_restrict(~(r1 ^ r2)))
+        assert list(fake_repo.iter(r1)) == [pkg1]
+        assert list(fake_repo.iter(r2)) == [pkg2]
+        assert list(fake_repo.iter(~r1)) == [pkg2]
+        assert list(fake_repo.iter(~r2)) == [pkg1]
+        assert not list(fake_repo.iter(r1 & r2))
+        assert list(fake_repo.iter(r1 | r2)) == [pkg1, pkg2]
+        assert list(fake_repo.iter(r1 ^ r2)) == [pkg1, pkg2]
+        assert list(fake_repo.iter(~(r1 & r2))) == [pkg1, pkg2]
+        assert not list(fake_repo.iter(~(r1 | r2)))
+        assert not list(fake_repo.iter(~(r1 ^ r2)))
 
         # verify incompatible types for boolean combinations
         with pytest.raises(TypeError):
@@ -117,13 +117,13 @@ class TestRestrict:
 
         r1 = Restrict("cat/pkg")
         r2 = Restrict("cat/pkg-2")
-        assert list(fake_repo.iter_restrict(r1)) == [pkg1, pkg2]
-        assert list(fake_repo.iter_restrict(r2)) == [pkg2]
-        assert not list(fake_repo.iter_restrict(~r1))
-        assert list(fake_repo.iter_restrict(~r2)) == [pkg1]
-        assert list(fake_repo.iter_restrict(r1 & r2)) == [pkg2]
-        assert list(fake_repo.iter_restrict(r1 | r2)) == [pkg1, pkg2]
-        assert list(fake_repo.iter_restrict(r1 ^ r2)) == [pkg1]
-        assert list(fake_repo.iter_restrict(~(r1 & r2))) == [pkg1]
-        assert not list(fake_repo.iter_restrict(~(r1 | r2)))
-        assert list(fake_repo.iter_restrict(~(r1 ^ r2))) == [pkg2]
+        assert list(fake_repo.iter(r1)) == [pkg1, pkg2]
+        assert list(fake_repo.iter(r2)) == [pkg2]
+        assert not list(fake_repo.iter(~r1))
+        assert list(fake_repo.iter(~r2)) == [pkg1]
+        assert list(fake_repo.iter(r1 & r2)) == [pkg2]
+        assert list(fake_repo.iter(r1 | r2)) == [pkg1, pkg2]
+        assert list(fake_repo.iter(r1 ^ r2)) == [pkg1]
+        assert list(fake_repo.iter(~(r1 & r2))) == [pkg1]
+        assert not list(fake_repo.iter(~(r1 | r2)))
+        assert list(fake_repo.iter(~(r1 ^ r2))) == [pkg2]

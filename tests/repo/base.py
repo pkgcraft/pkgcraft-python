@@ -155,40 +155,36 @@ class BaseRepoTests:
         assert list(map(str, repo)) == ["cat/pkg-1::fake", "cat/pkg-2::fake"]
 
     def test_iter_restrict_base(self, repo):
-        # non-None argument required
-        with pytest.raises(TypeError):
-            repo.iter_restrict(None)
-
         # unsupported object type
         with pytest.raises(TypeError):
-            list(repo.iter_restrict(object()))
+            list(repo.iter(object()))
 
         cpv = Cpv("cat/pkg-1")
         dep = Dep(">=cat/pkg-1")
 
         # empty repo -- no matches
-        assert not list(repo.iter_restrict(cpv))
-        assert not list(repo.iter_restrict(dep))
+        assert not list(repo.iter(cpv))
+        assert not list(repo.iter(dep))
 
         pkg1 = repo.create_pkg("cat/pkg-1")
         pkg2 = repo.create_pkg("cat/pkg-2")
 
         # non-empty repo -- no matches
         nonexistent = Cpv("nonexistent/pkg-1")
-        assert not list(repo.iter_restrict(nonexistent))
+        assert not list(repo.iter(nonexistent))
 
         # single match via Cpv
-        assert list(repo.iter_restrict(cpv)) == [pkg1]
+        assert list(repo.iter(cpv)) == [pkg1]
 
         # single match via package
-        assert list(repo.iter_restrict(pkg1)) == [pkg1]
+        assert list(repo.iter(pkg1)) == [pkg1]
 
         # multiple matches via restriction glob
-        assert list(repo.iter_restrict("cat/*")) == [pkg1, pkg2]
+        assert list(repo.iter("cat/*")) == [pkg1, pkg2]
 
         # multiple matches via Dep
-        assert list(repo.iter_restrict(dep)) == [pkg1, pkg2]
+        assert list(repo.iter(dep)) == [pkg1, pkg2]
 
         # invalid restriction string
         with pytest.raises(InvalidRestrict):
-            list(repo.iter_restrict("-"))
+            list(repo.iter("-"))

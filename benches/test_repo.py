@@ -45,7 +45,7 @@ def test_bench_ebuild_repo_iter_restrict_dep(benchmark, lib, func, ebuild_repo):
         r = repository.UnconfiguredTree(str(ebuild_repo.path), repo_config=repo_config)
         pkgs = benchmark(lambda x: list(r.itermatch(x)), dep)
     else:
-        pkgs = benchmark(lambda x: list(ebuild_repo.iter_restrict(x)), dep)
+        pkgs = benchmark(lambda x: list(ebuild_repo.iter(x)), dep)
 
     assert len(pkgs) == 1
     assert str(pkgs[0].version) == "50"
@@ -65,7 +65,7 @@ def test_bench_fake_repo_iter_restrict_dep(benchmark, fake_repo):
     # single dep restriction
     dep = pkgcraft_dep("=cat/pkg-50")
 
-    pkgs = benchmark(lambda x: list(fake_repo.iter_restrict(x)), dep)
+    pkgs = benchmark(lambda x: list(fake_repo.iter(x)), dep)
     assert len(pkgs) == 1
     assert str(pkgs[0].version) == "50"
 
@@ -97,7 +97,7 @@ def test_bench_repo_set_iter_restrict_dep(benchmark, make_ebuild_repo):
     dep = pkgcraft_dep("=cat/pkg-50")
 
     repos = RepoSet(r1, r2)
-    pkgs = benchmark(lambda x: list(repos.iter_restrict(x)), dep)
+    pkgs = benchmark(lambda x: list(repos.iter(x)), dep)
 
     assert len(pkgs) == 1
     assert str(pkgs[0].version) == "50"
