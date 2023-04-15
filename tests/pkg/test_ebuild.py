@@ -153,6 +153,15 @@ class TestEbuildPkg(BasePkgTests):
             assert list(dep_restrict.iter_flatten()) == [Dep("c/d")]
             assert list(map(str, dep_restrict.iter_recursive())) == ["c/d"]
 
+    def test_ownership(self, ebuild_repo):
+        """Verify owned objects are used and persist when parents are dropped."""
+        pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="a/b")
+        deps = iter(pkg.depend)
+        depend = pkg.depend
+        del pkg
+        assert str(next(deps)) == "a/b"
+        assert str(depend) == "a/b"
+
     def test_license(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
         assert pkg.license is None
