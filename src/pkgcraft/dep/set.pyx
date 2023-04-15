@@ -31,10 +31,8 @@ cdef class DepSet(_IndirectInit):
                     obj = <License>License.__new__(License)
                 else:  # pragma: no cover
                     raise TypeError(f'unknown DepSet kind: {kind}')
-
             obj.ptr = ptr
-            return obj
-        return None
+        return obj
 
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSet."""
