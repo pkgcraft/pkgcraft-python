@@ -1,4 +1,3 @@
-import os
 import textwrap
 
 import pytest
@@ -39,10 +38,10 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_ebuild(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert pkg.ebuild
+        assert pkg.path.read_text() == pkg.ebuild
 
         # missing file causes error
-        os.remove(pkg.path)
+        pkg.path.unlink()
         with pytest.raises(PkgcraftError):
             pkg.ebuild
 
