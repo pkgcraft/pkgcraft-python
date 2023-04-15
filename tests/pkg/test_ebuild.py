@@ -4,7 +4,7 @@ import textwrap
 import pytest
 
 from pkgcraft.dep import Dep
-from pkgcraft.eapi import EAPIS
+from pkgcraft.eapi import EAPI_LATEST, EAPIS
 from pkgcraft.error import PkgcraftError
 
 from .base import BasePkgTests
@@ -110,7 +110,7 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.dependencies("bdepend") == pkg.dependencies("BDEPEND")
 
     def test_dep_attrs(self, ebuild_repo):
-        for attr in ("depend", "bdepend", "idepend", "pdepend", "rdepend"):
+        for attr in map(lambda x: x.lower(), EAPI_LATEST.dep_keys):
             pkg = ebuild_repo.create_pkg("cat/pkg-1")
             assert getattr(pkg, attr) is None
 
