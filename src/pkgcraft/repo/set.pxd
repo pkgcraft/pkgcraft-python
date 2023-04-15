@@ -13,7 +13,3 @@ cdef class RepoSet:
 
 cdef class _Iter:
     cdef C.RepoSetIter *ptr
-
-
-cdef class _IterRestrict:
-    cdef C.RepoSetIter *ptr

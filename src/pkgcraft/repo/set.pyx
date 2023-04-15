@@ -36,10 +36,7 @@ cdef class RepoSet:
 
     def iter(self, restrict=None):
         """Iterate over a repo set's packages, optionally applying a restriction."""
-        if restrict is None:
-            yield from _Iter(self)
-        else:
-            yield from _IterRestrict(self, restrict)
+        yield from _Iter(self, restrict)
 
     @property
     def repos(self):
@@ -236,30 +233,17 @@ cdef class RepoSet:
 
 
 cdef class _Iter:
-    """Iterator over a repo set."""
+    """Iterator over a repo set, optionally applying a restriction."""
 
-    def __cinit__(self, RepoSet s not None):
-        self.ptr = C.pkgcraft_repo_set_iter(s.ptr, NULL)
+    def __cinit__(self, RepoSet s not None, obj=None):
+        cdef C.Restrict *restrict_ptr = NULL
+        cdef Restrict r
 
-    def __iter__(self):
-        return self
+        if obj is not None:
+            r = obj if isinstance(obj, Restrict) else Restrict(obj)
+            restrict_ptr = r.ptr
 
-    def __next__(self):
-        ptr = C.pkgcraft_repo_set_iter_next(self.ptr)
-        if ptr is not NULL:
-            return Pkg.from_ptr(ptr)
-        raise StopIteration
-
-    def __dealloc__(self):
-        C.pkgcraft_repo_set_iter_free(self.ptr)
-
-
-cdef class _IterRestrict:
-    """Iterator that applies a restriction over a repo set iterator."""
-
-    def __cinit__(self, RepoSet s not None, object obj not None):
-        cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
-        self.ptr = C.pkgcraft_repo_set_iter(s.ptr, r.ptr)
+        self.ptr = C.pkgcraft_repo_set_iter(s.ptr, restrict_ptr)
 
     def __iter__(self):
         return self
