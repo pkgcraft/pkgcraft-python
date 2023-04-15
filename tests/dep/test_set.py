@@ -1,5 +1,6 @@
 from pkgcraft.dep import Dependencies
 
+
 class TestDepSet:
     def test_attrs(self):
         dep = Dependencies("a/b")
@@ -8,7 +9,7 @@ class TestDepSet:
 
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing
-        for dep_s, rdep_s in (
+        for s1, s2 in (
             # same deps
             ("a/dep", "a/dep"),
             ("use? ( a/dep )", "use? ( a/dep )"),
@@ -17,17 +18,17 @@ class TestDepSet:
             ("a/b c/d", "c/d a/b"),
             ("use? ( a/b c/d )", "use? ( c/d a/b )"),
         ):
-            dep = Dependencies(dep_s)
-            rdep = Dependencies(rdep_s)
-            assert dep == rdep, f"{dep} != {rdep}"
-            assert len({dep, rdep}) == 1
+            dep1 = Dependencies(s1)
+            dep2 = Dependencies(s2)
+            assert dep1 == dep2, f"{dep1} != {dep2}"
+            assert len({dep1, dep2}) == 1
 
         # ordering that matters for equivalence and hashing
-        for dep_s, rdep_s in (("|| ( a/b c/d )", "|| ( c/d a/b )"),):
-            dep = Dependencies(dep_s)
-            rdep = Dependencies(rdep_s)
-            assert dep != rdep, f"{dep} != {rdep}"
-            assert len({dep, rdep}) == 2
+        for s1, s2 in (("|| ( a/b c/d )", "|| ( c/d a/b )"),):
+            dep1 = Dependencies(s1)
+            dep2 = Dependencies(s2)
+            assert dep1 != dep2, f"{dep1} != {dep2}"
+            assert len({dep1, dep2}) == 2
 
         # verify incompatible type comparisons
         dep = Dependencies("a/b")
