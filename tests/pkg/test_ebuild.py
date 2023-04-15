@@ -111,11 +111,12 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_dep_attrs(self, ebuild_repo):
         for attr in map(lambda x: x.lower(), EAPI_LATEST.dep_keys):
+            # undefined
             pkg = ebuild_repo.create_pkg("cat/pkg-1")
             assert getattr(pkg, attr) is None
 
+            # explicitly defined empty
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: ""})
-            val = getattr(pkg, attr)
             assert getattr(pkg, attr) is None
 
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: "cat/pkg"})
