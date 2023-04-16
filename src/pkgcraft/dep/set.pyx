@@ -19,16 +19,16 @@ cdef class DepSet(_IndirectInit):
                 kind = ptr.kind
                 if kind == C.DEP_SET_KIND_DEPENDENCIES:
                     obj = <Dependencies>Dependencies.__new__(Dependencies)
-                elif kind == C.DEP_SET_KIND_RESTRICT:
-                    obj = <Restrict>Restrict.__new__(Restrict)
-                elif kind == C.DEP_SET_KIND_REQUIRED_USE:
-                    obj = <RequiredUse>RequiredUse.__new__(RequiredUse)
-                elif kind == C.DEP_SET_KIND_PROPERTIES:
-                    obj = <Properties>Properties.__new__(Properties)
-                elif kind == C.DEP_SET_KIND_SRC_URI:
-                    obj = <SrcUri>SrcUri.__new__(SrcUri)
                 elif kind == C.DEP_SET_KIND_LICENSE:
                     obj = <License>License.__new__(License)
+                elif kind == C.DEP_SET_KIND_PROPERTIES:
+                    obj = <Properties>Properties.__new__(Properties)
+                elif kind == C.DEP_SET_KIND_REQUIRED_USE:
+                    obj = <RequiredUse>RequiredUse.__new__(RequiredUse)
+                elif kind == C.DEP_SET_KIND_RESTRICT:
+                    obj = <Restrict>Restrict.__new__(Restrict)
+                elif kind == C.DEP_SET_KIND_SRC_URI:
+                    obj = <SrcUri>SrcUri.__new__(SrcUri)
                 else:  # pragma: no cover
                     raise TypeError(f'unknown DepSet kind: {kind}')
             obj.ptr = ptr
@@ -83,10 +83,20 @@ cdef class Dependencies(DepSet):
 
 
 @cython.final
-cdef class Restrict(DepSet):
+cdef class License(DepSet):
 
     def __init__(self, str s=""):
-        ptr = C.pkgcraft_dep_set_restrict(s.encode())
+        ptr = C.pkgcraft_dep_set_license(s.encode())
+        if ptr is NULL:
+            raise PkgcraftError
+        DepSet.from_ptr(ptr, self)
+
+
+@cython.final
+cdef class Properties(DepSet):
+
+    def __init__(self, str s=""):
+        ptr = C.pkgcraft_dep_set_properties(s.encode())
         if ptr is NULL:
             raise PkgcraftError
         DepSet.from_ptr(ptr, self)
@@ -107,10 +117,10 @@ cdef class RequiredUse(DepSet):
 
 
 @cython.final
-cdef class Properties(DepSet):
+cdef class Restrict(DepSet):
 
     def __init__(self, str s=""):
-        ptr = C.pkgcraft_dep_set_properties(s.encode())
+        ptr = C.pkgcraft_dep_set_restrict(s.encode())
         if ptr is NULL:
             raise PkgcraftError
         DepSet.from_ptr(ptr, self)
@@ -125,16 +135,6 @@ cdef class SrcUri(DepSet):
             eapi_ptr = eapi_from_obj(eapi).ptr
 
         ptr = C.pkgcraft_dep_set_src_uri(s.encode(), eapi_ptr)
-        if ptr is NULL:
-            raise PkgcraftError
-        DepSet.from_ptr(ptr, self)
-
-
-@cython.final
-cdef class License(DepSet):
-
-    def __init__(self, str s=""):
-        ptr = C.pkgcraft_dep_set_license(s.encode())
         if ptr is NULL:
             raise PkgcraftError
         DepSet.from_ptr(ptr, self)
