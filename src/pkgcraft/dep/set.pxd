@@ -45,7 +45,6 @@ cdef class _IntoIterFlatten:
 
 cdef class _IntoIterRecursive:
     cdef C.DepSpecIntoIterRecursive *ptr
-    cdef C.DepSpecUnit unit
 
 
 cdef class Uri(_IndirectInit):

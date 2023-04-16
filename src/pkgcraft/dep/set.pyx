@@ -205,11 +205,9 @@ cdef class _IntoIterRecursive:
         if isinstance(obj, DepSet):
             deps = <DepSet>obj
             self.ptr = C.pkgcraft_dep_set_into_iter_recursive(deps.ptr)
-            self.unit = deps.ptr.unit
         elif isinstance(obj, DepSpec):
             dep = <DepSpec>obj
             self.ptr = C.pkgcraft_dep_spec_into_iter_recursive(dep.ptr)
-            self.unit = dep.ptr.unit
         else:  # pragma: no cover
             raise TypeError(f"{obj.__class__.__name__!r} unsupported dep type")
 
