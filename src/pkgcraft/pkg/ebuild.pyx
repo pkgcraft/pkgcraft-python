@@ -82,7 +82,7 @@ cdef class EbuildPkg(Pkg):
         if not array:  # pragma: no cover
             raise MemoryError
         for (i, s) in enumerate(keys):
-            key_bytes = (<str?>s.upper()).encode()
+            key_bytes = (<str?>s).encode()
             array[i] = key_bytes
         ptr = C.pkgcraft_pkg_ebuild_dependencies(self.ptr, array, len(keys))
         if ptr is NULL:
