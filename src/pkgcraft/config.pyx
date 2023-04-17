@@ -69,13 +69,13 @@ cdef class Config:
             self._repos = None
             return repo
 
-    def load_repos_conf(self, path=None):
+    def load_repos_conf(self, path=None, defaults=PORTAGE_REPOS_CONF_DEFAULTS):
         """Load repos from a given path to a portage-compatible repos.conf directory or file."""
         cdef C.Repo **repos
         cdef size_t length
 
         if path is None:
-            for path in PORTAGE_REPOS_CONF_DEFAULTS:
+            for path in defaults:
                 if os.path.exists(path):
                     break
             else:

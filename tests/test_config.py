@@ -1,5 +1,4 @@
 import textwrap
-from unittest.mock import patch
 
 import pytest
 
@@ -120,9 +119,8 @@ class TestConfig:
             config.load_repos_conf(f)
 
         # nonexistent repos.conf path defaults
-        with patch("pkgcraft.config.PORTAGE_REPOS_CONF_DEFAULTS", (f,)):
-            with pytest.raises(ValueError):
-                config.load_repos_conf()
+        with pytest.raises(ValueError):
+            config.load_repos_conf(defaults=[f])
 
         # empty file
         f.touch()
@@ -153,17 +151,16 @@ class TestConfig:
             config.load_repos_conf(f)
 
         # repos.conf path default fallback
-        with patch("pkgcraft.config.PORTAGE_REPOS_CONF_DEFAULTS", (f,)):
-            f.write_text(
-                textwrap.dedent(
-                    f"""
-                [default]
-                location = {repo_path}
-            """
-                )
+        f.write_text(
+            textwrap.dedent(
+                f"""
+            [default]
+            location = {repo_path}
+        """
             )
-            assert list(map(str, config.load_repos_conf())) == ["default"]
-            assert set(config.repos) == {"default"}
+        )
+        assert list(map(str, config.load_repos_conf(defaults=[f]))) == ["default"]
+        assert set(config.repos) == {"default"}
 
         # file path
         f.write_text(
