@@ -86,8 +86,8 @@ class TestCpv:
         with pytest.raises(TypeError):
             cpv1.intersects(object())
 
-    def test_hash(self, toml_data):
-        for d in toml_data["version.toml"]["hashing"]:
+    def test_hash(self, testdata_toml):
+        for d in testdata_toml["version.toml"]["hashing"]:
             s = {Cpv(f"cat/pkg-{x}") for x in d["versions"]}
             length = 1 if d["equal"] else len(d["versions"])
             assert len(s) == length

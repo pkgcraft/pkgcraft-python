@@ -17,7 +17,7 @@ TOMLDIR = DATADIR / "toml"
 
 
 @pytest.fixture(scope="session")
-def toml_data():
+def testdata_toml():
     """All toml test data presented as a dict using relative file paths as keys."""
     d = {}
     for path in glob.glob(f"{TOMLDIR}/**/*.toml", recursive=True):
