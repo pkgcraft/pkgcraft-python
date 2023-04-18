@@ -1,3 +1,4 @@
+import glob
 import os
 import subprocess
 from multiprocessing import cpu_count
@@ -55,21 +56,13 @@ def pkg_config(*packages, **kw):
     return kw
 
 
-def cython_pyx(path=MODULEDIR):
-    """Return all available cython extensions under a given path."""
-    for root, _dirs, files in os.walk(path):
-        for f in files:
-            if f.endswith(".pyx"):
-                yield str(os.path.join(root, f))
-
-
 def extensions(**build_opts):
     """Register cython extensions to be built."""
     if not build_opts:
         build_opts = {"depends": [], "include_dirs": []}
     exts = []
 
-    for ext in cython_pyx(MODULEDIR):
+    for ext in glob.glob(f"{MODULEDIR}/**/*.pyx", recursive=True):
         # strip package dir
         module = ext.rpartition(PACKAGEDIR)[-1].lstrip(os.path.sep)
         # strip file extension and translate to module namespace
