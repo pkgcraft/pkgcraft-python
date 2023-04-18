@@ -12,6 +12,8 @@ import pytest
 
 pytest_plugins = ["pkgcraft._pytest"]
 
+from pkgcraft.config import Config
+
 DATADIR = Path(__file__).parent.parent / "testdata"
 TOMLDIR = DATADIR / "toml"
 
@@ -25,3 +27,12 @@ def testdata_toml():
             key = path.removeprefix(f"{TOMLDIR}/")
             d[key] = tomllib.load(f)
     return d
+
+
+@pytest.fixture(scope="session")
+def testdata_config():
+    """All repo test data loaded into a Config object."""
+    config = Config()
+    for path in glob.glob(f"{DATADIR}/repos/*"):
+        config.add_repo(path, id=os.path.basename(path))
+    return config

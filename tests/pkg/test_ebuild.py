@@ -306,11 +306,23 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", iuse="a b c")
         assert pkg.iuse == {"a", "b", "c"}
 
-    def test_inherits(self, ebuild_repo):
-        # empty
+    def test_inherits(self, ebuild_repo, testdata_config):
+        # none
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
         assert pkg.inherit == []
         assert pkg.inherited == []
+
+        repo = testdata_config.repos["eclasses"]
+
+        # nested inherits
+        pkg = repo["pkg-tests/inherits-1"]
+        assert pkg.inherit == {"leaf"}
+        assert pkg.inherited == {"leaf", "base"}
+
+        # non-nested inherits
+        pkg = repo["pkg-tests/inherits-2"]
+        assert pkg.inherit == {"base"}
+        assert pkg.inherited == {"base"}
 
     def test_long_description(self, ebuild_repo):
         # none
