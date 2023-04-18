@@ -1,3 +1,4 @@
+import glob
 import os
 from pathlib import Path
 
@@ -19,10 +20,8 @@ TOMLDIR = DATADIR / "toml"
 def toml_data():
     """All toml test data presented as a dict using relative file paths as keys."""
     d = {}
-    for root, _dirs, files in os.walk(TOMLDIR):
-        for f in (f for f in files if f.endswith(".toml")):
-            path = Path(root, f)
-            with open(path, "rb") as f:
-                key = str(path.relative_to(TOMLDIR))
-                d[key] = tomllib.load(f)
+    for path in glob.glob(f"{TOMLDIR}/**/*.toml", recursive=True):
+        with open(path, "rb") as f:
+            key = path.removeprefix(f"{TOMLDIR}/")
+            d[key] = tomllib.load(f)
     return d
