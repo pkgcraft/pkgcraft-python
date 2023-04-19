@@ -15,16 +15,16 @@ pytest_plugins = ["pkgcraft._pytest"]
 from pkgcraft.config import Config
 
 DATADIR = Path(__file__).parent.parent / "testdata"
-TOMLDIR = DATADIR / "toml"
 
 
 @pytest.fixture(scope="session")
 def testdata_toml():
     """All toml test data presented as a dict using relative file paths as keys."""
     d = {}
-    for path in glob.glob(f"{TOMLDIR}/**/*.toml", recursive=True):
+    toml_dir = DATADIR / "toml"
+    for path in glob.glob(f"{toml_dir}/**/*.toml", recursive=True):
         with open(path, "rb") as f:
-            key = path.removeprefix(f"{TOMLDIR}/")
+            key = path.removeprefix(f"{toml_dir}/")
             d[key] = tomllib.load(f)
     return d
 
