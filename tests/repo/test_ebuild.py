@@ -95,16 +95,14 @@ class TestEbuildRepo(BaseRepoTests):
         r = EbuildRepo(repo.path)
         assert r.eapi is EAPI_LATEST_OFFICIAL
 
-    def test_masters(self, config, make_raw_ebuild_repo):
-        # empty masters
-        repo = make_raw_ebuild_repo()
-        r = config.add_repo(repo.path)
-        assert not r.masters
+    def test_masters(self, testdata_config):
+        # primary repo
+        primary_repo = testdata_config.repos["dependent-primary"]
+        assert not primary_repo.masters
 
-        # non-empty masters
-        overlay = make_raw_ebuild_repo(masters=[r.path])
-        o = config.add_repo(overlay.path)
-        assert o.masters == (r,)
+        # dependent repo
+        secondary_repo = testdata_config.repos["dependent-secondary"]
+        assert secondary_repo.masters == (primary_repo,)
 
 
 class TestEbuildRepoMetadata:
