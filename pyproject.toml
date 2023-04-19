@@ -71,7 +71,7 @@ exclude_lines = [
 
 [tool.black]
 line_length = 100
-include = "benches|doc/conf.py|examples|tests|setup.py"
+include = "/benches|/doc/conf.py|/examples|/tests|/setup.py"
 
 [tool.isort]
 line_length = 100
