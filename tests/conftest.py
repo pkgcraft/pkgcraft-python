@@ -33,6 +33,6 @@ def testdata_toml():
 def testdata_config():
     """All repo test data loaded into a Config object."""
     config = Config()
-    for path in glob.glob(f"{DATADIR}/repos/*"):
+    for path in sorted(glob.glob(f"{DATADIR}/repos/*")):
         config.add_repo(path, id=os.path.basename(path))
     return config
