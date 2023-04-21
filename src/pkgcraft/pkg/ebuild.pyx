@@ -70,8 +70,7 @@ cdef class EbuildPkg(Pkg):
         ptr = C.pkgcraft_pkg_ebuild_dependencies(self.ptr, array.ptr, len(array))
         if ptr is NULL:
             raise PkgcraftError
-        deps = Dependencies.from_ptr(ptr)
-        return deps
+        return Dependencies.from_ptr(ptr)
 
     @property
     def bdepend(self):
