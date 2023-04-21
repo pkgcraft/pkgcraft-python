@@ -16,11 +16,11 @@ cdef extern from "pkgcraft.h":
     # DepSet variants.
     cdef enum DepSetKind:
         DEP_SET_KIND_DEPENDENCIES,
-        DEP_SET_KIND_RESTRICT,
-        DEP_SET_KIND_REQUIRED_USE,
-        DEP_SET_KIND_PROPERTIES,
-        DEP_SET_KIND_SRC_URI,
         DEP_SET_KIND_LICENSE,
+        DEP_SET_KIND_PROPERTIES,
+        DEP_SET_KIND_REQUIRED_USE,
+        DEP_SET_KIND_RESTRICT,
+        DEP_SET_KIND_SRC_URI,
 
     # DepSpec variants.
     cdef enum DepSpecKind:
@@ -124,6 +124,10 @@ cdef extern from "pkgcraft.h":
     cdef struct Eapi:
         pass
 
+    # Opaque wrapper for pkgcraft::repo::temp::Repo objects.
+    cdef struct EbuildTempRepo:
+        pass
+
     # Opaque wrapper for pkgcraft::pkg::Pkg objects.
     cdef struct Pkg:
         pass
@@ -150,10 +154,6 @@ cdef extern from "pkgcraft.h":
 
     # Opaque wrapper for pkgcraft::restrict::Restrict objects.
     cdef struct Restrict:
-        pass
-
-    # Opaque wrapper for pkgcraft::repo::temp::Repo objects.
-    cdef struct TempRepo:
         pass
 
     # Uri object.
@@ -1195,13 +1195,34 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Repo pointer.
     char **pkgcraft_repo_ebuild_metadata_categories(Repo *r, uintptr_t *len)
 
+    # Create an ebuild file in the repo.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildTempRepo pointer.
+    char *pkgcraft_repo_ebuild_temp_create_ebuild(EbuildTempRepo *r,
+                                                  const char *cpv,
+                                                  char **key_vals,
+                                                  uintptr_t len)
+
+    # Create an ebuild file in the repo from raw data.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null EbuildTempRepo pointer.
+    char *pkgcraft_repo_ebuild_temp_create_ebuild_raw(EbuildTempRepo *r,
+                                                      const char *cpv,
+                                                      const char *data)
+
     # Free a temporary repo.
     #
     # Freeing a temporary repo removes the related directory from the filesystem.
     #
     # # Safety
-    # The argument must be a TempRepo pointer or NULL.
-    void pkgcraft_repo_ebuild_temp_free(TempRepo *r)
+    # The argument must be a EbuildTempRepo pointer or NULL.
+    void pkgcraft_repo_ebuild_temp_free(EbuildTempRepo *r)
 
     # Create a temporary ebuild repository.
     #
@@ -1210,19 +1231,19 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The id argument should be a valid, unicode string and the eapi parameter can optionally be
     # NULL.
-    TempRepo *pkgcraft_repo_ebuild_temp_new(const char *id, const Eapi *eapi)
+    EbuildTempRepo *pkgcraft_repo_ebuild_temp_new(const char *id, const Eapi *eapi)
 
     # Return a temporary repo's path.
     #
     # # Safety
-    # The argument must be a non-null TempRepo pointer.
-    char *pkgcraft_repo_ebuild_temp_path(TempRepo *r)
+    # The argument must be a non-null EbuildTempRepo pointer.
+    char *pkgcraft_repo_ebuild_temp_path(EbuildTempRepo *r)
 
     # Persist a temporary repo to disk, returning its path.
     #
     # # Safety
-    # The related TempRepo pointer is invalid on function completion and should not be used.
-    char *pkgcraft_repo_ebuild_temp_persist(TempRepo *r, const char *path)
+    # The related EbuildTempRepo pointer is invalid on function completion and should not be used.
+    char *pkgcraft_repo_ebuild_temp_persist(EbuildTempRepo *r, const char *path)
 
     # Add pkgs to an existing fake repo from an array of CPV strings.
     #
