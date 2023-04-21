@@ -1,10 +1,9 @@
 from pathlib import Path
 
 cimport cython
-from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport pkgcraft_c as C
-from .._misc cimport SENTINEL, ptr_to_str
+from .._misc cimport SENTINEL, StrArray, ptr_to_str
 from ..dep cimport Dependencies, License, Properties, RequiredUse, Restrict, SrcUri
 from . cimport Pkg
 
@@ -67,17 +66,11 @@ cdef class EbuildPkg(Pkg):
 
         Returns a DepSet encompassing all dependencies when no descriptors are passed.
         """
-        array = <char **> PyMem_Malloc(len(keys) * sizeof(char *))
-        if not array:  # pragma: no cover
-            raise MemoryError
-        for (i, s) in enumerate(keys):
-            key_bytes = (<str?>s).encode()
-            array[i] = key_bytes
-        ptr = C.pkgcraft_pkg_ebuild_dependencies(self.ptr, array, len(keys))
+        array = StrArray(keys)
+        ptr = C.pkgcraft_pkg_ebuild_dependencies(self.ptr, array.ptr, len(array))
         if ptr is NULL:
             raise PkgcraftError
         deps = Dependencies.from_ptr(ptr)
-        PyMem_Free(array)
         return deps
 
     @property
