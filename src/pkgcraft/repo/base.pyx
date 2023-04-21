@@ -102,10 +102,9 @@ cdef class Repo:
             return C.pkgcraft_repo_contains_path(self.ptr, str(obj).encode())
         return bool(next(self.iter(obj), None))
 
-    def __getitem__(self, obj):
+    def __getitem__(self, object obj not None):
         try:
-            cpv = Cpv(obj) if isinstance(obj, str) else <Cpv?>obj
-            return next(self.iter(cpv))
+            return next(self.iter(Cpv(str(obj))))
         except StopIteration:
             raise KeyError(obj)
 
