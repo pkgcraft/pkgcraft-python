@@ -24,22 +24,20 @@ cdef void pkgcraft_logger(C.PkgcraftLog *log):
 
 def _pkgcraft_log_test(str message not None, int level):
     """Inject log messages into pkgcraft to replay for test purposes."""
-    cdef C.PkgcraftLog log
-    log_bytes = message.encode()
-    log.message = log_bytes
-
     # convert from python logging levels to pkgcraft ones
+    cdef C.LogLevel log_level
+
     level = level // 10
     if level == C.LOG_LEVEL_ERROR:
-        log.level = C.LOG_LEVEL_ERROR
+        log_level = C.LOG_LEVEL_ERROR
     elif level == C.LOG_LEVEL_WARN:
-        log.level = C.LOG_LEVEL_WARN
+        log_level = C.LOG_LEVEL_WARN
     elif level == C.LOG_LEVEL_INFO:
-        log.level = C.LOG_LEVEL_INFO
+        log_level = C.LOG_LEVEL_INFO
     else:
-        log.level = C.LOG_LEVEL_DEBUG
+        log_level = C.LOG_LEVEL_DEBUG
 
-    C.pkgcraft_log_test(&log)
+    C.pkgcraft_log_test(message.encode(), log_level)
 
 
 # progagate pkgcraft log messages to python on module import

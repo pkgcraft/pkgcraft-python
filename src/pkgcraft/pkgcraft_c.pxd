@@ -842,7 +842,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null PkgcraftLog pointer.
-    void pkgcraft_log_test(const PkgcraftLog *l)
+    void pkgcraft_log_test(const char *msg, LogLevel level)
 
     # Enable pkgcraft logging support.
     void pkgcraft_logging_enable(LogCallback cb)
