@@ -46,6 +46,7 @@ cdef extern from "pkgcraft.h":
         ERROR_KIND_REPO,
 
     cdef enum LogLevel:
+        LOG_LEVEL_OFF,
         LOG_LEVEL_TRACE,
         LOG_LEVEL_DEBUG,
         LOG_LEVEL_INFO,
@@ -845,7 +846,7 @@ cdef extern from "pkgcraft.h":
     void pkgcraft_log_test(const char *msg, LogLevel level)
 
     # Enable pkgcraft logging support.
-    void pkgcraft_logging_enable(LogCallback cb)
+    void pkgcraft_logging_enable(LogCallback cb, LogLevel level)
 
     # Parse a package category.
     #
