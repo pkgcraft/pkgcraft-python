@@ -3,6 +3,7 @@ from types import MappingProxyType
 cimport cython
 
 from . cimport pkgcraft_c as C
+from ._misc cimport ptr_to_str
 from .error cimport _IndirectInit
 
 from .error import PkgcraftError
@@ -65,10 +66,7 @@ cdef Eapi eapi_from_ptr(const C.Eapi *ptr):
     """Create an Eapi from a pointer."""
     obj = <Eapi>Eapi.__new__(Eapi)
     obj.ptr = ptr
-    c_str = C.pkgcraft_eapi_as_str(ptr)
-    id = c_str.decode()
-    C.pkgcraft_str_free(c_str)
-    obj.id = id
+    obj.id = ptr_to_str(C.pkgcraft_eapi_as_str(ptr))
     obj.hash = C.pkgcraft_eapi_hash(ptr)
     return obj
 
@@ -98,9 +96,7 @@ def eapi_range(str s not None):
 
     eapis = []
     for i in range(0, length):
-        c_str = C.pkgcraft_eapi_as_str(c_eapis[i])
-        id = c_str.decode()
-        C.pkgcraft_str_free(c_str)
+        id = ptr_to_str(C.pkgcraft_eapi_as_str(c_eapis[i]))
         eapis.append(EAPIS[id])
 
     C.pkgcraft_eapis_free(c_eapis, length)
@@ -113,9 +109,7 @@ cdef class Eapi(_IndirectInit):
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *ptr):
         """Return a known Eapi object for a given pointer."""
-        c_str = C.pkgcraft_eapi_as_str(ptr)
-        id = c_str.decode()
-        C.pkgcraft_str_free(c_str)
+        id = ptr_to_str(C.pkgcraft_eapi_as_str(ptr))
         return EAPIS[id]
 
     def has(self, str s not None):

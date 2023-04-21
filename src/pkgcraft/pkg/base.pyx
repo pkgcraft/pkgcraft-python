@@ -1,4 +1,5 @@
 from .. cimport pkgcraft_c as C
+from .._misc cimport ptr_to_str
 from ..dep cimport Cpv, Version
 from ..eapi cimport Eapi
 from ..error cimport _IndirectInit
@@ -118,10 +119,7 @@ cdef class Pkg(_IndirectInit):
         return NotImplemented
 
     def __str__(self):
-        c_str = C.pkgcraft_pkg_str(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_pkg_str(self.ptr))
 
     def __repr__(self):
         addr = <size_t>&self.ptr

@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from .. cimport pkgcraft_c as C
+from .._misc cimport ptr_to_str
 from ..dep cimport Cpv
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
@@ -53,18 +54,14 @@ cdef class Repo:
     def id(self):
         """Get a repo's id."""
         if self._id is None:
-            c_str = C.pkgcraft_repo_id(self.ptr)
-            self._id = c_str.decode()
-            C.pkgcraft_str_free(c_str)
+            self._id = ptr_to_str(C.pkgcraft_repo_id(self.ptr))
         return self._id
 
     @property
     def path(self):
         """Get a repo's path."""
         if self._path is None:
-            c_str = C.pkgcraft_repo_path(self.ptr)
-            self._path = Path(c_str.decode())
-            C.pkgcraft_str_free(c_str)
+            self._path = Path(ptr_to_str(C.pkgcraft_repo_path(self.ptr)))
         return self._path
 
     @property

@@ -3,6 +3,7 @@ import os
 cimport cython
 
 from . cimport pkgcraft_c as C
+from ._misc cimport ptr_to_str
 from .repo cimport Repo, RepoSet
 from .error import ConfigError, PkgcraftError
 
@@ -19,9 +20,8 @@ cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
     d = {}
     for i in range(length):
         ptr = repos[i]
-        c_str = C.pkgcraft_repo_id(ptr)
-        d[c_str.decode()] = Repo.from_ptr(ptr, ref)
-        C.pkgcraft_str_free(c_str)
+        id = ptr_to_str(C.pkgcraft_repo_id(ptr))
+        d[id] = Repo.from_ptr(ptr, ref)
     return d
 
 

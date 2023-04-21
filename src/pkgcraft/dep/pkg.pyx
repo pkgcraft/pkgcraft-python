@@ -4,7 +4,7 @@ from enum import IntEnum
 cimport cython
 
 from .. cimport pkgcraft_c as C
-from .._misc cimport SENTINEL
+from .._misc cimport SENTINEL, ptr_to_str
 from ..eapi cimport eapi_from_obj
 from ..restrict cimport Restrict
 from . cimport Cpv
@@ -33,10 +33,7 @@ class Blocker(IntEnum):
         raise ValueError(f'invalid blocker: {s}')
 
     def __str__(self):
-        c_str = C.pkgcraft_dep_blocker_str(self)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_dep_blocker_str(self))
 
     def __eq__(self, other):
         if isinstance(other, str):
@@ -56,10 +53,7 @@ class SlotOperator(IntEnum):
         raise ValueError(f'invalid slot operator: {s}')
 
     def __str__(self):
-        c_str = C.pkgcraft_dep_slot_op_str(self)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_dep_slot_op_str(self))
 
     def __eq__(self, other):
         if isinstance(other, str):
@@ -161,9 +155,7 @@ cdef class Dep:
         'cat'
         """
         if self._category is None:
-            c_str = C.pkgcraft_dep_category(self.ptr)
-            self._category = c_str.decode()
-            C.pkgcraft_str_free(c_str)
+            self._category = ptr_to_str(C.pkgcraft_dep_category(self.ptr))
         return self._category
 
     @property
@@ -176,9 +168,7 @@ cdef class Dep:
         'pkg'
         """
         if self._package is None:
-            c_str = C.pkgcraft_dep_package(self.ptr)
-            self._package = c_str.decode()
-            C.pkgcraft_str_free(c_str)
+            self._package = ptr_to_str(C.pkgcraft_dep_package(self.ptr))
         return self._package
 
     @property
@@ -249,12 +239,7 @@ cdef class Dep:
         >>> dep.slot is None
         True
         """
-        c_str = C.pkgcraft_dep_slot(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
+        return ptr_to_str(C.pkgcraft_dep_slot(self.ptr))
 
     @property
     def subslot(self):
@@ -271,12 +256,7 @@ cdef class Dep:
         >>> dep.subslot is None
         True
         """
-        c_str = C.pkgcraft_dep_subslot(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
+        return ptr_to_str(C.pkgcraft_dep_subslot(self.ptr))
 
     @property
     def slot_op(self):
@@ -340,12 +320,7 @@ cdef class Dep:
         >>> dep.repo is None
         True
         """
-        c_str = C.pkgcraft_dep_repo(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
+        return ptr_to_str(C.pkgcraft_dep_repo(self.ptr))
 
     @property
     def p(self):
@@ -359,10 +334,7 @@ cdef class Dep:
         >>> dep.p
         'pkg'
         """
-        c_str = C.pkgcraft_dep_p(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_dep_p(self.ptr))
 
     @property
     def pf(self):
@@ -379,10 +351,7 @@ cdef class Dep:
         >>> dep.pf
         'pkg'
         """
-        c_str = C.pkgcraft_dep_pf(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_dep_pf(self.ptr))
 
     @property
     def pr(self):
@@ -399,12 +368,7 @@ cdef class Dep:
         >>> dep.pr is None
         True
         """
-        c_str = C.pkgcraft_dep_pr(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
+        return ptr_to_str(C.pkgcraft_dep_pr(self.ptr))
 
     @property
     def pv(self):
@@ -421,12 +385,7 @@ cdef class Dep:
         >>> dep.pv is None
         True
         """
-        c_str = C.pkgcraft_dep_pv(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
+        return ptr_to_str(C.pkgcraft_dep_pv(self.ptr))
 
     @property
     def pvr(self):
@@ -443,12 +402,7 @@ cdef class Dep:
         >>> dep.pvr is None
         True
         """
-        c_str = C.pkgcraft_dep_pvr(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
+        return ptr_to_str(C.pkgcraft_dep_pvr(self.ptr))
 
     @property
     def cpn(self):
@@ -462,10 +416,7 @@ cdef class Dep:
         >>> dep.cpn
         'cat/pkg'
         """
-        c_str = C.pkgcraft_dep_cpn(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_dep_cpn(self.ptr))
 
     @property
     def cpv(self):
@@ -479,10 +430,7 @@ cdef class Dep:
         >>> dep.cpv
         'cat/pkg'
         """
-        c_str = C.pkgcraft_dep_cpv(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_dep_cpv(self.ptr))
 
     def matches(self, Restrict r not None):
         """Determine if a restriction matches a package dependency."""
@@ -534,10 +482,7 @@ cdef class Dep:
         return NotImplemented
 
     def __str__(self):
-        c_str = C.pkgcraft_dep_str(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_dep_str(self.ptr))
 
     def __repr__(self):
         addr = <size_t>&self.ptr

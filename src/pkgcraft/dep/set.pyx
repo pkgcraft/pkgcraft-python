@@ -1,6 +1,7 @@
 cimport cython
 
 from .. cimport pkgcraft_c as C
+from .._misc cimport ptr_to_str
 from ..eapi cimport eapi_from_obj
 from ..error cimport _IndirectInit
 from .pkg cimport Dep
@@ -54,10 +55,7 @@ cdef class DepSet(_IndirectInit):
         return C.pkgcraft_dep_set_hash(self.ptr)
 
     def __str__(self):
-        c_str = C.pkgcraft_dep_set_str(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_dep_set_str(self.ptr))
 
     def __repr__(self):
         addr = <size_t>&self.ptr
@@ -184,10 +182,7 @@ cdef class _IntoIterFlatten:
             if self.unit == C.DEP_SPEC_UNIT_DEP:
                 return Dep.from_ptr(<C.Dep *>ptr)
             elif self.unit == C.DEP_SPEC_UNIT_STRING:
-                c_str = <char *>ptr
-                s = c_str.decode()
-                C.pkgcraft_str_free(c_str)
-                return s
+                return ptr_to_str(<char *>ptr)
             elif self.unit == C.DEP_SPEC_UNIT_URI:
                 return Uri.from_ptr(<C.Uri *>ptr)
             else:  # pragma: no cover
@@ -236,25 +231,15 @@ cdef class Uri(_IndirectInit):
     @property
     def uri(self):
         if self._uri_str is None:
-            c_str = C.pkgcraft_uri_uri(self.ptr)
-            self._uri_str = c_str.decode()
-            C.pkgcraft_str_free(c_str)
+            self._uri_str = ptr_to_str(C.pkgcraft_uri_uri(self.ptr))
         return self._uri_str
 
     @property
     def rename(self):
-        c_str = C.pkgcraft_uri_rename(self.ptr)
-        if c_str is not NULL:
-            s = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return s
-        return None
+        return ptr_to_str(C.pkgcraft_uri_rename(self.ptr))
 
     def __str__(self):
-        c_str = C.pkgcraft_uri_str(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_uri_str(self.ptr))
 
     def __dealloc__(self):
         C.pkgcraft_uri_free(self.ptr)

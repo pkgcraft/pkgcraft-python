@@ -1,6 +1,7 @@
 cimport cython
 
 from .. cimport pkgcraft_c as C
+from .._misc cimport ptr_to_str
 from ..error cimport _IndirectInit
 from .set cimport _IntoIterFlatten, _IntoIterRecursive
 
@@ -77,10 +78,7 @@ cdef class DepSpec(_IndirectInit):
         return C.pkgcraft_dep_spec_hash(self.ptr)
 
     def __str__(self):
-        c_str = C.pkgcraft_dep_spec_str(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_dep_spec_str(self.ptr))
 
     def __repr__(self):
         addr = <size_t>&self.ptr

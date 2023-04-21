@@ -4,7 +4,7 @@ cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport pkgcraft_c as C
-from .._misc cimport SENTINEL
+from .._misc cimport SENTINEL, ptr_to_str
 from ..dep cimport Dependencies, License, Properties, RequiredUse, Restrict, SrcUri
 from . cimport Pkg
 
@@ -31,46 +31,35 @@ cdef class EbuildPkg(Pkg):
     @property
     def path(self):
         """Get a package's path."""
-        c_str = C.pkgcraft_pkg_ebuild_path(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return Path(s)
+        return Path(ptr_to_str(C.pkgcraft_pkg_ebuild_path(self.ptr)))
 
     @property
     def ebuild(self):
         """Get a package's ebuild file content."""
-        c_str = C.pkgcraft_pkg_ebuild_ebuild(self.ptr)
-        if c_str is NULL:
+        s = ptr_to_str(C.pkgcraft_pkg_ebuild_ebuild(self.ptr))
+        if s is None:
             raise PkgcraftError
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
         return s
 
     @property
     def description(self):
         """Get a package's description."""
         if self._description is None:
-            c_str = C.pkgcraft_pkg_ebuild_description(self.ptr)
-            self._description = c_str.decode()
-            C.pkgcraft_str_free(c_str)
+            self._description = ptr_to_str(C.pkgcraft_pkg_ebuild_description(self.ptr))
         return self._description
 
     @property
     def slot(self):
         """Get a package's slot."""
         if self._slot is None:
-            c_str = C.pkgcraft_pkg_ebuild_slot(self.ptr)
-            self._slot = c_str.decode()
-            C.pkgcraft_str_free(c_str)
+            self._slot = ptr_to_str(C.pkgcraft_pkg_ebuild_slot(self.ptr))
         return self._slot
 
     @property
     def subslot(self):
         """Get a package's subslot."""
         if self._subslot is None:
-            c_str = C.pkgcraft_pkg_ebuild_subslot(self.ptr)
-            self._subslot = c_str.decode()
-            C.pkgcraft_str_free(c_str)
+            self._subslot = ptr_to_str(C.pkgcraft_pkg_ebuild_subslot(self.ptr))
         return self._subslot
 
     def dependencies(self, *keys):
@@ -234,13 +223,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def long_description(self):
         """Get a package's long description."""
-        c_str = C.pkgcraft_pkg_ebuild_long_description(self.ptr)
-        if c_str is NULL:
-            return None
-        else:
-            long_desc = c_str.decode()
-            C.pkgcraft_str_free(c_str)
-            return long_desc
+        return ptr_to_str(C.pkgcraft_pkg_ebuild_long_description(self.ptr))
 
     @property
     def maintainers(self):

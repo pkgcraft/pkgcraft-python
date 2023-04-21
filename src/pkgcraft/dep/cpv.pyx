@@ -1,6 +1,7 @@
 cimport cython
 
 from .. cimport pkgcraft_c as C
+from .._misc cimport ptr_to_str
 from ..restrict cimport Restrict
 from . cimport Dep
 from .version cimport Version
@@ -52,9 +53,7 @@ cdef class Cpv:
         'cat'
         """
         if self._category is None:
-            c_str = C.pkgcraft_cpv_category(self.ptr)
-            self._category = c_str.decode()
-            C.pkgcraft_str_free(c_str)
+            self._category = ptr_to_str(C.pkgcraft_cpv_category(self.ptr))
         return self._category
 
     @property
@@ -67,9 +66,7 @@ cdef class Cpv:
         'pkg'
         """
         if self._package is None:
-            c_str = C.pkgcraft_cpv_package(self.ptr)
-            self._package = c_str.decode()
-            C.pkgcraft_str_free(c_str)
+            self._package = ptr_to_str(C.pkgcraft_cpv_package(self.ptr))
         return self._package
 
     @property
@@ -112,10 +109,7 @@ cdef class Cpv:
         >>> cpv.p
         'pkg-1'
         """
-        c_str = C.pkgcraft_cpv_p(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_cpv_p(self.ptr))
 
     @property
     def pf(self):
@@ -132,10 +126,7 @@ cdef class Cpv:
         >>> cpv.pf
         'pkg-1'
         """
-        c_str = C.pkgcraft_cpv_pf(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_cpv_pf(self.ptr))
 
     @property
     def pr(self):
@@ -152,10 +143,7 @@ cdef class Cpv:
         >>> cpv.pr
         'r0'
         """
-        c_str = C.pkgcraft_cpv_pr(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_cpv_pr(self.ptr))
 
     @property
     def pv(self):
@@ -172,10 +160,7 @@ cdef class Cpv:
         >>> cpv.pv
         '1'
         """
-        c_str = C.pkgcraft_cpv_pv(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_cpv_pv(self.ptr))
 
     @property
     def pvr(self):
@@ -192,10 +177,7 @@ cdef class Cpv:
         >>> cpv.pvr
         '1'
         """
-        c_str = C.pkgcraft_cpv_pvr(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_cpv_pvr(self.ptr))
 
     @property
     def cpn(self):
@@ -206,10 +188,7 @@ cdef class Cpv:
         >>> cpv.cpn
         'cat/pkg'
         """
-        c_str = C.pkgcraft_cpv_cpn(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_cpv_cpn(self.ptr))
 
     def matches(self, Restrict r not None):
         """Determine if a restriction matches a Cpv."""
@@ -262,10 +241,7 @@ cdef class Cpv:
         return NotImplemented
 
     def __str__(self):
-        c_str = C.pkgcraft_cpv_str(self.ptr)
-        s = c_str.decode()
-        C.pkgcraft_str_free(c_str)
-        return s
+        return ptr_to_str(C.pkgcraft_cpv_str(self.ptr))
 
     def __repr__(self):
         addr = <size_t>&self.ptr
