@@ -2,7 +2,6 @@ import textwrap
 
 import pytest
 
-from pkgcraft.config import Config
 from pkgcraft.error import ConfigError, InvalidRepo
 from pkgcraft.repo import FakeRepo, RepoSet
 
