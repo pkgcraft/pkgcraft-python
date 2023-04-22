@@ -28,13 +28,8 @@ cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
 cdef class Config:
     """Config for the system."""
 
-    def __init__(self, repos_conf=False):
+    def __init__(self):
         self.ptr = C.pkgcraft_config_new()
-
-        # load repos.conf file if enabled or manually specifying a path
-        if repos_conf:
-            args = [repos_conf] if not isinstance(repos_conf, bool) else []
-            self.load_repos_conf(*args)
 
     @property
     def repos(self):

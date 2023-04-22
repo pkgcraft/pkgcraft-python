@@ -8,26 +8,6 @@ from pkgcraft.repo import FakeRepo, RepoSet
 
 
 class TestConfig:
-    def test_init(self, raw_ebuild_repo, tmp_path):
-        repo_path = raw_ebuild_repo.path
-
-        # repos.conf file path
-        f = tmp_path / "repos.conf"
-        f.write_text(
-            textwrap.dedent(
-                f"""
-            [test]
-            location = {repo_path}
-        """
-            )
-        )
-        config = Config(repos_conf=f)
-        assert set(config.repos) == {"test"}
-
-        # nonexistent repos.conf
-        with pytest.raises(ConfigError):
-            Config(repos_conf="/path/to/nonexistent/file")
-
     def test_repos(self, config, raw_ebuild_repo):
         path = str(raw_ebuild_repo.path)
         assert not config.repos
