@@ -30,7 +30,7 @@ cdef list eapis_to_list(const C.Eapi **c_eapis, size_t length, int start=0):
     """Convert an array of Eapi pointers to a list of Eapi objects."""
     eapis = []
     for i in range(start, length):
-        eapis.append(eapi_from_ptr(c_eapis[i]))
+        eapis.append(Eapi.from_ptr(c_eapis[i], init=True))
     return eapis
 
 
@@ -60,15 +60,6 @@ cdef object get_eapis():
     d.update((str(eapi), eapi) for eapi in eapis)
     C.pkgcraft_eapis_free(c_eapis, length)
     return MappingProxyType(d)
-
-
-cdef Eapi eapi_from_ptr(const C.Eapi *ptr):
-    """Create an Eapi from a pointer."""
-    obj = <Eapi>Eapi.__new__(Eapi)
-    obj.ptr = ptr
-    obj.id = ptr_to_str(C.pkgcraft_eapi_as_str(ptr))
-    obj.hash = C.pkgcraft_eapi_hash(ptr)
-    return obj
 
 
 def eapi_range(str s not None):
@@ -107,10 +98,20 @@ def eapi_range(str s not None):
 cdef class Eapi(_IndirectInit):
 
     @staticmethod
-    cdef Eapi from_ptr(const C.Eapi *ptr):
-        """Return a known Eapi object for a given pointer."""
-        id = ptr_to_str(C.pkgcraft_eapi_as_str(ptr))
-        return EAPIS[id]
+    cdef Eapi from_ptr(const C.Eapi *ptr, bint init=False):
+        """Create an Eapi from a pointer."""
+        cdef Eapi eapi
+
+        if init:
+            eapi = <Eapi>Eapi.__new__(Eapi)
+            eapi.ptr = ptr
+            eapi.id = ptr_to_str(C.pkgcraft_eapi_as_str(ptr))
+            eapi.hash = C.pkgcraft_eapi_hash(ptr)
+        else:
+            id = ptr_to_str(C.pkgcraft_eapi_as_str(ptr))
+            eapi = EAPIS[id]
+
+        return eapi
 
     def has(self, str s not None):
         """Check if an EAPI has a given feature.
