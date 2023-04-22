@@ -2,8 +2,6 @@ from . cimport pkgcraft_c as C
 from .error cimport _IndirectInit
 
 
-cpdef Eapi eapi_from_obj(object obj)
-
 cdef class Eapi(_IndirectInit):
     cdef const C.Eapi *ptr
     # cached fields
@@ -14,3 +12,6 @@ cdef class Eapi(_IndirectInit):
 
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *, bint init=*)
+
+    @staticmethod
+    cdef Eapi from_obj(object)

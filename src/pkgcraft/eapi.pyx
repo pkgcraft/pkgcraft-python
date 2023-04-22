@@ -13,17 +13,9 @@ EAPIS_OFFICIAL = get_official_eapis()
 EAPIS = get_eapis()
 
 
-cpdef Eapi eapi_from_obj(object obj):
+def eapi_from_obj(object obj):
     """Try to convert an object to an Eapi object."""
-    if isinstance(obj, Eapi):
-        return obj
-    elif isinstance(obj, str):
-        try:
-            return EAPIS[obj]
-        except KeyError:
-            raise ValueError(f'unknown EAPI: {obj}')
-    else:
-        raise TypeError(f'{obj.__class__.__name__!r} unsupported Eapi type')
+    return Eapi.from_obj(obj)
 
 
 cdef list eapis_to_list(const C.Eapi **c_eapis, size_t length, int start=0):
@@ -99,7 +91,7 @@ cdef class Eapi(_IndirectInit):
 
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *ptr, bint init=False):
-        """Create an Eapi from a pointer."""
+        """Create an Eapi object from a pointer."""
         cdef Eapi eapi
 
         if init:
@@ -112,6 +104,19 @@ cdef class Eapi(_IndirectInit):
             eapi = EAPIS[id]
 
         return eapi
+
+    @staticmethod
+    cdef Eapi from_obj(object obj):
+        """Try to convert an object to an Eapi object."""
+        if isinstance(obj, Eapi):
+            return obj
+        elif isinstance(obj, str):
+            try:
+                return EAPIS[obj]
+            except KeyError:
+                raise ValueError(f'unknown EAPI: {obj}')
+        else:
+            raise TypeError(f'{obj.__class__.__name__!r} unsupported Eapi type')
 
     def has(self, str s not None):
         """Check if an EAPI has a given feature.

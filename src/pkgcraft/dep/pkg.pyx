@@ -5,7 +5,7 @@ cimport cython
 
 from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL, ptr_to_str
-from ..eapi cimport eapi_from_obj
+from ..eapi cimport Eapi
 from ..restrict cimport Restrict
 from . cimport Cpv
 from .version cimport Version
@@ -107,7 +107,7 @@ cdef class Dep:
 
     def __init__(self, str s not None, eapi=None):
         if eapi is not None:
-            self.eapi = eapi_from_obj(eapi)
+            self.eapi = Eapi.from_obj(eapi)
 
         self.ptr = C.pkgcraft_dep_new(s.encode(), self.eapi.ptr)
         if self.ptr is NULL:
