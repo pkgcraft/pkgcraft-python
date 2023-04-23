@@ -14,4 +14,4 @@ cdef class Eapi(_IndirectInit):
     cdef Eapi from_ptr(const C.Eapi *, bint init=*)
 
     @staticmethod
-    cdef Eapi from_obj(object)
+    cdef Eapi _from_obj(object)

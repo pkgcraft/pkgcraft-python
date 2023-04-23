@@ -9,7 +9,7 @@ from pkgcraft.eapi import (
     EAPI_LATEST_OFFICIAL,
     EAPIS,
     EAPIS_OFFICIAL,
-    eapi_from_obj,
+    Eapi,
 )
 
 from .misc import OperatorMap
@@ -23,19 +23,6 @@ def test_globals():
     assert EAPIS[str(EAPI_LATEST_OFFICIAL)] is EAPI_LATEST_OFFICIAL
     assert EAPIS[str(EAPI_LATEST)] is EAPI_LATEST
     assert EAPI_LATEST_OFFICIAL is not EAPI_LATEST
-
-
-def test_eapi_from_obj():
-    assert eapi_from_obj(EAPI0) is EAPI0
-    assert eapi_from_obj("0") is EAPI0
-
-    # unknown EAPI
-    with pytest.raises(ValueError):
-        assert eapi_from_obj("unknown")
-
-    # invalid type
-    with pytest.raises(TypeError):
-        assert eapi_from_obj(object())
 
 
 class TestEapi:
@@ -88,6 +75,18 @@ class TestEapi:
         assert len(s) == 2
         s = {EAPI0, EAPI0}
         assert len(s) == 1
+
+    def test_from_obj(self):
+        assert Eapi.from_obj(EAPI0) is EAPI0
+        assert Eapi.from_obj("0") is EAPI0
+
+        # unknown EAPI
+        with pytest.raises(ValueError):
+            assert Eapi.from_obj("unknown")
+
+        # invalid type
+        with pytest.raises(TypeError):
+            assert Eapi.from_obj(object())
 
     def test_eapi_pickle(self):
         e1 = EAPI0

@@ -12,7 +12,7 @@ def dep(str s not None, eapi=None):
     """
     cdef const C.Eapi *eapi_ptr = NULL
     if eapi is not None:
-        eapi_ptr = Eapi.from_obj(eapi).ptr
+        eapi_ptr = Eapi._from_obj(eapi).ptr
 
     if C.pkgcraft_parse_dep(s.encode(), eapi_ptr) is NULL:
         raise PkgcraftError

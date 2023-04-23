@@ -72,7 +72,7 @@ cdef class Dependencies(DepSet):
     def __init__(self, str s="", eapi=None):
         cdef const C.Eapi *eapi_ptr = NULL
         if eapi is not None:
-            eapi_ptr = Eapi.from_obj(eapi).ptr
+            eapi_ptr = Eapi._from_obj(eapi).ptr
 
         ptr = C.pkgcraft_dep_set_dependencies(s.encode(), eapi_ptr)
         if ptr is NULL:
@@ -106,7 +106,7 @@ cdef class RequiredUse(DepSet):
     def __init__(self, str s="", eapi=None):
         cdef const C.Eapi *eapi_ptr = NULL
         if eapi is not None:
-            eapi_ptr = Eapi.from_obj(eapi).ptr
+            eapi_ptr = Eapi._from_obj(eapi).ptr
 
         ptr = C.pkgcraft_dep_set_required_use(s.encode(), eapi_ptr)
         if ptr is NULL:
@@ -130,7 +130,7 @@ cdef class SrcUri(DepSet):
     def __init__(self, str s="", eapi=None):
         cdef const C.Eapi *eapi_ptr = NULL
         if eapi is not None:
-            eapi_ptr = Eapi.from_obj(eapi).ptr
+            eapi_ptr = Eapi._from_obj(eapi).ptr
 
         ptr = C.pkgcraft_dep_set_src_uri(s.encode(), eapi_ptr)
         if ptr is NULL:

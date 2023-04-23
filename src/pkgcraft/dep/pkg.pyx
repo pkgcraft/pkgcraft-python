@@ -107,7 +107,7 @@ cdef class Dep:
 
     def __init__(self, str s not None, eapi=None):
         if eapi is not None:
-            self.eapi = Eapi.from_obj(eapi)
+            self.eapi = Eapi._from_obj(eapi)
 
         self.ptr = C.pkgcraft_dep_new(s.encode(), self.eapi.ptr)
         if self.ptr is NULL:
