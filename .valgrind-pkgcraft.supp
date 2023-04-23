@@ -1,0 +1,17 @@
+# valgrind suppressions for pkgcraft
+
+{
+	wcscat_avx2
+	Memcheck:Cond
+	fun:__wcscat_avx2
+	fun:_PyPathConfig_Calculate
+	...
+}
+
+{
+	wcsncpy_avx2
+	Memcheck:Addr32
+	fun:__wcsncpy_avx2
+	fun:_Py_wrealpath
+	...
+}

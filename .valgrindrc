@@ -1,4 +1,5 @@
 --suppressions=.valgrind-python.supp
+--suppressions=.valgrind-pkgcraft.supp
 --memcheck:leak-check=full
 --memcheck:show-leak-kinds=definite
 --memcheck:errors-for-leak-kinds=definite
