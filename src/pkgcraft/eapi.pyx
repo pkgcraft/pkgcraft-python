@@ -45,7 +45,7 @@ cdef object get_eapis():
     eapis = eapis_to_list(c_eapis, length, start=len(d))
     globals()['EAPI_LATEST'] = eapis[-1]
     d.update((str(eapi), eapi) for eapi in eapis)
-    C.pkgcraft_eapis_free(c_eapis, length)
+    C.pkgcraft_array_free(<void **>c_eapis, length)
     return MappingProxyType(d)
 
 
@@ -77,7 +77,7 @@ def eapi_range(str s not None):
         id = ptr_to_str(C.pkgcraft_eapi_as_str(c_eapis[i]))
         eapis.append(EAPIS[id])
 
-    C.pkgcraft_eapis_free(c_eapis, length)
+    C.pkgcraft_array_free(<void **>c_eapis, length)
     return OrderedFrozenSet(eapis)
 
 

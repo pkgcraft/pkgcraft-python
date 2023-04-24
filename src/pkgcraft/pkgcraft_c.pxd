@@ -806,13 +806,6 @@ cdef extern from "pkgcraft.h":
     # The returned array must be freed via pkgcraft_eapis_free().
     const Eapi **pkgcraft_eapis(uintptr_t *len)
 
-    # Free an array of borrowed Eapi objects.
-    #
-    # # Safety
-    # The argument must be the value received from pkgcraft_eapis(), pkgcraft_eapis_official(), or
-    # NULL along with the length of the array.
-    void pkgcraft_eapis_free(const Eapi **eapis, uintptr_t len)
-
     # Get all official EAPIS.
     #
     # # Safety
@@ -1489,13 +1482,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The arguments must be a non-null Repo pointer, category, and package.
     char **pkgcraft_repo_versions(Repo *r, const char *cat, const char *pkg, uintptr_t *len)
-
-    # Free an array of configured repos.
-    #
-    # # Safety
-    # The argument must be the value received from pkgcraft_config_repos() or NULL along with the
-    # length of the array.
-    void pkgcraft_repos_free(Repo **repos, uintptr_t len)
 
     # Create a new restriction combining two restrictions via logical AND.
     #
