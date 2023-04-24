@@ -15,11 +15,11 @@ PORTAGE_REPOS_CONF_DEFAULTS = (
 )
 
 
-cdef dict repos_to_dict(C.Repo **repos, size_t length, bint ref):
+cdef dict repos_to_dict(C.Repo **c_repos, size_t length, bint ref):
     """Convert an array of repos to an (id, Repo) mapping."""
     d = {}
     for i in range(length):
-        ptr = repos[i]
+        ptr = c_repos[i]
         id = ptr_to_str(C.pkgcraft_repo_id(ptr))
         d[id] = Repo.from_ptr(ptr, ref)
     return d
@@ -66,7 +66,7 @@ cdef class Config:
 
     def load_repos_conf(self, path=None, defaults=PORTAGE_REPOS_CONF_DEFAULTS):
         """Load repos from a given path to a portage-compatible repos.conf directory or file."""
-        cdef C.Repo **repos
+        cdef C.Repo **c_repos
         cdef size_t length
 
         if path is None:
@@ -76,15 +76,15 @@ cdef class Config:
             else:
                 raise ValueError('no repos.conf found on the system')
 
-        repos = C.pkgcraft_config_load_repos_conf(self.ptr, str(path).encode(), &length)
-        if repos is NULL:
+        c_repos = C.pkgcraft_config_load_repos_conf(self.ptr, str(path).encode(), &length)
+        if c_repos is NULL:
             raise PkgcraftError
 
         # force repos attr refresh
         self._repos = None
 
-        d = repos_to_dict(repos, length, False)
-        C.pkgcraft_array_free(<void **>repos, length)
+        d = repos_to_dict(c_repos, length, False)
+        C.pkgcraft_array_free(<void **>c_repos, length)
         return d
 
     def __dealloc__(self):
@@ -97,11 +97,11 @@ cdef class Repos:
     @staticmethod
     cdef Repos from_config(C.Config *ptr):
         cdef size_t length
-        repos = <C.Repo **>C.pkgcraft_config_repos(ptr, &length)
+        c_repos = <C.Repo **>C.pkgcraft_config_repos(ptr, &length)
         obj = <Repos>Repos.__new__(Repos)
         obj.config_ptr = ptr
-        obj._repos = repos_to_dict(repos, length, True)
-        C.pkgcraft_array_free(<void **>repos, length)
+        obj._repos = repos_to_dict(c_repos, length, True)
+        C.pkgcraft_array_free(<void **>c_repos, length)
         return obj
 
     @property

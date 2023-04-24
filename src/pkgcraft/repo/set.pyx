@@ -43,9 +43,9 @@ cdef class RepoSet:
         """Return the set's repos in order."""
         cdef size_t length
         if self._repos is None:
-            repos = <C.Repo **>C.pkgcraft_repo_set_repos(self.ptr, &length)
-            d = repos_to_dict(repos, length, True)
-            C.pkgcraft_array_free(<void **>repos, length)
+            c_repos = <C.Repo **>C.pkgcraft_repo_set_repos(self.ptr, &length)
+            d = repos_to_dict(c_repos, length, True)
+            C.pkgcraft_array_free(<void **>c_repos, length)
             self._repos = OrderedFrozenSet(d.values())
         return self._repos
 
