@@ -27,7 +27,7 @@ cdef object get_official_eapis():
     c_eapis = C.pkgcraft_eapis_official(&length)
     eapis = eapis_to_list(c_eapis, length)
     d = {str(eapi): eapi for eapi in eapis}
-    C.pkgcraft_eapis_free(c_eapis, length)
+    C.pkgcraft_array_free(<void **>c_eapis, length)
 
     # set global variables for each official EAPIs
     globals()['EAPI_LATEST_OFFICIAL'] = eapis[-1]

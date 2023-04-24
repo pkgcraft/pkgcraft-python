@@ -84,7 +84,7 @@ cdef class Config:
         self._repos = None
 
         d = repos_to_dict(repos, length, False)
-        C.pkgcraft_repos_free(repos, length)
+        C.pkgcraft_array_free(<void **>repos, length)
         return d
 
     def __dealloc__(self):
@@ -101,7 +101,7 @@ cdef class Repos:
         obj = <Repos>Repos.__new__(Repos)
         obj.config_ptr = ptr
         obj._repos = repos_to_dict(repos, length, True)
-        C.pkgcraft_repos_free(repos, length)
+        C.pkgcraft_array_free(<void **>repos, length)
         return obj
 
     @property

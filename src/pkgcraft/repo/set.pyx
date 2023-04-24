@@ -45,7 +45,7 @@ cdef class RepoSet:
         if self._repos is None:
             repos = <C.Repo **>C.pkgcraft_repo_set_repos(self.ptr, &length)
             d = repos_to_dict(repos, length, True)
-            C.pkgcraft_repos_free(repos, length)
+            C.pkgcraft_array_free(<void **>repos, length)
             self._repos = OrderedFrozenSet(d.values())
         return self._repos
 

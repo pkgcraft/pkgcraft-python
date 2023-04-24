@@ -199,6 +199,12 @@ cdef extern from "pkgcraft.h":
         char *site
         char *name
 
+    # Free an array without dropping the objects inside it.
+    #
+    # # Safety
+    # The array objects should be explicitly dropped using other methods otherwise they will leak.
+    void pkgcraft_array_free(void **array, uintptr_t len)
+
     # Add an external Repo to the config.
     #
     # Returns NULL on error.
