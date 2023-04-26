@@ -81,8 +81,8 @@ class TestEbuildRepo(BaseRepoTests):
         assert r.eapi is EAPI0
 
         # invalid EAPI
-        repo = make_raw_ebuild_repo(eapi="unknown")
-        with pytest.raises(InvalidRepo, match="invalid repo eapi"):
+        repo = make_raw_ebuild_repo(eapi="abc123")
+        with pytest.raises(InvalidRepo, match="unknown EAPI: abc123"):
             EbuildRepo(repo.path)
 
         # defaults to latest EAPI
