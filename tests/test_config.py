@@ -36,8 +36,13 @@ class TestConfig:
         r = config.add_repo(path, "fake")
         assert r == config.repos["fake"]
 
-        # re-adding a repo doesn't fail but causes log output
-        config.add_repo(path, "fake")
+        # existing
+        with pytest.raises(ConfigError, match="existing repos: fake"):
+            config.add_repo(path, "fake")
+
+        # existing using a different id
+        with pytest.raises(ConfigError, match="existing repos: existing"):
+            config.add_repo(path, "existing")
 
         # nonexistent
         with pytest.raises(InvalidRepo, match="nonexistent repo path"):
@@ -74,8 +79,9 @@ class TestConfig:
         assert config.repos != {}
         assert config.repos == {"r2": r2, "r1": r1}
 
-        # re-adding a repo doesn't fail but causes log output
-        config.add_repo(r1)
+        # re-adding a repo fails
+        with pytest.raises(ConfigError, match="existing repos: r1"):
+            config.add_repo(r1)
 
     def test_repo_sets(self, config, make_ebuild_repo, make_fake_repo):
         # empty
@@ -156,8 +162,21 @@ class TestConfig:
         assert list(map(str, config.load_repos_conf(f))) == ["test1"]
         assert set(config.repos) == {"test1", "default"}
 
-        # reloading doesn't error out, but causes an existence error to be logged
-        config.load_repos_conf(f)
+        # reloading causes an existence error
+        with pytest.raises(ConfigError, match="existing repos: test1"):
+            config.load_repos_conf(f)
+
+        # reloading using a different id still causes an error
+        f.write_text(
+            textwrap.dedent(
+                f"""
+            [existing]
+            location = {repo_path}
+        """
+            )
+        )
+        with pytest.raises(ConfigError, match="existing repos: existing"):
+            config.load_repos_conf(f)
 
         # dir path
         dir_path = tmp_path / "dir"
