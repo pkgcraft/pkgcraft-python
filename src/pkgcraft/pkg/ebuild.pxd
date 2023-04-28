@@ -1,4 +1,5 @@
 from .. cimport pkgcraft_c as C
+from ..error cimport _IndirectInit
 from . cimport Pkg
 
 
@@ -38,7 +39,7 @@ cdef class Maintainer:
     cdef Maintainer from_ptr(C.Maintainer *)
 
 
-cdef class RemoteId:
+cdef class RemoteId(_IndirectInit):
     cdef readonly str site
     cdef readonly str name
 
@@ -46,7 +47,7 @@ cdef class RemoteId:
     cdef RemoteId from_ptr(C.RemoteId *)
 
 
-cdef class UpstreamMaintainer:
+cdef class UpstreamMaintainer(_IndirectInit):
     cdef readonly str name
     cdef readonly str email
     cdef readonly str status
@@ -55,7 +56,7 @@ cdef class UpstreamMaintainer:
     cdef UpstreamMaintainer from_ptr(C.UpstreamMaintainer *)
 
 
-cdef class Upstream:
+cdef class Upstream(_IndirectInit):
     cdef readonly tuple remote_ids
     cdef readonly tuple maintainers
     cdef readonly str bugs_to

@@ -5,6 +5,7 @@ cimport cython
 from .. cimport pkgcraft_c as C
 from .._misc cimport SENTINEL, StrArray, ptr_to_str
 from ..dep cimport Dependencies, License, Properties, RequiredUse, Restrict, SrcUri
+from ..error cimport _IndirectInit
 from . cimport Pkg
 
 from ..error import PkgcraftError
@@ -280,7 +281,7 @@ cdef class Maintainer:
 
 
 @cython.final
-cdef class RemoteId:
+cdef class RemoteId(_IndirectInit):
     """Ebuild package upstream site."""
 
     @staticmethod
@@ -300,7 +301,7 @@ cdef class RemoteId:
 
 
 @cython.final
-cdef class UpstreamMaintainer:
+cdef class UpstreamMaintainer(_IndirectInit):
     """Upstream package maintainer."""
 
     @staticmethod
@@ -326,7 +327,7 @@ cdef class UpstreamMaintainer:
 
 
 @cython.final
-cdef class Upstream:
+cdef class Upstream(_IndirectInit):
     """Ebuild package upstream info."""
 
     @staticmethod
