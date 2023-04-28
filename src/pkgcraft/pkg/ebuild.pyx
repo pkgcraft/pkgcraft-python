@@ -224,8 +224,8 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._maintainers is None:
             maintainers = C.pkgcraft_pkg_ebuild_maintainers(self.ptr, &length)
-            data = (Maintainer.create(maintainers[i][0]) for i in range(length))
-            self._maintainers = OrderedFrozenSet(data)
+            self._maintainers = OrderedFrozenSet(
+                Maintainer.from_ptr(maintainers[i]) for i in range(length))
             C.pkgcraft_pkg_ebuild_maintainers_free(maintainers, length)
         return self._maintainers
 
@@ -251,13 +251,14 @@ cdef class Maintainer:
         self.proxied = proxied
 
     @staticmethod
-    cdef Maintainer create(C.Maintainer m):
+    cdef Maintainer from_ptr(C.Maintainer *m):
+        """Create a Maintainer from a pointer."""
         return Maintainer(
             m.email.decode(),
-            name=m.name.decode() if m.name is not NULL else None,
-            description=m.description.decode() if m.description is not NULL else None,
-            maint_type=m.maint_type.decode() if m.maint_type is not NULL else None,
-            proxied=m.proxied.decode() if m.proxied is not NULL else None,
+            name=ptr_to_str(m.name, free=False),
+            description=ptr_to_str(m.description, free=False),
+            maint_type=ptr_to_str(m.maint_type, free=False),
+            proxied=ptr_to_str(m.proxied, free=False),
         )
 
     def __str__(self):

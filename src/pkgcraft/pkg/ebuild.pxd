@@ -35,7 +35,7 @@ cdef class Maintainer:
     cdef readonly str proxied
 
     @staticmethod
-    cdef Maintainer create(C.Maintainer)
+    cdef Maintainer from_ptr(C.Maintainer *)
 
 
 cdef class RemoteId:
