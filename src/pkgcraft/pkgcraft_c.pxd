@@ -194,10 +194,18 @@ cdef extern from "pkgcraft.h":
         char *maint_type
         char *proxied
 
-    # Wrapper for package upstreams.
-    cdef struct Upstream:
+    # Wrapper for package upstream remote-ids.
+    cdef struct RemoteId:
         char *site
         char *name
+
+    # Wrapper for package upstream info.
+    cdef struct Upstream:
+        uintptr_t remote_ids_len
+        RemoteId **remote_ids
+        char *bugs_to
+        char *changelog
+        char *doc
 
     # Free an array without dropping the objects inside it.
     #
@@ -1091,18 +1099,19 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer.
     char *pkgcraft_pkg_ebuild_subslot(Pkg *p)
 
-    # Return a package's upstreams.
+    # Return a package's upstream info.
+    #
+    # Returns NULL on nonexistence.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    Upstream **pkgcraft_pkg_ebuild_upstreams(Pkg *p, uintptr_t *len)
+    Upstream *pkgcraft_pkg_ebuild_upstream(Pkg *p)
 
-    # Free an array of Upstream pointers.
+    # Free an Upstream.
     #
     # # Safety
-    # The argument must be the value received from pkgcraft_pkg_ebuild_upstreams() or NULL along
-    # with the length of the array.
-    void pkgcraft_pkg_ebuild_upstreams_free(Upstream **upstreams, uintptr_t len)
+    # The argument must be a Upstream pointer or NULL.
+    void pkgcraft_pkg_ebuild_upstream_free(Upstream *u)
 
     # Return a package's format.
     #

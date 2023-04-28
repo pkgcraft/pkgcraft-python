@@ -26,6 +26,7 @@ cdef class EbuildPkg(Pkg):
         self._required_use = SENTINEL
         self._restrict = SENTINEL
         self._src_uri = SENTINEL
+        self._upstream = SENTINEL
 
     @property
     def path(self):
@@ -229,15 +230,12 @@ cdef class EbuildPkg(Pkg):
         return self._maintainers
 
     @property
-    def upstreams(self):
-        """Get a package's upstreams."""
-        cdef size_t length
-        if self._upstreams is None:
-            upstreams = C.pkgcraft_pkg_ebuild_upstreams(self.ptr, &length)
-            data = (Upstream.create(upstreams[i][0]) for i in range(length))
-            self._upstreams = OrderedFrozenSet(data)
-            C.pkgcraft_pkg_ebuild_upstreams_free(upstreams, length)
-        return self._upstreams
+    def upstream(self):
+        """Get a package's upstream info."""
+        if self._upstream is SENTINEL:
+            ptr = C.pkgcraft_pkg_ebuild_upstream(self.ptr)
+            self._upstream = Upstream.from_ptr(ptr)
+        return self._upstream
 
 
 @cython.final
@@ -281,16 +279,12 @@ cdef class Maintainer:
 
 
 @cython.final
-cdef class Upstream:
-    """Ebuild package upstream."""
+cdef class RemoteId:
+    """Ebuild package upstream site."""
 
     def __cinit__(self, str site not None, str name not None):
         self.site = site
         self.name = name
-
-    @staticmethod
-    cdef Upstream create(C.Upstream u):
-        return Upstream(u.site.decode(), u.name.decode())
 
     def __str__(self):
         return f'{self.site}: {self.name}'
@@ -299,5 +293,28 @@ cdef class Upstream:
         name = self.__class__.__name__
         return f"<{name} '{self}'>"
 
-    def __hash__(self):
-        return hash((self.site, self.name))
+
+@cython.final
+cdef class Upstream:
+    """Ebuild package upstream info."""
+
+    @staticmethod
+    cdef Upstream from_ptr(C.Upstream *u):
+        """Create an Upstream from a pointer."""
+        obj = None
+
+        if u is not NULL:
+            obj = <Upstream>Upstream.__new__(Upstream)
+
+            remote_ids = []
+            for i in range(u.remote_ids_len):
+                r = u.remote_ids[i]
+                remote_ids.append(RemoteId(r.site.decode(), r.name.decode()))
+            obj.remote_ids = tuple(remote_ids)
+
+            obj.bugs_to = ptr_to_str(u.bugs_to, free=False)
+            obj.changelog = ptr_to_str(u.changelog, free=False)
+            obj.doc = ptr_to_str(u.doc, free=False)
+            C.pkgcraft_pkg_ebuild_upstream_free(u)
+
+        return obj

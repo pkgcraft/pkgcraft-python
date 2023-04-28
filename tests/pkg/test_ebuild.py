@@ -438,10 +438,10 @@ class TestEbuildPkg(BasePkgTests):
         # verify hashing support
         assert len(set(pkg.maintainers)) == 3
 
-    def test_upstreams(self, ebuild_repo):
+    def test_upstream(self, ebuild_repo):
         # none
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert pkg.upstreams == []
+        assert pkg.upstream is None
 
         # invalid
         path = ebuild_repo.create_ebuild("cat/a-1")
@@ -455,9 +455,9 @@ class TestEbuildPkg(BasePkgTests):
                 )
             )
         pkg = next(ebuild_repo.iter("cat/a-1"))
-        assert pkg.upstreams == []
+        assert pkg.upstream is None
 
-        # multiple
+        # multiple remote-id
         path = ebuild_repo.create_ebuild("cat/b-1")
         with open(path.parent / "metadata.xml", "w") as f:
             f.write(
@@ -467,17 +467,21 @@ class TestEbuildPkg(BasePkgTests):
                     <upstream>
                         <remote-id type="github">pkgcraft/pkgcraft</remote-id>
                         <remote-id type="pypi">pkgcraft</remote-id>
+                        <bugs-to>https://github.com/pkgcraft/pkgcraft/issues</bugs-to>
+                        <changelog> </changelog>
+                        <doc> https://github.com/pkgcraft/pkgcraft  </doc>
                     </upstream>
                 </pkgmetadata>
             """
                 )
             )
         pkg = next(ebuild_repo.iter("cat/b-1"))
-        assert len(pkg.upstreams) == 2
-        assert str(pkg.upstreams[0]) == "github: pkgcraft/pkgcraft"
-        assert repr(pkg.upstreams[0]) == "<Upstream 'github: pkgcraft/pkgcraft'>"
-        assert str(pkg.upstreams[1]) == "pypi: pkgcraft"
-        assert repr(pkg.upstreams[1]) == "<Upstream 'pypi: pkgcraft'>"
-
-        # verify hashing support
-        assert len(set(pkg.upstreams)) == 2
+        u = pkg.upstream
+        assert u.bugs_to == "https://github.com/pkgcraft/pkgcraft/issues"
+        assert u.changelog is None
+        assert u.doc == "https://github.com/pkgcraft/pkgcraft"
+        assert len(u.remote_ids) == 2
+        assert str(u.remote_ids[0]) == "github: pkgcraft/pkgcraft"
+        assert repr(u.remote_ids[0]) == "<RemoteId 'github: pkgcraft/pkgcraft'>"
+        assert str(u.remote_ids[1]) == "pypi: pkgcraft"
+        assert repr(u.remote_ids[1]) == "<RemoteId 'pypi: pkgcraft'>"

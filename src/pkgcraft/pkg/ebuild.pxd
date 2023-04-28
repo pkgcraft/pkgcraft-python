@@ -23,7 +23,7 @@ cdef class EbuildPkg(Pkg):
     cdef object _inherit
     cdef object _inherited
     cdef object _maintainers
-    cdef object _upstreams
+    cdef object _upstream
     cdef object _iuse
 
 
@@ -38,9 +38,16 @@ cdef class Maintainer:
     cdef Maintainer create(C.Maintainer)
 
 
-cdef class Upstream:
+cdef class RemoteId:
     cdef readonly str site
     cdef readonly str name
 
+
+cdef class Upstream:
+    cdef readonly tuple remote_ids
+    cdef readonly str bugs_to
+    cdef readonly str changelog
+    cdef readonly str doc
+
     @staticmethod
-    cdef Upstream create(C.Upstream)
+    cdef Upstream from_ptr(C.Upstream *)
