@@ -470,6 +470,10 @@ class TestEbuildPkg(BasePkgTests):
                         <bugs-to>https://github.com/pkgcraft/pkgcraft/issues</bugs-to>
                         <changelog> </changelog>
                         <doc> https://github.com/pkgcraft/pkgcraft  </doc>
+                        <maintainer status="active">
+                            <email>an@email.address</email>
+                            <name>A Person</name>
+                        </maintainer>
                     </upstream>
                 </pkgmetadata>
             """
@@ -477,11 +481,14 @@ class TestEbuildPkg(BasePkgTests):
             )
         pkg = next(ebuild_repo.iter("cat/b-1"))
         u = pkg.upstream
+        assert list(map(str, u.maintainers)) == ["A Person <an@email.address> (active)"]
+        assert (list(map(repr, u.maintainers)) ==
+            ["<UpstreamMaintainer 'A Person <an@email.address> (active)'>"])
         assert u.bugs_to == "https://github.com/pkgcraft/pkgcraft/issues"
         assert u.changelog is None
         assert u.doc == "https://github.com/pkgcraft/pkgcraft"
         assert len(u.remote_ids) == 2
-        assert str(u.remote_ids[0]) == "github: pkgcraft/pkgcraft"
-        assert repr(u.remote_ids[0]) == "<RemoteId 'github: pkgcraft/pkgcraft'>"
-        assert str(u.remote_ids[1]) == "pypi: pkgcraft"
-        assert repr(u.remote_ids[1]) == "<RemoteId 'pypi: pkgcraft'>"
+        assert (list(map(str, u.remote_ids)) ==
+            ["github: pkgcraft/pkgcraft", "pypi: pkgcraft"])
+        assert (list(map(repr, u.remote_ids)) ==
+            ["<RemoteId 'github: pkgcraft/pkgcraft'>", "<RemoteId 'pypi: pkgcraft'>"])

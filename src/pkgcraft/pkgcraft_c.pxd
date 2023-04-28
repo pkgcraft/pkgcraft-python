@@ -199,10 +199,18 @@ cdef extern from "pkgcraft.h":
         char *site
         char *name
 
+    # Wrapper for upstream package maintainers.
+    cdef struct UpstreamMaintainer:
+        char *name
+        char *email
+        char *status
+
     # Wrapper for package upstream info.
     cdef struct Upstream:
         uintptr_t remote_ids_len
         RemoteId **remote_ids
+        uintptr_t maintainers_len
+        UpstreamMaintainer **maintainers
         char *bugs_to
         char *changelog
         char *doc

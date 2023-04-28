@@ -282,12 +282,42 @@ cdef class Maintainer:
 cdef class RemoteId:
     """Ebuild package upstream site."""
 
-    def __cinit__(self, str site not None, str name not None):
-        self.site = site
-        self.name = name
+    @staticmethod
+    cdef RemoteId from_ptr(C.RemoteId *r):
+        """Create an RemoteId from a pointer."""
+        obj = <RemoteId>RemoteId.__new__(RemoteId)
+        obj.site = r.site.decode()
+        obj.name = r.name.decode()
+        return obj
 
     def __str__(self):
         return f'{self.site}: {self.name}'
+
+    def __repr__(self):
+        name = self.__class__.__name__
+        return f"<{name} '{self}'>"
+
+
+@cython.final
+cdef class UpstreamMaintainer:
+    """Upstream package maintainer."""
+
+    @staticmethod
+    cdef UpstreamMaintainer from_ptr(C.UpstreamMaintainer *m):
+        """Create an UpstreamMaintainer from a pointer."""
+        obj = <UpstreamMaintainer>UpstreamMaintainer.__new__(UpstreamMaintainer)
+        obj.name = m.name.decode()
+        obj.email = ptr_to_str(m.email, free=False)
+        obj.status = m.status.decode()
+        return obj
+
+    def __str__(self):
+        if self.email is not None:
+            s = f'{self.name} <{self.email}>'
+        else:
+            s = self.name
+
+        return f'{s} ({self.status})'
 
     def __repr__(self):
         name = self.__class__.__name__
@@ -305,13 +335,10 @@ cdef class Upstream:
 
         if u is not NULL:
             obj = <Upstream>Upstream.__new__(Upstream)
-
-            remote_ids = []
-            for i in range(u.remote_ids_len):
-                r = u.remote_ids[i]
-                remote_ids.append(RemoteId(r.site.decode(), r.name.decode()))
-            obj.remote_ids = tuple(remote_ids)
-
+            obj.remote_ids = tuple(
+                RemoteId.from_ptr(u.remote_ids[i]) for i in range(u.remote_ids_len))
+            obj.maintainers = tuple(
+                UpstreamMaintainer.from_ptr(u.maintainers[i]) for i in range(u.maintainers_len))
             obj.bugs_to = ptr_to_str(u.bugs_to, free=False)
             obj.changelog = ptr_to_str(u.changelog, free=False)
             obj.doc = ptr_to_str(u.doc, free=False)

@@ -42,9 +42,22 @@ cdef class RemoteId:
     cdef readonly str site
     cdef readonly str name
 
+    @staticmethod
+    cdef RemoteId from_ptr(C.RemoteId *)
+
+
+cdef class UpstreamMaintainer:
+    cdef readonly str name
+    cdef readonly str email
+    cdef readonly str status
+
+    @staticmethod
+    cdef UpstreamMaintainer from_ptr(C.UpstreamMaintainer *)
+
 
 cdef class Upstream:
     cdef readonly tuple remote_ids
+    cdef readonly tuple maintainers
     cdef readonly str bugs_to
     cdef readonly str changelog
     cdef readonly str doc
