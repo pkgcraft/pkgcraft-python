@@ -28,7 +28,7 @@ cdef class EbuildPkg(Pkg):
     cdef object _iuse
 
 
-cdef class Maintainer:
+cdef class Maintainer(_IndirectInit):
     cdef readonly str email
     cdef readonly str name
     cdef readonly str description

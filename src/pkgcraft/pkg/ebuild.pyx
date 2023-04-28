@@ -240,27 +240,19 @@ cdef class EbuildPkg(Pkg):
 
 
 @cython.final
-cdef class Maintainer:
+cdef class Maintainer(_IndirectInit):
     """Ebuild package maintainer."""
-
-    def __cinit__(self, str email not None, str name=None, str description=None,
-                  str maint_type=None, str proxied=None):
-        self.email = email
-        self.name = name
-        self.description = description
-        self.maint_type = maint_type
-        self.proxied = proxied
 
     @staticmethod
     cdef Maintainer from_ptr(C.Maintainer *m):
         """Create a Maintainer from a pointer."""
-        return Maintainer(
-            m.email.decode(),
-            name=ptr_to_str(m.name, free=False),
-            description=ptr_to_str(m.description, free=False),
-            maint_type=ptr_to_str(m.maint_type, free=False),
-            proxied=ptr_to_str(m.proxied, free=False),
-        )
+        obj = <Maintainer>Maintainer.__new__(Maintainer)
+        obj.email = m.email.decode()
+        obj.name = ptr_to_str(m.name, free=False)
+        obj.description = ptr_to_str(m.description, free=False)
+        obj.maint_type = m.maint_type.decode()
+        obj.proxied = m.proxied.decode()
+        return obj
 
     def __str__(self):
         if self.name is not None:
