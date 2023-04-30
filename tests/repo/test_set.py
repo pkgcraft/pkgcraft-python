@@ -1,7 +1,7 @@
 import pytest
 
 from pkgcraft.config import Config
-from pkgcraft.dep import Cpv, Dep
+from pkgcraft.dep import Cpv, Dep, Version
 from pkgcraft.error import InvalidRestrict
 from pkgcraft.repo import RepoSet
 
@@ -40,7 +40,7 @@ class TestRepoSet:
         s = RepoSet(r1, r2)
         assert s.categories == ("cat",)
         assert s.packages("cat") == ("pkg",)
-        assert s.versions("cat", "pkg") == ("1",)
+        assert s.versions("cat", "pkg") == (Version("1"),)
 
         # multiple new pkg version
         r1 = make_fake_repo(["cat/pkg-1", "cat/pkg-2"])
@@ -48,7 +48,7 @@ class TestRepoSet:
         s = RepoSet(r1, r2)
         assert s.categories == ("cat",)
         assert s.packages("cat") == ("pkg",)
-        assert s.versions("cat", "pkg") == ("1", "2")
+        assert s.versions("cat", "pkg") == (Version("1"), Version("2"))
 
         # matching pkg in other repo
         r1 = make_fake_repo(["cat/pkg-1", "cat/pkg-2"])
@@ -56,7 +56,7 @@ class TestRepoSet:
         s = RepoSet(r1, r2)
         assert s.categories == ("cat",)
         assert s.packages("cat") == ("pkg",)
-        assert s.versions("cat", "pkg") == ("1", "2")
+        assert s.versions("cat", "pkg") == (Version("1"), Version("2"))
 
         # new pkg in new category in other repo
         r1 = make_fake_repo(["cat/pkg-1", "cat/pkg-2"])
@@ -64,7 +64,7 @@ class TestRepoSet:
         s = RepoSet(r1, r2)
         assert s.categories == ("a", "cat")
         assert s.packages("a") == ("b",)
-        assert s.versions("a", "b") == ("1",)
+        assert s.versions("a", "b") == (Version("1"),)
 
     def test_cmp(self, make_fake_repo):
         for r1, op, r2 in (

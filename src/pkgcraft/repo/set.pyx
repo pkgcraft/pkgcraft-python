@@ -3,6 +3,7 @@ from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport pkgcraft_c as C
 from ..config cimport repos_to_dict
+from ..dep cimport Version
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport Repo
@@ -71,9 +72,9 @@ cdef class RepoSet:
         """Get a repo set's versions for a package."""
         cdef size_t length
         if parse.category(cat) and parse.package(pkg):
-            vers = C.pkgcraft_repo_set_versions(self.ptr, cat.encode(), pkg.encode(), &length)
-            versions = tuple(vers[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(vers, length)
+            c_versions = C.pkgcraft_repo_set_versions(self.ptr, cat.encode(), pkg.encode(), &length)
+            versions = tuple(Version.from_ptr(c_versions[i]) for i in range(length))
+            C.pkgcraft_array_free(<void **>c_versions, length)
             return versions
 
     def __len__(self):

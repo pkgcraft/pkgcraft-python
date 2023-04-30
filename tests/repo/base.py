@@ -1,7 +1,7 @@
 import pytest
 
 from pkgcraft.config import Config
-from pkgcraft.dep import Cpv, Dep
+from pkgcraft.dep import Cpv, Dep, Version
 from pkgcraft.error import InvalidRestrict
 
 from ..misc import OperatorMap
@@ -25,13 +25,13 @@ class BaseRepoTests:
         repo.create_pkg("cat1/pkga-1")
         assert repo.categories == ("cat1",)
         assert repo.packages("cat1") == ("pkga",)
-        assert repo.versions("cat1", "pkga") == ("1",)
+        assert repo.versions("cat1", "pkga") == (Version("1"),)
 
         # create new pkg version
         repo.create_pkg("cat1/pkga-2")
         assert repo.categories == ("cat1",)
         assert repo.packages("cat1") == ("pkga",)
-        assert repo.versions("cat1", "pkga") == ("1", "2")
+        assert repo.versions("cat1", "pkga") == (Version("1"), Version("2"))
 
         # create new pkg
         repo.create_pkg("cat1/pkgb-1")

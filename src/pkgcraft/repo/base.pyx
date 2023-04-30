@@ -3,7 +3,7 @@ from pathlib import Path
 
 from .. cimport pkgcraft_c as C
 from .._misc cimport ptr_to_str
-from ..dep cimport Cpv
+from ..dep cimport Cpv, Version
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport EbuildRepo, FakeRepo
@@ -86,9 +86,9 @@ cdef class Repo:
         """Get a repo's versions for a package."""
         cdef size_t length
         if parse.category(cat) and parse.package(pkg):
-            vers = C.pkgcraft_repo_versions(self.ptr, cat.encode(), pkg.encode(), &length)
-            versions = tuple(vers[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(vers, length)
+            c_versions = C.pkgcraft_repo_versions(self.ptr, cat.encode(), pkg.encode(), &length)
+            versions = tuple(Version.from_ptr(c_versions[i]) for i in range(length))
+            C.pkgcraft_array_free(<void **>c_versions, length)
             return versions
 
     def __len__(self):

@@ -1492,13 +1492,16 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The arguments must be a non-null RepoSet pointer, category, and package.
-    char **pkgcraft_repo_set_versions(RepoSet *s, const char *cat, const char *pkg, uintptr_t *len)
+    Version **pkgcraft_repo_set_versions(RepoSet *s,
+                                         const char *cat,
+                                         const char *pkg,
+                                         uintptr_t *len)
 
     # Return a repo's versions for a package.
     #
     # # Safety
     # The arguments must be a non-null Repo pointer, category, and package.
-    char **pkgcraft_repo_versions(Repo *r, const char *cat, const char *pkg, uintptr_t *len)
+    Version **pkgcraft_repo_versions(Repo *r, const char *cat, const char *pkg, uintptr_t *len)
 
     # Create a new restriction combining two restrictions via logical AND.
     #
