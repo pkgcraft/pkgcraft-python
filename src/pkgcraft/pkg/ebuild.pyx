@@ -2,7 +2,7 @@ from pathlib import Path
 
 cimport cython
 
-from .. cimport pkgcraft_c as C
+from .. cimport C
 from .._misc cimport SENTINEL, StrArray, ptr_to_str
 from ..dep cimport Dependencies, License, Properties, RequiredUse, Restrict, SrcUri
 from ..error cimport _IndirectInit

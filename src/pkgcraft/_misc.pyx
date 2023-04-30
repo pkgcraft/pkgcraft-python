@@ -1,6 +1,6 @@
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
-from . cimport pkgcraft_c as C
+from . cimport C
 
 SENTINEL = object()
 

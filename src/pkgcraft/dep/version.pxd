@@ -1,4 +1,4 @@
-from pkgcraft cimport pkgcraft_c as C
+from .. cimport C
 
 
 cdef class Version:

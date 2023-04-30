@@ -1,6 +1,6 @@
 from enum import IntEnum
 
-from .. cimport pkgcraft_c as C
+from .. cimport C
 from .._misc cimport ptr_to_str
 from ..error import InvalidVersion
 

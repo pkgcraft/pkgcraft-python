@@ -1,6 +1,6 @@
 cimport cython
 
-from . cimport pkgcraft_c as C
+from . cimport C
 from .dep cimport Cpv, Dep
 from .pkg cimport Pkg
 

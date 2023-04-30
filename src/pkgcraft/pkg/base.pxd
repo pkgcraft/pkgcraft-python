@@ -1,4 +1,4 @@
-from .. cimport pkgcraft_c as C
+from .. cimport C
 from ..dep cimport Cpv, Version
 from ..eapi cimport Eapi
 from ..error cimport _IndirectInit

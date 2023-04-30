@@ -1,4 +1,4 @@
-from . cimport pkgcraft_c as C
+from . cimport C
 
 
 cdef C.Restrict *str_to_restrict(str s) except NULL

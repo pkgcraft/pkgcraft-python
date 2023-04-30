@@ -1,6 +1,6 @@
 import logging
 
-from . cimport pkgcraft_c as C
+from . cimport C
 
 
 cdef void pkgcraft_logger(C.PkgcraftLog *log):

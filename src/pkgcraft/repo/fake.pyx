@@ -2,7 +2,7 @@ import os
 import random
 import string
 
-from .. cimport pkgcraft_c as C
+from .. cimport C
 from .._misc cimport StrArray
 from . cimport Repo
 

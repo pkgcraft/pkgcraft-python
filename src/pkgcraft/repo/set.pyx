@@ -1,7 +1,7 @@
 cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
-from .. cimport pkgcraft_c as C
+from .. cimport C
 from ..config cimport repos_to_dict
 from ..dep cimport Version
 from ..pkg cimport Pkg

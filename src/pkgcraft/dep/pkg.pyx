@@ -3,7 +3,7 @@ from enum import IntEnum
 
 cimport cython
 
-from .. cimport pkgcraft_c as C
+from .. cimport C
 from .._misc cimport SENTINEL, ptr_to_str
 from ..eapi cimport Eapi
 from ..restrict cimport Restrict

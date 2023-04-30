@@ -1,4 +1,4 @@
-from . cimport pkgcraft_c as C
+from . cimport C
 
 
 def _get_last_error():

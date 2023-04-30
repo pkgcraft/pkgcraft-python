@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from .. cimport pkgcraft_c as C
+from .. cimport C
 from .._misc cimport ptr_to_str
 from ..dep cimport Cpv, Version
 from ..pkg cimport Pkg

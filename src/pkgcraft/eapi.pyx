@@ -2,7 +2,7 @@ from types import MappingProxyType
 
 cimport cython
 
-from . cimport pkgcraft_c as C
+from . cimport C
 from ._misc cimport ptr_to_str
 from .error cimport _IndirectInit
 
