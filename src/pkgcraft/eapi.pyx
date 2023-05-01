@@ -3,7 +3,7 @@ from types import MappingProxyType
 cimport cython
 
 from . cimport C
-from ._misc cimport ptr_to_str
+from ._misc cimport ptr_to_str, ptr_to_str_array
 from .error cimport _IndirectInit
 
 from .error import PkgcraftError
@@ -142,9 +142,8 @@ cdef class Eapi(_IndirectInit):
         """Get an EAPI's dependency keys."""
         cdef size_t length
         if self.dep_keys is None:
-            c_keys = C.pkgcraft_eapi_dep_keys(self.ptr, &length)
-            self.dep_keys = frozenset(c_keys[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(c_keys, length)
+            c_strs = C.pkgcraft_eapi_dep_keys(self.ptr, &length)
+            self.dep_keys = frozenset(ptr_to_str_array(c_strs, length))
         return self.dep_keys
 
     @property
@@ -152,9 +151,8 @@ cdef class Eapi(_IndirectInit):
         """Get an EAPI's metadata keys."""
         cdef size_t length
         if self.metadata_keys is None:
-            c_keys = C.pkgcraft_eapi_metadata_keys(self.ptr, &length)
-            self.metadata_keys = frozenset(c_keys[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(c_keys, length)
+            c_strs = C.pkgcraft_eapi_metadata_keys(self.ptr, &length)
+            self.metadata_keys = frozenset(ptr_to_str_array(c_strs, length))
         return self.metadata_keys
 
     def __lt__(self, other):

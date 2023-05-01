@@ -5,7 +5,7 @@ from . cimport C
 SENTINEL = object()
 
 cdef str ptr_to_str(char *c_str, bint free=True):
-    """Convert a char* to a string object, freeing the pointer.
+    """Convert a char* to a string object, optionally freeing the pointer.
 
     Returns None if char* is NULL.
     """
@@ -14,6 +14,19 @@ cdef str ptr_to_str(char *c_str, bint free=True):
         if free:
             C.pkgcraft_str_free(c_str)
         return s
+    return None
+
+
+cdef tuple ptr_to_str_array(char **c_strs, size_t length, bint free=True):
+    """Convert a char** to a tuple of strings, optional freeing the array.
+
+    Returns None if char** is NULL.
+    """
+    if c_strs is not NULL:
+        values = tuple(c_strs[i].decode() for i in range(length))
+        if free:
+            C.pkgcraft_str_array_free(c_strs, length)
+        return values
     return None
 
 

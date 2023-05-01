@@ -4,7 +4,7 @@ from enum import IntEnum
 cimport cython
 
 from .. cimport C
-from .._misc cimport SENTINEL, ptr_to_str
+from .._misc cimport SENTINEL, ptr_to_str, ptr_to_str_array
 from ..eapi cimport Eapi
 from ..restrict cimport Restrict
 from . cimport Cpv
@@ -300,12 +300,8 @@ cdef class Dep:
         cdef size_t length
 
         if self._use is SENTINEL:
-            use = C.pkgcraft_dep_use_deps(self.ptr, &length)
-            if use is not NULL:
-                self._use = tuple(use[i].decode() for i in range(length))
-                C.pkgcraft_str_array_free(use, length)
-            else:
-                self._use = None
+            c_strs = C.pkgcraft_dep_use_deps(self.ptr, &length)
+            self._use = ptr_to_str_array(c_strs, length)
         return self._use
 
     @property

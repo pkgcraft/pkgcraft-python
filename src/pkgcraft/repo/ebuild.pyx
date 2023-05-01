@@ -1,4 +1,5 @@
 from .. cimport C
+from .._misc cimport ptr_to_str_array
 from ..error cimport _IndirectInit
 from . cimport Repo
 
@@ -49,9 +50,8 @@ cdef class _Metadata(_IndirectInit):
         """Get an ebuild repo's defined arches."""
         cdef size_t length
         if self._arches is None:
-            arches = C.pkgcraft_repo_ebuild_metadata_arches(self.ptr, &length)
-            self._arches = OrderedFrozenSet(arches[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(arches, length)
+            c_strs = C.pkgcraft_repo_ebuild_metadata_arches(self.ptr, &length)
+            self._arches = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
         return self._arches
 
     @property
@@ -59,7 +59,6 @@ cdef class _Metadata(_IndirectInit):
         """Get an ebuild repo's defined categories."""
         cdef size_t length
         if self._categories is None:
-            categories = C.pkgcraft_repo_ebuild_metadata_categories(self.ptr, &length)
-            self._categories = OrderedFrozenSet(categories[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(categories, length)
+            c_strs = C.pkgcraft_repo_ebuild_metadata_categories(self.ptr, &length)
+            self._categories = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
         return self._categories

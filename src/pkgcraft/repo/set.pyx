@@ -2,6 +2,7 @@ cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport C
+from .._misc cimport ptr_to_str_array
 from ..config cimport repos_to_dict
 from ..dep cimport Version
 from ..pkg cimport Pkg
@@ -54,19 +55,15 @@ cdef class RepoSet:
     def categories(self):
         """Get a repo set's categories."""
         cdef size_t length
-        cats = C.pkgcraft_repo_set_categories(self.ptr, &length)
-        categories = tuple(cats[i].decode() for i in range(length))
-        C.pkgcraft_str_array_free(cats, length)
-        return categories
+        c_strs = C.pkgcraft_repo_set_categories(self.ptr, &length)
+        return ptr_to_str_array(c_strs, length)
 
     def packages(self, str cat not None):
         """Get a repo set's packages for a category."""
         cdef size_t length
         if parse.category(cat):
-            pkgs = C.pkgcraft_repo_set_packages(self.ptr, cat.encode(), &length)
-            packages = tuple(pkgs[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(pkgs, length)
-            return packages
+            c_strs = C.pkgcraft_repo_set_packages(self.ptr, cat.encode(), &length)
+            return ptr_to_str_array(c_strs, length)
 
     def versions(self, str cat not None, str pkg not None):
         """Get a repo set's versions for a package."""

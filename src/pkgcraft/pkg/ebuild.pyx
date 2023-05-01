@@ -3,7 +3,7 @@ from pathlib import Path
 cimport cython
 
 from .. cimport C
-from .._misc cimport SENTINEL, StrArray, ptr_to_str
+from .._misc cimport SENTINEL, StrArray, ptr_to_str, ptr_to_str_array
 from ..dep cimport Dependencies, License, Properties, RequiredUse, Restrict, SrcUri
 from ..error cimport _IndirectInit
 from . cimport Pkg
@@ -159,9 +159,8 @@ cdef class EbuildPkg(Pkg):
         """Get a package's defined phases."""
         cdef size_t length
         if self._defined_phases is None:
-            phases = C.pkgcraft_pkg_ebuild_defined_phases(self.ptr, &length)
-            self._defined_phases = OrderedFrozenSet(phases[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(phases, length)
+            c_strs = C.pkgcraft_pkg_ebuild_defined_phases(self.ptr, &length)
+            self._defined_phases = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
         return self._defined_phases
 
     @property
@@ -169,9 +168,8 @@ cdef class EbuildPkg(Pkg):
         """Get a package's homepage."""
         cdef size_t length
         if self._homepage is None:
-            uris = C.pkgcraft_pkg_ebuild_homepage(self.ptr, &length)
-            self._homepage = OrderedFrozenSet(uris[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(uris, length)
+            c_strs = C.pkgcraft_pkg_ebuild_homepage(self.ptr, &length)
+            self._homepage = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
         return self._homepage
 
     @property
@@ -179,9 +177,8 @@ cdef class EbuildPkg(Pkg):
         """Get a package's keywords."""
         cdef size_t length
         if self._keywords is None:
-            keywords = C.pkgcraft_pkg_ebuild_keywords(self.ptr, &length)
-            self._keywords = OrderedFrozenSet(keywords[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(keywords, length)
+            c_strs = C.pkgcraft_pkg_ebuild_keywords(self.ptr, &length)
+            self._keywords = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
         return self._keywords
 
     @property
@@ -189,9 +186,8 @@ cdef class EbuildPkg(Pkg):
         """Get a package's USE flags."""
         cdef size_t length
         if self._iuse is None:
-            iuse = C.pkgcraft_pkg_ebuild_iuse(self.ptr, &length)
-            self._iuse = OrderedFrozenSet(iuse[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(iuse, length)
+            c_strs = C.pkgcraft_pkg_ebuild_iuse(self.ptr, &length)
+            self._iuse = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
         return self._iuse
 
     @property
@@ -199,9 +195,8 @@ cdef class EbuildPkg(Pkg):
         """Get a package's ordered set of directly inherited eclasses."""
         cdef size_t length
         if self._inherit is None:
-            eclasses = C.pkgcraft_pkg_ebuild_inherit(self.ptr, &length)
-            self._inherit = OrderedFrozenSet(eclasses[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(eclasses, length)
+            c_strs = C.pkgcraft_pkg_ebuild_inherit(self.ptr, &length)
+            self._inherit = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
         return self._inherit
 
     @property
@@ -209,9 +204,8 @@ cdef class EbuildPkg(Pkg):
         """Get a package's ordered set of inherited eclasses."""
         cdef size_t length
         if self._inherited is None:
-            eclasses = C.pkgcraft_pkg_ebuild_inherited(self.ptr, &length)
-            self._inherited = OrderedFrozenSet(eclasses[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(eclasses, length)
+            c_strs = C.pkgcraft_pkg_ebuild_inherited(self.ptr, &length)
+            self._inherited = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
         return self._inherited
 
     @property

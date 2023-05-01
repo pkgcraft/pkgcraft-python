@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from .. cimport C
-from .._misc cimport ptr_to_str
+from .._misc cimport ptr_to_str, ptr_to_str_array
 from ..dep cimport Cpv, Version
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
@@ -68,19 +68,15 @@ cdef class Repo:
     def categories(self):
         """Get a repo's categories."""
         cdef size_t length
-        cats = C.pkgcraft_repo_categories(self.ptr, &length)
-        categories = tuple(cats[i].decode() for i in range(length))
-        C.pkgcraft_str_array_free(cats, length)
-        return categories
+        c_strs = C.pkgcraft_repo_categories(self.ptr, &length)
+        return ptr_to_str_array(c_strs, length)
 
     def packages(self, str cat not None):
         """Get a repo's packages for a category."""
         cdef size_t length
         if parse.category(cat):
-            pkgs = C.pkgcraft_repo_packages(self.ptr, cat.encode(), &length)
-            packages = tuple(pkgs[i].decode() for i in range(length))
-            C.pkgcraft_str_array_free(pkgs, length)
-            return packages
+            c_strs = C.pkgcraft_repo_packages(self.ptr, cat.encode(), &length)
+            return ptr_to_str_array(c_strs, length)
 
     def versions(self, str cat not None, str pkg not None):
         """Get a repo's versions for a package."""
