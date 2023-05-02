@@ -81,7 +81,7 @@ cdef class Dep:
     >>> dep.package
     'pkg'
     >>> str(dep.version)
-    '1-r2'
+    '=1-r2'
     >>> dep.revision
     '2'
     >>> dep.slot
@@ -178,7 +178,7 @@ cdef class Dep:
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2')
         >>> str(dep.version)
-        '1-r2'
+        '=1-r2'
         >>> dep = Dep('cat/pkg')
         >>> dep.version is None
         True

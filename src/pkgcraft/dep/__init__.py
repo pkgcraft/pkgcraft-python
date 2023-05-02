@@ -12,4 +12,4 @@ from .spec import (
     UseDisabled,
     UseEnabled,
 )
-from .version import Operator, Version, VersionWithOp
+from .version import Operator, Version

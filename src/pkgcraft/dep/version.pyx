@@ -70,11 +70,11 @@ cdef class Version:
     def op(self):
         """Get a version's operator.
 
-        >>> from pkgcraft.dep import Operator, Version, VersionWithOp
+        >>> from pkgcraft.dep import Operator, Version
         >>> v = Version('1-r2')
         >>> v.op is None
         True
-        >>> v = VersionWithOp('>=1')
+        >>> v = Version('>=1')
         >>> v.op is Operator.GreaterOrEqual
         True
         >>> v.op == '>='
@@ -89,11 +89,11 @@ cdef class Version:
     def base(self):
         """Get a version's base.
 
-        >>> from pkgcraft.dep import Version, VersionWithOp
+        >>> from pkgcraft.dep import Version
         >>> v = Version('1-r2')
         >>> v.base
         '1'
-        >>> v = VersionWithOp('>=1.2_alpha3')
+        >>> v = Version('>=1.2_alpha3')
         >>> v.base
         '1.2_alpha3'
         """
@@ -119,13 +119,13 @@ cdef class Version:
     def intersects(self, Version other not None):
         """Determine if two versions intersect.
 
-        >>> from pkgcraft.dep import Version, VersionWithOp
-        >>> v1 = VersionWithOp('>1')
+        >>> from pkgcraft.dep import Version
+        >>> v1 = Version('>1')
         >>> v2 = Version('2-r1')
         >>> v1.intersects(v2) and v2.intersects(v1)
         True
-        >>> v1 = VersionWithOp('>1-r1')
-        >>> v2 = VersionWithOp('=1-r1')
+        >>> v1 = Version('>1-r1')
+        >>> v2 = Version('=1-r1')
         >>> v1.intersects(v2) or v2.intersects(v1)
         False
         """
@@ -179,33 +179,3 @@ cdef class Version:
 
     def __dealloc__(self):
         C.pkgcraft_version_free(self.ptr)
-
-
-cdef class VersionWithOp(Version):
-    """Package version with an operator.
-
-    >>> v = VersionWithOp('=1')
-    >>> v.op == "="
-    True
-
-    Missing operator
-    >>> VersionWithOp('1')
-    Traceback (most recent call last):
-        ...
-    pkgcraft.error.InvalidVersion: parsing failure: invalid version: 1
-    ...
-
-    Invalid operator
-    >>> VersionWithOp('^1')
-    Traceback (most recent call last):
-        ...
-    pkgcraft.error.InvalidVersion: parsing failure: invalid version: ^1
-    ...
-    """
-    def __init__(self, str s not None):
-        self.ptr = C.pkgcraft_version_with_op(s.encode())
-        if self.ptr is NULL:
-            raise InvalidVersion
-
-    def __str__(self):
-        return ptr_to_str(C.pkgcraft_version_str_with_op(self.ptr))

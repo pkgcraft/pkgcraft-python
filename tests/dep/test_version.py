@@ -3,7 +3,7 @@ import pickle
 
 import pytest
 
-from pkgcraft.dep import Operator, Version, VersionWithOp
+from pkgcraft.dep import Operator, Version
 from pkgcraft.error import InvalidVersion
 
 from ..misc import OperatorIterMap, OperatorMap
@@ -47,8 +47,24 @@ class TestVersion:
         assert str(v) == "1-r0"
         assert repr(v).startswith("<Version '1-r0' at 0x")
 
+        # unrevisioned with operator
+        v = Version("<1_alpha")
+        assert v.op == "<"
+        assert v.base == "1_alpha"
+        assert v.revision is None
+        assert str(v) == "<1_alpha"
+        assert repr(v).startswith("<Version '<1_alpha' at 0x")
+
+        # revisioned with operator
+        v = Version(">=1_beta2-r3")
+        assert v.op == ">="
+        assert v.base == "1_beta2"
+        assert v.revision == "3"
+        assert str(v) == ">=1_beta2-r3"
+        assert repr(v).startswith("<Version '>=1_beta2-r3' at 0x")
+
     def test_invalid(self):
-        for s in ("-1", "1a1", "a", ">1-r2"):
+        for s in ("-1", "1a1", "a"):
             with pytest.raises(InvalidVersion, match=f"invalid version: {s}"):
                 Version(s)
 
@@ -77,17 +93,10 @@ class TestVersion:
                     op_func(obj, None)
 
     def test_intersects(self, testdata_toml):
-        def parse(s):
-            """Convert string to non-op version falling back to op-ed version."""
-            try:
-                return Version(s)
-            except InvalidVersion:
-                return VersionWithOp(s)
-
         for d in testdata_toml["version.toml"]["intersects"]:
             # test intersections between all pairs of distinct values
             for s1, s2 in itertools.permutations(d["vals"], 2):
-                (v1, v2) = (parse(s1), parse(s2))
+                (v1, v2) = (Version(s1), Version(s2))
 
                 # elements intersect themselves
                 assert v1.intersects(v1)
@@ -115,40 +124,7 @@ class TestVersion:
             assert len(s) == length
 
     def test_pickle(self):
-        a = Version("1-r1")
-        b = pickle.loads(pickle.dumps(a))
-        assert a == b
-
-
-class TestVersionWithOp:
-    def test_creation(self):
-        # no revision
-        v = VersionWithOp("<1_alpha")
-        assert v.op == "<"
-        assert v.base == "1_alpha"
-        assert v.revision is None
-        assert str(v) == "<1_alpha"
-        assert repr(v).startswith("<VersionWithOp '<1_alpha' at 0x")
-
-        # revisioned
-        v = VersionWithOp(">=1_beta2-r3")
-        assert v.op == ">="
-        assert v.base == "1_beta2"
-        assert v.revision == "3"
-        assert str(v) == ">=1_beta2-r3"
-        assert repr(v).startswith("<VersionWithOp '>=1_beta2-r3' at 0x")
-
-    def test_invalid(self):
-        for s in ("1-r2",):
-            with pytest.raises(InvalidVersion, match=f"invalid version: {s}"):
-                VersionWithOp(s)
-
-    def test_invalid_arg_type(self):
-        for obj in (object(), None):
-            with pytest.raises(TypeError):
-                VersionWithOp(obj)
-
-    def test_pickle(self):
-        a = VersionWithOp(">=1-r1")
-        b = pickle.loads(pickle.dumps(a))
-        assert a == b
+        for s in ("1-r1", ">=1-r1"):
+            a = Version(s)
+            b = pickle.loads(pickle.dumps(a))
+            assert a == b

@@ -12,4 +12,4 @@ from .spec cimport (
     UseDisabled,
     UseEnabled,
 )
-from .version cimport Version, VersionWithOp
+from .version cimport Version

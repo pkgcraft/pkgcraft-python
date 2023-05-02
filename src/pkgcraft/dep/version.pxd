@@ -8,7 +8,3 @@ cdef class Version:
 
     @staticmethod
     cdef Version from_ptr(C.Version *)
-
-
-cdef class VersionWithOp(Version):
-    pass

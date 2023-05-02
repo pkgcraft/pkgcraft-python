@@ -1667,17 +1667,3 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The version argument should be a non-null Version pointer.
     char *pkgcraft_version_str(Version *v)
-
-    # Return a version's string value including the operator if it exists.
-    #
-    # # Safety
-    # The version argument should be a non-null Version pointer.
-    char *pkgcraft_version_str_with_op(Version *v)
-
-    # Parse a string into a version with an operator.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The version argument should point to a valid string.
-    Version *pkgcraft_version_with_op(const char *s)
