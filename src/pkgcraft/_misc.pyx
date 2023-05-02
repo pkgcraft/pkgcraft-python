@@ -4,7 +4,7 @@ from . cimport C
 
 SENTINEL = object()
 
-cdef str ptr_to_str(char *c_str, bint free=True):
+cdef str cstring_to_str(char *c_str, bint free=True):
     """Convert a char* to a string object, optionally freeing the pointer.
 
     Returns None if char* is NULL.
@@ -17,7 +17,7 @@ cdef str ptr_to_str(char *c_str, bint free=True):
     return None
 
 
-cdef tuple ptr_to_str_array(char **c_strs, size_t length, bint free=True):
+cdef tuple cstring_array_to_tuple(char **c_strs, size_t length, bint free=True):
     """Convert a char** to a tuple of strings, optional freeing the array.
 
     Returns None if char** is NULL.
@@ -30,9 +30,12 @@ cdef tuple ptr_to_str_array(char **c_strs, size_t length, bint free=True):
     return None
 
 
-cdef class StrArray:
-    """Convert an iterable of stringable objects to an array of char*."""
+cdef class CStringArray:
+    """Convert an iterable of stringable objects to an array of char*.
 
+    Note that this copies the strings to byte objects in order to avoid scope
+    issues when the array is freed automatically on instance deallocation.
+    """
     def __init__(self, object iterable):
         self.strs = [str(s).encode() for s in iterable]
         self.ptr = <char **>PyMem_Malloc(len(self.strs) * sizeof(char *))

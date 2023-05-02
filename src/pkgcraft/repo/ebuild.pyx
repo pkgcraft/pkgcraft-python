@@ -1,5 +1,5 @@
 from .. cimport C
-from .._misc cimport ptr_to_str_array
+from .._misc cimport cstring_array_to_tuple
 from ..error cimport _IndirectInit
 from . cimport Repo
 
@@ -51,7 +51,7 @@ cdef class _Metadata(_IndirectInit):
         cdef size_t length
         if self._arches is None:
             c_strs = C.pkgcraft_repo_ebuild_metadata_arches(self.ptr, &length)
-            self._arches = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
+            self._arches = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
         return self._arches
 
     @property
@@ -60,5 +60,5 @@ cdef class _Metadata(_IndirectInit):
         cdef size_t length
         if self._categories is None:
             c_strs = C.pkgcraft_repo_ebuild_metadata_categories(self.ptr, &length)
-            self._categories = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
+            self._categories = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
         return self._categories

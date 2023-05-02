@@ -3,7 +3,7 @@ import random
 import string
 
 from .. cimport C
-from .._misc cimport StrArray
+from .._misc cimport CStringArray
 from . cimport Repo
 
 from ..error import InvalidRepo, PkgcraftError
@@ -23,7 +23,7 @@ cdef class FakeRepo(Repo):
                 rand = ''.join(random.choices(string.ascii_letters, k=10))
                 id = f'fake-{rand}'
 
-            array = StrArray(cpvs_or_path)
+            array = CStringArray(cpvs_or_path)
             ptr = C.pkgcraft_repo_fake_new(id.encode(), priority, array.ptr, len(array))
             if ptr is NULL:
                 raise InvalidRepo
@@ -37,7 +37,7 @@ cdef class FakeRepo(Repo):
         Note that the repo cannot be included in any RepoSet or Config objects
         otherwise this will raise an error.
         """
-        array = StrArray(cpvs)
+        array = CStringArray(cpvs)
         repo = C.pkgcraft_repo_fake_extend(self.ptr, array.ptr, len(array))
         if repo is NULL:
             raise PkgcraftError

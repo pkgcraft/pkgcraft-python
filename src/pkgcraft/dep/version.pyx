@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 from .. cimport C
-from .._misc cimport ptr_to_str
+from .._misc cimport cstring_to_str
 from ..error import InvalidVersion
 
 
@@ -22,7 +22,7 @@ class Operator(IntEnum):
         raise ValueError(f'invalid operator: {s}')
 
     def __str__(self):
-        return ptr_to_str(C.pkgcraft_version_op_str(self))
+        return cstring_to_str(C.pkgcraft_version_op_str(self))
 
     def __eq__(self, other):
         if isinstance(other, str):
@@ -97,7 +97,7 @@ cdef class Version:
         >>> v.base
         '1.2_alpha3'
         """
-        return ptr_to_str(C.pkgcraft_version_base(self.ptr))
+        return cstring_to_str(C.pkgcraft_version_base(self.ptr))
 
     @property
     def revision(self):
@@ -114,7 +114,7 @@ cdef class Version:
         >>> v.revision
         '0'
         """
-        return ptr_to_str(C.pkgcraft_version_revision(self.ptr))
+        return cstring_to_str(C.pkgcraft_version_revision(self.ptr))
 
     def intersects(self, Version other not None):
         """Determine if two versions intersect.
@@ -162,7 +162,7 @@ cdef class Version:
         return NotImplemented
 
     def __str__(self):
-        return ptr_to_str(C.pkgcraft_version_str(self.ptr))
+        return cstring_to_str(C.pkgcraft_version_str(self.ptr))
 
     def __repr__(self):
         addr = <size_t>&self.ptr

@@ -3,7 +3,7 @@ from pathlib import Path
 cimport cython
 
 from .. cimport C
-from .._misc cimport SENTINEL, StrArray, ptr_to_str, ptr_to_str_array
+from .._misc cimport SENTINEL, CStringArray, cstring_array_to_tuple, cstring_to_str
 from ..dep cimport Dependencies, License, Properties, RequiredUse, Restrict, SrcUri
 from ..error cimport _IndirectInit
 from . cimport Pkg
@@ -32,12 +32,12 @@ cdef class EbuildPkg(Pkg):
     @property
     def path(self):
         """Get a package's path."""
-        return Path(ptr_to_str(C.pkgcraft_pkg_ebuild_path(self.ptr)))
+        return Path(cstring_to_str(C.pkgcraft_pkg_ebuild_path(self.ptr)))
 
     @property
     def ebuild(self):
         """Get a package's ebuild file content."""
-        s = ptr_to_str(C.pkgcraft_pkg_ebuild_ebuild(self.ptr))
+        s = cstring_to_str(C.pkgcraft_pkg_ebuild_ebuild(self.ptr))
         if s is None:
             raise PkgcraftError
         return s
@@ -46,21 +46,21 @@ cdef class EbuildPkg(Pkg):
     def description(self):
         """Get a package's description."""
         if self._description is None:
-            self._description = ptr_to_str(C.pkgcraft_pkg_ebuild_description(self.ptr))
+            self._description = cstring_to_str(C.pkgcraft_pkg_ebuild_description(self.ptr))
         return self._description
 
     @property
     def slot(self):
         """Get a package's slot."""
         if self._slot is None:
-            self._slot = ptr_to_str(C.pkgcraft_pkg_ebuild_slot(self.ptr))
+            self._slot = cstring_to_str(C.pkgcraft_pkg_ebuild_slot(self.ptr))
         return self._slot
 
     @property
     def subslot(self):
         """Get a package's subslot."""
         if self._subslot is None:
-            self._subslot = ptr_to_str(C.pkgcraft_pkg_ebuild_subslot(self.ptr))
+            self._subslot = cstring_to_str(C.pkgcraft_pkg_ebuild_subslot(self.ptr))
         return self._subslot
 
     def dependencies(self, *keys):
@@ -68,7 +68,7 @@ cdef class EbuildPkg(Pkg):
 
         Returns a DepSet encompassing all dependencies when no descriptors are passed.
         """
-        array = StrArray(keys)
+        array = CStringArray(keys)
         ptr = C.pkgcraft_pkg_ebuild_dependencies(self.ptr, array.ptr, len(array))
         if ptr is NULL:
             raise PkgcraftError
@@ -160,7 +160,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._defined_phases is None:
             c_strs = C.pkgcraft_pkg_ebuild_defined_phases(self.ptr, &length)
-            self._defined_phases = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
+            self._defined_phases = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
         return self._defined_phases
 
     @property
@@ -169,7 +169,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._homepage is None:
             c_strs = C.pkgcraft_pkg_ebuild_homepage(self.ptr, &length)
-            self._homepage = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
+            self._homepage = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
         return self._homepage
 
     @property
@@ -178,7 +178,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._keywords is None:
             c_strs = C.pkgcraft_pkg_ebuild_keywords(self.ptr, &length)
-            self._keywords = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
+            self._keywords = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
         return self._keywords
 
     @property
@@ -187,7 +187,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._iuse is None:
             c_strs = C.pkgcraft_pkg_ebuild_iuse(self.ptr, &length)
-            self._iuse = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
+            self._iuse = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
         return self._iuse
 
     @property
@@ -196,7 +196,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._inherit is None:
             c_strs = C.pkgcraft_pkg_ebuild_inherit(self.ptr, &length)
-            self._inherit = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
+            self._inherit = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
         return self._inherit
 
     @property
@@ -205,13 +205,13 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._inherited is None:
             c_strs = C.pkgcraft_pkg_ebuild_inherited(self.ptr, &length)
-            self._inherited = OrderedFrozenSet(ptr_to_str_array(c_strs, length))
+            self._inherited = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
         return self._inherited
 
     @property
     def long_description(self):
         """Get a package's long description."""
-        return ptr_to_str(C.pkgcraft_pkg_ebuild_long_description(self.ptr))
+        return cstring_to_str(C.pkgcraft_pkg_ebuild_long_description(self.ptr))
 
     @property
     def maintainers(self):
@@ -242,8 +242,8 @@ cdef class Maintainer(_IndirectInit):
         """Create a Maintainer from a pointer."""
         obj = <Maintainer>Maintainer.__new__(Maintainer)
         obj.email = m.email.decode()
-        obj.name = ptr_to_str(m.name, free=False)
-        obj.description = ptr_to_str(m.description, free=False)
+        obj.name = cstring_to_str(m.name, free=False)
+        obj.description = cstring_to_str(m.description, free=False)
         obj.maint_type = m.maint_type.decode()
         obj.proxied = m.proxied.decode()
         return obj
@@ -295,7 +295,7 @@ cdef class UpstreamMaintainer(_IndirectInit):
         """Create an UpstreamMaintainer from a pointer."""
         obj = <UpstreamMaintainer>UpstreamMaintainer.__new__(UpstreamMaintainer)
         obj.name = m.name.decode()
-        obj.email = ptr_to_str(m.email, free=False)
+        obj.email = cstring_to_str(m.email, free=False)
         obj.status = m.status.decode()
         return obj
 
@@ -327,9 +327,9 @@ cdef class Upstream(_IndirectInit):
                 RemoteId.from_ptr(u.remote_ids[i]) for i in range(u.remote_ids_len))
             obj.maintainers = tuple(
                 UpstreamMaintainer.from_ptr(u.maintainers[i]) for i in range(u.maintainers_len))
-            obj.bugs_to = ptr_to_str(u.bugs_to, free=False)
-            obj.changelog = ptr_to_str(u.changelog, free=False)
-            obj.doc = ptr_to_str(u.doc, free=False)
+            obj.bugs_to = cstring_to_str(u.bugs_to, free=False)
+            obj.changelog = cstring_to_str(u.changelog, free=False)
+            obj.doc = cstring_to_str(u.doc, free=False)
             C.pkgcraft_pkg_ebuild_upstream_free(u)
 
         return obj

@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from .. cimport C
-from .._misc cimport ptr_to_str, ptr_to_str_array
+from .._misc cimport cstring_array_to_tuple, cstring_to_str
 from ..dep cimport Cpv, Version
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
@@ -54,14 +54,14 @@ cdef class Repo:
     def id(self):
         """Get a repo's id."""
         if self._id is None:
-            self._id = ptr_to_str(C.pkgcraft_repo_id(self.ptr))
+            self._id = cstring_to_str(C.pkgcraft_repo_id(self.ptr))
         return self._id
 
     @property
     def path(self):
         """Get a repo's path."""
         if self._path is None:
-            self._path = Path(ptr_to_str(C.pkgcraft_repo_path(self.ptr)))
+            self._path = Path(cstring_to_str(C.pkgcraft_repo_path(self.ptr)))
         return self._path
 
     @property
@@ -69,14 +69,14 @@ cdef class Repo:
         """Get a repo's categories."""
         cdef size_t length
         c_strs = C.pkgcraft_repo_categories(self.ptr, &length)
-        return ptr_to_str_array(c_strs, length)
+        return cstring_array_to_tuple(c_strs, length)
 
     def packages(self, str cat not None):
         """Get a repo's packages for a category."""
         cdef size_t length
         if parse.category(cat):
             c_strs = C.pkgcraft_repo_packages(self.ptr, cat.encode(), &length)
-            return ptr_to_str_array(c_strs, length)
+            return cstring_array_to_tuple(c_strs, length)
 
     def versions(self, str cat not None, str pkg not None):
         """Get a repo's versions for a package."""

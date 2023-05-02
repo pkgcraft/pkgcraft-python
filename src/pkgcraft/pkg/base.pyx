@@ -1,5 +1,5 @@
 from .. cimport C
-from .._misc cimport ptr_to_str
+from .._misc cimport cstring_to_str
 from ..dep cimport Cpv, Version
 from ..eapi cimport Eapi
 from ..error cimport _IndirectInit
@@ -119,7 +119,7 @@ cdef class Pkg(_IndirectInit):
         return NotImplemented
 
     def __str__(self):
-        return ptr_to_str(C.pkgcraft_pkg_str(self.ptr))
+        return cstring_to_str(C.pkgcraft_pkg_str(self.ptr))
 
     def __repr__(self):
         addr = <size_t>&self.ptr

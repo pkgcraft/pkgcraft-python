@@ -3,7 +3,7 @@ from types import MappingProxyType
 cimport cython
 
 from . cimport C
-from ._misc cimport ptr_to_str, ptr_to_str_array
+from ._misc cimport cstring_array_to_tuple, cstring_to_str
 from .error cimport _IndirectInit
 
 from .error import PkgcraftError
@@ -74,7 +74,7 @@ def eapi_range(str s not None):
 
     eapis = []
     for i in range(0, length):
-        id = ptr_to_str(C.pkgcraft_eapi_as_str(c_eapis[i]))
+        id = cstring_to_str(C.pkgcraft_eapi_as_str(c_eapis[i]))
         eapis.append(EAPIS[id])
 
     C.pkgcraft_array_free(<void **>c_eapis, length)
@@ -92,10 +92,10 @@ cdef class Eapi(_IndirectInit):
         if init:
             eapi = <Eapi>Eapi.__new__(Eapi)
             eapi.ptr = ptr
-            eapi.id = ptr_to_str(C.pkgcraft_eapi_as_str(ptr))
+            eapi.id = cstring_to_str(C.pkgcraft_eapi_as_str(ptr))
             eapi.hash = C.pkgcraft_eapi_hash(ptr)
         else:
-            id = ptr_to_str(C.pkgcraft_eapi_as_str(ptr))
+            id = cstring_to_str(C.pkgcraft_eapi_as_str(ptr))
             eapi = EAPIS[id]
 
         return eapi
@@ -143,7 +143,7 @@ cdef class Eapi(_IndirectInit):
         cdef size_t length
         if self.dep_keys is None:
             c_strs = C.pkgcraft_eapi_dep_keys(self.ptr, &length)
-            self.dep_keys = frozenset(ptr_to_str_array(c_strs, length))
+            self.dep_keys = frozenset(cstring_array_to_tuple(c_strs, length))
         return self.dep_keys
 
     @property
@@ -152,7 +152,7 @@ cdef class Eapi(_IndirectInit):
         cdef size_t length
         if self.metadata_keys is None:
             c_strs = C.pkgcraft_eapi_metadata_keys(self.ptr, &length)
-            self.metadata_keys = frozenset(ptr_to_str_array(c_strs, length))
+            self.metadata_keys = frozenset(cstring_array_to_tuple(c_strs, length))
         return self.metadata_keys
 
     def __lt__(self, other):
