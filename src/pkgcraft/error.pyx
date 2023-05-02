@@ -7,8 +7,7 @@ def _get_last_error():
     if err is NULL:
         raise RuntimeError('no pkgcraft error occurred')
 
-    msg = err.message.decode()
-    kind = err.kind
+    msg, kind = err.message.decode(), err.kind
     C.pkgcraft_error_free(err)
 
     return msg, kind

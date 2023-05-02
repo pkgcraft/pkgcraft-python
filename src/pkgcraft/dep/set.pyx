@@ -17,21 +17,20 @@ cdef class DepSet(_IndirectInit):
     cdef DepSet from_ptr(C.DepSet *ptr, DepSet obj=None):
         if ptr is not NULL:
             if obj is None:
-                kind = ptr.kind
-                if kind == C.DEP_SET_KIND_DEPENDENCIES:
+                if ptr.kind == C.DEP_SET_KIND_DEPENDENCIES:
                     obj = <Dependencies>Dependencies.__new__(Dependencies)
-                elif kind == C.DEP_SET_KIND_LICENSE:
+                elif ptr.kind == C.DEP_SET_KIND_LICENSE:
                     obj = <License>License.__new__(License)
-                elif kind == C.DEP_SET_KIND_PROPERTIES:
+                elif ptr.kind == C.DEP_SET_KIND_PROPERTIES:
                     obj = <Properties>Properties.__new__(Properties)
-                elif kind == C.DEP_SET_KIND_REQUIRED_USE:
+                elif ptr.kind == C.DEP_SET_KIND_REQUIRED_USE:
                     obj = <RequiredUse>RequiredUse.__new__(RequiredUse)
-                elif kind == C.DEP_SET_KIND_RESTRICT:
+                elif ptr.kind == C.DEP_SET_KIND_RESTRICT:
                     obj = <Restrict>Restrict.__new__(Restrict)
-                elif kind == C.DEP_SET_KIND_SRC_URI:
+                elif ptr.kind == C.DEP_SET_KIND_SRC_URI:
                     obj = <SrcUri>SrcUri.__new__(SrcUri)
                 else:  # pragma: no cover
-                    raise TypeError(f'unknown DepSet kind: {kind}')
+                    raise TypeError(f'unknown DepSet kind: {ptr.kind}')
             obj.ptr = ptr
         return obj
 
