@@ -1573,19 +1573,17 @@ cdef extern from "pkgcraft.h":
     # The argument must be a string pointer or NULL.
     void pkgcraft_str_free(char *s)
 
+    # Get the filename for a Uri.
+    #
+    # # Safety
+    # The argument must be a Uri pointer.
+    char *pkgcraft_uri_filename(Uri *u)
+
     # Free a Uri object.
     #
     # # Safety
     # The argument must be a non-null Uri pointer or NULL.
     void pkgcraft_uri_free(Uri *u)
-
-    # Get the filename rename for a Uri.
-    #
-    # Returns NULL when no rename exists.
-    #
-    # # Safety
-    # The argument must be a Uri pointer.
-    char *pkgcraft_uri_rename(Uri *u)
 
     # Return the formatted string for a Uri object.
     #

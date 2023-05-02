@@ -226,14 +226,14 @@ class TestEbuildPkg(BasePkgTests):
         assert str(pkg.src_uri) == "https://a.com/b.tar.gz"
         u = next(pkg.src_uri.iter_flatten())
         assert u.uri == "https://a.com/b.tar.gz"
-        assert u.rename is None
+        assert u.filename == "b.tar.gz"
         assert list(map(str, pkg.src_uri.iter_recursive())) == ["https://a.com/b.tar.gz"]
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", src_uri="https://a.com/z -> z.tar.xz")
         assert str(pkg.src_uri) == "https://a.com/z -> z.tar.xz"
         u = next(pkg.src_uri.iter_flatten())
         assert u.uri == "https://a.com/z"
-        assert u.rename == "z.tar.xz"
+        assert u.filename == "z.tar.xz"
         assert list(map(str, pkg.src_uri.iter_recursive())) == ["https://a.com/z -> z.tar.xz"]
 
         pkg = ebuild_repo.create_pkg(

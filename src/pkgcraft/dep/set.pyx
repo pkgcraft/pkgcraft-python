@@ -234,8 +234,8 @@ cdef class Uri(_IndirectInit):
         return self._uri_str
 
     @property
-    def rename(self):
-        return cstring_to_str(C.pkgcraft_uri_rename(self.ptr))
+    def filename(self):
+        return cstring_to_str(C.pkgcraft_uri_filename(self.ptr))
 
     def __str__(self):
         return cstring_to_str(C.pkgcraft_uri_str(self.ptr))
