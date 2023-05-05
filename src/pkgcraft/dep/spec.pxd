@@ -10,32 +10,32 @@ cdef class DepSpec(_IndirectInit):
 
 
 cdef class Enabled(DepSpec):
-    pass
+    """Enabled dependency."""
 
 
 cdef class Disabled(DepSpec):
-    pass
+    """Disabled dependency."""
 
 
 cdef class AllOf(DepSpec):
-    pass
+    """All of a given dependency set."""
 
 
 cdef class AnyOf(DepSpec):
-    pass
+    """Any of a given dependency set."""
 
 
 cdef class ExactlyOneOf(DepSpec):
-    pass
+    """Exactly one of a given dependency set."""
 
 
 cdef class AtMostOneOf(DepSpec):
-    pass
+    """At most one of a given dependency set."""
 
 
 cdef class UseDisabled(DepSpec):
-    pass
+    """Conditionally disabled dependency."""
 
 
 cdef class UseEnabled(DepSpec):
-    pass
+    """Conditionally enabled dependency."""
