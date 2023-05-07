@@ -14,3 +14,7 @@ cdef class Dep:
 
     @staticmethod
     cdef Dep from_ptr(C.Dep *)
+
+
+cdef class Cpn(Dep):
+    pass

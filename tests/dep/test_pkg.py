@@ -5,7 +5,7 @@ import re
 
 import pytest
 
-from pkgcraft.dep import Blocker, Cpv, Dep, Operator, SlotOperator, Version
+from pkgcraft.dep import Blocker, Cpn, Cpv, Dep, Operator, SlotOperator, Version
 from pkgcraft.eapi import EAPIS, eapi_range
 from pkgcraft.error import InvalidDep
 from pkgcraft.restrict import Restrict
@@ -30,52 +30,52 @@ class TestSlotOperator:
 class TestDep:
     def test_init(self):
         # no version
-        a = Dep("cat/pkg")
-        assert a.category == "cat"
-        assert a.package == "pkg"
-        assert a.blocker is None
-        assert a.slot is None
-        assert a.subslot is None
-        assert a.slot_op is None
-        assert a.use is None
-        assert a.repo is None
-        assert a.version is None
-        assert a.revision is None
-        assert a.p == "pkg"
-        assert a.pf == "pkg"
-        assert a.pr is None
-        assert a.pv is None
-        assert a.pvr is None
-        assert a.cpn == "cat/pkg"
-        assert a.cpv == "cat/pkg"
-        assert str(a) == "cat/pkg"
-        assert repr(a).startswith("<Dep 'cat/pkg' at 0x")
+        dep = Dep("cat/pkg")
+        assert dep.category == "cat"
+        assert dep.package == "pkg"
+        assert dep.blocker is None
+        assert dep.slot is None
+        assert dep.subslot is None
+        assert dep.slot_op is None
+        assert dep.use is None
+        assert dep.repo is None
+        assert dep.version is None
+        assert dep.revision is None
+        assert dep.p == "pkg"
+        assert dep.pf == "pkg"
+        assert dep.pr is None
+        assert dep.pv is None
+        assert dep.pvr is None
+        assert dep.cpn == "cat/pkg"
+        assert dep.cpv == "cat/pkg"
+        assert str(dep) == "cat/pkg"
+        assert repr(dep).startswith("<Dep 'cat/pkg' at 0x")
 
         # all fields -- extended EAPI default allows repo deps
-        a = Dep("!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo")
-        assert a.category == "cat"
-        assert a.package == "pkg"
-        assert a.blocker == Blocker.Strong
-        assert a.blocker == "!!"
-        assert a.slot == "0"
-        assert a.subslot == "2"
-        assert a.slot_op == SlotOperator.Equal
-        assert a.slot_op == "="
-        assert a.use == ("a", "b", "c")
-        assert a.repo == "repo"
-        assert a.version == Version(">=1-r2")
-        assert a.op == Operator.GreaterOrEqual
-        assert a.op == ">="
-        assert a.revision == "2"
-        assert a.p == "pkg-1"
-        assert a.pf == "pkg-1-r2"
-        assert a.pr == "r2"
-        assert a.pv == "1"
-        assert a.pvr == "1-r2"
-        assert a.cpn == "cat/pkg"
-        assert a.cpv == "cat/pkg-1-r2"
-        assert str(a) == "!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo"
-        assert repr(a).startswith("<Dep '!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
+        dep = Dep("!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo")
+        assert dep.category == "cat"
+        assert dep.package == "pkg"
+        assert dep.blocker == Blocker.Strong
+        assert dep.blocker == "!!"
+        assert dep.slot == "0"
+        assert dep.subslot == "2"
+        assert dep.slot_op == SlotOperator.Equal
+        assert dep.slot_op == "="
+        assert dep.use == ("a", "b", "c")
+        assert dep.repo == "repo"
+        assert dep.version == Version(">=1-r2")
+        assert dep.op == Operator.GreaterOrEqual
+        assert dep.op == ">="
+        assert dep.revision == "2"
+        assert dep.p == "pkg-1"
+        assert dep.pf == "pkg-1-r2"
+        assert dep.pr == "r2"
+        assert dep.pv == "1"
+        assert dep.pvr == "1-r2"
+        assert dep.cpn == "cat/pkg"
+        assert dep.cpv == "cat/pkg-1-r2"
+        assert str(dep) == "!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo"
+        assert repr(dep).startswith("<Dep '!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
 
         # explicitly specifying an official EAPI fails
         for eapi in ("8", EAPIS["8"]):
@@ -91,10 +91,10 @@ class TestDep:
             Dep("cat/pkg", object())
 
     def test_matches(self):
-        a = Dep("=cat/pkg-1")
-        r = Restrict(a)
-        assert a.matches(r)
-        assert not a.matches(~r)
+        dep = Dep("=cat/pkg-1")
+        r = Restrict(dep)
+        assert dep.matches(r)
+        assert not dep.matches(~r)
 
     def test_valid(self, testdata_toml):
         attrs = []
@@ -121,18 +121,18 @@ class TestDep:
             passing_eapis = eapi_range(entry["eapis"])
             for eapi in EAPIS.values():
                 if eapi in passing_eapis:
-                    a = Dep(s, eapi)
-                    assert a.category == entry.get("category")
-                    assert a.package == entry.get("package")
-                    assert a.blocker == entry.get("blocker")
-                    assert a.version == entry.get("version")
-                    assert a.revision == entry.get("revision")
-                    assert a.slot == entry.get("slot")
-                    assert a.subslot == entry.get("subslot")
-                    assert a.slot_op == entry.get("slot_op")
-                    assert a.use == entry.get("use")
-                    assert str(a) == s
-                    assert repr(a).startswith(f"<Dep {s!r} at 0x")
+                    dep = Dep(s, eapi)
+                    assert dep.category == entry.get("category")
+                    assert dep.package == entry.get("package")
+                    assert dep.blocker == entry.get("blocker")
+                    assert dep.version == entry.get("version")
+                    assert dep.revision == entry.get("revision")
+                    assert dep.slot == entry.get("slot")
+                    assert dep.subslot == entry.get("subslot")
+                    assert dep.slot_op == entry.get("slot_op")
+                    assert dep.use == entry.get("use")
+                    assert str(dep) == s
+                    assert repr(dep).startswith(f"<Dep {s!r} at 0x")
                 else:
                     with pytest.raises(InvalidDep, match=f"invalid dep: {re.escape(s)}"):
                         Dep(s, eapi)
@@ -221,6 +221,39 @@ class TestDep:
         assert len(l) == 1000
 
     def test_pickle(self):
-        a = Dep("=cat/pkg-1-r2:0/2=[a,b,c]")
-        b = pickle.loads(pickle.dumps(a))
-        assert a == b
+        dep = Dep("=cat/pkg-1-r2:0/2=[a,b,c]")
+        new_dep = pickle.loads(pickle.dumps(dep))
+        assert dep == new_dep
+
+
+class TestCpn:
+    def test_init(self):
+        dep = Cpn("cat/pkg")
+        assert dep.category == "cat"
+        assert dep.package == "pkg"
+        assert dep.blocker is None
+        assert dep.slot is None
+        assert dep.subslot is None
+        assert dep.slot_op is None
+        assert dep.use is None
+        assert dep.repo is None
+        assert dep.version is None
+        assert dep.revision is None
+        assert dep.p == "pkg"
+        assert dep.pf == "pkg"
+        assert dep.pr is None
+        assert dep.pv is None
+        assert dep.pvr is None
+        assert dep.cpn == "cat/pkg"
+        assert dep.cpv == "cat/pkg"
+        assert str(dep) == "cat/pkg"
+        assert repr(dep).startswith("<Cpn 'cat/pkg' at 0x")
+
+        # unknown EAPI
+        with pytest.raises(ValueError, match="invalid unversioned dep"):
+            Cpn("=cat/pkg-3")
+
+    def test_pickle(self):
+        dep = Cpn("cat/pkg")
+        new_dep = pickle.loads(pickle.dumps(dep))
+        assert dep == new_dep

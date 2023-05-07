@@ -61,7 +61,6 @@ class SlotOperator(IntEnum):
         return int(self) == other
 
 
-@cython.final
 cdef class Dep:
     """Package dependency parsing.
 
@@ -496,3 +495,17 @@ cdef class Dep:
 
     def __dealloc__(self):
         C.pkgcraft_dep_free(self.ptr)
+
+
+@cython.final
+cdef class Cpn(Dep):
+    """Unversioned package dependencies."""
+
+    def __init__(self, str s not None):
+        self.ptr = C.pkgcraft_dep_new_cpn(s.encode())
+        if self.ptr is NULL:
+            raise InvalidDep
+
+    def __reduce__(self):
+        """Support pickling Cpn objects."""
+        return self.__class__, (str(self),)

@@ -397,7 +397,7 @@ cdef extern from "pkgcraft.h":
     # Parse a string into a Blocker.
     #
     # # Safety
-    # The argument should be a UTF-8 string.
+    # The argument must be a UTF-8 string.
     Blocker pkgcraft_dep_blocker_from_str(const char *s)
 
     # Return the string for a Blocker.
@@ -464,6 +464,14 @@ cdef extern from "pkgcraft.h":
     # The eapi argument may be NULL to use the default EAPI.
     Dep *pkgcraft_dep_new(const char *s,
                           const Eapi *eapi)
+
+    # Parse a string into an unversioned package dependency.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a UTF-8 string.
+    Dep *pkgcraft_dep_new_cpn(const char *s)
 
     # Get the package and revision of a package dependency.
     # For example, the package dependency "=cat/pkg-1-r2" returns "pkg-1".
@@ -694,7 +702,7 @@ cdef extern from "pkgcraft.h":
     # Parse a string into a SlotOperator.
     #
     # # Safety
-    # The argument should be a UTF-8 string.
+    # The argument must be a UTF-8 string.
     SlotOperator pkgcraft_dep_slot_op_from_str(const char *s)
 
     # Return the string for a SlotOperator.
