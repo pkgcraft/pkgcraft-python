@@ -295,9 +295,7 @@ cdef class Dep:
         >>> dep.use is None
         True
         """
-        cdef char **use
         cdef size_t length
-
         if self._use is SENTINEL:
             c_strs = C.pkgcraft_dep_use_deps(self.ptr, &length)
             self._use = cstring_array_to_tuple(c_strs, length)
