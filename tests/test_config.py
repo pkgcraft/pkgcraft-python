@@ -100,9 +100,7 @@ class TestConfig:
         f = tmp_path / "repos.conf"
 
         # nonexistent
-        with pytest.raises(
-            ConfigError, match=f'config error: nonexistent portage config path: .+'
-        ):
+        with pytest.raises(ConfigError, match=f"config error: nonexistent portage config path: .+"):
             config.load_portage_conf(tmp_path / "nonexistent")
 
         # empty file
