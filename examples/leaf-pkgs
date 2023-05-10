@@ -25,7 +25,7 @@ def main():
     # load specified repo path or id
     config = Config()
     try:
-        config.load_repos_conf()
+        config.load()
         if os.path.sep in args.repo:
             repo = config.add_repo(args.repo)
         else:

@@ -7,13 +7,6 @@ from ._misc cimport cstring_to_str
 from .repo cimport Repo, RepoSet
 from .error import ConfigError, PkgcraftError
 
-# default fallback paths when running Config.load_repos_conf() with no path argument.
-# TODO: determine paths based off install prefix?
-PORTAGE_REPOS_CONF_DEFAULTS = (
-    '/etc/portage/repos.conf',
-    '/usr/share/portage/config/repos.conf',
-)
-
 
 cdef dict repos_to_dict(C.Repo **c_repos, size_t length, bint ref):
     """Convert an array of repos to an (id, Repo) mapping."""
@@ -64,28 +57,24 @@ cdef class Config:
             self._repos = None
             return repo
 
-    def load_repos_conf(self, path=None, defaults=PORTAGE_REPOS_CONF_DEFAULTS):
-        """Load repos from a given path to a portage-compatible repos.conf directory or file."""
-        cdef C.Repo **c_repos
-        cdef size_t length
-
-        if path is None:
-            for path in defaults:
-                if os.path.exists(path):
-                    break
-            else:
-                raise ValueError('no repos.conf found on the system')
-
-        c_repos = C.pkgcraft_config_load_repos_conf(self.ptr, str(path).encode(), &length)
-        if c_repos is NULL:
+    def load(self):
+        """Load pkgcraft config files, if none are found revert to loading portage files."""
+        cdef C.Config *ptr = C.pkgcraft_config_load(self.ptr)
+        if ptr is NULL:
             raise PkgcraftError
 
         # force repos attr refresh
         self._repos = None
 
-        d = repos_to_dict(c_repos, length, False)
-        C.pkgcraft_array_free(<void **>c_repos, length)
-        return d
+    def load_portage_conf(self, path=None):
+        """Load portage config files from a given directory, falling back to default locations."""
+        path = str(path).encode() if path is not None else None
+        cdef C.Config *ptr = C.pkgcraft_config_load_portage_conf(self.ptr, path)
+        if ptr is NULL:
+            raise PkgcraftError
+
+        # force repos attr refresh
+        self._repos = None
 
     def __dealloc__(self):
         C.pkgcraft_config_free(self.ptr)

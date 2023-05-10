@@ -94,23 +94,20 @@ class TestConfig:
         assert config.repos.all == RepoSet(r1, r2)
         assert config.repos.ebuild == RepoSet(r1)
 
-    def test_load_repos_conf(self, config, make_raw_ebuild_repo, tmp_path):
+    def test_load_portage_conf(self, config, make_raw_ebuild_repo, tmp_path):
         repo_path = make_raw_ebuild_repo().path
-        f = tmp_path / "file"
+        conf_path = str(tmp_path)
+        f = tmp_path / "repos.conf"
 
         # nonexistent
         with pytest.raises(
-            ConfigError, match=f'config error: .* "{str(f)}": No such file or directory'
+            ConfigError, match=f'config error: nonexistent portage config path: .+'
         ):
-            config.load_repos_conf(f)
-
-        # nonexistent repos.conf path defaults
-        with pytest.raises(ValueError):
-            config.load_repos_conf(defaults=[f])
+            config.load_portage_conf(tmp_path / "nonexistent")
 
         # empty file
         f.touch()
-        config.load_repos_conf(f)
+        config.load_portage_conf(conf_path)
         assert not config.repos
 
         # no sections
@@ -121,7 +118,7 @@ class TestConfig:
         """
             )
         )
-        config.load_repos_conf(f)
+        config.load_portage_conf(conf_path)
         assert not config.repos
 
         # bad ini format
@@ -134,20 +131,7 @@ class TestConfig:
             )
         )
         with pytest.raises(ConfigError, match=f'config error: invalid repos.conf file: "{f}"'):
-            config.load_repos_conf(f)
-
-        # repos.conf path default fallback
-        repo_path = make_raw_ebuild_repo(id="default").path
-        f.write_text(
-            textwrap.dedent(
-                f"""
-            [default]
-            location = {repo_path}
-        """
-            )
-        )
-        assert list(map(str, config.load_repos_conf(defaults=[f]))) == ["default"]
-        assert set(config.repos) == {"default"}
+            config.load_portage_conf(conf_path)
 
         # file path
         repo_path = make_raw_ebuild_repo(id="test1").path
@@ -159,12 +143,12 @@ class TestConfig:
         """
             )
         )
-        assert list(map(str, config.load_repos_conf(f))) == ["test1"]
-        assert set(config.repos) == {"test1", "default"}
+        config.load_portage_conf(conf_path)
+        assert set(config.repos) == {"test1"}
 
         # reloading causes an existence error
         with pytest.raises(ConfigError, match="existing repos: test1"):
-            config.load_repos_conf(f)
+            config.load_portage_conf(conf_path)
 
         # reloading using a different id still causes an error
         f.write_text(
@@ -176,11 +160,12 @@ class TestConfig:
             )
         )
         with pytest.raises(ConfigError, match="existing repos: existing"):
-            config.load_repos_conf(f)
+            config.load_portage_conf(conf_path)
 
         # dir path
-        dir_path = tmp_path / "dir"
-        dir_path.mkdir()
+        conf_path = tmp_path / "dir"
+        dir_path = conf_path / "repos.conf"
+        dir_path.mkdir(parents=True)
         f = dir_path / "2.conf"
         r2_path = make_raw_ebuild_repo(id="test2").path
         f.write_text(
@@ -202,5 +187,5 @@ class TestConfig:
         """
             )
         )
-        assert list(map(str, config.load_repos_conf(dir_path))) == ["test3", "test2"]
-        assert set(config.repos) == {"default", "test3", "test1", "test2"}
+        config.load_portage_conf(conf_path)
+        assert set(config.repos) == {"test3", "test1", "test2"}

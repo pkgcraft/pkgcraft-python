@@ -69,7 +69,7 @@ def main():
             for path in args.repos:
                 config.add_repo(path)
         else:
-            config.load_repos_conf()
+            config.load()
     except PkgcraftError as e:
         parser.error(e)
 
