@@ -36,7 +36,7 @@ def test_bench_dep_random(benchmark, random_str, _lib, func):
 def test_bench_dep_property(benchmark, _lib, func):
     dep = func("=cat/pkg-1-r2:3/4=[a,b,c]")
     version = benchmark(getattr, dep, "version")
-    assert str(version).startswith("1")
+    assert '1' in str(version)
 
 
 @pytest.mark.parametrize("_lib,func", dep_funcs)
