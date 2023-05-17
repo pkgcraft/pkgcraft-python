@@ -249,9 +249,10 @@ class TestCpn:
         assert str(dep) == "cat/pkg"
         assert repr(dep).startswith("<Cpn 'cat/pkg' at 0x")
 
-        # unknown EAPI
-        with pytest.raises(ValueError, match="invalid unversioned dep"):
-            Cpn("=cat/pkg-3")
+        # invalid
+        for s in ("=cat/pkg-3", "cat/pkg-3", ""):
+            with pytest.raises(ValueError, match="invalid unversioned dep"):
+                Cpn(s)
 
     def test_pickle(self):
         dep = Cpn("cat/pkg")
