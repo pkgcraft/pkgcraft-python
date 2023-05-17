@@ -22,6 +22,7 @@ def _cached_dep(cls, dep, eapi=None):
 
 
 class Blocker(IntEnum):
+    """Package dependency blocker."""
     Strong = C.BLOCKER_STRONG
     Weak = C.BLOCKER_WEAK
 
@@ -42,6 +43,7 @@ class Blocker(IntEnum):
 
 
 class SlotOperator(IntEnum):
+    """Package dependency slot operator."""
     Equal = C.SLOT_OPERATOR_EQUAL
     Star = C.SLOT_OPERATOR_STAR
 
@@ -62,18 +64,9 @@ class SlotOperator(IntEnum):
 
 
 cdef class Dep:
-    """Package dependency parsing.
+    """Package dependency.
 
     >>> from pkgcraft.dep import Dep
-
-    Unversioned package dependency
-    >>> dep = Dep('cat/pkg')
-    >>> dep.category
-    'cat'
-    >>> dep.package
-    'pkg'
-
-    Complex package dependency
     >>> dep = Dep('=cat/pkg-1-r2:0/2[a,b]::repo')
     >>> dep.category
     'cat'
@@ -488,7 +481,6 @@ cdef class Dep:
         return self._hash
 
     def __reduce__(self):
-        """Support pickling Dep objects."""
         return self.__class__, (str(self), self.eapi)
 
     def __dealloc__(self):
@@ -497,7 +489,7 @@ cdef class Dep:
 
 @cython.final
 cdef class Cpn(Dep):
-    """Unversioned package dependencies."""
+    """Unversioned Package dependency."""
 
     def __init__(self, str s not None):
         self.ptr = C.pkgcraft_dep_new_cpn(s.encode())
@@ -505,5 +497,4 @@ cdef class Cpn(Dep):
             raise InvalidDep
 
     def __reduce__(self):
-        """Support pickling Cpn objects."""
         return self.__class__, (str(self),)

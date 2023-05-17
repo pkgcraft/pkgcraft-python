@@ -36,7 +36,7 @@ cdef class DepSpec(_IndirectInit):
         return obj
 
     def iter_flatten(self):
-        """Iterate over the objects of a flattened DepSet."""
+        """Iterate over the objects of a flattened DepSpec."""
         yield from _IntoIterFlatten(self)
 
     def iter_recursive(self):
