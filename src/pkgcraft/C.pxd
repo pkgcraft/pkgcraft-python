@@ -1228,6 +1228,15 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Repo pointer.
     char **pkgcraft_repo_ebuild_metadata_categories(Repo *r, uintptr_t *len)
 
+    # Regenerate an ebuild repo's package metadata cache.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    uintptr_t *pkgcraft_repo_ebuild_pkg_metadata_regen(Repo *r,
+                                                       uintptr_t *len,
+                                                       uintptr_t jobs,
+                                                       bool force)
+
     # Create an ebuild file in the repo.
     #
     # Returns NULL on error.

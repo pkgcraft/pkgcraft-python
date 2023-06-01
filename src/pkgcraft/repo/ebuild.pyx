@@ -1,8 +1,11 @@
+import os
+
 from .. cimport C
 from .._misc cimport cstring_array_to_tuple
 from ..error cimport _IndirectInit
 from . cimport Repo
 
+from ..error import PkgcraftError
 from ..types import OrderedFrozenSet
 
 
@@ -33,6 +36,15 @@ cdef class EbuildRepo(Repo):
         if self._metadata is None:
             self._metadata = _Metadata.from_ptr(self.ptr)
         return self._metadata
+
+    def pkg_metadata_regen(self, int jobs=0, force=False):
+        """Regenerate an ebuild repo's package metadata cache."""
+        cdef size_t errors
+        jobs = jobs if jobs > 0 else os.cpu_count()
+        ptr = C.pkgcraft_repo_ebuild_pkg_metadata_regen(self.ptr, &errors, jobs, force)
+        if ptr is NULL:
+            raise PkgcraftError
+        return errors
 
 
 cdef class _Metadata(_IndirectInit):
