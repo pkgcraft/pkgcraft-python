@@ -1230,12 +1230,11 @@ cdef extern from "pkgcraft.h":
 
     # Regenerate an ebuild repo's package metadata cache.
     #
+    # Returns false on error, otherwise true.
+    #
     # # Safety
     # The argument must be a non-null Repo pointer.
-    uintptr_t *pkgcraft_repo_ebuild_pkg_metadata_regen(Repo *r,
-                                                       uintptr_t *len,
-                                                       uintptr_t jobs,
-                                                       bool force)
+    bool pkgcraft_repo_ebuild_pkg_metadata_regen(Repo *r, uintptr_t jobs, bool force)
 
     # Create an ebuild file in the repo.
     #

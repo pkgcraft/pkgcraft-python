@@ -39,12 +39,9 @@ cdef class EbuildRepo(Repo):
 
     def pkg_metadata_regen(self, int jobs=0, force=False):
         """Regenerate an ebuild repo's package metadata cache."""
-        cdef size_t errors
         jobs = jobs if jobs > 0 else os.cpu_count()
-        ptr = C.pkgcraft_repo_ebuild_pkg_metadata_regen(self.ptr, &errors, jobs, force)
-        if ptr is NULL:
+        if not C.pkgcraft_repo_ebuild_pkg_metadata_regen(self.ptr, jobs, force):
             raise PkgcraftError
-        return errors
 
 
 cdef class _Metadata(_IndirectInit):
