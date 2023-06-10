@@ -1320,10 +1320,10 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The path argument should be a valid path on the system.
-    Repo *pkgcraft_repo_from_format(const char *id,
+    Repo *pkgcraft_repo_from_format(RepoFormat format,
+                                    const char *id,
                                     int priority,
                                     const char *path,
-                                    RepoFormat format,
                                     bool finalize)
 
     # Load a repo from a given path.
