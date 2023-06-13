@@ -79,10 +79,10 @@ cdef extern from "pkgcraft.h":
         REPO_SET_OP_XOR,
         REPO_SET_OP_SUB,
 
-    # Set types of configured repos
-    cdef enum RepoSetType:
-        REPO_SET_TYPE_ALL,
-        REPO_SET_TYPE_EBUILD,
+    # Repo set types registered in the config object.
+    cdef enum Repos:
+        REPOS_ALL,
+        REPOS_EBUILD,
 
     cdef enum SlotOperator:
         SLOT_OPERATOR_NONE,
@@ -272,7 +272,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The config argument must be a non-null Config pointer.
-    RepoSet *pkgcraft_config_repos_set(Config *c, RepoSetType set_type)
+    RepoSet *pkgcraft_config_repos_set(Config *c, Repos kind)
 
     # Get the category of a Cpv object.
     #
