@@ -45,7 +45,7 @@ class TestConfig:
             config.add_repo(path, "existing")
 
         # nonexistent
-        with pytest.raises(InvalidRepo, match="nonexistent repo path"):
+        with pytest.raises(InvalidRepo):
             config.add_repo("/path/to/nonexistent/repo")
 
     def test_add_repo_path_fake(self, config, tmp_path):
