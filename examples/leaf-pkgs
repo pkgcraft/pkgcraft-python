@@ -9,6 +9,7 @@ from collections import defaultdict
 from pkgcraft.config import Config
 from pkgcraft.error import PkgcraftError
 from pkgcraft.logging import logger
+from pkgcraft.repo import EbuildRepo
 
 
 def main():
@@ -27,7 +28,7 @@ def main():
     try:
         config.load()
         if os.path.sep in args.repo:
-            repo = config.add_repo(args.repo)
+            repo = EbuildRepo(args.repo)
         else:
             repo = config.repos[args.repo]
     except PkgcraftError as e:
