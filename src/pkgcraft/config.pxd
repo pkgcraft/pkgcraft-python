@@ -10,7 +10,7 @@ cdef class Config:
     # cached fields
     cdef Repos _repos
 
-    cdef Repo add_repo_path(self, object, object, int)
+    cdef Repo add_repo_path(self, object, object, int, bint external=*)
 
 
 cdef class Repos:

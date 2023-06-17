@@ -227,7 +227,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The arguments must be valid Config and Repo pointers.
-    Repo *pkgcraft_config_add_repo(Config *c, Repo *r)
+    Repo *pkgcraft_config_add_repo(Config *c, Repo *r, bool external)
 
     # Add local repo from filesystem path.
     #
@@ -235,7 +235,11 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The path argument should be a valid path on the system.
-    Repo *pkgcraft_config_add_repo_path(Config *c, const char *id, int priority, const char *path)
+    Repo *pkgcraft_config_add_repo_path(Config *c,
+                                        const char *id,
+                                        int priority,
+                                        const char *path,
+                                        bool external)
 
     # Free a config.
     #
