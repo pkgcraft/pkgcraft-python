@@ -46,7 +46,7 @@ cdef class Config:
 
         return Repo.from_ptr(ptr, False)
 
-    def add_repo(self, repo not None, id=None, priority=0, external=False):
+    def add_repo(self, repo not None, id=None, priority=0, external=True):
         """Add a repo via its file path or from a Repo object and return the Repo object."""
         if isinstance(repo, (str, os.PathLike)):
             path = str(repo)

@@ -34,5 +34,5 @@ def testdata_config():
     """All repo test data loaded into a Config object."""
     config = Config()
     for path in sorted(glob.glob(f"{DATADIR}/repos/*")):
-        config.add_repo(path, id=os.path.basename(path))
+        config.add_repo(path, id=os.path.basename(path), external=False)
     return config
