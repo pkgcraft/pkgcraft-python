@@ -32,7 +32,7 @@ cdef class Config:
         return self._repos
 
     cdef Repo add_repo_path(self, object path, object id, int priority, bint external=True):
-        """Add an external repo via its file path and return its pointer."""
+        """Add a repo via its file path and return the Repo object."""
         path = str(path)
         id = str(id) if id is not None else path
 
@@ -47,7 +47,7 @@ cdef class Config:
         return Repo.from_ptr(ptr, False)
 
     def add_repo(self, repo not None, id=None, priority=0, external=False):
-        """Add an external repo via its file path or from a Repo object."""
+        """Add a repo via its file path or from a Repo object and return the Repo object."""
         if isinstance(repo, (str, os.PathLike)):
             path = str(repo)
             return self.add_repo_path(path, id, priority, external)
