@@ -33,7 +33,7 @@ def main():
     try:
         if args.repos:
             for path in args.repos:
-                config.add_repo(path)
+                config.add_repo(path, external=True)
         else:
             config.load()
     except PkgcraftError as e:
