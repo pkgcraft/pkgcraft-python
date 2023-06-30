@@ -18,7 +18,7 @@ cdef str cstring_to_str(char *c_str, bint free=True):
 
 
 cdef tuple cstring_array_to_tuple(char **c_strs, size_t length, bint free=True):
-    """Convert a char** to a tuple of strings, optional freeing the array.
+    """Convert a char** to a tuple of strings, optionally freeing the array.
 
     Returns None if char** is NULL.
     """
