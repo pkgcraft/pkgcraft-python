@@ -51,9 +51,10 @@ jobs:
         if [[ -n "${{ inputs.python-version }}" ]]; then
           echo "python-version=$(jq 'split(",")' -Rc <(echo '${{ inputs.python-version }}'))" >> $GITHUB_OUTPUT
         else
-          min_ver=$(sed -rn '/^requires-python\s*=/ s/^.*=\s*">=([0-9](\.[0-9])*)(.*)/\1/p' pyproject.toml)
-          if [[ -n ${min_ver} ]]; then
-            echo "python-version=['${min_ver}', '3.x']" >> $GITHUB_OUTPUT
+          # pull supported python versions from classifiers
+          readarray -t vers < <(sed -rn '/Programming Language :: Python :: / s/.*([0-9]\.[0-9]+).*/\1/p' pyproject.toml)
+          if [[ ${#vers[@]} -ge 2 ]]; then
+            echo "python-version=['${vers[0]}', '${vers[-1]}']" >> $GITHUB_OUTPUT
           else
             exit 1
           fi
