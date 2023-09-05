@@ -1,3 +1,5 @@
+import os
+import shutil
 from pathlib import Path
 
 import pytest
@@ -103,6 +105,30 @@ class TestEbuildRepo(BaseRepoTests):
         # dependent repo
         secondary_repo = testdata_config.repos["dependent-secondary"]
         assert secondary_repo.masters == (primary_repo,)
+
+    def test_pkg_metadata_regen(self, testdata_config, tmpdir):
+        orig_repo = testdata_config.repos["metadata-gen"]
+        # copy original repo to a temp dir
+        repo_path = shutil.copytree(orig_repo.path, tmpdir.join("repo"))
+        repo = EbuildRepo(repo_path)
+        metadata_path = repo.path.joinpath("metadata/md5-cache")
+
+        def metadata_content():
+            """Yield metadata file names and content."""
+            for root, _dirs, files in os.walk(metadata_path):
+                for name in files:
+                    with open(os.path.join(root, name)) as f:
+                        yield (name, f.read())
+
+        # record expected metadata file content
+        expected = sorted(metadata_content())
+        # wipe metadata
+        shutil.rmtree(metadata_path)
+        # regenerate metadata
+        repo.pkg_metadata_regen()
+        # verify new data matches original
+        data = sorted(metadata_content())
+        assert data == expected
 
 
 class TestEbuildRepoMetadata:

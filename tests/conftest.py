@@ -13,6 +13,7 @@ import pytest
 pytest_plugins = ["pkgcraft._pytest"]
 
 from pkgcraft.config import Config
+from pkgcraft.error import InvalidRepo
 
 DATADIR = Path(__file__).parent.parent / "testdata"
 
@@ -34,5 +35,9 @@ def testdata_config():
     """All repo test data loaded into a Config object."""
     config = Config()
     for path in sorted(glob.glob(f"{DATADIR}/repos/*")):
-        config.add_repo(path, id=os.path.basename(path), external=False)
+        try:
+            config.add_repo(path, id=os.path.basename(path), external=False)
+        except InvalidRepo:
+            # ignore purposely broken repos
+            pass
     return config
