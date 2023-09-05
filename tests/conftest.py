@@ -16,6 +16,8 @@ from pkgcraft.config import Config
 from pkgcraft.error import InvalidRepo
 
 DATADIR = Path(__file__).parent.parent / "testdata"
+# TODO: drop this when pkgcraft source handling is reworked
+os.environ["PKGCRAFT_TEST"] = "1"
 
 
 @pytest.fixture(scope="session")
