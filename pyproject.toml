@@ -40,6 +40,9 @@ minversion = "6.0"
 addopts = "-ra"
 testpaths = ["tests"]
 doctest_optionflags = "ELLIPSIS"
+markers = [
+    "parallel: marks tests as inherently parallel (deselect with '-m \"not parallel\"')",
+]
 
 [tool.coverage.run]
 source = ["src/pkgcraft"]
