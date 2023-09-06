@@ -106,6 +106,7 @@ class TestEbuildRepo(BaseRepoTests):
         secondary_repo = testdata_config.repos["dependent-secondary"]
         assert secondary_repo.masters == (primary_repo,)
 
+    @pytest.mark.parallel
     def test_pkg_metadata_regen(self, testdata_config, tmpdir):
         orig_repo = testdata_config.repos["metadata-gen"]
         # copy original repo to a temp dir
