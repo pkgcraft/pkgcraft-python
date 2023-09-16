@@ -52,15 +52,19 @@ cdef object get_eapis():
 def eapi_range(str s not None):
     """Convert EAPI range into an ordered set of Eapi objects.
 
-    >>> from pkgcraft.eapi import eapi_range, EAPI3, EAPI4, EAPIS, EAPIS_OFFICIAL
+    >>> from pkgcraft.eapi import *
 
     >>> eapi_range('..') == set(EAPIS.values())
     True
-    >>> eapi_range('..2') == {EAPI0, EAPI1}
+    >>> eapi_range('..6') == {EAPI5}
     True
-    >>> eapi_range('3..4') == {EAPI3}
+    >>> eapi_range('..=6') == {EAPI5, EAPI6}
     True
-    >>> eapi_range('3..=4') == {EAPI3, EAPI4}
+    >>> eapi_range('7..8') == {EAPI7}
+    True
+    >>> eapi_range('8..8') == set()
+    True
+    >>> eapi_range('7..=8') == {EAPI7, EAPI8}
     True
     >>> eapi_range('..9999')
     Traceback (most recent call last):
@@ -121,18 +125,18 @@ cdef class Eapi(_IndirectInit):
     def has(self, str s not None):
         """Check if an EAPI has a given feature.
 
-        >>> from pkgcraft.eapi import EAPI5
+        >>> from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 
         existing feature
-        >>> EAPI5.has('subslots')
+        >>> EAPI_LATEST_OFFICIAL.has('usev_two_args')
         True
 
-        newer feature not existing in EAPI 5
-        >>> EAPI5.has('nonfatal_die')
+        feature not existing in official EAPIs
+        >>> EAPI_LATEST_OFFICIAL.has('repo_ids')
         False
 
         nonexistent feature
-        >>> EAPI5.has('nonexistent')
+        >>> EAPI_LATEST_OFFICIAL.has('nonexistent')
         False
         """
         return C.pkgcraft_eapi_has(self.ptr, s.encode())

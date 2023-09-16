@@ -2,15 +2,7 @@ import pickle
 
 import pytest
 
-from pkgcraft.eapi import (
-    EAPI0,
-    EAPI1,
-    EAPI_LATEST,
-    EAPI_LATEST_OFFICIAL,
-    EAPIS,
-    EAPIS_OFFICIAL,
-    Eapi,
-)
+from pkgcraft.eapi import *
 
 from .misc import OperatorMap
 
@@ -27,40 +19,39 @@ def test_globals():
 
 class TestEapi:
     def test_has(self):
-        assert not EAPI1.has("nonexistent_feature")
-        assert EAPI1.has("slot_deps")
+        assert not EAPI_LATEST_OFFICIAL.has("repo_ids")
+        assert EAPI_LATEST.has("repo_ids")
+        assert not EAPI_LATEST.has("nonexistent_feature")
 
         # invalid feature param type
         for obj in (object(), None):
             with pytest.raises(TypeError):
-                EAPI1.has(obj)
+                EAPI_LATEST.has(obj)
 
     def test_dep_keys(self):
-        assert "DEPEND" in EAPI0.dep_keys
-        assert "BDEPEND" not in EAPI0.dep_keys
         assert "BDEPEND" in EAPI_LATEST.dep_keys
+        assert "NONEXISTENT" not in EAPI_LATEST.dep_keys
 
     def test_metadata_keys(self):
-        assert "SLOT" in EAPI0.metadata_keys
-        assert "REQUIRED_USE" not in EAPI0.metadata_keys
-        assert "REQUIRED_USE" in EAPI_LATEST.metadata_keys
+        assert "SLOT" in EAPI_LATEST.metadata_keys
+        assert "NONEXISTENT" not in EAPI_LATEST.metadata_keys
 
     def test_methods(self):
-        assert str(EAPI0) == "0"
-        assert repr(EAPI0).startswith("<Eapi '0' at 0x")
+        assert str(EAPI8) == "8"
+        assert repr(EAPI8).startswith("<Eapi '8' at 0x")
 
     def test_cmp(self):
-        assert EAPI0 < EAPI1
-        assert EAPI0 <= EAPI1
-        assert EAPI1 <= EAPI1
-        assert EAPI1 == EAPI1
-        assert EAPI0 != EAPI1
-        assert EAPI1 >= EAPI1
-        assert EAPI1 >= EAPI0
-        assert EAPI1 > EAPI0
+        assert EAPI7 < EAPI8
+        assert EAPI8 <= EAPI8
+        assert EAPI8 <= EAPI8
+        assert EAPI8 == EAPI8
+        assert EAPI7 != EAPI8
+        assert EAPI8 >= EAPI7
+        assert EAPI8 >= EAPI7
+        assert EAPI8 > EAPI7
 
         # verify incompatible type comparisons
-        obj = EAPI0
+        obj = EAPI_LATEST
         for op, op_func in OperatorMap.items():
             if op == "==":
                 assert not op_func(obj, None)
@@ -71,14 +62,14 @@ class TestEapi:
                     op_func(obj, None)
 
     def test_hash(self):
-        s = {EAPI0, EAPI1}
+        s = {EAPI7, EAPI8}
         assert len(s) == 2
-        s = {EAPI0, EAPI0}
+        s = {EAPI8, EAPI8}
         assert len(s) == 1
 
     def test_from_obj(self):
-        assert Eapi.from_obj(EAPI0) is EAPI0
-        assert Eapi.from_obj("0") is EAPI0
+        assert Eapi.from_obj(EAPI8) is EAPI8
+        assert Eapi.from_obj("8") is EAPI8
 
         # unknown EAPI
         with pytest.raises(ValueError):
@@ -89,6 +80,6 @@ class TestEapi:
             assert Eapi.from_obj(object())
 
     def test_eapi_pickle(self):
-        e1 = EAPI0
+        e1 = EAPI8
         e2 = pickle.loads(pickle.dumps(e1))
         assert e1 is e2
