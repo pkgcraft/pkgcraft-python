@@ -64,6 +64,7 @@ cdef extern from "pkgcraft.h":
         OPERATOR_GREATER,
 
     cdef enum PkgFormat:
+        PKG_FORMAT_CONFIGURED,
         PKG_FORMAT_EBUILD,
         PKG_FORMAT_FAKE,
 
