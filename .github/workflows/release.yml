@@ -18,7 +18,7 @@ jobs:
       pkgcraft-c-ref: ${{ steps.vars.outputs.pkgcraft-c-ref }}
     steps:
     - name: Checkout pkgcraft code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: pkgcraft/pkgcraft
         # checkout full history for tags
@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         # checkout full history for setuptools-scm
         fetch-depth: 0
@@ -96,7 +96,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: recursive
 

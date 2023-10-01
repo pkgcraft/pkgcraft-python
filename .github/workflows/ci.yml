@@ -41,7 +41,7 @@ jobs:
     steps:
     - name: Checkout code to determine the minimum supported python version
       if: ${{ inputs.python-version == '' }}
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: pkgcraft/pkgcraft-python
 
@@ -93,7 +93,7 @@ jobs:
         path: ${{ env.pkgcraft_dir }}
 
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: pkgcraft/pkgcraft-python
         # checkout full history for setuptools-scm
