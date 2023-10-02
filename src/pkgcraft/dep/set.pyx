@@ -7,7 +7,7 @@ from ..error cimport _IndirectInit
 from .pkg cimport Dep
 from .spec cimport DepSpec
 
-from ..error import PkgcraftError
+from ..error import InvalidDep
 
 
 cdef class DepSet(_IndirectInit):
@@ -75,7 +75,7 @@ cdef class Dependencies(DepSet):
 
         ptr = C.pkgcraft_dep_set_dependencies(s.encode(), eapi_ptr)
         if ptr is NULL:
-            raise PkgcraftError
+            raise InvalidDep
         DepSet.from_ptr(ptr, self)
 
 
@@ -85,7 +85,7 @@ cdef class License(DepSet):
     def __init__(self, str s=""):
         ptr = C.pkgcraft_dep_set_license(s.encode())
         if ptr is NULL:
-            raise PkgcraftError
+            raise InvalidDep
         DepSet.from_ptr(ptr, self)
 
 
@@ -95,7 +95,7 @@ cdef class Properties(DepSet):
     def __init__(self, str s=""):
         ptr = C.pkgcraft_dep_set_properties(s.encode())
         if ptr is NULL:
-            raise PkgcraftError
+            raise InvalidDep
         DepSet.from_ptr(ptr, self)
 
 
@@ -109,7 +109,7 @@ cdef class RequiredUse(DepSet):
 
         ptr = C.pkgcraft_dep_set_required_use(s.encode(), eapi_ptr)
         if ptr is NULL:
-            raise PkgcraftError
+            raise InvalidDep
         DepSet.from_ptr(ptr, self)
 
 
@@ -119,7 +119,7 @@ cdef class Restrict(DepSet):
     def __init__(self, str s=""):
         ptr = C.pkgcraft_dep_set_restrict(s.encode())
         if ptr is NULL:
-            raise PkgcraftError
+            raise InvalidDep
         DepSet.from_ptr(ptr, self)
 
 
@@ -133,7 +133,7 @@ cdef class SrcUri(DepSet):
 
         ptr = C.pkgcraft_dep_set_src_uri(s.encode(), eapi_ptr)
         if ptr is NULL:
-            raise PkgcraftError
+            raise InvalidDep
         DepSet.from_ptr(ptr, self)
 
 
