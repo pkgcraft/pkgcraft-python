@@ -1,11 +1,20 @@
+import pytest
+
 from pkgcraft.dep import Dependencies
+from pkgcraft.eapi import EAPI8
+from pkgcraft.error import InvalidDep
 
 
-class TestDepSet:
-    def test_attrs(self):
-        dep = Dependencies("a/b")
-        assert str(dep) == "a/b"
-        assert repr(dep).startswith("<Dependencies 'a/b' at 0x")
+class TestDependencies:
+    def test_parse(self):
+        dep1 = Dependencies("a/b")
+        assert str(dep1) == "a/b"
+        assert repr(dep1).startswith("<Dependencies 'a/b' at 0x")
+        dep2 = Dependencies("a/b", EAPI8)
+        assert dep1 == dep2
+
+        with pytest.raises(InvalidDep):
+            Dependencies("a/b::repo", EAPI8)
 
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing
