@@ -44,6 +44,7 @@ cdef extern from "pkgcraft.h":
         ERROR_KIND_PKGCRAFT,
         ERROR_KIND_CONFIG,
         ERROR_KIND_REPO,
+        ERROR_KIND_PKG,
 
     cdef enum LogLevel:
         LOG_LEVEL_OFF,

@@ -68,6 +68,11 @@ class InvalidRepo(PkgcraftError):
     kinds = (C.ERROR_KIND_REPO,)
 
 
+class InvalidPkg(PkgcraftError):
+    """Package doesn't meet required specifications."""
+    kinds = (C.ERROR_KIND_PKG,)
+
+
 class InvalidCpv(PkgcraftError, ValueError):
     """Package CPV doesn't meet required specifications."""
     kinds = ()
