@@ -16,6 +16,10 @@ cdef class Repo:
     cdef Repo from_ptr(C.Repo *, bint, Repo obj=*)
 
 
+cdef class _IterCpv:
+    cdef C.RepoIterCpv *ptr
+
+
 cdef class _Iter:
     cdef C.RepoIter *ptr
 

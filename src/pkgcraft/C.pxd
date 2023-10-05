@@ -143,6 +143,10 @@ cdef extern from "pkgcraft.h":
     cdef struct RepoIter:
         pass
 
+    # Opaque wrapper for pkgcraft::repo::IterCpv objects.
+    cdef struct RepoIterCpv:
+        pass
+
     # Opaque wrapper for pkgcraft::repo::IterRestrict objects.
     cdef struct RepoIterRestrict:
         pass
@@ -1363,6 +1367,26 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Repo pointer.
     RepoIter *pkgcraft_repo_iter(Repo *r)
+
+    # Return a Cpv iterator for a repo.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    RepoIterCpv *pkgcraft_repo_iter_cpv(Repo *r)
+
+    # Free a repo Cpv iterator.
+    #
+    # # Safety
+    # The argument must be a non-null RepoIterCpv pointer or NULL.
+    void pkgcraft_repo_iter_cpv_free(RepoIterCpv *i)
+
+    # Return the next Cpv from a repo Cpv iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a non-null RepoIterCpv pointer.
+    Cpv *pkgcraft_repo_iter_cpv_next(RepoIterCpv *i)
 
     # Free a repo iterator.
     #

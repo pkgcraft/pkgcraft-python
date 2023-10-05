@@ -107,6 +107,9 @@ cdef class Repo:
     def __iter__(self):
         return _Iter(self)
 
+    def iter_cpv(self):
+        return _IterCpv(self)
+
     def iter(self, restrict=None):
         """Iterate over a repo's packages, optionally applying a restriction."""
         if restrict is None:
@@ -164,6 +167,25 @@ cdef class Repo:
     def __dealloc__(self):
         if not self.ref:
             C.pkgcraft_repo_free(self.ptr)
+
+
+cdef class _IterCpv:
+    """Iterator over the Cpv objects from a repo."""
+
+    def __cinit__(self, Repo r not None):
+        self.ptr = C.pkgcraft_repo_iter_cpv(r.ptr)
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        ptr = C.pkgcraft_repo_iter_cpv_next(self.ptr)
+        if ptr is not NULL:
+            return Cpv.from_ptr(ptr)
+        raise StopIteration
+
+    def __dealloc__(self):
+        C.pkgcraft_repo_iter_cpv_free(self.ptr)
 
 
 cdef class _Iter:

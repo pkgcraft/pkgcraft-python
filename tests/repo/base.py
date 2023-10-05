@@ -135,6 +135,18 @@ class BaseRepoTests:
         assert repo
         assert len(repo) == 2
 
+    def test_iter_cpv_base(self, repo):
+        # empty repo
+        assert not list(repo.iter_cpv())
+
+        # single pkg
+        repo.create_pkg("cat/pkg-1")
+        assert list(map(str, repo.iter_cpv())) == ["cat/pkg-1"]
+
+        # multiple pkgs
+        repo.create_pkg("cat/pkg-2")
+        assert list(map(str, repo.iter_cpv())) == ["cat/pkg-1", "cat/pkg-2"]
+
     def test_iter_base(self, repo):
         # calling next() directly on a repo object fails
         with pytest.raises(TypeError):
