@@ -108,7 +108,7 @@ cdef class Repo:
         return _Iter(self)
 
     def iter_cpv(self):
-        return _IterCpv(self)
+        yield from _IterCpv(self)
 
     def iter(self, restrict=None):
         """Iterate over a repo's packages, optionally applying a restriction."""
