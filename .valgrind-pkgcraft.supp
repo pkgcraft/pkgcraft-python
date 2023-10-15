@@ -15,3 +15,12 @@
 	fun:_Py_wrealpath
 	...
 }
+
+{
+	from regex-syntax crate
+	Memcheck:Cond
+	...
+	fun:_ZN12regex_syntax3ast7visitor5visit17h0cfc843851a30238E
+	...
+	fun:_ZN8pkgcraft8restrict5parse3dep3dep17h1e51039ad7cfed20E
+}
