@@ -6,6 +6,7 @@ on:
   push:
     branches-ignore: [release]
     paths:
+      - ".valgrind*"
       - ".github/workflows/valgrind.yml"
   workflow_dispatch:
 
