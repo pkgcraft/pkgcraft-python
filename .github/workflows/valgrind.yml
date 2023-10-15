@@ -46,7 +46,9 @@ jobs:
       run: pip install tox
 
     - name: Install valgrind
-      run: sudo apt-get install -y valgrind
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y valgrind
 
     - name: Override build variables
       run: |
