@@ -1,7 +1,7 @@
 cimport cython
 
 from .. cimport C
-from .._misc cimport cstring_to_str
+from .._misc cimport CStringArray, cstring_to_str
 from ..eapi cimport Eapi
 from ..error cimport _IndirectInit
 from .pkg cimport Dep
@@ -34,12 +34,18 @@ cdef class DepSet(_IndirectInit):
             obj.ptr = ptr
         return obj
 
+    def evaluate(self, options=()):
+        """Evaluate a DepSet using the given set of options."""
+        array = CStringArray(options)
+        ptr = C.pkgcraft_dep_set_evaluate(self.ptr, array.ptr, len(array))
+        return DepSet.from_ptr(ptr)
+
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSet."""
         yield from _IntoIterFlatten(self)
 
     def iter_recursive(self):
-        """Recursively iterate over the DepSpec objects of a DepSpec."""
+        """Recursively iterate over the DepSpec objects of a DepSet."""
         yield from _IntoIterRecursive(self)
 
     def __iter__(self):

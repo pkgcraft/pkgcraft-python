@@ -107,15 +107,15 @@ cdef extern from "pkgcraft.h":
     cdef struct DepSetWrapper:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::spec::IntoIter<T>.
+    # Opaque wrapper for pkgcraft::dep::spec::IntoIter<String, T>.
     cdef struct DepSpecIntoIter:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::spec::IntoIterFlatten<T>.
+    # Opaque wrapper for pkgcraft::dep::spec::IntoIterFlatten<String, T>.
     cdef struct DepSpecIntoIterFlatten:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::spec::IntoIterRecursive<T>.
+    # Opaque wrapper for pkgcraft::dep::spec::IntoIterRecursive<String, T>.
     cdef struct DepSpecIntoIterRecursive:
         pass
 
@@ -582,6 +582,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The arguments must be non-null DepSet pointers.
     bool pkgcraft_dep_set_eq(DepSet *d1, DepSet *d2)
+
+    # Evaluate a depset.
+    #
+    # # Safety
+    # The argument must be a non-null DepSet pointer.
+    DepSet *pkgcraft_dep_set_evaluate(DepSet *d, char **opts, uintptr_t len)
 
     # Free a DepSet.
     #

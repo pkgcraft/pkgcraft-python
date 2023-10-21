@@ -16,6 +16,22 @@ class TestDependencies:
         with pytest.raises(InvalidDep):
             Dependencies("a/b::repo", EAPI8)
 
+    def test_evaluate(self):
+        # no conditionals
+        cond_none = Dependencies("a/b")
+        assert cond_none.evaluate() == cond_none
+        assert cond_none.evaluate(["use"]) == cond_none
+
+        # conditionally enabled
+        cond_enabled = Dependencies("use? ( a/b )")
+        assert cond_enabled.evaluate() != cond_enabled
+        assert cond_enabled.evaluate(["use"]) == cond_none
+
+        # conditionally disabled
+        cond_disabled = Dependencies("!use? ( a/b )")
+        assert cond_disabled.evaluate() == cond_none
+        assert cond_disabled.evaluate(["use"]) != cond_none
+
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing
         for s1, s2 in (
