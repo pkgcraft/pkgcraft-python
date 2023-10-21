@@ -6,6 +6,8 @@ from pkgcraft.dep import Cpv, Dep, Version
 from pkgcraft.error import InvalidCpv
 from pkgcraft.restrict import Restrict
 
+from ..misc import TEST_DATA
+
 
 class TestCpv:
     def test_init(self):
@@ -86,8 +88,8 @@ class TestCpv:
         with pytest.raises(TypeError):
             cpv1.intersects(object())
 
-    def test_hash(self, testdata_toml):
-        for d in testdata_toml["version.toml"]["hashing"]:
+    def test_hash(self):
+        for d in TEST_DATA.toml("version.toml")["hashing"]:
             s = {Cpv(f"cat/pkg-{x}") for x in d["versions"]}
             length = 1 if d["equal"] else len(d["versions"])
             assert len(s) == length

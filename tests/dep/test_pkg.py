@@ -10,7 +10,7 @@ from pkgcraft.eapi import EAPIS, eapi_range
 from pkgcraft.error import InvalidDep
 from pkgcraft.restrict import Restrict
 
-from ..misc import OperatorIterMap, OperatorMap
+from ..misc import OperatorIterMap, OperatorMap, TEST_DATA
 
 
 class TestBlocker:
@@ -96,7 +96,7 @@ class TestDep:
         assert dep.matches(r)
         assert not dep.matches(~r)
 
-    def test_valid(self, testdata_toml):
+    def test_valid(self):
         attrs = []
         for attr, val in inspect.getmembers(Dep):
             if inspect.isgetsetdescriptor(val):
@@ -110,7 +110,7 @@ class TestDep:
             "use": tuple,
         }
 
-        for entry in testdata_toml["dep.toml"]["valid"]:
+        for entry in TEST_DATA.toml("dep.toml")["valid"]:
             s = entry["dep"]
 
             # convert toml strings into expected types
@@ -137,8 +137,8 @@ class TestDep:
                     with pytest.raises(InvalidDep, match=f"invalid dep: {re.escape(s)}"):
                         Dep(s, eapi)
 
-    def test_invalid(self, testdata_toml):
-        for s in testdata_toml["dep.toml"]["invalid"]:
+    def test_invalid(self):
+        for s in TEST_DATA.toml("dep.toml")["invalid"]:
             for eapi in EAPIS.values():
                 with pytest.raises(InvalidDep, match=f"invalid dep: {re.escape(s)}"):
                     Dep(s, eapi)
@@ -148,15 +148,15 @@ class TestDep:
             with pytest.raises(TypeError):
                 Dep(obj)
 
-    def test_cmp(self, testdata_toml):
-        for s in testdata_toml["dep.toml"]["compares"]:
+    def test_cmp(self):
+        for s in TEST_DATA.toml("dep.toml")["compares"]:
             s1, op, s2 = s.split()
             d1 = Dep(s1)
             d2 = Dep(s2)
             for op_func in OperatorIterMap[op]:
                 assert op_func(d1, d2), f"failed comparison: {s}"
 
-        for s in testdata_toml["version.toml"]["compares"]:
+        for s in TEST_DATA.toml("version.toml")["compares"]:
             s1, op, s2 = s.split()
             d1 = Dep(f"=cat/pkg-{s1}")
             d2 = Dep(f"=cat/pkg-{s2}")
@@ -174,7 +174,7 @@ class TestDep:
                 with pytest.raises(TypeError):
                     op_func(obj, None)
 
-    def test_intersects(self, testdata_toml):
+    def test_intersects(self):
         def parse(s):
             """Convert string to Dep falling back to Cpv."""
             try:
@@ -182,7 +182,7 @@ class TestDep:
             except InvalidDep:
                 return Cpv(s)
 
-        for d in testdata_toml["dep.toml"]["intersects"]:
+        for d in TEST_DATA.toml("dep.toml")["intersects"]:
             # test intersections between all pairs of distinct values
             for s1, s2 in itertools.permutations(d["vals"], 2):
                 (obj1, obj2) = (parse(s1), parse(s2))
@@ -201,8 +201,8 @@ class TestDep:
         with pytest.raises(TypeError):
             Dep("cat/pkg").intersects(object())
 
-    def test_sort(self, testdata_toml):
-        for d in testdata_toml["dep.toml"]["sorting"]:
+    def test_sort(self):
+        for d in TEST_DATA.toml("dep.toml")["sorting"]:
             expected = [Dep(s) for s in d["sorted"]]
             ordered = sorted(reversed(expected))
             if d["equal"]:
@@ -210,8 +210,8 @@ class TestDep:
                 ordered = list(reversed(ordered))
             assert ordered == expected
 
-    def test_hash(self, testdata_toml):
-        for d in testdata_toml["version.toml"]["hashing"]:
+    def test_hash(self):
+        for d in TEST_DATA.toml("version.toml")["hashing"]:
             s = {Dep(f"=cat/pkg-{x}") for x in d["versions"]}
             length = 1 if d["equal"] else len(d["versions"])
             assert len(s) == length

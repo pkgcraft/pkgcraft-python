@@ -7,6 +7,7 @@ from pkgcraft.eapi import EAPI_LATEST, EAPIS
 from pkgcraft.error import PkgcraftError
 
 from .base import BasePkgTests
+from ..misc import TEST_DATA
 
 
 @pytest.fixture
@@ -306,27 +307,25 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", iuse="a b c")
         assert pkg.iuse == {"a", "b", "c"}
 
-    def test_inherits(self, ebuild_repo, testdata_config):
+    def test_inherits(self, ebuild_repo):
         # none
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
         assert pkg.inherit == []
         assert pkg.inherited == []
 
-        repo = testdata_config.repos["eclasses"]
-
         # nested inherits
-        pkg = repo["pkg-tests/inherits-1"]
+        pkg = TEST_DATA.ebuild_pkg("=pkg-tests/inherits-1::eclasses")
         assert pkg.inherit == {"leaf"}
         assert pkg.inherited == {"leaf", "base"}
 
         # non-nested inherits
-        pkg = repo["pkg-tests/inherits-2"]
+        pkg = TEST_DATA.ebuild_pkg("=pkg-tests/inherits-2::eclasses")
         assert pkg.inherit == {"base"}
         assert pkg.inherited == {"base"}
 
     def test_long_description(self, ebuild_repo):
         # none
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+        pkg = TEST_DATA.ebuild_pkg("=pkg/none-1::xml")
         assert pkg.long_description is None
 
         # invalid
@@ -381,7 +380,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_maintainers(self, ebuild_repo):
         # none
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+        pkg = TEST_DATA.ebuild_pkg("=pkg/none-1::xml")
         assert pkg.maintainers == []
 
         # invalid
@@ -397,6 +396,13 @@ class TestEbuildPkg(BasePkgTests):
             )
         pkg = next(ebuild_repo.iter("cat/a-1"))
         assert pkg.maintainers == []
+
+        # single
+        pkg = TEST_DATA.ebuild_pkg("=pkg/single-1::xml")
+        assert len(pkg.maintainers) == 1
+        assert str(pkg.maintainers[0]) == "A Person <a.person@email.com>"
+        assert repr(pkg.maintainers[0]) == "<Maintainer 'a.person@email.com'>"
+        assert pkg.maintainers[0].maint_type == "person"
 
         # multiple
         path = ebuild_repo.create_ebuild("cat/b-1")
@@ -440,7 +446,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_upstream(self, ebuild_repo):
         # none
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+        pkg = TEST_DATA.ebuild_pkg("=pkg/none-1::xml")
         assert pkg.upstream is None
 
         # invalid
@@ -457,7 +463,14 @@ class TestEbuildPkg(BasePkgTests):
         pkg = next(ebuild_repo.iter("cat/a-1"))
         assert pkg.upstream is None
 
-        # multiple remote-id
+        # single
+        pkg = TEST_DATA.ebuild_pkg("=pkg/single-1::xml")
+        u = pkg.upstream
+        assert len(u.remote_ids) == 1
+        assert list(map(str, u.remote_ids)) == ["github: pkgcraft/pkgcraft"]
+        assert list(map(repr, u.remote_ids)) == ["<RemoteId 'github: pkgcraft/pkgcraft'>"]
+
+        # multiple
         path = ebuild_repo.create_ebuild("cat/b-1")
         with open(path.parent / "metadata.xml", "w") as f:
             f.write(

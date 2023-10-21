@@ -9,6 +9,7 @@ from pkgcraft.error import InvalidRepo
 from pkgcraft.repo import EbuildRepo, Repo
 
 from .base import BaseRepoTests
+from ..misc import TEST_DATA
 
 
 @pytest.fixture
@@ -97,18 +98,18 @@ class TestEbuildRepo(BaseRepoTests):
         r = EbuildRepo(repo.path)
         assert r.eapi is EAPI_LATEST_OFFICIAL
 
-    def test_masters(self, testdata_config):
+    def test_masters(self):
         # primary repo
-        primary_repo = testdata_config.repos["dependent-primary"]
+        primary_repo = TEST_DATA.ebuild_repo("dependent-primary")
         assert not primary_repo.masters
 
         # dependent repo
-        secondary_repo = testdata_config.repos["dependent-secondary"]
+        secondary_repo = TEST_DATA.ebuild_repo("dependent-secondary")
         assert secondary_repo.masters == (primary_repo,)
 
     @pytest.mark.parallel
-    def test_pkg_metadata_regen(self, testdata_config, tmpdir):
-        orig_repo = testdata_config.repos["metadata-gen"]
+    def test_pkg_metadata_regen(self, tmpdir):
+        orig_repo = TEST_DATA.ebuild_repo("metadata-gen")
         # copy original repo to a temp dir
         repo_path = shutil.copytree(orig_repo.path, tmpdir.join("repo"))
         repo = EbuildRepo(repo_path)

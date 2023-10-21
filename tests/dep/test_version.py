@@ -6,7 +6,7 @@ import pytest
 from pkgcraft.dep import Operator, Version
 from pkgcraft.error import InvalidVersion
 
-from ..misc import OperatorIterMap, OperatorMap
+from ..misc import OperatorIterMap, OperatorMap, TEST_DATA
 
 
 class TestOperator:
@@ -73,8 +73,8 @@ class TestVersion:
             with pytest.raises(TypeError):
                 Version(obj)
 
-    def test_cmp(self, testdata_toml):
-        for s in testdata_toml["version.toml"]["compares"]:
+    def test_cmp(self):
+        for s in TEST_DATA.toml("version.toml")["compares"]:
             a, op, b = s.split()
             v1 = Version(a)
             v2 = Version(b)
@@ -92,8 +92,8 @@ class TestVersion:
                 with pytest.raises(TypeError):
                     op_func(obj, None)
 
-    def test_intersects(self, testdata_toml):
-        for d in testdata_toml["version.toml"]["intersects"]:
+    def test_intersects(self):
+        for d in TEST_DATA.toml("version.toml")["intersects"]:
             # test intersections between all pairs of distinct values
             for s1, s2 in itertools.permutations(d["vals"], 2):
                 (v1, v2) = (Version(s1), Version(s2))
@@ -108,8 +108,8 @@ class TestVersion:
                 else:
                     assert not v1.intersects(v2)
 
-    def test_sort(self, testdata_toml):
-        for d in testdata_toml["version.toml"]["sorting"]:
+    def test_sort(self):
+        for d in TEST_DATA.toml("version.toml")["sorting"]:
             expected = [Version(s) for s in d["sorted"]]
             ordered = sorted(reversed(expected))
             if d["equal"]:
@@ -117,8 +117,8 @@ class TestVersion:
                 ordered = list(reversed(ordered))
             assert ordered == expected
 
-    def test_hash(self, testdata_toml):
-        for d in testdata_toml["version.toml"]["hashing"]:
+    def test_hash(self):
+        for d in TEST_DATA.toml("version.toml")["hashing"]:
             s = {Version(x) for x in d["versions"]}
             length = 1 if d["equal"] else len(d["versions"])
             assert len(s) == length

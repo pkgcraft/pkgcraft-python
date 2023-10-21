@@ -4,7 +4,7 @@ from pkgcraft.dep import Cpv, Version
 from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 from pkgcraft.restrict import Restrict
 
-from ..misc import OperatorIterMap, OperatorMap
+from ..misc import OperatorIterMap, OperatorMap, TEST_DATA
 
 
 class BasePkgTests:
@@ -35,9 +35,9 @@ class BasePkgTests:
         assert pkg.matches(pkg_restrict)
         assert pkg.matches(cpv_restrict)
 
-    def test_cmp_base(self, repo, testdata_toml):
+    def test_cmp_base(self, repo):
         # version-based comparisons
-        for s in testdata_toml["version.toml"]["compares"]:
+        for s in TEST_DATA.toml("version.toml")["compares"]:
             a, op, b = s.split()
             pkg1 = repo.create_pkg(f"cat/pkg-{a}")
             pkg2 = repo.create_pkg(f"cat/pkg-{b}")
@@ -70,8 +70,8 @@ class BasePkgTests:
         cls = pkg.__class__.__name__
         assert repr(pkg).startswith(f"<{cls} 'cat/pkg-1::fake' at 0x")
 
-    def test_hash_base(self, repo, testdata_toml):
-        for d in testdata_toml["version.toml"]["hashing"]:
+    def test_hash_base(self, repo):
+        for d in TEST_DATA.toml("version.toml")["hashing"]:
             pkgs = {repo.create_pkg(f"cat/pkg-{x}") for x in d["versions"]}
             length = 1 if d["equal"] else len(d["versions"])
             assert len(pkgs) == length
