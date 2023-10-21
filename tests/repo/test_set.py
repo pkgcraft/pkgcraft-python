@@ -231,6 +231,9 @@ class TestRepoSet:
         assert s.repos == [r1]
         s &= r3
         assert s.repos == []
+        # invalid
+        with pytest.raises(TypeError):
+            s &= None
 
         # |= operator
         s = RepoSet()
@@ -238,6 +241,9 @@ class TestRepoSet:
         assert s.repos == [r2, r1]
         s |= r3
         assert s.repos == [r3, r2, r1]
+        # invalid
+        with pytest.raises(TypeError):
+            s |= None
 
         # ^= operator
         s = RepoSet(r1, r2, r3)
@@ -245,6 +251,9 @@ class TestRepoSet:
         assert s.repos == [r3]
         s ^= r3
         assert s.repos == []
+        # invalid
+        with pytest.raises(TypeError):
+            s ^= None
 
         # -= operator
         s = RepoSet(r1, r2, r3)
@@ -252,6 +261,9 @@ class TestRepoSet:
         assert s.repos == [r3]
         s -= r3
         assert s.repos == []
+        # invalid
+        with pytest.raises(TypeError):
+            s -= None
 
         # & operator
         s = RepoSet(r1, r2, r3)
