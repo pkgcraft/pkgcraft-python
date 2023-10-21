@@ -570,6 +570,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Dep pointer.
     char *pkgcraft_dep_revision(Dep *d)
 
+    # Perform a set operation on two DepSets, assigning to the first.
+    #
+    # # Safety
+    # The arguments must be non-null DepSet pointers.
+    void pkgcraft_dep_set_assign_op_set(SetOp op, DepSet *d1, DepSet *d2)
+
     # Parse a string into a Dependencies DepSet.
     #
     # Returns NULL on error.
@@ -675,6 +681,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument should be a UTF-8 string.
     DepSet *pkgcraft_dep_set_license(const char *s)
+
+    # Perform a set operation on two DepSets, creating a new set.
+    #
+    # # Safety
+    # The arguments must be non-null DepSet pointers.
+    DepSet *pkgcraft_dep_set_op_set(SetOp op, DepSet *d1, DepSet *d2)
 
     # Parse a string into a Properties DepSet.
     #

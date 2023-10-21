@@ -70,6 +70,78 @@ cdef class DepSet(_IndirectInit):
         name = self.__class__.__name__
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
+    def __iand__(self, other):
+        op = C.SetOp.SET_OP_AND
+        if isinstance(other, DepSet):
+            C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
+            return self
+        else:
+            return NotImplemented
+
+    def __ior__(self, other):
+        op = C.SetOp.SET_OP_OR
+        if isinstance(other, DepSet):
+            C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
+            return self
+        else:
+            return NotImplemented
+
+    def __ixor__(self, other):
+        op = C.SetOp.SET_OP_XOR
+        if isinstance(other, DepSet):
+            C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
+            return self
+        else:
+            return NotImplemented
+
+    def __isub__(self, other):
+        op = C.SetOp.SET_OP_SUB
+        if isinstance(other, DepSet):
+            C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
+            return self
+        else:
+            return NotImplemented
+
+    def __and__(self, other):
+        op = C.SetOp.SET_OP_AND
+        if isinstance(other, DepSet):
+            return DepSet.from_ptr(C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr))
+        else:
+            return NotImplemented
+
+    def __rand__(self, other):
+        return self.__and__(other)
+
+    def __or__(self, other):
+        op = C.SetOp.SET_OP_OR
+        if isinstance(other, DepSet):
+            return DepSet.from_ptr(C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr))
+        else:
+            return NotImplemented
+
+    def __ror__(self, other):
+        return self.__or__(other)
+
+    def __xor__(self, other):
+        op = C.SetOp.SET_OP_XOR
+        if isinstance(other, DepSet):
+            return DepSet.from_ptr(C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr))
+        else:
+            return NotImplemented
+
+    def __rxor__(self, other):
+        return self.__xor__(other)
+
+    def __sub__(self, other):
+        op = C.SetOp.SET_OP_SUB
+        if isinstance(other, DepSet):
+            return DepSet.from_ptr(C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr))
+        else:
+            return NotImplemented
+
+    def __rsub__(self, other):
+        return self.__sub__(other)
+
     def __dealloc__(self):
         C.pkgcraft_dep_set_free(self.ptr)
 

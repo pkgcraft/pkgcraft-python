@@ -69,6 +69,104 @@ class TestDependencies:
         assert not dep == None
         assert dep != None
 
+    def test_set_ops(self):
+        # &= operator
+        d = Dependencies("a/a b/b c/c")
+        d &= Dependencies("a/a b/b")
+        assert d == Dependencies("a/a b/b")
+        d &= Dependencies("a/a")
+        assert d == Dependencies("a/a")
+        d &= Dependencies()
+        assert d == Dependencies()
+        # invalid
+        with pytest.raises(TypeError):
+            d &= None
+
+        # |= operator
+        d = Dependencies()
+        d |= Dependencies("a/a b/b")
+        assert d == Dependencies("a/a b/b")
+        d |= Dependencies("c/c")
+        assert d == Dependencies("a/a b/b c/c")
+        # all-of group doesn't combine with regular deps
+        d = Dependencies("a/a")
+        d |= Dependencies("( a/a )")
+        assert d == Dependencies("a/a ( a/a )")
+        # invalid
+        with pytest.raises(TypeError):
+            d |= None
+
+        # ^= operator
+        d = Dependencies("a/a b/b c/c")
+        d ^= Dependencies("a/a b/b")
+        assert d == Dependencies("c/c")
+        d ^= Dependencies("c/c d/d")
+        assert d == Dependencies("d/d")
+        d ^= Dependencies("d/d")
+        assert d == Dependencies()
+        # invalid
+        with pytest.raises(TypeError):
+            d ^= None
+
+        # -= operator
+        d = Dependencies("a/a b/b c/c")
+        d -= Dependencies("a/a b/b")
+        assert d == Dependencies("c/c")
+        d -= Dependencies("d/d")
+        assert d == Dependencies("c/c")
+        d -= Dependencies("c/c")
+        assert d == Dependencies()
+        # invalid
+        with pytest.raises(TypeError):
+            d -= None
+
+        # & operator
+        d = Dependencies("a/a b/b c/c")
+        assert (d & Dependencies("a/a b/b")) == Dependencies("a/a b/b")
+        assert (d & Dependencies("c/c")) == Dependencies("c/c")
+        assert (d & Dependencies("d/d")) == Dependencies()
+        assert (d & Dependencies()) == Dependencies()
+        # invalid
+        for a, b in [(None, d), ("s", d)]:
+            for x, y in [(a, b), (b, a)]:
+                with pytest.raises(TypeError):
+                    _ = x & y
+
+        # | operator
+        d = Dependencies("a/a")
+        assert (d | Dependencies("a/a b/b")) == Dependencies("a/a b/b")
+        assert (d | Dependencies("c/c")) == Dependencies("a/a c/c")
+        assert (d | Dependencies()) == Dependencies("a/a")
+        # invalid
+        for a, b in [(None, d), ("s", d)]:
+            for x, y in [(a, b), (b, a)]:
+                with pytest.raises(TypeError):
+                    _ = x | y
+
+        # ^ operator
+        d = Dependencies("a/a b/b c/c")
+        assert (d ^ Dependencies("b/b c/c")) == Dependencies("a/a")
+        assert (d ^ Dependencies("c/c")) == Dependencies("a/a b/b")
+        assert (d ^ Dependencies("d/d")) == Dependencies("a/a b/b c/c d/d")
+        assert (d ^ Dependencies()) == Dependencies("a/a b/b c/c")
+        # invalid
+        for a, b in [(None, d), ("s", d)]:
+            for x, y in [(a, b), (b, a)]:
+                with pytest.raises(TypeError):
+                    _ = x ^ y
+
+        # - operator
+        d = Dependencies("a/a b/b c/c")
+        assert (d - Dependencies("b/b c/c")) == Dependencies("a/a")
+        assert (d - Dependencies("c/c")) == Dependencies("a/a b/b")
+        assert (d - Dependencies("d/d")) == Dependencies("a/a b/b c/c")
+        assert (d - Dependencies()) == Dependencies("a/a b/b c/c")
+        # invalid
+        for a, b in [(None, d), ("s", d)]:
+            for x, y in [(a, b), (b, a)]:
+                with pytest.raises(TypeError):
+                    _ = x - y
+
 
 class TestLicense:
     def test_parse(self):

@@ -258,6 +258,7 @@ class TestRepoSet:
         assert (s & RepoSet(r1, r2)).repos == [r2, r1]
         assert (s & r3).repos == [r3]
         assert (r3 & s).repos == [r3]
+        # invalid
         for a, b in [(None, s), ("s", s)]:
             for x, y in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
@@ -268,6 +269,7 @@ class TestRepoSet:
         assert (s | RepoSet(r2, r3)).repos == [r3, r2, r1]
         assert (s | r2).repos == [r2, r1]
         assert (r2 | s).repos == [r2, r1]
+        # invalid
         for a, b in [(None, s), ("s", s)]:
             for x, y in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
@@ -278,6 +280,7 @@ class TestRepoSet:
         assert (s ^ RepoSet(r2, r3)).repos == [r1]
         assert (s ^ r3).repos == [r2, r1]
         assert (r3 ^ s).repos == [r2, r1]
+        # invalid
         for a, b in [(None, s), ("s", s)]:
             for x, y in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
@@ -288,6 +291,7 @@ class TestRepoSet:
         assert (s - RepoSet(r1, r2)).repos == []
         assert (s - r3).repos == [r2, r1]
         assert (s - r2).repos == [r1]
+        # invalid
         for a, b in [(None, s), ("s", s)]:
             for x, y in [(a, b), (b, a)]:
                 with pytest.raises(TypeError):
