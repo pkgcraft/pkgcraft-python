@@ -8,8 +8,8 @@ from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 from pkgcraft.error import InvalidRepo
 from pkgcraft.repo import EbuildRepo, Repo
 
-from .base import BaseRepoTests
 from ..misc import TEST_DATA
+from .base import BaseRepoTests
 
 
 @pytest.fixture

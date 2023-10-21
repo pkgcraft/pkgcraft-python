@@ -6,8 +6,8 @@ from pkgcraft.dep import Dep
 from pkgcraft.eapi import EAPI_LATEST, EAPIS
 from pkgcraft.error import PkgcraftError
 
-from .base import BasePkgTests
 from ..misc import TEST_DATA
+from .base import BasePkgTests
 
 
 @pytest.fixture

@@ -4,7 +4,7 @@ from pkgcraft.dep import Cpv, Version
 from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 from pkgcraft.restrict import Restrict
 
-from ..misc import OperatorIterMap, OperatorMap, TEST_DATA
+from ..misc import TEST_DATA, OperatorIterMap, OperatorMap
 
 
 class BasePkgTests:

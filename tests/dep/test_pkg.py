@@ -10,7 +10,7 @@ from pkgcraft.eapi import EAPIS, eapi_range
 from pkgcraft.error import InvalidDep
 from pkgcraft.restrict import Restrict
 
-from ..misc import OperatorIterMap, OperatorMap, TEST_DATA
+from ..misc import TEST_DATA, OperatorIterMap, OperatorMap
 
 
 class TestBlocker:

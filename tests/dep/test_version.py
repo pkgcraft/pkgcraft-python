@@ -6,7 +6,7 @@ import pytest
 from pkgcraft.dep import Operator, Version
 from pkgcraft.error import InvalidVersion
 
-from ..misc import OperatorIterMap, OperatorMap, TEST_DATA
+from ..misc import TEST_DATA, OperatorIterMap, OperatorMap
 
 
 class TestOperator:
