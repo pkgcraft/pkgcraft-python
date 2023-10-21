@@ -329,20 +329,7 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.long_description is None
 
         # invalid
-        path = ebuild_repo.create_ebuild("cat/a-1")
-        with open(path.parent / "metadata.xml", "w") as f:
-            f.write(
-                textwrap.dedent(
-                    """
-                <pkgmetadata>
-                    <longdescription>
-                        long description
-                    </longdescription>
-                </pkg>
-            """
-                )
-            )
-        pkg = next(ebuild_repo.iter("cat/a-1"))
+        pkg = TEST_DATA.ebuild_pkg("=pkg/bad-1::xml")
         assert pkg.long_description is None
 
         # empty
@@ -362,21 +349,8 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.long_description == ""
 
         # exists
-        path = ebuild_repo.create_ebuild("cat/c-1")
-        with open(path.parent / "metadata.xml", "w") as f:
-            f.write(
-                textwrap.dedent(
-                    """
-                <pkgmetadata>
-                    <longdescription>
-                        long description
-                    </longdescription>
-                </pkgmetadata>
-            """
-                )
-            )
-        pkg = next(ebuild_repo.iter("cat/c-1"))
-        assert pkg.long_description == "long description"
+        pkg = TEST_DATA.ebuild_pkg("=pkg/single-1::xml")
+        assert pkg.long_description == "desc"
 
     def test_maintainers(self, ebuild_repo):
         # none
@@ -384,17 +358,7 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.maintainers == []
 
         # invalid
-        path = ebuild_repo.create_ebuild("cat/a-1")
-        with open(path.parent / "metadata.xml", "w") as f:
-            f.write(
-                textwrap.dedent(
-                    """
-                <pkgmetadata>
-                </pkg>
-            """
-                )
-            )
-        pkg = next(ebuild_repo.iter("cat/a-1"))
+        pkg = TEST_DATA.ebuild_pkg("=pkg/bad-1::xml")
         assert pkg.maintainers == []
 
         # single
@@ -450,17 +414,7 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.upstream is None
 
         # invalid
-        path = ebuild_repo.create_ebuild("cat/a-1")
-        with open(path.parent / "metadata.xml", "w") as f:
-            f.write(
-                textwrap.dedent(
-                    """
-                <pkgmetadata>
-                </pkg>
-            """
-                )
-            )
-        pkg = next(ebuild_repo.iter("cat/a-1"))
+        pkg = TEST_DATA.ebuild_pkg("=pkg/bad-1::xml")
         assert pkg.upstream is None
 
         # single
