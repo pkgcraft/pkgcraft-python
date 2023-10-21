@@ -48,6 +48,9 @@ cdef class DepSet(_IndirectInit):
         """Recursively iterate over the DepSpec objects of a DepSet."""
         yield from _IntoIterRecursive(self)
 
+    def __bool__(self):
+        return not C.pkgcraft_dep_set_is_empty(self.ptr)
+
     def __iter__(self):
         return _IntoIter(self)
 

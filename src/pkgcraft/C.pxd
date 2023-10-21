@@ -583,11 +583,11 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null DepSet pointers.
     bool pkgcraft_dep_set_eq(DepSet *d1, DepSet *d2)
 
-    # Evaluate a depset.
+    # Evaluate a DepSet.
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
-    DepSet *pkgcraft_dep_set_evaluate(DepSet *d, char **opts, uintptr_t len)
+    DepSet *pkgcraft_dep_set_evaluate(DepSet *d, char **options, uintptr_t len)
 
     # Free a DepSet.
     #
@@ -660,6 +660,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null DepSpecIntoIterRecursive pointer.
     DepSpec *pkgcraft_dep_set_into_iter_recursive_next(DepSpecIntoIterRecursive *i)
+
+    # Determine if a DepSet is empty.
+    #
+    # # Safety
+    # The argument must be a non-null DepSet pointer.
+    bool pkgcraft_dep_set_is_empty(DepSet *d)
 
     # Parse a string into a License DepSet.
     #

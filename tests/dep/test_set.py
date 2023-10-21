@@ -7,12 +7,21 @@ from pkgcraft.error import InvalidDep
 
 class TestDependencies:
     def test_parse(self):
+        # empty
+        d1 = Dependencies()
+        assert not d1
+        assert str(d1) == ""
+        assert repr(d1).startswith("<Dependencies '' at 0x")
+
+        # default latest and specified EAPI
         d1 = Dependencies("a/b")
+        assert d1
         assert str(d1) == "a/b"
         assert repr(d1).startswith("<Dependencies 'a/b' at 0x")
         d2 = Dependencies("a/b", EAPI8)
         assert d1 == d2
 
+        # invalid
         with pytest.raises(InvalidDep):
             Dependencies("a/b::repo", EAPI8)
 
@@ -24,13 +33,13 @@ class TestDependencies:
 
         # conditionally enabled
         cond_enabled = Dependencies("use? ( a/b )")
-        assert cond_enabled.evaluate() != cond_enabled
+        assert not cond_enabled.evaluate()
         assert cond_enabled.evaluate(["use"]) == cond_none
 
         # conditionally disabled
         cond_disabled = Dependencies("!use? ( a/b )")
         assert cond_disabled.evaluate() == cond_none
-        assert cond_disabled.evaluate(["use"]) != cond_none
+        assert not cond_disabled.evaluate(["use"])
 
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing
