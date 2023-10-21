@@ -75,16 +75,17 @@ cdef extern from "pkgcraft.h":
         REPO_FORMAT_FAKE,
         REPO_FORMAT_EMPTY,
 
-    cdef enum RepoSetOp:
-        REPO_SET_OP_AND,
-        REPO_SET_OP_OR,
-        REPO_SET_OP_XOR,
-        REPO_SET_OP_SUB,
-
     # Repo set types registered in the config object.
     cdef enum Repos:
         REPOS_ALL,
         REPOS_EBUILD,
+
+    # Generic set operations.
+    cdef enum SetOp:
+        SET_OP_AND,
+        SET_OP_OR,
+        SET_OP_XOR,
+        SET_OP_SUB,
 
     cdef enum SlotOperator:
         SLOT_OPERATOR_NONE,
@@ -1457,13 +1458,13 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The arguments must be non-null RepoSet and Repo pointers.
-    void pkgcraft_repo_set_assign_op_repo(RepoSetOp op, RepoSet *s, Repo *r)
+    void pkgcraft_repo_set_assign_op_repo(SetOp op, RepoSet *s, Repo *r)
 
     # Perform a set operation on two repo sets, assigning to the first set.
     #
     # # Safety
     # The arguments must be non-null RepoSet pointers.
-    void pkgcraft_repo_set_assign_op_set(RepoSetOp op, RepoSet *s1, RepoSet *s2)
+    void pkgcraft_repo_set_assign_op_set(SetOp op, RepoSet *s1, RepoSet *s2)
 
     # Return a repo set's categories.
     #
@@ -1534,13 +1535,13 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The arguments must be non-null RepoSet and Repo pointers.
-    RepoSet *pkgcraft_repo_set_op_repo(RepoSetOp op, RepoSet *s, Repo *r)
+    RepoSet *pkgcraft_repo_set_op_repo(SetOp op, RepoSet *s, Repo *r)
 
     # Perform a set operation on two repo sets, creating a new set.
     #
     # # Safety
     # The arguments must be non-null RepoSet pointers.
-    RepoSet *pkgcraft_repo_set_op_set(RepoSetOp op, RepoSet *s1, RepoSet *s2)
+    RepoSet *pkgcraft_repo_set_op_set(SetOp op, RepoSet *s1, RepoSet *s2)
 
     # Return a repo set's packages for a category.
     #

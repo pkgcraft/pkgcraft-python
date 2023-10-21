@@ -127,7 +127,7 @@ cdef class RepoSet:
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __iand__(self, other):
-        op = C.RepoSetOp.REPO_SET_OP_AND
+        op = C.SetOp.SET_OP_AND
         if isinstance(other, RepoSet):
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
         elif isinstance(other, Repo):
@@ -140,7 +140,7 @@ cdef class RepoSet:
         return self
 
     def __ior__(self, other):
-        op = C.RepoSetOp.REPO_SET_OP_OR
+        op = C.SetOp.SET_OP_OR
         if isinstance(other, RepoSet):
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
         elif isinstance(other, Repo):
@@ -153,7 +153,7 @@ cdef class RepoSet:
         return self
 
     def __ixor__(self, other):
-        op = C.RepoSetOp.REPO_SET_OP_XOR
+        op = C.SetOp.SET_OP_XOR
         if isinstance(other, RepoSet):
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
         elif isinstance(other, Repo):
@@ -166,7 +166,7 @@ cdef class RepoSet:
         return self
 
     def __isub__(self, other):
-        op = C.RepoSetOp.REPO_SET_OP_SUB
+        op = C.SetOp.SET_OP_SUB
         if isinstance(other, RepoSet):
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
         elif isinstance(other, Repo):
@@ -179,7 +179,7 @@ cdef class RepoSet:
         return self
 
     def __and__(self, other):
-        op = C.RepoSetOp.REPO_SET_OP_AND
+        op = C.SetOp.SET_OP_AND
         if isinstance(other, RepoSet):
             return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
         elif isinstance(other, Repo):
@@ -191,7 +191,7 @@ cdef class RepoSet:
         return self.__and__(other)
 
     def __or__(self, other):
-        op = C.RepoSetOp.REPO_SET_OP_OR
+        op = C.SetOp.SET_OP_OR
         if isinstance(other, RepoSet):
             return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
         elif isinstance(other, Repo):
@@ -203,7 +203,7 @@ cdef class RepoSet:
         return self.__or__(other)
 
     def __xor__(self, other):
-        op = C.RepoSetOp.REPO_SET_OP_XOR
+        op = C.SetOp.SET_OP_XOR
         if isinstance(other, RepoSet):
             return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
         elif isinstance(other, Repo):
@@ -215,7 +215,7 @@ cdef class RepoSet:
         return self.__xor__(other)
 
     def __sub__(self, other):
-        op = C.RepoSetOp.REPO_SET_OP_SUB
+        op = C.SetOp.SET_OP_SUB
         if isinstance(other, RepoSet):
             return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
         elif isinstance(other, Repo):
