@@ -79,8 +79,9 @@ class TestDependencies:
         d &= Dependencies()
         assert d == Dependencies()
         # invalid
-        with pytest.raises(TypeError):
-            d &= None
+        for obj in [None, "s", License()]:
+            with pytest.raises(TypeError):
+                d &= obj
 
         # |= operator
         d = Dependencies()
@@ -93,8 +94,9 @@ class TestDependencies:
         d |= Dependencies("( a/a )")
         assert d == Dependencies("a/a ( a/a )")
         # invalid
-        with pytest.raises(TypeError):
-            d |= None
+        for obj in [None, "s", License()]:
+            with pytest.raises(TypeError):
+                d |= obj
 
         # ^= operator
         d = Dependencies("a/a b/b c/c")
@@ -105,8 +107,9 @@ class TestDependencies:
         d ^= Dependencies("d/d")
         assert d == Dependencies()
         # invalid
-        with pytest.raises(TypeError):
-            d ^= None
+        for obj in [None, "s", License()]:
+            with pytest.raises(TypeError):
+                d ^= obj
 
         # -= operator
         d = Dependencies("a/a b/b c/c")
@@ -117,8 +120,9 @@ class TestDependencies:
         d -= Dependencies("c/c")
         assert d == Dependencies()
         # invalid
-        with pytest.raises(TypeError):
-            d -= None
+        for obj in [None, "s", License()]:
+            with pytest.raises(TypeError):
+                d -= obj
 
         # & operator
         d = Dependencies("a/a b/b c/c")
@@ -127,10 +131,10 @@ class TestDependencies:
         assert (d & Dependencies("d/d")) == Dependencies()
         assert (d & Dependencies()) == Dependencies()
         # invalid
-        for a, b in [(None, d), ("s", d)]:
-            for x, y in [(a, b), (b, a)]:
+        for obj in [None, "s", License()]:
+            for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
-                    _ = x & y
+                    x & y
 
         # | operator
         d = Dependencies("a/a")
@@ -138,10 +142,10 @@ class TestDependencies:
         assert (d | Dependencies("c/c")) == Dependencies("a/a c/c")
         assert (d | Dependencies()) == Dependencies("a/a")
         # invalid
-        for a, b in [(None, d), ("s", d)]:
-            for x, y in [(a, b), (b, a)]:
+        for obj in [None, "s", License()]:
+            for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
-                    _ = x | y
+                    x | y
 
         # ^ operator
         d = Dependencies("a/a b/b c/c")
@@ -150,10 +154,10 @@ class TestDependencies:
         assert (d ^ Dependencies("d/d")) == Dependencies("a/a b/b c/c d/d")
         assert (d ^ Dependencies()) == Dependencies("a/a b/b c/c")
         # invalid
-        for a, b in [(None, d), ("s", d)]:
-            for x, y in [(a, b), (b, a)]:
+        for obj in [None, "s", License()]:
+            for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
-                    _ = x ^ y
+                    x ^ y
 
         # - operator
         d = Dependencies("a/a b/b c/c")
@@ -162,10 +166,10 @@ class TestDependencies:
         assert (d - Dependencies("d/d")) == Dependencies("a/a b/b c/c")
         assert (d - Dependencies()) == Dependencies("a/a b/b c/c")
         # invalid
-        for a, b in [(None, d), ("s", d)]:
-            for x, y in [(a, b), (b, a)]:
+        for obj in [None, "s", License()]:
+            for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
-                    _ = x - y
+                    x - y
 
 
 class TestLicense:

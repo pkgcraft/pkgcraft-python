@@ -72,7 +72,7 @@ cdef class DepSet(_IndirectInit):
 
     def __iand__(self, other):
         op = C.SetOp.SET_OP_AND
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
             return self
         else:
@@ -80,7 +80,7 @@ cdef class DepSet(_IndirectInit):
 
     def __ior__(self, other):
         op = C.SetOp.SET_OP_OR
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
             return self
         else:
@@ -88,7 +88,7 @@ cdef class DepSet(_IndirectInit):
 
     def __ixor__(self, other):
         op = C.SetOp.SET_OP_XOR
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
             return self
         else:
@@ -96,7 +96,7 @@ cdef class DepSet(_IndirectInit):
 
     def __isub__(self, other):
         op = C.SetOp.SET_OP_SUB
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
             return self
         else:
@@ -104,7 +104,7 @@ cdef class DepSet(_IndirectInit):
 
     def __and__(self, other):
         op = C.SetOp.SET_OP_AND
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             return DepSet.from_ptr(C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr))
         else:
             return NotImplemented
@@ -116,7 +116,7 @@ cdef class DepSet(_IndirectInit):
 
     def __or__(self, other):
         op = C.SetOp.SET_OP_OR
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             return DepSet.from_ptr(C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr))
         else:
             return NotImplemented
@@ -128,7 +128,7 @@ cdef class DepSet(_IndirectInit):
 
     def __xor__(self, other):
         op = C.SetOp.SET_OP_XOR
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             return DepSet.from_ptr(C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr))
         else:
             return NotImplemented
@@ -140,7 +140,7 @@ cdef class DepSet(_IndirectInit):
 
     def __sub__(self, other):
         op = C.SetOp.SET_OP_SUB
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             return DepSet.from_ptr(C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr))
         else:
             return NotImplemented
