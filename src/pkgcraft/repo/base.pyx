@@ -100,7 +100,7 @@ cdef class Repo:
 
     def __getitem__(self, object obj not None):
         try:
-            return next(self.iter(Cpv(str(obj))))
+            return next(self.iter(obj))
         except StopIteration:
             raise KeyError(obj)
 
