@@ -58,9 +58,7 @@ class TestConfig:
 
         # cpvs
         f = tmp_path / "repo2"
-        f.write_text(
-            textwrap.dedent(
-                """
+        f.write_text(textwrap.dedent("""
             cat/pkg-1
             cat/pkg-2
             a/b-0
@@ -109,9 +107,7 @@ class TestConfig:
         assert not config.repos
 
         # no sections
-        f.write_text(
-            textwrap.dedent(
-                f"""
+        f.write_text(textwrap.dedent(f"""
             location = {repo_path}
         """
             )
@@ -120,9 +116,7 @@ class TestConfig:
         assert not config.repos
 
         # bad ini format
-        f.write_text(
-            textwrap.dedent(
-                f"""
+        f.write_text(textwrap.dedent(f"""
             [test
             location = {repo_path}
         """
@@ -133,9 +127,7 @@ class TestConfig:
 
         # file path
         repo_path = make_raw_ebuild_repo(id="test1").path
-        f.write_text(
-            textwrap.dedent(
-                f"""
+        f.write_text(textwrap.dedent(f"""
             [test1]
             location = {repo_path}
         """
@@ -149,9 +141,7 @@ class TestConfig:
             config.load_portage_conf(conf_path)
 
         # reloading using a different id still causes an error
-        f.write_text(
-            textwrap.dedent(
-                f"""
+        f.write_text(textwrap.dedent(f"""
             [existing]
             location = {repo_path}
         """
@@ -166,9 +156,7 @@ class TestConfig:
         dir_path.mkdir(parents=True)
         f = dir_path / "2.conf"
         r2_path = make_raw_ebuild_repo(id="test2").path
-        f.write_text(
-            textwrap.dedent(
-                f"""
+        f.write_text(textwrap.dedent(f"""
             [test2]
             location = {r2_path}
         """
@@ -176,9 +164,7 @@ class TestConfig:
         )
         f = dir_path / "3.conf"
         r3_path = make_raw_ebuild_repo(id="test3").path
-        f.write_text(
-            textwrap.dedent(
-                f"""
+        f.write_text(textwrap.dedent(f"""
             [test3]
             location = {r3_path}
             priority = 1

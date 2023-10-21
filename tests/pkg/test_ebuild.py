@@ -266,8 +266,7 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.defined_phases == {"configure"}
 
         # multiple
-        data = textwrap.dedent(
-            """
+        data = textwrap.dedent("""
             src_prepare() { :; }
             src_configure() { :; }
             src_compile() { :; }
@@ -335,9 +334,7 @@ class TestEbuildPkg(BasePkgTests):
         # empty
         path = ebuild_repo.create_ebuild("cat/b-1")
         with open(path.parent / "metadata.xml", "w") as f:
-            f.write(
-                textwrap.dedent(
-                    """
+            f.write(textwrap.dedent("""
                 <pkgmetadata>
                     <longdescription>
                     </longdescription>
@@ -371,9 +368,7 @@ class TestEbuildPkg(BasePkgTests):
         # multiple
         path = ebuild_repo.create_ebuild("cat/b-1")
         with open(path.parent / "metadata.xml", "w") as f:
-            f.write(
-                textwrap.dedent(
-                    """
+            f.write(textwrap.dedent("""
                 <pkgmetadata>
                     <maintainer type="person">
                         <email>a.person@email.com</email>
@@ -427,9 +422,7 @@ class TestEbuildPkg(BasePkgTests):
         # multiple
         path = ebuild_repo.create_ebuild("cat/b-1")
         with open(path.parent / "metadata.xml", "w") as f:
-            f.write(
-                textwrap.dedent(
-                    """
+            f.write(textwrap.dedent("""
                 <pkgmetadata>
                     <upstream>
                         <remote-id type="github">pkgcraft/pkgcraft</remote-id>
