@@ -110,7 +110,9 @@ cdef class DepSet(_IndirectInit):
             return NotImplemented
 
     def __rand__(self, other):
-        return self.__and__(other)
+        if not isinstance(other, DepSet):
+            return self.__and__(other)
+        return NotImplemented
 
     def __or__(self, other):
         op = C.SetOp.SET_OP_OR
@@ -120,7 +122,9 @@ cdef class DepSet(_IndirectInit):
             return NotImplemented
 
     def __ror__(self, other):
-        return self.__or__(other)
+        if not isinstance(other, DepSet):
+            return self.__or__(other)
+        return NotImplemented
 
     def __xor__(self, other):
         op = C.SetOp.SET_OP_XOR
@@ -130,7 +134,9 @@ cdef class DepSet(_IndirectInit):
             return NotImplemented
 
     def __rxor__(self, other):
-        return self.__xor__(other)
+        if not isinstance(other, DepSet):
+            return self.__xor__(other)
+        return NotImplemented
 
     def __sub__(self, other):
         op = C.SetOp.SET_OP_SUB
@@ -140,7 +146,9 @@ cdef class DepSet(_IndirectInit):
             return NotImplemented
 
     def __rsub__(self, other):
-        return self.__sub__(other)
+        if not isinstance(other, DepSet):
+            return self.__sub__(other)
+        return NotImplemented
 
     def __dealloc__(self):
         C.pkgcraft_dep_set_free(self.ptr)
