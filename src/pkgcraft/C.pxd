@@ -809,6 +809,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSpec pointer.
     DepSpecIntoIterRecursive *pkgcraft_dep_spec_into_iter_recursive(DepSpec *d)
 
+    # Return a DepSpec's length.
+    #
+    # # Safety
+    # The argument must be a non-null DepSpec pointer.
+    uintptr_t pkgcraft_dep_spec_len(DepSpec *d)
+
     # Return the formatted string for a DepSpec object.
     #
     # # Safety

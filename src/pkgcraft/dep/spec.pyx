@@ -60,6 +60,9 @@ cdef class DepSpec(_IndirectInit):
         """Recursively iterate over the DepSpec objects of a DepSpec."""
         yield from _IntoIterRecursive(self)
 
+    def __len__(self):
+        return C.pkgcraft_dep_spec_len(self.ptr)
+
     def __lt__(self, other):
         if isinstance(other, DepSpec):
             return C.pkgcraft_dep_spec_cmp(self.ptr, (<DepSpec>other).ptr) == -1
