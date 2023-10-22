@@ -46,9 +46,22 @@ class TestDepSpec:
         assert isinstance(d, UseEnabled)
         assert len(d) == 1
 
-        d = RequiredUse.dep_spec("!u? ( a u2? ( b ) )")
+        d = RequiredUse.dep_spec("!u1? ( a u2? ( b ) )")
         assert isinstance(d, UseDisabled)
         assert len(d) == 2
+
+    def test_contains(self):
+        # simple DepSpecs don't contain themselves
+        assert RequiredUse.dep_spec("a") not in RequiredUse.dep_spec("a")
+
+        # only top-level DepSpec objects have membership
+        d = RequiredUse.dep_spec("!u1? ( a u2? ( b ) )")
+        assert RequiredUse.dep_spec("a") in d
+        assert RequiredUse.dep_spec("u2? ( b )") in d
+        assert RequiredUse.dep_spec("b") not in d
+
+        # non-DepSpec objects return False
+        assert None not in d
 
     def test_iter(self):
         assert list(RequiredUse.dep_spec("a")) == []

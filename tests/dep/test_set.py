@@ -55,6 +55,14 @@ class TestDependencies:
         assert d1.evaluate(True) == d
         assert not d1.evaluate(False)
 
+    def test_contains(self):
+        # only top-level DepSpec objects have membership
+        assert Dependencies.dep_spec("a/b") in Dependencies("a/b")
+        assert Dependencies.dep_spec("a/b") not in Dependencies("u? ( a/b )")
+
+        # non-DepSpec objects return False
+        assert None not in Dependencies("a/b")
+
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing
         for s1, s2 in (

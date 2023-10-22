@@ -576,6 +576,12 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null DepSet pointers.
     void pkgcraft_dep_set_assign_op_set(SetOp op, DepSet *d1, DepSet *d2)
 
+    # Determine if a DepSet contains a given DepSpec.
+    #
+    # # Safety
+    # The arguments must be non-null DepSet and DepSpec pointers.
+    bool pkgcraft_dep_set_contains(DepSet *s, DepSpec *d)
+
     # Parse a string into a Dependencies DepSet.
     #
     # Returns NULL on error.
@@ -769,6 +775,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The arguments must be non-null DepSpec pointers.
     int pkgcraft_dep_spec_cmp(DepSpec *d1, DepSpec *d2)
+
+    # Determine if a DepSpec contains a given DepSpec.
+    #
+    # # Safety
+    # The arguments must be non-null DepSpec pointers.
+    bool pkgcraft_dep_spec_contains(DepSpec *d1, DepSpec *d2)
 
     # Evaluate a DepSpec.
     #
