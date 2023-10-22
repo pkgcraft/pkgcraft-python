@@ -680,6 +680,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSet pointer.
     bool pkgcraft_dep_set_is_empty(DepSet *d)
 
+    # Return a DepSet's length.
+    #
+    # # Safety
+    # The argument must be a non-null DepSet pointer.
+    uintptr_t pkgcraft_dep_set_len(DepSet *d)
+
     # Parse a string into a License DepSet.
     #
     # Returns NULL on error.
