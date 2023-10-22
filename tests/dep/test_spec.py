@@ -1,8 +1,6 @@
 import pytest
 
 from pkgcraft.dep import *
-from pkgcraft.eapi import EAPI8
-from pkgcraft.error import InvalidDep
 
 
 class TestDepSpec:
@@ -22,20 +20,35 @@ class TestDepSpec:
         # variants
         d = RequiredUse.dep_spec("a")
         assert isinstance(d, Enabled)
+        assert len(d) == 1
+
         d = RequiredUse.dep_spec("!a")
         assert isinstance(d, Disabled)
+        assert len(d) == 1
+
         d = RequiredUse.dep_spec("( a b )")
         assert isinstance(d, AllOf)
+        assert len(d) == 2
+
         d = RequiredUse.dep_spec("|| ( a b )")
         assert isinstance(d, AnyOf)
+        assert len(d) == 2
+
         d = RequiredUse.dep_spec("^^ ( a b )")
         assert isinstance(d, ExactlyOneOf)
+        assert len(d) == 2
+
         d = RequiredUse.dep_spec("?? ( a b )")
         assert isinstance(d, AtMostOneOf)
-        d = RequiredUse.dep_spec("use? ( a )")
+        assert len(d) == 2
+
+        d = RequiredUse.dep_spec("u? ( a )")
         assert isinstance(d, UseEnabled)
-        d = RequiredUse.dep_spec("!use? ( a )")
+        assert len(d) == 1
+
+        d = RequiredUse.dep_spec("!u? ( a u2? ( b ) )")
         assert isinstance(d, UseDisabled)
+        assert len(d) == 2
 
     def test_evaluate(self):
         # no conditionals
