@@ -13,6 +13,15 @@ from ..error import InvalidDep
 cdef class DepSet(_IndirectInit):
     """Set of dependency objects."""
 
+    @classmethod
+    def dep_spec(cls, str s not None, *args):
+        """Parse a singular DepSpec object for a given DepSet type."""
+        depset = cls(s, *args)
+        if len(depset) == 1:
+            return next(iter(depset))
+        else:
+            raise TypeError(f'invalid {cls.__name__} DepSpec: {depset}')
+
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *ptr, DepSet obj=None):
         if ptr is not NULL:

@@ -25,6 +25,17 @@ class TestDependencies:
         with pytest.raises(InvalidDep):
             Dependencies("a/b::repo", EAPI8)
 
+    def test_dep_spec(self):
+        d = Dependencies.dep_spec("a/b")
+        assert isinstance(d, Enabled)
+        d = Dependencies.dep_spec("|| ( a/b c/d )")
+        assert isinstance(d, AnyOf)
+
+        # invalid
+        for s in ["", "a/b c/d"]:
+            with pytest.raises(TypeError):
+                Dependencies.dep_spec(s)
+
     def test_evaluate(self):
         # no conditionals
         cond_none = Dependencies("a/b")
