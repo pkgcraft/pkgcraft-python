@@ -3,7 +3,7 @@ cimport cython
 from .. cimport C
 from .._misc cimport CStringArray, cstring_to_str
 from ..error cimport _IndirectInit
-from .set cimport _IntoIterFlatten, _IntoIterRecursive
+from .set cimport _IntoIter, _IntoIterFlatten, _IntoIterRecursive
 from ..types import OrderedFrozenSet
 
 
@@ -59,6 +59,9 @@ cdef class DepSpec(_IndirectInit):
     def iter_recursive(self):
         """Recursively iterate over the DepSpec objects of a DepSpec."""
         yield from _IntoIterRecursive(self)
+
+    def __iter__(self):
+        return _IntoIter(self)
 
     def __len__(self):
         return C.pkgcraft_dep_spec_len(self.ptr)

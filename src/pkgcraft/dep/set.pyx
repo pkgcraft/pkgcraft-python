@@ -63,14 +63,14 @@ cdef class DepSet(_IndirectInit):
         """Recursively iterate over the DepSpec objects of a DepSet."""
         yield from _IntoIterRecursive(self)
 
+    def __iter__(self):
+        return _IntoIter(self)
+
     def __len__(self):
         return C.pkgcraft_dep_set_len(self.ptr)
 
     def __bool__(self):
         return not C.pkgcraft_dep_set_is_empty(self.ptr)
-
-    def __iter__(self):
-        return _IntoIter(self)
 
     def __eq__(self, other):
         if isinstance(other, DepSet):
@@ -245,11 +245,19 @@ cdef class SrcUri(DepSet):
 
 
 cdef class _IntoIter:
-    """Iterator over a DepSet."""
+    """Iterator over a DepSet or DepSpec object."""
 
-    def __cinit__(self, DepSet d not None):
-        self.ptr = C.pkgcraft_dep_set_into_iter(d.ptr)
-        self.unit = d.ptr.unit
+    def __cinit__(self, object obj not None):
+        if isinstance(obj, DepSet):
+            deps = <DepSet>obj
+            self.ptr = C.pkgcraft_dep_set_into_iter(deps.ptr)
+            self.unit = deps.ptr.unit
+        elif isinstance(obj, DepSpec):
+            dep = <DepSpec>obj
+            self.ptr = C.pkgcraft_dep_spec_into_iter(dep.ptr)
+            self.unit = dep.ptr.unit
+        else:  # pragma: no cover
+            raise TypeError(f"{obj.__class__.__name__!r} unsupported dep type")
 
     def __iter__(self):
         return self

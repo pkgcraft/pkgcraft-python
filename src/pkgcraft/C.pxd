@@ -614,7 +614,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSet pointer.
     uint64_t pkgcraft_dep_set_hash(DepSet *d)
 
-    # Return an iterator for a depset.
+    # Return an iterator for a DepSet.
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
@@ -640,13 +640,13 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSpecIntoIterFlatten pointer.
     void *pkgcraft_dep_set_into_iter_flatten_next(DepSpecIntoIterFlatten *i)
 
-    # Free a depset iterator.
+    # Free a DepSet iterator.
     #
     # # Safety
     # The argument must be a non-null DepSpecIntoIter pointer or NULL.
     void pkgcraft_dep_set_into_iter_free(DepSpecIntoIter *i)
 
-    # Return the next object from a depset iterator.
+    # Return the next object from a DepSet iterator.
     #
     # Returns NULL when the iterator is empty.
     #
@@ -796,6 +796,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null DepSpec pointer.
     uint64_t pkgcraft_dep_spec_hash(DepSpec *d)
+
+    # Return an iterator for a DepSpec.
+    #
+    # # Safety
+    # The argument must be a non-null DepSpec pointer.
+    DepSpecIntoIter *pkgcraft_dep_spec_into_iter(DepSpec *d)
 
     # Return a flattened iterator for a DepSpec.
     #
