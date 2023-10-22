@@ -50,6 +50,27 @@ class TestDepSpec:
         assert isinstance(d, UseDisabled)
         assert len(d) == 2
 
+    def test_iter(self):
+        assert list(RequiredUse.dep_spec("a")) == []
+        assert list(iter(RequiredUse.dep_spec("!a"))) == []
+        assert list(map(str, RequiredUse.dep_spec("( a )"))) == ["a"]
+        assert list(map(str, RequiredUse.dep_spec("|| ( a b )"))) == ["a", "b"]
+        assert list(map(str, RequiredUse.dep_spec("|| ( a? ( b ) )"))) == ["a? ( b )"]
+
+    def test_iter_flatten(self):
+        assert list(RequiredUse.dep_spec("a").iter_flatten()) == ["a"]
+        assert list(RequiredUse.dep_spec("!a").iter_flatten()) == ["a"]
+        assert list(RequiredUse.dep_spec("( a )").iter_flatten()) == ["a"]
+        assert list(RequiredUse.dep_spec("|| ( a b )").iter_flatten()) == ["a", "b"]
+        assert list(RequiredUse.dep_spec("|| ( a? ( b ) )").iter_flatten()) == ["b"]
+
+    def test_iter_recursive(self):
+        assert list(map(str, RequiredUse.dep_spec("a").iter_recursive())) == ["a"]
+        assert list(map(str, RequiredUse.dep_spec("!a").iter_recursive())) == ["!a"]
+        assert list(map(str, RequiredUse.dep_spec("( a )").iter_recursive())) == ["( a )", "a"]
+        assert list(map(str, RequiredUse.dep_spec("|| ( a b )").iter_recursive())) == ["|| ( a b )", "a", "b"]
+        assert list(map(str, RequiredUse.dep_spec("|| ( a? ( b ) )").iter_recursive())) == ["|| ( a? ( b ) )", "a? ( b )", "b"]
+
     def test_evaluate(self):
         # no conditionals
         d = Dependencies.dep_spec("a/b")
