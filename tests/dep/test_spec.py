@@ -60,14 +60,14 @@ class TestDepSpec:
 
         # conditionally enabled
         d1 = Dependencies.dep_spec("use? ( a/b )")
-        assert not d1.evaluate()
+        assert d1.evaluate() == []
         assert d1.evaluate(["use"]) == [d]
         assert d1.evaluate(True) == [d]
-        assert not d1.evaluate(False)
+        assert d1.evaluate(False) == []
 
         # conditionally disabled
         d1 = Dependencies.dep_spec("!use? ( a/b )")
         assert d1.evaluate() == [d]
-        assert not d1.evaluate(["use"])
+        assert d1.evaluate(["use"]) == []
         assert d1.evaluate(True) == [d]
-        assert not d1.evaluate(False)
+        assert d1.evaluate(False) == []
