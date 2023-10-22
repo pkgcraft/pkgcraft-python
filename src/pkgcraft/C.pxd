@@ -764,6 +764,21 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null DepSpec pointers.
     int pkgcraft_dep_spec_cmp(DepSpec *d1, DepSpec *d2)
 
+    # Evaluate a DepSpec.
+    #
+    # # Safety
+    # The argument must be a non-null DepSpec pointer.
+    DepSpec **pkgcraft_dep_spec_evaluate(DepSpec *d,
+                                         char **options,
+                                         uintptr_t len,
+                                         uintptr_t *deps_len)
+
+    # Forcibly evaluate a DepSpec.
+    #
+    # # Safety
+    # The argument must be a non-null DepSpec pointer.
+    DepSpec **pkgcraft_dep_spec_evaluate_force(DepSpec *d, bool force, uintptr_t *deps_len)
+
     # Free a DepSpec object.
     #
     # # Safety

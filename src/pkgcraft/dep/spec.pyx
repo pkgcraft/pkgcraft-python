@@ -1,9 +1,10 @@
 cimport cython
 
 from .. cimport C
-from .._misc cimport cstring_to_str
+from .._misc cimport CStringArray, cstring_to_str
 from ..error cimport _IndirectInit
 from .set cimport _IntoIterFlatten, _IntoIterRecursive
+from ..types import OrderedFrozenSet
 
 
 @cython.final
@@ -34,6 +35,22 @@ cdef class DepSpec(_IndirectInit):
 
         obj.ptr = ptr
         return obj
+
+    def evaluate(self, enabled=()):
+        """Evaluate a DepSpec using a given set of enabled options or by force."""
+        cdef size_t length
+
+        if isinstance(enabled, bool):
+            # forcible evaluation, enabling or disabling all conditionals
+            ptrs = C.pkgcraft_dep_spec_evaluate_force(self.ptr, enabled, &length)
+        else:
+            # use options to determine conditionals
+            opts = CStringArray(enabled)
+            ptrs = C.pkgcraft_dep_spec_evaluate(self.ptr, opts.ptr, len(opts), &length)
+
+        deps = OrderedFrozenSet(DepSpec.from_ptr(ptrs[i]) for i in range(length))
+        C.pkgcraft_array_free(<void **>ptrs, length)
+        return deps
 
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSpec."""
