@@ -35,7 +35,6 @@ cdef class License(DepSet):
 
 cdef class _IntoIter:
     cdef C.DepSpecIntoIter *ptr
-    cdef C.DepSpecUnit unit
 
 
 cdef class _IntoIterFlatten:

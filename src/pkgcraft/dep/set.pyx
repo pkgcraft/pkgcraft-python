@@ -249,13 +249,9 @@ cdef class _IntoIter:
 
     def __cinit__(self, object obj not None):
         if isinstance(obj, DepSet):
-            deps = <DepSet>obj
-            self.ptr = C.pkgcraft_dep_set_into_iter(deps.ptr)
-            self.unit = deps.ptr.unit
+            self.ptr = C.pkgcraft_dep_set_into_iter((<DepSet>obj).ptr)
         elif isinstance(obj, DepSpec):
-            dep = <DepSpec>obj
-            self.ptr = C.pkgcraft_dep_spec_into_iter(dep.ptr)
-            self.unit = dep.ptr.unit
+            self.ptr = C.pkgcraft_dep_spec_into_iter((<DepSpec>obj).ptr)
         else:  # pragma: no cover
             raise TypeError(f"{obj.__class__.__name__!r} unsupported dep type")
 
