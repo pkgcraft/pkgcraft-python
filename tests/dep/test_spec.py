@@ -85,23 +85,36 @@ class TestDepSpec:
         assert list(map(str, RequiredUse.dep_spec("|| ( a? ( b ) )").iter_recursive())) == ["|| ( a? ( b ) )", "a? ( b )", "b"]
 
     def test_evaluate(self):
+        req_use = RequiredUse.dep_spec
+        d = req_use("a")
+
         # no conditionals
-        d = Dependencies.dep_spec("a/b")
         assert d.evaluate() == [d]
-        assert d.evaluate(["use"]) == [d]
+        assert d.evaluate(["u"]) == [d]
         assert d.evaluate(True) == [d]
         assert d.evaluate(False) == [d]
 
         # conditionally enabled
-        d1 = Dependencies.dep_spec("use? ( a/b )")
+        d1 = req_use("u? ( a )")
         assert d1.evaluate() == []
-        assert d1.evaluate(["use"]) == [d]
+        assert d1.evaluate(["u"]) == [d]
+        assert d1.evaluate(True) == [d]
+        assert d1.evaluate(False) == []
+        d1 = req_use("u? ( a b )")
+        assert d1.evaluate(["u"]) == [req_use("a"), req_use("b")]
+
+        # conditionally disabled
+        d1 = req_use("!u? ( a )")
+        assert d1.evaluate() == [d]
+        assert d1.evaluate(["u"]) == []
         assert d1.evaluate(True) == [d]
         assert d1.evaluate(False) == []
 
-        # conditionally disabled
-        d1 = Dependencies.dep_spec("!use? ( a/b )")
-        assert d1.evaluate() == [d]
-        assert d1.evaluate(["use"]) == []
-        assert d1.evaluate(True) == [d]
-        assert d1.evaluate(False) == []
+        # empty DepSpecs are discarded
+        d1 = req_use("|| ( u1? ( a !u2? ( b ) ) )")
+        assert not d1.evaluate()
+        assert d1.evaluate(["u1"]) == [req_use("|| ( a b )")]
+        assert d1.evaluate(["u1", "u2"]) == [req_use("|| ( a )")]
+        assert d1.evaluate(["u2"]) == []
+        assert d1.evaluate(True) == [req_use("|| ( a b )")]
+        assert not d1.evaluate(False)

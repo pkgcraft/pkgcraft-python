@@ -37,22 +37,31 @@ class TestDependencies:
         # no conditionals
         d = Dependencies("a/b")
         assert d.evaluate() == d
-        assert d.evaluate(["use"]) == d
+        assert d.evaluate(["u"]) == d
         assert d.evaluate(True) == d
         assert d.evaluate(False) == d
 
         # conditionally enabled
-        d1 = Dependencies("use? ( a/b )")
+        d1 = Dependencies("u? ( a/b )")
         assert not d1.evaluate()
-        assert d1.evaluate(["use"]) == d
+        assert d1.evaluate(["u"]) == d
         assert d1.evaluate(True) == d
         assert not d1.evaluate(False)
 
         # conditionally disabled
-        d1 = Dependencies("!use? ( a/b )")
+        d1 = Dependencies("!u? ( a/b )")
         assert d1.evaluate() == d
-        assert not d1.evaluate(["use"])
+        assert not d1.evaluate(["u"])
         assert d1.evaluate(True) == d
+        assert not d1.evaluate(False)
+
+        # empty DepSpecs are discarded
+        d1 = Dependencies("|| ( u1? ( a/b !u2? ( c/d ) ) )")
+        assert not d1.evaluate()
+        assert d1.evaluate(["u1"]) == Dependencies("|| ( a/b c/d )")
+        assert d1.evaluate(["u1", "u2"]) == Dependencies("|| ( a/b )")
+        assert not d1.evaluate(["u2"])
+        assert d1.evaluate(True) == Dependencies("|| ( a/b c/d )")
         assert not d1.evaluate(False)
 
     def test_contains(self):
