@@ -34,11 +34,16 @@ cdef class DepSet(_IndirectInit):
             obj.ptr = ptr
         return obj
 
-    def evaluate(self, options=()):
-        """Evaluate a DepSet using the given set of options."""
-        array = CStringArray(options)
-        ptr = C.pkgcraft_dep_set_evaluate(self.ptr, array.ptr, len(array))
-        return DepSet.from_ptr(ptr)
+    def evaluate(self, enabled=()):
+        """Evaluate a DepSet using a given set of enabled options or by force."""
+        if isinstance(enabled, bool):
+            # forcibly evaluate a DepSet, enabling or disabling all conditionals
+            return DepSet.from_ptr(C.pkgcraft_dep_set_evaluate_force(self.ptr, enabled))
+        else:
+            # use options to determine DepSet conditionals
+            array = CStringArray(enabled)
+            ptr = C.pkgcraft_dep_set_evaluate(self.ptr, array.ptr, len(array))
+            return DepSet.from_ptr(ptr)
 
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSet."""

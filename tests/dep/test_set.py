@@ -30,16 +30,22 @@ class TestDependencies:
         cond_none = Dependencies("a/b")
         assert cond_none.evaluate() == cond_none
         assert cond_none.evaluate(["use"]) == cond_none
+        assert cond_none.evaluate(True) == cond_none
+        assert cond_none.evaluate(False) == cond_none
 
         # conditionally enabled
         cond_enabled = Dependencies("use? ( a/b )")
         assert not cond_enabled.evaluate()
         assert cond_enabled.evaluate(["use"]) == cond_none
+        assert cond_enabled.evaluate(True) == cond_none
+        assert not cond_enabled.evaluate(False)
 
         # conditionally disabled
         cond_disabled = Dependencies("!use? ( a/b )")
         assert cond_disabled.evaluate() == cond_none
         assert not cond_disabled.evaluate(["use"])
+        assert cond_enabled.evaluate(True) == cond_none
+        assert not cond_enabled.evaluate(False)
 
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing

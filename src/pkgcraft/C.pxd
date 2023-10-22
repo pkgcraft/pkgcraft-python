@@ -596,6 +596,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSet pointer.
     DepSet *pkgcraft_dep_set_evaluate(DepSet *d, char **options, uintptr_t len)
 
+    # Forcibly evaluate a DepSet.
+    #
+    # # Safety
+    # The argument must be a non-null DepSet pointer.
+    DepSet *pkgcraft_dep_set_evaluate_force(DepSet *d, bool force)
+
     # Free a DepSet.
     #
     # # Safety
