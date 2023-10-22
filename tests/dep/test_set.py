@@ -10,16 +10,24 @@ class TestDependencies:
         # empty
         d1 = Dependencies()
         assert not d1
+        assert len(d1) == 0
         assert str(d1) == ""
         assert repr(d1).startswith("<Dependencies '' at 0x")
 
-        # default latest and specified EAPI
+        # single
         d1 = Dependencies("a/b")
         assert d1
+        assert len(d1) == 1
         assert str(d1) == "a/b"
         assert repr(d1).startswith("<Dependencies 'a/b' at 0x")
-        d2 = Dependencies("a/b", EAPI8)
-        assert d1 == d2
+        assert d1 == Dependencies("a/b", EAPI8)
+
+        # multiple
+        d1 = Dependencies("a/b || ( c/d e/f )")
+        assert d1
+        assert len(d1) == 2
+        assert str(d1) == "a/b || ( c/d e/f )"
+        assert repr(d1).startswith("<Dependencies 'a/b || ( c/d e/f )' at 0x")
 
         # invalid
         with pytest.raises(InvalidDep):
