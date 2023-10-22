@@ -46,25 +46,25 @@ class TestDependencies:
 
     def test_evaluate(self):
         # no conditionals
-        cond_none = Dependencies("a/b")
-        assert cond_none.evaluate() == cond_none
-        assert cond_none.evaluate(["use"]) == cond_none
-        assert cond_none.evaluate(True) == cond_none
-        assert cond_none.evaluate(False) == cond_none
+        d = Dependencies("a/b")
+        assert d.evaluate() == d
+        assert d.evaluate(["use"]) == d
+        assert d.evaluate(True) == d
+        assert d.evaluate(False) == d
 
         # conditionally enabled
-        cond_enabled = Dependencies("use? ( a/b )")
-        assert not cond_enabled.evaluate()
-        assert cond_enabled.evaluate(["use"]) == cond_none
-        assert cond_enabled.evaluate(True) == cond_none
-        assert not cond_enabled.evaluate(False)
+        d1 = Dependencies("use? ( a/b )")
+        assert not d1.evaluate()
+        assert d1.evaluate(["use"]) == d
+        assert d1.evaluate(True) == d
+        assert not d1.evaluate(False)
 
         # conditionally disabled
-        cond_disabled = Dependencies("!use? ( a/b )")
-        assert cond_disabled.evaluate() == cond_none
-        assert not cond_disabled.evaluate(["use"])
-        assert cond_enabled.evaluate(True) == cond_none
-        assert not cond_enabled.evaluate(False)
+        d1 = Dependencies("!use? ( a/b )")
+        assert d1.evaluate() == d
+        assert not d1.evaluate(["use"])
+        assert d1.evaluate(True) == d
+        assert not d1.evaluate(False)
 
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing
