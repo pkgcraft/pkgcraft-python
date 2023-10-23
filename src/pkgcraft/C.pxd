@@ -106,6 +106,10 @@ cdef extern from "pkgcraft.h":
     cdef struct DepSpecIntoIter:
         pass
 
+    # Opaque wrapper for pkgcraft::dep::spec::IntoIterConditionals<String, T>.
+    cdef struct DepSpecIntoIterConditionals:
+        pass
+
     # Opaque wrapper for pkgcraft::dep::spec::IntoIterFlatten<String, T>.
     cdef struct DepSpecIntoIterFlatten:
         pass
@@ -627,19 +631,39 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSet pointer.
     DepSpecIntoIter *pkgcraft_dep_set_into_iter(DepSet *d)
 
-    # Return a flattened iterator for a DepSet.
+    # Return a conditionals iterator for a DepSet.
+    #
+    # # Safety
+    # The argument must be a non-null DepSet pointer.
+    DepSpecIntoIterConditionals *pkgcraft_dep_set_into_iter_conditionals(DepSet *d)
+
+    # Free a conditionals iterator.
+    #
+    # # Safety
+    # The argument must be a non-null DepSpecIntoIterConditionals pointer or NULL.
+    void pkgcraft_dep_set_into_iter_conditionals_free(DepSpecIntoIterConditionals *i)
+
+    # Return the next object from a conditionals iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a non-null DepSpecIntoIterConditionals pointer.
+    char *pkgcraft_dep_set_into_iter_conditionals_next(DepSpecIntoIterConditionals *i)
+
+    # Return a flatten iterator for a DepSet.
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
     DepSpecIntoIterFlatten *pkgcraft_dep_set_into_iter_flatten(DepSet *d)
 
-    # Free a flattened depset iterator.
+    # Free a flatten iterator.
     #
     # # Safety
     # The argument must be a non-null DepSpecIntoIterFlatten pointer or NULL.
     void pkgcraft_dep_set_into_iter_flatten_free(DepSpecIntoIterFlatten *i)
 
-    # Return the next object from a flattened depset iterator.
+    # Return the next object from a flatten iterator.
     #
     # Returns NULL when the iterator is empty.
     #
@@ -667,13 +691,13 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSet pointer.
     DepSpecIntoIterRecursive *pkgcraft_dep_set_into_iter_recursive(DepSet *d)
 
-    # Free a recursive depset iterator.
+    # Free a recursive iterator.
     #
     # # Safety
-    # The argument must be a non-null DepSpecIntoIterFlatten pointer or NULL.
+    # The argument must be a non-null DepSpecIntoIterRecursive pointer or NULL.
     void pkgcraft_dep_set_into_iter_recursive_free(DepSpecIntoIterRecursive *i)
 
-    # Return the next object from a recursive depset iterator.
+    # Return the next object from a recursive iterator.
     #
     # Returns NULL when the iterator is empty.
     #
@@ -824,7 +848,13 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSpec pointer.
     DepSpecIntoIter *pkgcraft_dep_spec_into_iter(DepSpec *d)
 
-    # Return a flattened iterator for a DepSpec.
+    # Return a conditionals iterator for a DepSpec.
+    #
+    # # Safety
+    # The argument must be a non-null DepSpec pointer.
+    DepSpecIntoIterConditionals *pkgcraft_dep_spec_into_iter_conditionals(DepSpec *d)
+
+    # Return a flatten iterator for a DepSpec.
     #
     # # Safety
     # The argument must be a non-null DepSpec pointer.

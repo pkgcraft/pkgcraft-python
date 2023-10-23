@@ -3,7 +3,7 @@ cimport cython
 from .. cimport C
 from .._misc cimport CStringArray, cstring_to_str
 from ..error cimport _IndirectInit
-from .set cimport _IntoIter, _IntoIterFlatten, _IntoIterRecursive
+from .set cimport _IntoIter, _IntoIterConditionals, _IntoIterFlatten, _IntoIterRecursive
 from ..types import OrderedFrozenSet
 
 
@@ -51,6 +51,10 @@ cdef class DepSpec(_IndirectInit):
         deps = OrderedFrozenSet(DepSpec.from_ptr(ptrs[i]) for i in range(length))
         C.pkgcraft_array_free(<void **>ptrs, length)
         return deps
+
+    def iter_conditionals(self):
+        """Iterate over the conditionals of a DepSpec."""
+        yield from _IntoIterConditionals(self)
 
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSpec."""

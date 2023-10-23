@@ -39,6 +39,10 @@ cdef class _IntoIter:
     cdef C.DepSpecIntoIter *ptr
 
 
+cdef class _IntoIterConditionals:
+    cdef C.DepSpecIntoIterConditionals *ptr
+
+
 cdef class _IntoIterFlatten:
     cdef C.DepSpecIntoIterFlatten *ptr
     cdef C.DepSetKind set

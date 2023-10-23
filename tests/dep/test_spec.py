@@ -71,6 +71,13 @@ class TestDepSpec:
         assert list(map(str, RequiredUse.dep_spec("|| ( a b )"))) == ["a", "b"]
         assert list(map(str, RequiredUse.dep_spec("|| ( a? ( b ) )"))) == ["a? ( b )"]
 
+    def test_iter_conditionals(self):
+        assert list(RequiredUse.dep_spec("a").iter_conditionals()) == []
+        assert list(RequiredUse.dep_spec("( a )").iter_conditionals()) == []
+        assert list(RequiredUse.dep_spec("u? ( a )").iter_conditionals()) == ["u"]
+        assert list(RequiredUse.dep_spec("!u? ( a )").iter_conditionals()) == ["u"]
+        assert list(RequiredUse.dep_spec("|| ( a? ( b !c? ( d ) ) )").iter_conditionals()) == ["a", "c"]
+
     def test_iter_flatten(self):
         assert list(RequiredUse.dep_spec("a").iter_flatten()) == ["a"]
         assert list(RequiredUse.dep_spec("!a").iter_flatten()) == ["a"]

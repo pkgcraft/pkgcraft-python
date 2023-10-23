@@ -66,6 +66,10 @@ cdef class DepSet(_IndirectInit):
 
         return DepSet.from_ptr(ptr)
 
+    def iter_conditionals(self):
+        """Iterate over the conditionals of a DepSet."""
+        yield from _IntoIterConditionals(self)
+
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSet."""
         yield from _IntoIterFlatten(self)
@@ -400,6 +404,30 @@ cdef class _IntoIter:
 
     def __dealloc__(self):
         C.pkgcraft_dep_set_into_iter_free(self.ptr)
+
+
+cdef class _IntoIterConditionals:
+    """Conditionals iterator over a DepSet or DepSpec object."""
+
+    def __cinit__(self, object obj not None):
+        if isinstance(obj, DepSet):
+            self.ptr = C.pkgcraft_dep_set_into_iter_conditionals((<DepSet>obj).ptr)
+        elif isinstance(obj, DepSpec):
+            self.ptr = C.pkgcraft_dep_spec_into_iter_conditionals((<DepSpec>obj).ptr)
+        else:  # pragma: no cover
+            raise TypeError(f"{obj.__class__.__name__!r} unsupported dep type")
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        ptr = C.pkgcraft_dep_set_into_iter_conditionals_next(self.ptr)
+        if ptr is not NULL:
+            return cstring_to_str(<char *>ptr)
+        raise StopIteration
+
+    def __dealloc__(self):
+        C.pkgcraft_dep_set_into_iter_conditionals_free(self.ptr)
 
 
 cdef class _IntoIterFlatten:
