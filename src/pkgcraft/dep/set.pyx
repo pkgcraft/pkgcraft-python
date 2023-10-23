@@ -16,15 +16,6 @@ from ..error import PkgcraftError
 cdef class DepSet(_IndirectInit):
     """Set of dependency objects."""
 
-    @classmethod
-    def dep_spec(cls, str s not None, *args):
-        """Parse a singular DepSpec object for a given DepSet type."""
-        depset = cls(s, *args)
-        if len(depset) == 1:
-            return next(iter(depset))
-        else:
-            raise TypeError(f'invalid {cls.__name__} DepSpec: {s}')
-
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *ptr, DepSet obj=None):
         """Create a DepSet from a DepSet pointer."""
@@ -217,6 +208,19 @@ cdef class Dependencies(DepSet):
 
         DepSet.from_ptr(ptr, self)
 
+    @staticmethod
+    def dep_spec(str s not None, eapi=None):
+        """Parse a dependency DepSpec."""
+        cdef const C.Eapi *eapi_ptr = NULL
+        if eapi is not None:
+            eapi_ptr = Eapi._from_obj(eapi).ptr
+        ptr = C.pkgcraft_dep_spec_dependencies(s.encode(), eapi_ptr)
+
+        if ptr is NULL:
+            raise PkgcraftError
+
+        return DepSpec.from_ptr(ptr)
+
 
 @cython.final
 cdef class License(DepSet):
@@ -234,6 +238,16 @@ cdef class License(DepSet):
 
         DepSet.from_ptr(ptr, self)
 
+    @staticmethod
+    def dep_spec(str s not None):
+        """Parse a LICENSE DepSpec."""
+        ptr = C.pkgcraft_dep_spec_license(s.encode())
+
+        if ptr is NULL:
+            raise PkgcraftError
+
+        return DepSpec.from_ptr(ptr)
+
 
 @cython.final
 cdef class Properties(DepSet):
@@ -250,6 +264,16 @@ cdef class Properties(DepSet):
             raise PkgcraftError
 
         DepSet.from_ptr(ptr, self)
+
+    @staticmethod
+    def dep_spec(str s not None):
+        """Parse a PROPERTIES DepSpec."""
+        ptr = C.pkgcraft_dep_spec_properties(s.encode())
+
+        if ptr is NULL:
+            raise PkgcraftError
+
+        return DepSpec.from_ptr(ptr)
 
 
 @cython.final
@@ -272,6 +296,19 @@ cdef class RequiredUse(DepSet):
 
         DepSet.from_ptr(ptr, self)
 
+    @staticmethod
+    def dep_spec(str s not None, eapi=None):
+        """Parse a REQUIRED_USE DepSpec."""
+        cdef const C.Eapi *eapi_ptr = NULL
+        if eapi is not None:
+            eapi_ptr = Eapi._from_obj(eapi).ptr
+        ptr = C.pkgcraft_dep_spec_required_use(s.encode(), eapi_ptr)
+
+        if ptr is NULL:
+            raise PkgcraftError
+
+        return DepSpec.from_ptr(ptr)
+
 
 @cython.final
 cdef class Restrict(DepSet):
@@ -288,6 +325,16 @@ cdef class Restrict(DepSet):
             raise PkgcraftError
 
         DepSet.from_ptr(ptr, self)
+
+    @staticmethod
+    def dep_spec(str s not None):
+        """Parse a RESTRICT DepSpec."""
+        ptr = C.pkgcraft_dep_spec_restrict(s.encode())
+
+        if ptr is NULL:
+            raise PkgcraftError
+
+        return DepSpec.from_ptr(ptr)
 
 
 @cython.final
@@ -309,6 +356,19 @@ cdef class SrcUri(DepSet):
             raise PkgcraftError
 
         DepSet.from_ptr(ptr, self)
+
+    @staticmethod
+    def dep_spec(str s not None, eapi=None):
+        """Parse a SRC_URI DepSpec."""
+        cdef const C.Eapi *eapi_ptr = NULL
+        if eapi is not None:
+            eapi_ptr = Eapi._from_obj(eapi).ptr
+        ptr = C.pkgcraft_dep_spec_src_uri(s.encode(), eapi_ptr)
+
+        if ptr is NULL:
+            raise PkgcraftError
+
+        return DepSpec.from_ptr(ptr)
 
 
 cdef class _IntoIter:

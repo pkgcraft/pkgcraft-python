@@ -783,6 +783,14 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null DepSpec pointers.
     bool pkgcraft_dep_spec_contains(DepSpec *d1, DepSpec *d2)
 
+    # Parse a string into a Dependencies DepSpec.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DepSpec *pkgcraft_dep_spec_dependencies(const char *s, const Eapi *eapi)
+
     # Evaluate a DepSpec.
     #
     # # Safety
@@ -833,6 +841,46 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null DepSpec pointer.
     uintptr_t pkgcraft_dep_spec_len(DepSpec *d)
+
+    # Parse a string into a License DepSpec.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DepSpec *pkgcraft_dep_spec_license(const char *s)
+
+    # Parse a string into a Properties DepSpec.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DepSpec *pkgcraft_dep_spec_properties(const char *s)
+
+    # Parse a string into a RequiredUse DepSpec.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DepSpec *pkgcraft_dep_spec_required_use(const char *s, const Eapi *eapi)
+
+    # Parse a string into a Restrict DepSpec.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DepSpec *pkgcraft_dep_spec_restrict(const char *s)
+
+    # Parse a string into a SrcUri DepSpec.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DepSpec *pkgcraft_dep_spec_src_uri(const char *s, const Eapi *eapi)
 
     # Return the formatted string for a DepSpec object.
     #

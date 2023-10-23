@@ -1,20 +1,21 @@
 import pytest
 
 from pkgcraft.dep import *
+from pkgcraft.error import PkgcraftError
 
 
 class TestDepSpec:
     def test_parse(self):
-        # only works with subclasses
-        with pytest.raises(TypeError):
+        # only defined in subclasses
+        with pytest.raises(AttributeError):
             DepSet.dep_spec("a/b")
 
         # empty strings fail
-        with pytest.raises(TypeError):
+        with pytest.raises(PkgcraftError):
             Dependencies.dep_spec("")
 
         # multiple DepSpecs fail
-        with pytest.raises(TypeError):
+        with pytest.raises(PkgcraftError):
             Dependencies.dep_spec("a/b c/d")
 
         # variants
