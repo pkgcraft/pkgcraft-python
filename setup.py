@@ -120,7 +120,7 @@ class build_ext(dst_build_ext.build_ext):
         self.extensions[:] = cythonize(
             self.extensions,
             nthreads=self.parallel,
-            force=True,
+            force=self.force,
             compiler_directives=compiler_directives,
             annotate=False,
         )
