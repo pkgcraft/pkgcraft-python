@@ -203,7 +203,7 @@ cdef class Dependencies(DepSet):
         if isinstance(obj, str):
             if eapi is not None:
                 eapi_ptr = Eapi._from_obj(eapi).ptr
-            ptr = C.pkgcraft_dep_set_dependencies((<str>obj).encode(), eapi_ptr)
+            ptr = C.pkgcraft_dep_set_dependencies(str(obj).encode(), eapi_ptr)
         elif isinstance(obj, Iterable):
             ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_DEPENDENCIES)
         else:
@@ -218,58 +218,93 @@ cdef class Dependencies(DepSet):
 @cython.final
 cdef class License(DepSet):
 
-    def __init__(self, str s=""):
-        ptr = C.pkgcraft_dep_set_license(s.encode())
+    def __init__(self, obj=""):
+        if isinstance(obj, str):
+            ptr = C.pkgcraft_dep_set_license(str(obj).encode())
+        elif isinstance(obj, Iterable):
+            ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_LICENSE)
+        else:
+            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
+
         if ptr is NULL:
             raise PkgcraftError
+
         DepSet.from_ptr(ptr, self)
 
 
 @cython.final
 cdef class Properties(DepSet):
 
-    def __init__(self, str s=""):
-        ptr = C.pkgcraft_dep_set_properties(s.encode())
+    def __init__(self, obj=""):
+        if isinstance(obj, str):
+            ptr = C.pkgcraft_dep_set_properties(str(obj).encode())
+        elif isinstance(obj, Iterable):
+            ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_PROPERTIES)
+        else:
+            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
+
         if ptr is NULL:
             raise PkgcraftError
+
         DepSet.from_ptr(ptr, self)
 
 
 @cython.final
 cdef class RequiredUse(DepSet):
 
-    def __init__(self, str s="", eapi=None):
+    def __init__(self, obj="", eapi=None):
         cdef const C.Eapi *eapi_ptr = NULL
-        if eapi is not None:
-            eapi_ptr = Eapi._from_obj(eapi).ptr
 
-        ptr = C.pkgcraft_dep_set_required_use(s.encode(), eapi_ptr)
+        if isinstance(obj, str):
+            if eapi is not None:
+                eapi_ptr = Eapi._from_obj(eapi).ptr
+            ptr = C.pkgcraft_dep_set_required_use(str(obj).encode(), eapi_ptr)
+        elif isinstance(obj, Iterable):
+            ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_REQUIRED_USE)
+        else:
+            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
+
         if ptr is NULL:
             raise PkgcraftError
+
         DepSet.from_ptr(ptr, self)
 
 
 @cython.final
 cdef class Restrict(DepSet):
 
-    def __init__(self, str s=""):
-        ptr = C.pkgcraft_dep_set_restrict(s.encode())
+    def __init__(self, obj=""):
+        if isinstance(obj, str):
+            ptr = C.pkgcraft_dep_set_restrict(str(obj).encode())
+        elif isinstance(obj, Iterable):
+            ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_RESTRICT)
+        else:
+            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
+
         if ptr is NULL:
             raise PkgcraftError
+
         DepSet.from_ptr(ptr, self)
 
 
 @cython.final
 cdef class SrcUri(DepSet):
 
-    def __init__(self, str s="", eapi=None):
+    def __init__(self, obj="", eapi=None):
         cdef const C.Eapi *eapi_ptr = NULL
-        if eapi is not None:
-            eapi_ptr = Eapi._from_obj(eapi).ptr
 
-        ptr = C.pkgcraft_dep_set_src_uri(s.encode(), eapi_ptr)
+        if isinstance(obj, str):
+            if eapi is not None:
+                eapi_ptr = Eapi._from_obj(eapi).ptr
+            ptr = C.pkgcraft_dep_set_src_uri(str(obj).encode(), eapi_ptr)
+        elif isinstance(obj, Iterable):
+            ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_SRC_URI)
+        else:
+            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
+
         if ptr is NULL:
             raise PkgcraftError
+
         DepSet.from_ptr(ptr, self)
 
 
