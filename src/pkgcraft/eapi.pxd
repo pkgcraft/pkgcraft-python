@@ -5,8 +5,8 @@ from .error cimport _IndirectInit
 cdef class Eapi(_IndirectInit):
     cdef const C.Eapi *ptr
     # cached fields
-    cdef frozenset dep_keys
-    cdef frozenset metadata_keys
+    cdef object dep_keys
+    cdef object metadata_keys
     cdef str id
     cdef int hash
 

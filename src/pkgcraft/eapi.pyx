@@ -3,7 +3,7 @@ from types import MappingProxyType
 cimport cython
 
 from . cimport C
-from ._misc cimport cstring_array_to_tuple, cstring_to_str
+from ._misc cimport CStringIter, cstring_to_str
 from .error cimport _IndirectInit
 
 from .error import PkgcraftError
@@ -147,7 +147,7 @@ cdef class Eapi(_IndirectInit):
         cdef size_t length
         if self.dep_keys is None:
             c_strs = C.pkgcraft_eapi_dep_keys(self.ptr, &length)
-            self.dep_keys = frozenset(cstring_array_to_tuple(c_strs, length))
+            self.dep_keys = OrderedFrozenSet(CStringIter.create(c_strs, length))
         return self.dep_keys
 
     @property
@@ -156,7 +156,7 @@ cdef class Eapi(_IndirectInit):
         cdef size_t length
         if self.metadata_keys is None:
             c_strs = C.pkgcraft_eapi_metadata_keys(self.ptr, &length)
-            self.metadata_keys = frozenset(cstring_array_to_tuple(c_strs, length))
+            self.metadata_keys = OrderedFrozenSet(CStringIter.create(c_strs, length))
         return self.metadata_keys
 
     def __lt__(self, other):

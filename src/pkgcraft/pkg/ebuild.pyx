@@ -3,7 +3,7 @@ from pathlib import Path
 cimport cython
 
 from .. cimport C
-from .._misc cimport SENTINEL, CStringArray, cstring_array_to_tuple, cstring_to_str
+from .._misc cimport SENTINEL, CStringArray, CStringIter, cstring_to_str
 from ..dep cimport Dependencies, License, Properties, RequiredUse, Restrict, SrcUri
 from ..error cimport _IndirectInit
 from . cimport Pkg
@@ -160,7 +160,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._defined_phases is None:
             c_strs = C.pkgcraft_pkg_ebuild_defined_phases(self.ptr, &length)
-            self._defined_phases = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
+            self._defined_phases = OrderedFrozenSet(CStringIter.create(c_strs, length))
         return self._defined_phases
 
     @property
@@ -169,7 +169,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._homepage is None:
             c_strs = C.pkgcraft_pkg_ebuild_homepage(self.ptr, &length)
-            self._homepage = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
+            self._homepage = OrderedFrozenSet(CStringIter.create(c_strs, length))
         return self._homepage
 
     @property
@@ -178,7 +178,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._keywords is None:
             c_strs = C.pkgcraft_pkg_ebuild_keywords(self.ptr, &length)
-            self._keywords = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
+            self._keywords = OrderedFrozenSet(CStringIter.create(c_strs, length))
         return self._keywords
 
     @property
@@ -187,7 +187,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._iuse is None:
             c_strs = C.pkgcraft_pkg_ebuild_iuse(self.ptr, &length)
-            self._iuse = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
+            self._iuse = OrderedFrozenSet(CStringIter.create(c_strs, length))
         return self._iuse
 
     @property
@@ -196,7 +196,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._inherit is None:
             c_strs = C.pkgcraft_pkg_ebuild_inherit(self.ptr, &length)
-            self._inherit = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
+            self._inherit = OrderedFrozenSet(CStringIter.create(c_strs, length))
         return self._inherit
 
     @property
@@ -205,7 +205,7 @@ cdef class EbuildPkg(Pkg):
         cdef size_t length
         if self._inherited is None:
             c_strs = C.pkgcraft_pkg_ebuild_inherited(self.ptr, &length)
-            self._inherited = OrderedFrozenSet(cstring_array_to_tuple(c_strs, length))
+            self._inherited = OrderedFrozenSet(CStringIter.create(c_strs, length))
         return self._inherited
 
     @property

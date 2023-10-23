@@ -1,6 +1,7 @@
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from . cimport C
+from .error cimport _IndirectInit
 
 SENTINEL = object()
 
@@ -23,11 +24,35 @@ cdef tuple cstring_array_to_tuple(char **c_strs, size_t length, bint free=True):
     Returns None if char** is NULL.
     """
     if c_strs is not NULL:
-        values = tuple(c_strs[i].decode() for i in range(length))
-        if free:
-            C.pkgcraft_str_array_free(c_strs, length)
-        return values
+        return tuple(CStringIter.create(c_strs, length, free))
     return None
+
+
+cdef class CStringIter(_IndirectInit):
+    """Iterator over a char** converting char* to str, optionally freeing the array."""
+
+    @staticmethod
+    cdef CStringIter create(char **c_strs, size_t length, bint free=True):
+        obj = <CStringIter>CStringIter.__new__(CStringIter)
+        obj.c_strs = c_strs
+        obj.length = length
+        obj.free = free
+        obj.idx = 0
+        return obj
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.c_strs is not NULL and self.idx < self.length:
+            s = self.c_strs[self.idx].decode()
+            self.idx += 1
+            return s
+        raise StopIteration
+
+    def __dealloc__(self):
+        if self.free:
+            C.pkgcraft_str_array_free(self.c_strs, self.length)
 
 
 cdef class CStringArray:
