@@ -23,7 +23,7 @@ cdef class DepSet(_IndirectInit):
         if len(depset) == 1:
             return next(iter(depset))
         else:
-            raise TypeError(f'invalid {cls.__name__} DepSpec: {depset}')
+            raise TypeError(f'invalid {cls.__name__} DepSpec: {s}')
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *ptr, DepSet obj=None):
@@ -47,16 +47,19 @@ cdef class DepSet(_IndirectInit):
             obj.ptr = ptr
         return obj
 
-    @staticmethod
-    cdef C.DepSet *from_iter(object obj, C.DepSetKind kind):
-        """Create a DepSet pointer from an iterable of DepSpec objects."""
-        deps = tuple(obj)
-        array = <C.DepSpec **> PyMem_Malloc(len(deps) * sizeof(C.DepSpec *))
+    cdef C.DepSet *from_iter(self, object obj, C.DepSetKind kind):
+        """Create a DepSet pointer from an iterable of DepSpec objects or strings."""
+        # convert iterable to DepSpec objects
+        objs = tuple(
+            x if isinstance(x, DepSpec) else self.dep_spec(x)
+            for x in obj
+        )
+        array = <C.DepSpec **> PyMem_Malloc(len(objs) * sizeof(C.DepSpec *))
         if not array:  # pragma: no cover
             raise MemoryError
-        for (i, d) in enumerate(deps):
-            array[i] = (<DepSpec?>d).ptr
-        ptr = C.pkgcraft_dep_set_from_iter(array, len(deps), kind)
+        for (i, d) in enumerate(objs):
+            array[i] = (<DepSpec>d).ptr
+        ptr = C.pkgcraft_dep_set_from_iter(array, len(objs), kind)
         PyMem_Free(array)
         return ptr
 
@@ -205,7 +208,7 @@ cdef class Dependencies(DepSet):
                 eapi_ptr = Eapi._from_obj(eapi).ptr
             ptr = C.pkgcraft_dep_set_dependencies(str(obj).encode(), eapi_ptr)
         elif isinstance(obj, Iterable):
-            ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_DEPENDENCIES)
+            ptr = self.from_iter(obj, C.DEP_SET_KIND_DEPENDENCIES)
         else:
             raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
 
@@ -222,7 +225,7 @@ cdef class License(DepSet):
         if isinstance(obj, str):
             ptr = C.pkgcraft_dep_set_license(str(obj).encode())
         elif isinstance(obj, Iterable):
-            ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_LICENSE)
+            ptr = self.from_iter(obj, C.DEP_SET_KIND_LICENSE)
         else:
             raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
 
@@ -239,7 +242,7 @@ cdef class Properties(DepSet):
         if isinstance(obj, str):
             ptr = C.pkgcraft_dep_set_properties(str(obj).encode())
         elif isinstance(obj, Iterable):
-            ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_PROPERTIES)
+            ptr = self.from_iter(obj, C.DEP_SET_KIND_PROPERTIES)
         else:
             raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
 
@@ -260,7 +263,7 @@ cdef class RequiredUse(DepSet):
                 eapi_ptr = Eapi._from_obj(eapi).ptr
             ptr = C.pkgcraft_dep_set_required_use(str(obj).encode(), eapi_ptr)
         elif isinstance(obj, Iterable):
-            ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_REQUIRED_USE)
+            ptr = self.from_iter(obj, C.DEP_SET_KIND_REQUIRED_USE)
         else:
             raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
 
@@ -277,7 +280,7 @@ cdef class Restrict(DepSet):
         if isinstance(obj, str):
             ptr = C.pkgcraft_dep_set_restrict(str(obj).encode())
         elif isinstance(obj, Iterable):
-            ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_RESTRICT)
+            ptr = self.from_iter(obj, C.DEP_SET_KIND_RESTRICT)
         else:
             raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
 
@@ -298,7 +301,7 @@ cdef class SrcUri(DepSet):
                 eapi_ptr = Eapi._from_obj(eapi).ptr
             ptr = C.pkgcraft_dep_set_src_uri(str(obj).encode(), eapi_ptr)
         elif isinstance(obj, Iterable):
-            ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_SRC_URI)
+            ptr = self.from_iter(obj, C.DEP_SET_KIND_SRC_URI)
         else:
             raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
 

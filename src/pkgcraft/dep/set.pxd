@@ -8,8 +8,7 @@ cdef class DepSet(_IndirectInit):
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *, DepSet obj=*)
 
-    @staticmethod
-    cdef C.DepSet *from_iter(object obj, C.DepSetKind kind)
+    cdef C.DepSet *from_iter(self, object obj, C.DepSetKind kind)
 
 
 cdef class Dependencies(DepSet):

@@ -44,6 +44,9 @@ class TestDependencies:
         d = Dependencies("a/b || ( c/d e/f )")
         assert d == Dependencies(d)
 
+        # create from parsing DepSpec strings
+        assert d == Dependencies(["a/b", "|| ( c/d e/f )"])
+
         # create from DepSpec iterable
         d1 = Dependencies.dep_spec("a/b")
         d2 = Dependencies.dep_spec("c/d")
@@ -241,8 +244,11 @@ class TestLicense:
         # create from iterating over DepSet
         d = License()
         assert d == License(d)
-        d = License("a || ( b c )")
+        d = License("a u? ( b c )")
         assert d == License(d)
+
+        # create from parsing DepSpec strings
+        assert d == License(["a", "u? ( b c )"])
 
         # create from DepSpec iterable
         d1 = License.dep_spec("a")
@@ -274,6 +280,9 @@ class TestProperties:
         assert d == Properties(d)
         d = Properties("a u? ( b c )")
         assert d == Properties(d)
+
+        # create from parsing DepSpec strings
+        assert d == Properties(["a", "u? ( b c )"])
 
         # create from DepSpec iterable
         d1 = Properties.dep_spec("a")
@@ -308,6 +317,9 @@ class TestRequiredUse:
         d = RequiredUse("a u? ( b c )")
         assert d == RequiredUse(d)
 
+        # create from parsing DepSpec strings
+        assert d == RequiredUse(["a", "u? ( b c )"])
+
         # create from DepSpec iterable
         d1 = RequiredUse.dep_spec("a")
         d2 = RequiredUse.dep_spec("b")
@@ -338,6 +350,9 @@ class TestRestrict:
         assert d == Restrict(d)
         d = Restrict("a u? ( b c )")
         assert d == Restrict(d)
+
+        # create from parsing DepSpec strings
+        assert d == Restrict(["a", "u? ( b c )"])
 
         # create from DepSpec iterable
         d1 = Restrict.dep_spec("a")
@@ -371,6 +386,9 @@ class TestSrcUri:
         assert d == SrcUri(d)
         d = SrcUri("a u? ( b c )")
         assert d == SrcUri(d)
+
+        # create from parsing DepSpec strings
+        assert d == SrcUri(["a", "u? ( b c )"])
 
         # create from DepSpec iterable
         d1 = SrcUri.dep_spec("a")
