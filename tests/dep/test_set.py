@@ -233,6 +233,27 @@ class TestLicense:
         with pytest.raises(PkgcraftError):
             License("!a")
 
+        # invalid type
+        with pytest.raises(TypeError):
+            License(None)
+
+    def test_from_iterable(self):
+        # create from iterating over DepSet
+        d = License()
+        assert d == License(d)
+        d = License("a || ( b c )")
+        assert d == License(d)
+
+        # create from DepSpec iterable
+        d1 = License.dep_spec("a")
+        d2 = License.dep_spec("b")
+        assert str(License([d1, d2])) == "a b"
+
+        # invalid types
+        d = RequiredUse("a")
+        with pytest.raises(PkgcraftError):
+            License(d)
+
 
 class TestProperties:
     def test_parse(self):
@@ -242,6 +263,27 @@ class TestProperties:
 
         with pytest.raises(PkgcraftError):
             Properties("!a")
+
+        # invalid type
+        with pytest.raises(TypeError):
+            Properties(None)
+
+    def test_from_iterable(self):
+        # create from iterating over DepSet
+        d = Properties()
+        assert d == Properties(d)
+        d = Properties("a u? ( b c )")
+        assert d == Properties(d)
+
+        # create from DepSpec iterable
+        d1 = Properties.dep_spec("a")
+        d2 = Properties.dep_spec("b")
+        assert str(Properties([d1, d2])) == "a b"
+
+        # invalid types
+        d = RequiredUse("a")
+        with pytest.raises(PkgcraftError):
+            Properties(d)
 
 
 class TestRequiredUse:
@@ -255,6 +297,27 @@ class TestRequiredUse:
         with pytest.raises(PkgcraftError):
             RequiredUse("use!")
 
+        # invalid type
+        with pytest.raises(TypeError):
+            RequiredUse(None)
+
+    def test_from_iterable(self):
+        # create from iterating over DepSet
+        d = RequiredUse()
+        assert d == RequiredUse(d)
+        d = RequiredUse("a u? ( b c )")
+        assert d == RequiredUse(d)
+
+        # create from DepSpec iterable
+        d1 = RequiredUse.dep_spec("a")
+        d2 = RequiredUse.dep_spec("b")
+        assert str(RequiredUse([d1, d2])) == "a b"
+
+        # invalid types
+        d = Properties("a")
+        with pytest.raises(PkgcraftError):
+            RequiredUse(d)
+
 
 class TestRestrict:
     def test_parse(self):
@@ -264,6 +327,27 @@ class TestRestrict:
 
         with pytest.raises(PkgcraftError):
             Restrict("!a")
+
+        # invalid type
+        with pytest.raises(TypeError):
+            Restrict(None)
+
+    def test_from_iterable(self):
+        # create from iterating over DepSet
+        d = Restrict()
+        assert d == Restrict(d)
+        d = Restrict("a u? ( b c )")
+        assert d == Restrict(d)
+
+        # create from DepSpec iterable
+        d1 = Restrict.dep_spec("a")
+        d2 = Restrict.dep_spec("b")
+        assert str(Restrict([d1, d2])) == "a b"
+
+        # invalid types
+        d = Properties("a")
+        with pytest.raises(PkgcraftError):
+            Restrict(d)
 
 
 class TestSrcUri:
@@ -276,3 +360,24 @@ class TestSrcUri:
 
         with pytest.raises(PkgcraftError):
             SrcUri("http://a/")
+
+        # invalid type
+        with pytest.raises(TypeError):
+            SrcUri(None)
+
+    def test_from_iterable(self):
+        # create from iterating over DepSet
+        d = SrcUri()
+        assert d == SrcUri(d)
+        d = SrcUri("a u? ( b c )")
+        assert d == SrcUri(d)
+
+        # create from DepSpec iterable
+        d1 = SrcUri.dep_spec("a")
+        d2 = SrcUri.dep_spec("b")
+        assert str(SrcUri([d1, d2])) == "a b"
+
+        # invalid types
+        d = Properties("a")
+        with pytest.raises(PkgcraftError):
+            SrcUri(d)
