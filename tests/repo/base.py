@@ -152,9 +152,6 @@ class BaseRepoTests:
         with pytest.raises(TypeError):
             next(repo)
 
-        # nested calls return equivalent objects
-        assert list(iter(repo)) == list(iter(iter(repo)))
-
         # empty repo
         assert not list(repo)
 
@@ -165,6 +162,12 @@ class BaseRepoTests:
         # multiple pkgs
         repo.create_pkg("cat/pkg-2")
         assert list(map(str, repo)) == ["cat/pkg-1::fake", "cat/pkg-2::fake"]
+
+        # nested calls return equivalent objects
+        assert list(iter(repo)) == list(iter(iter(repo)))
+
+        # repo.iter() with no args is equivalent to iter(repo)
+        assert list(iter(repo)) == list(repo.iter())
 
     def test_iter_restrict_base(self, repo):
         # unsupported object type
