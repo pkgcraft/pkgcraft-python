@@ -13,23 +13,15 @@ EAPIS_OFFICIAL = get_official_eapis()
 EAPIS = get_eapis()
 
 
-cdef list eapis_to_list(const C.Eapi **c_eapis, size_t length, int start=0):
-    """Convert an array of Eapi pointers to a list of Eapi objects."""
-    eapis = []
-    for i in range(start, length):
-        eapis.append(Eapi.from_ptr(c_eapis[i], init=True))
-    return eapis
-
-
 cdef object get_official_eapis():
     """Get the mapping of all official EAPIs."""
     cdef size_t length
     c_eapis = C.pkgcraft_eapis_official(&length)
-    eapis = eapis_to_list(c_eapis, length)
+    eapis = [Eapi.from_ptr(c_eapis[i], init=True) for i in range(length)]
     d = {str(eapi): eapi for eapi in eapis}
     C.pkgcraft_array_free(<void **>c_eapis, length)
 
-    # set global variables for each official EAPIs
+    # set global variables for official EAPIs
     globals()['EAPI_LATEST_OFFICIAL'] = eapis[-1]
     for k, v in d.items():
         globals()[f'EAPI{k}'] = v
@@ -42,7 +34,7 @@ cdef object get_eapis():
     cdef size_t length
     d = EAPIS_OFFICIAL.copy()
     c_eapis = C.pkgcraft_eapis(&length)
-    eapis = eapis_to_list(c_eapis, length, start=len(d))
+    eapis = [Eapi.from_ptr(c_eapis[i], init=True) for i in range(len(d), length)]
     globals()['EAPI_LATEST'] = eapis[-1]
     d.update((str(eapi), eapi) for eapi in eapis)
     C.pkgcraft_array_free(<void **>c_eapis, length)
