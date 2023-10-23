@@ -75,8 +75,15 @@ cdef class DepSet(_IndirectInit):
         yield from _IntoIterRecursive(self)
 
     def __contains__(self, obj):
+        cdef DepSpec dep = None
+
         if isinstance(obj, DepSpec):
-            return C.pkgcraft_dep_set_contains(self.ptr, (<DepSpec>obj).ptr)
+            dep = obj
+        elif isinstance(obj, str):
+            dep = self.dep_spec(obj)
+
+        if dep is not None:
+            return C.pkgcraft_dep_set_contains(self.ptr, dep.ptr)
         return False
 
     def __iter__(self):
