@@ -1,4 +1,7 @@
+from collections.abc import Iterable
+
 cimport cython
+from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport C
 from .._misc cimport CStringArray, cstring_to_str
@@ -7,7 +10,7 @@ from ..error cimport _IndirectInit
 from .pkg cimport Dep
 from .spec cimport DepSpec
 
-from ..error import InvalidDep
+from ..error import PkgcraftError
 
 
 cdef class DepSet(_IndirectInit):
@@ -24,24 +27,38 @@ cdef class DepSet(_IndirectInit):
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *ptr, DepSet obj=None):
+        """Create a DepSet from a DepSet pointer."""
         if ptr is not NULL:
             if obj is None:
-                if ptr.kind == C.DEP_SET_KIND_DEPENDENCIES:
+                if ptr.set == C.DEP_SET_KIND_DEPENDENCIES:
                     obj = <Dependencies>Dependencies.__new__(Dependencies)
-                elif ptr.kind == C.DEP_SET_KIND_LICENSE:
+                elif ptr.set == C.DEP_SET_KIND_LICENSE:
                     obj = <License>License.__new__(License)
-                elif ptr.kind == C.DEP_SET_KIND_PROPERTIES:
+                elif ptr.set == C.DEP_SET_KIND_PROPERTIES:
                     obj = <Properties>Properties.__new__(Properties)
-                elif ptr.kind == C.DEP_SET_KIND_REQUIRED_USE:
+                elif ptr.set == C.DEP_SET_KIND_REQUIRED_USE:
                     obj = <RequiredUse>RequiredUse.__new__(RequiredUse)
-                elif ptr.kind == C.DEP_SET_KIND_RESTRICT:
+                elif ptr.set == C.DEP_SET_KIND_RESTRICT:
                     obj = <Restrict>Restrict.__new__(Restrict)
-                elif ptr.kind == C.DEP_SET_KIND_SRC_URI:
+                elif ptr.set == C.DEP_SET_KIND_SRC_URI:
                     obj = <SrcUri>SrcUri.__new__(SrcUri)
                 else:  # pragma: no cover
-                    raise TypeError(f'unknown DepSet kind: {ptr.kind}')
+                    raise TypeError(f'unknown DepSet kind: {ptr.set}')
             obj.ptr = ptr
         return obj
+
+    @staticmethod
+    cdef C.DepSet *from_iter(object obj, C.DepSetKind kind):
+        """Create a DepSet pointer from an iterable of DepSpec objects."""
+        deps = tuple(obj)
+        array = <C.DepSpec **> PyMem_Malloc(len(deps) * sizeof(C.DepSpec *))
+        if not array:  # pragma: no cover
+            raise MemoryError
+        for (i, d) in enumerate(deps):
+            array[i] = (<DepSpec?>d).ptr
+        ptr = C.pkgcraft_dep_set_from_iter(array, len(deps), kind)
+        PyMem_Free(array)
+        return ptr
 
     def evaluate(self, enabled=()):
         """Evaluate a DepSet using a given set of enabled options or by force."""
@@ -180,14 +197,21 @@ cdef class DepSet(_IndirectInit):
 @cython.final
 cdef class Dependencies(DepSet):
 
-    def __init__(self, str s="", eapi=None):
+    def __init__(self, obj="", eapi=None):
         cdef const C.Eapi *eapi_ptr = NULL
-        if eapi is not None:
-            eapi_ptr = Eapi._from_obj(eapi).ptr
 
-        ptr = C.pkgcraft_dep_set_dependencies(s.encode(), eapi_ptr)
+        if isinstance(obj, str):
+            if eapi is not None:
+                eapi_ptr = Eapi._from_obj(eapi).ptr
+            ptr = C.pkgcraft_dep_set_dependencies((<str>obj).encode(), eapi_ptr)
+        elif isinstance(obj, Iterable):
+            ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_DEPENDENCIES)
+        else:
+            raise TypeError(f"{obj.__class__.__name__!r} invalid depset type")
+
         if ptr is NULL:
-            raise InvalidDep
+            raise PkgcraftError
+
         DepSet.from_ptr(ptr, self)
 
 
@@ -197,7 +221,7 @@ cdef class License(DepSet):
     def __init__(self, str s=""):
         ptr = C.pkgcraft_dep_set_license(s.encode())
         if ptr is NULL:
-            raise InvalidDep
+            raise PkgcraftError
         DepSet.from_ptr(ptr, self)
 
 
@@ -207,7 +231,7 @@ cdef class Properties(DepSet):
     def __init__(self, str s=""):
         ptr = C.pkgcraft_dep_set_properties(s.encode())
         if ptr is NULL:
-            raise InvalidDep
+            raise PkgcraftError
         DepSet.from_ptr(ptr, self)
 
 
@@ -221,7 +245,7 @@ cdef class RequiredUse(DepSet):
 
         ptr = C.pkgcraft_dep_set_required_use(s.encode(), eapi_ptr)
         if ptr is NULL:
-            raise InvalidDep
+            raise PkgcraftError
         DepSet.from_ptr(ptr, self)
 
 
@@ -231,7 +255,7 @@ cdef class Restrict(DepSet):
     def __init__(self, str s=""):
         ptr = C.pkgcraft_dep_set_restrict(s.encode())
         if ptr is NULL:
-            raise InvalidDep
+            raise PkgcraftError
         DepSet.from_ptr(ptr, self)
 
 
@@ -245,7 +269,7 @@ cdef class SrcUri(DepSet):
 
         ptr = C.pkgcraft_dep_set_src_uri(s.encode(), eapi_ptr)
         if ptr is NULL:
-            raise InvalidDep
+            raise PkgcraftError
         DepSet.from_ptr(ptr, self)
 
 
@@ -280,11 +304,11 @@ cdef class _IntoIterFlatten:
         if isinstance(obj, DepSet):
             deps = <DepSet>obj
             self.ptr = C.pkgcraft_dep_set_into_iter_flatten(deps.ptr)
-            self.unit = deps.ptr.unit
+            self.set = deps.ptr.set
         elif isinstance(obj, DepSpec):
             dep = <DepSpec>obj
             self.ptr = C.pkgcraft_dep_spec_into_iter_flatten(dep.ptr)
-            self.unit = dep.ptr.unit
+            self.set = dep.ptr.set
         else:  # pragma: no cover
             raise TypeError(f"{obj.__class__.__name__!r} unsupported dep type")
 
@@ -294,14 +318,12 @@ cdef class _IntoIterFlatten:
     def __next__(self):
         ptr = C.pkgcraft_dep_set_into_iter_flatten_next(self.ptr)
         if ptr is not NULL:
-            if self.unit == C.DEP_SPEC_UNIT_DEP:
+            if self.set == C.DEP_SET_KIND_DEPENDENCIES:
                 return Dep.from_ptr(<C.Dep *>ptr)
-            elif self.unit == C.DEP_SPEC_UNIT_STRING:
-                return cstring_to_str(<char *>ptr)
-            elif self.unit == C.DEP_SPEC_UNIT_URI:
+            elif self.set == C.DEP_SET_KIND_SRC_URI:
                 return Uri.from_ptr(<C.Uri *>ptr)
-            else:  # pragma: no cover
-                raise TypeError(f'unknown DepSet unit: {self.unit}')
+            else:
+                return cstring_to_str(<char *>ptr)
         raise StopIteration
 
     def __dealloc__(self):

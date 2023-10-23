@@ -8,6 +8,9 @@ cdef class DepSet(_IndirectInit):
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *, DepSet obj=*)
 
+    @staticmethod
+    cdef C.DepSet *from_iter(object obj, C.DepSetKind kind)
+
 
 cdef class Dependencies(DepSet):
     pass
@@ -39,7 +42,7 @@ cdef class _IntoIter:
 
 cdef class _IntoIterFlatten:
     cdef C.DepSpecIntoIterFlatten *ptr
-    cdef C.DepSpecUnit unit
+    cdef C.DepSetKind set
 
 
 cdef class _IntoIterRecursive:

@@ -2,7 +2,7 @@ import pytest
 
 from pkgcraft.dep import *
 from pkgcraft.eapi import EAPI8
-from pkgcraft.error import InvalidDep
+from pkgcraft.error import PkgcraftError
 
 
 class TestDependencies:
@@ -30,8 +30,25 @@ class TestDependencies:
         assert repr(d1).startswith("<Dependencies 'a/b || ( c/d e/f )' at 0x")
 
         # invalid
-        with pytest.raises(InvalidDep):
+        with pytest.raises(PkgcraftError):
             Dependencies("a/b::repo", EAPI8)
+
+    def test_from_iterable(self):
+        # create from iterating over DepSet
+        d = Dependencies()
+        assert d == Dependencies(d)
+        d = Dependencies("a/b || ( c/d e/f )")
+        assert d == Dependencies(d)
+
+        # create from DepSpec iterable
+        d1 = Dependencies.dep_spec("a/b")
+        d2 = Dependencies.dep_spec("c/d")
+        assert str(Dependencies([d1, d2])) == "a/b c/d"
+
+        # invalid types
+        d = RequiredUse("a")
+        with pytest.raises(PkgcraftError):
+            Dependencies(d)
 
     def test_evaluate(self):
         # no conditionals
@@ -209,7 +226,7 @@ class TestLicense:
         assert str(d1) == "a"
         assert repr(d1).startswith("<License 'a' at 0x")
 
-        with pytest.raises(InvalidDep):
+        with pytest.raises(PkgcraftError):
             License("!a")
 
 
@@ -219,7 +236,7 @@ class TestProperties:
         assert str(d1) == "a"
         assert repr(d1).startswith("<Properties 'a' at 0x")
 
-        with pytest.raises(InvalidDep):
+        with pytest.raises(PkgcraftError):
             Properties("!a")
 
 
@@ -231,7 +248,7 @@ class TestRequiredUse:
         d2 = RequiredUse("use", EAPI8)
         assert d1 == d2
 
-        with pytest.raises(InvalidDep):
+        with pytest.raises(PkgcraftError):
             RequiredUse("use!")
 
 
@@ -241,7 +258,7 @@ class TestRestrict:
         assert str(d1) == "a"
         assert repr(d1).startswith("<Restrict 'a' at 0x")
 
-        with pytest.raises(InvalidDep):
+        with pytest.raises(PkgcraftError):
             Restrict("!a")
 
 
@@ -253,5 +270,5 @@ class TestSrcUri:
         d2 = SrcUri("a", EAPI8)
         assert d1 == d2
 
-        with pytest.raises(InvalidDep):
+        with pytest.raises(PkgcraftError):
             SrcUri("http://a/")

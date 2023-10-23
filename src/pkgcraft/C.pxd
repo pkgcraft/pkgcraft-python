@@ -16,11 +16,11 @@ cdef extern from "pkgcraft.h":
     # DepSet variants.
     cdef enum DepSetKind:
         DEP_SET_KIND_DEPENDENCIES,
+        DEP_SET_KIND_SRC_URI,
         DEP_SET_KIND_LICENSE,
         DEP_SET_KIND_PROPERTIES,
         DEP_SET_KIND_REQUIRED_USE,
         DEP_SET_KIND_RESTRICT,
-        DEP_SET_KIND_SRC_URI,
 
     # DepSpec variants.
     cdef enum DepSpecKind:
@@ -32,12 +32,6 @@ cdef extern from "pkgcraft.h":
         DEP_SPEC_KIND_AT_MOST_ONE_OF,
         DEP_SPEC_KIND_USE_ENABLED,
         DEP_SPEC_KIND_USE_DISABLED,
-
-    # DepSpec unit variants.
-    cdef enum DepSpecUnit:
-        DEP_SPEC_UNIT_DEP,
-        DEP_SPEC_UNIT_STRING,
-        DEP_SPEC_UNIT_URI,
 
     cdef enum ErrorKind:
         ERROR_KIND_GENERIC,
@@ -173,13 +167,12 @@ cdef extern from "pkgcraft.h":
 
     # C-compatible wrapper for pkgcraft::dep::DepSet.
     cdef struct DepSet:
-        DepSpecUnit unit
-        DepSetKind kind
+        DepSetKind set
         DepSetWrapper *dep
 
     # C-compatible wrapper for pkgcraft::dep::DepSpec.
     cdef struct DepSpec:
-        DepSpecUnit unit
+        DepSetKind set
         DepSpecKind kind
         DepSpecWrapper *dep
 
@@ -613,6 +606,14 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a DepSet pointer or NULL.
     void pkgcraft_dep_set_free(DepSet *d)
+
+    # Create a DepSet from an array of DepSpec objects.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be an array of similarly-typed DepSpec objects.
+    DepSet *pkgcraft_dep_set_from_iter(DepSpec **deps, uintptr_t len, DepSetKind kind)
 
     # Return the hash value for a DepSet.
     #
