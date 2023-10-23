@@ -207,7 +207,7 @@ cdef class Dependencies(DepSet):
         elif isinstance(obj, Iterable):
             ptr = DepSet.from_iter(obj, C.DEP_SET_KIND_DEPENDENCIES)
         else:
-            raise TypeError(f"{obj.__class__.__name__!r} invalid depset type")
+            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
 
         if ptr is NULL:
             raise PkgcraftError

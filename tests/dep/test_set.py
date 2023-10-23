@@ -33,6 +33,10 @@ class TestDependencies:
         with pytest.raises(PkgcraftError):
             Dependencies("a/b::repo", EAPI8)
 
+        # invalid type
+        with pytest.raises(TypeError):
+            Dependencies(None)
+
     def test_from_iterable(self):
         # create from iterating over DepSet
         d = Dependencies()
