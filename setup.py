@@ -119,6 +119,7 @@ class build_ext(dst_build_ext.build_ext):
         # generate C modules with cython
         self.extensions[:] = cythonize(
             self.extensions,
+            nthreads=self.parallel,
             force=True,
             compiler_directives=compiler_directives,
             annotate=False,
