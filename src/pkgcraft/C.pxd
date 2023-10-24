@@ -705,11 +705,23 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSpecIntoIterRecursive pointer.
     DepSpec *pkgcraft_dep_set_into_iter_recursive_next(DepSpecIntoIterRecursive *i)
 
-    # Determine if a DepSet is empty.
+    # Returns true if two DepSets have no elements in common.
+    #
+    # # Safety
+    # The arguments must be a non-null DepSet pointers.
+    bool pkgcraft_dep_set_is_disjoint(DepSet *d1, DepSet *d2)
+
+    # Returns true if a DepSet is empty.
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
     bool pkgcraft_dep_set_is_empty(DepSet *d)
+
+    # Returns true if all the elements of the first DepSet are contained in the second.
+    #
+    # # Safety
+    # The arguments must be a non-null DepSet pointers.
+    bool pkgcraft_dep_set_is_subset(DepSet *d1, DepSet *d2)
 
     # Return a DepSet's length.
     #

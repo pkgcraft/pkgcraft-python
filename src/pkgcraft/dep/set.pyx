@@ -105,6 +105,56 @@ cdef class DepSet(_IndirectInit):
         """Recursively iterate over the DepSpec objects of a DepSet."""
         yield from _IntoIterRecursive(self)
 
+    def isdisjoint(self, other):
+        cdef DepSet obj = None
+
+        if isinstance(other, DepSet):
+            obj = other
+        else:
+            obj = self.__class__(other)
+
+        return C.pkgcraft_dep_set_is_disjoint(self.ptr, obj.ptr)
+
+    def issubset(self, other):
+        cdef DepSet obj = None
+
+        if isinstance(other, DepSet):
+            obj = other
+        else:
+            obj = self.__class__(other)
+
+        return C.pkgcraft_dep_set_is_subset(self.ptr, obj.ptr)
+
+    def issuperset(self, other):
+        cdef DepSet obj = None
+
+        if isinstance(other, DepSet):
+            obj = other
+        else:
+            obj = self.__class__(other)
+
+        return C.pkgcraft_dep_set_is_subset(obj.ptr, self.ptr)
+
+    def __lt__(self, other):
+        if isinstance(other, DepSet):
+            return self <= other and self != other
+        return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, DepSet):
+            return self.issubset(other)
+        return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, DepSet):
+            return other.issubset(self)
+        return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, DepSet):
+            return self >= other and self != other
+        return NotImplemented
+
     def __contains__(self, obj):
         cdef DepSpec dep = None
 

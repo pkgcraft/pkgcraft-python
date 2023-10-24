@@ -125,7 +125,49 @@ class TestDependencies:
         assert not dep == None
         assert dep != None
 
-    def test_set_ops(self):
+    def test_set_functionality(self):
+        # disjoint
+        d1 = Dependencies()
+        d2 = Dependencies("a/b")
+        d3 = Dependencies("u? ( c/d ) a/b")
+        assert d1.isdisjoint(d1)
+        assert d1.isdisjoint(d2)
+        assert d1.isdisjoint("")
+        assert d2.isdisjoint("u? ( a/b )")
+        assert not d2.isdisjoint(d2)
+        assert not d2.isdisjoint(list(d2))
+        assert not d2.isdisjoint(d3)
+
+        # subset
+        assert d1 <= d1
+        assert d1.issubset(d1)
+        assert not d1 < d1
+        assert d1 <= d2
+        assert d1.issubset(d2)
+        assert d1 < d2
+        assert d1.issubset(list(d2))
+        assert d1.issubset(str(d3))
+        # operators don't convert strings or iterables to DepSet
+        with pytest.raises(TypeError):
+            d1 <= list(d2)
+        with pytest.raises(TypeError):
+            d1 < "a/b"
+
+        # superset
+        assert d1 >= d1
+        assert d1.issuperset(d1)
+        assert not d1 > d1
+        assert d2 >= d1
+        assert d2.issuperset(d1)
+        assert d2 > d1
+        assert d2.issuperset(list(d1))
+        assert d3.issuperset(str(d1))
+        # operators don't convert strings or iterables to DepSet
+        with pytest.raises(TypeError):
+            d2 >= list(d1)
+        with pytest.raises(TypeError):
+            d2 > ""
+
         # &= operator
         d = Dependencies("a/a b/b c/c")
         d &= Dependencies("a/a b/b")
