@@ -106,34 +106,34 @@ cdef class DepSet(_IndirectInit):
         yield from _IntoIterRecursive(self)
 
     def isdisjoint(self, other):
-        cdef DepSet obj = None
+        cdef DepSet depset = None
 
         if isinstance(other, DepSet):
-            obj = other
+            depset = other
         else:
-            obj = self.__class__(other)
+            depset = self.__class__(other)
 
-        return C.pkgcraft_dep_set_is_disjoint(self.ptr, obj.ptr)
+        return C.pkgcraft_dep_set_is_disjoint(self.ptr, depset.ptr)
 
     def issubset(self, other):
-        cdef DepSet obj = None
+        cdef DepSet depset = None
 
         if isinstance(other, DepSet):
-            obj = other
+            depset = other
         else:
-            obj = self.__class__(other)
+            depset = self.__class__(other)
 
-        return C.pkgcraft_dep_set_is_subset(self.ptr, obj.ptr)
+        return C.pkgcraft_dep_set_is_subset(self.ptr, depset.ptr)
 
     def issuperset(self, other):
-        cdef DepSet obj = None
+        cdef DepSet depset = None
 
         if isinstance(other, DepSet):
-            obj = other
+            depset = other
         else:
-            obj = self.__class__(other)
+            depset = self.__class__(other)
 
-        return C.pkgcraft_dep_set_is_subset(obj.ptr, self.ptr)
+        return C.pkgcraft_dep_set_is_subset(depset.ptr, self.ptr)
 
     def __lt__(self, other):
         if isinstance(other, DepSet):
@@ -142,12 +142,12 @@ cdef class DepSet(_IndirectInit):
 
     def __le__(self, other):
         if isinstance(other, DepSet):
-            return self.issubset(other)
+            return C.pkgcraft_dep_set_is_subset(self.ptr, (<DepSet>other).ptr)
         return NotImplemented
 
     def __ge__(self, other):
         if isinstance(other, DepSet):
-            return other.issubset(self)
+            return C.pkgcraft_dep_set_is_subset((<DepSet>other).ptr, self.ptr)
         return NotImplemented
 
     def __gt__(self, other):
