@@ -43,14 +43,10 @@ class TestDependencies:
         assert d == Dependencies(d)
         d = Dependencies("a/b || ( c/d e/f )")
         assert d == Dependencies(d)
+        assert d == Dependencies(list(d))
 
         # create from parsing DepSpec strings
         assert d == Dependencies(["a/b", "|| ( c/d e/f )"])
-
-        # create from DepSpec iterable
-        d1 = Dependencies.dep_spec("a/b")
-        d2 = Dependencies.dep_spec("c/d")
-        assert str(Dependencies([d1, d2])) == "a/b c/d"
 
         # invalid types
         d = RequiredUse("a")
@@ -250,14 +246,10 @@ class TestLicense:
         assert d == License(d)
         d = License("a u? ( b c )")
         assert d == License(d)
+        assert d == License(list(d))
 
         # create from parsing DepSpec strings
         assert d == License(["a", "u? ( b c )"])
-
-        # create from DepSpec iterable
-        d1 = License.dep_spec("a")
-        d2 = License.dep_spec("b")
-        assert str(License([d1, d2])) == "a b"
 
         # invalid types
         d = RequiredUse("a")
@@ -284,14 +276,10 @@ class TestProperties:
         assert d == Properties(d)
         d = Properties("a u? ( b c )")
         assert d == Properties(d)
+        assert d == Properties(list(d))
 
         # create from parsing DepSpec strings
         assert d == Properties(["a", "u? ( b c )"])
-
-        # create from DepSpec iterable
-        d1 = Properties.dep_spec("a")
-        d2 = Properties.dep_spec("b")
-        assert str(Properties([d1, d2])) == "a b"
 
         # invalid types
         d = RequiredUse("a")
@@ -320,14 +308,10 @@ class TestRequiredUse:
         assert d == RequiredUse(d)
         d = RequiredUse("a u? ( b c )")
         assert d == RequiredUse(d)
+        assert d == RequiredUse(list(d))
 
         # create from parsing DepSpec strings
         assert d == RequiredUse(["a", "u? ( b c )"])
-
-        # create from DepSpec iterable
-        d1 = RequiredUse.dep_spec("a")
-        d2 = RequiredUse.dep_spec("b")
-        assert str(RequiredUse([d1, d2])) == "a b"
 
         # invalid types
         d = Properties("a")
@@ -354,14 +338,10 @@ class TestRestrict:
         assert d == Restrict(d)
         d = Restrict("a u? ( b c )")
         assert d == Restrict(d)
+        assert d == Restrict(list(d))
 
         # create from parsing DepSpec strings
         assert d == Restrict(["a", "u? ( b c )"])
-
-        # create from DepSpec iterable
-        d1 = Restrict.dep_spec("a")
-        d2 = Restrict.dep_spec("b")
-        assert str(Restrict([d1, d2])) == "a b"
 
         # invalid types
         d = Properties("a")
@@ -390,14 +370,10 @@ class TestSrcUri:
         assert d == SrcUri(d)
         d = SrcUri("a u? ( b c )")
         assert d == SrcUri(d)
+        assert d == SrcUri(list(d))
 
         # create from parsing DepSpec strings
         assert d == SrcUri(["a", "u? ( b c )"])
-
-        # create from DepSpec iterable
-        d1 = SrcUri.dep_spec("a")
-        d2 = SrcUri.dep_spec("b")
-        assert str(SrcUri([d1, d2])) == "a b"
 
         # invalid types
         d = Properties("a")

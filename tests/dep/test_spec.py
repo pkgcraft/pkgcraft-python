@@ -6,8 +6,8 @@ from pkgcraft.error import PkgcraftError
 
 class TestDepSpec:
     def test_parse(self):
-        # only defined in subclasses
-        with pytest.raises(AttributeError):
+        # only valid in subclasses
+        with pytest.raises(TypeError):
             DepSet.dep_spec("a/b")
 
         # empty strings fail

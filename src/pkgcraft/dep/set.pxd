@@ -15,11 +15,7 @@ cdef class Dependencies(DepSet):
     pass
 
 
-cdef class Restrict(DepSet):
-    pass
-
-
-cdef class RequiredUse(DepSet):
+cdef class License(DepSet):
     pass
 
 
@@ -27,11 +23,15 @@ cdef class Properties(DepSet):
     pass
 
 
-cdef class SrcUri(DepSet):
+cdef class RequiredUse(DepSet):
     pass
 
 
-cdef class License(DepSet):
+cdef class Restrict(DepSet):
+    pass
+
+
+cdef class SrcUri(DepSet):
     pass
 
 
