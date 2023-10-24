@@ -121,7 +121,13 @@ cdef class DepSet(_IndirectInit):
         return _IntoIter(self)
 
     def __getitem__(self, key):
-        return list(self)[key]
+        deps = list(self)[key]
+        if isinstance(key, int):
+            # return a singular DepSpec for integers
+            return deps
+        elif isinstance(key, slice):
+            # create a new DepSet for slices
+            return self.__class__(deps)
 
     def __len__(self):
         return C.pkgcraft_dep_set_len(self.ptr)
