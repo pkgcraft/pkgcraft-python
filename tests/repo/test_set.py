@@ -143,6 +143,46 @@ class TestRepoSet:
             with pytest.raises(TypeError):
                 assert obj in s
 
+    def test_getitem(self, make_fake_repo):
+        # empty set
+        s = RepoSet()
+        assert s[:] == s
+        with pytest.raises(IndexError):
+            s[0]
+        with pytest.raises(KeyError):
+            s["cat/pkg"]
+
+        # empty repo
+        r = make_fake_repo()
+        s = RepoSet(r)
+        assert s[:] == s
+        assert s[0] == r
+        with pytest.raises(KeyError):
+            s["cat/pkg"]
+
+        # single repo with pkg
+        r1 = make_fake_repo(id="r1")
+        pkg = r1.create_pkg("cat/pkg-1")
+        s = RepoSet(r1)
+        assert s[:] == s
+        assert s[0] == r1
+        assert s["cat/pkg"] == pkg
+        assert s["cat/pkg-1"] == pkg
+        with pytest.raises(KeyError):
+            s["cat/pkg-2"]
+
+        # multiple repos with overlapping pkgs
+        r2 = make_fake_repo(id="r2")
+        pkg1 = r2.create_pkg("cat/pkg-1")
+        pkg2 = r2.create_pkg("cat/pkg-2")
+        s = RepoSet(r1, r2)
+        assert s[:] == s
+        assert s[-1] == r2
+        assert s["cat/pkg"] == pkg
+        assert s["cat/pkg-1"] == pkg
+        assert s["=cat/pkg-1::r2"] == pkg1
+        assert s["cat/pkg-2"] == pkg2
+
     def test_bool_and_len(self, make_fake_repo):
         s = RepoSet()
         assert not s

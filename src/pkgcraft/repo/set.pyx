@@ -36,6 +36,20 @@ cdef class RepoSet:
     def __iter__(self):
         return _Iter(self)
 
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            # return a singular Repo for integers
+            return self.repos[key]
+        elif isinstance(key, slice):
+            # create a new RepoSet for slices
+            return self.__class__(*list(self.repos)[key])
+
+        # try to return the first pkg match from a restriction
+        try:
+            return next(self.iter(key))
+        except StopIteration:
+            raise KeyError(key)
+
     def iter(self, restrict=None):
         """Iterate over a repo set's packages, optionally applying a restriction."""
         yield from _Iter(self, restrict)
