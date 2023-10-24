@@ -155,6 +155,50 @@ cdef class DepSet(_IndirectInit):
             return self >= other and self != other
         return NotImplemented
 
+    def union(self, *others):
+        depset = self.__class__(self)
+
+        for obj in others:
+            if isinstance(obj, DepSet):
+                depset |= obj
+            else:
+                depset |= self.__class__(obj)
+
+        return depset
+
+    def intersection(self, *others):
+        depset = self.__class__(self)
+
+        for obj in others:
+            if isinstance(obj, DepSet):
+                depset &= obj
+            else:
+                depset &= self.__class__(obj)
+
+        return depset
+
+    def difference(self, *others):
+        depset = self.__class__(self)
+
+        for obj in others:
+            if isinstance(obj, DepSet):
+                depset -= obj
+            else:
+                depset -= self.__class__(obj)
+
+        return depset
+
+    def symmetric_difference(self, *others):
+        depset = self.__class__(self)
+
+        for obj in others:
+            if isinstance(obj, DepSet):
+                depset ^= obj
+            else:
+                depset ^= self.__class__(obj)
+
+        return depset
+
     def __contains__(self, obj):
         cdef DepSpec dep = None
 
