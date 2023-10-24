@@ -120,6 +120,9 @@ cdef class DepSet(_IndirectInit):
     def __iter__(self):
         return _IntoIter(self)
 
+    def __getitem__(self, key):
+        return list(self)[key]
+
     def __len__(self):
         return C.pkgcraft_dep_set_len(self.ptr)
 

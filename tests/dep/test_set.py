@@ -44,6 +44,7 @@ class TestDependencies:
         d = Dependencies("a/b || ( c/d e/f )")
         assert d == Dependencies(d)
         assert d == Dependencies(list(d))
+        assert d == Dependencies(d[:])
 
         # create from parsing DepSpec strings
         assert d == Dependencies(["a/b", "|| ( c/d e/f )"])
@@ -247,6 +248,7 @@ class TestLicense:
         d = License("a u? ( b c )")
         assert d == License(d)
         assert d == License(list(d))
+        assert d == License(d[:])
 
         # create from parsing DepSpec strings
         assert d == License(["a", "u? ( b c )"])
@@ -277,6 +279,7 @@ class TestProperties:
         d = Properties("a u? ( b c )")
         assert d == Properties(d)
         assert d == Properties(list(d))
+        assert d == Properties(d[:])
 
         # create from parsing DepSpec strings
         assert d == Properties(["a", "u? ( b c )"])
@@ -309,6 +312,7 @@ class TestRequiredUse:
         d = RequiredUse("a u? ( b c )")
         assert d == RequiredUse(d)
         assert d == RequiredUse(list(d))
+        assert d == RequiredUse(d[:])
 
         # create from parsing DepSpec strings
         assert d == RequiredUse(["a", "u? ( b c )"])
@@ -339,6 +343,7 @@ class TestRestrict:
         d = Restrict("a u? ( b c )")
         assert d == Restrict(d)
         assert d == Restrict(list(d))
+        assert d == Restrict(d[:])
 
         # create from parsing DepSpec strings
         assert d == Restrict(["a", "u? ( b c )"])
@@ -371,6 +376,7 @@ class TestSrcUri:
         d = SrcUri("a u? ( b c )")
         assert d == SrcUri(d)
         assert d == SrcUri(list(d))
+        assert d == SrcUri(d[:])
 
         # create from parsing DepSpec strings
         assert d == SrcUri(["a", "u? ( b c )"])
