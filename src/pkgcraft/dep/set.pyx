@@ -108,7 +108,7 @@ cdef class DepSet(_IndirectInit):
     def isdisjoint(self, other):
         cdef DepSet depset = None
 
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             depset = other
         else:
             depset = self.__class__(other)
@@ -118,7 +118,7 @@ cdef class DepSet(_IndirectInit):
     def issubset(self, other):
         cdef DepSet depset = None
 
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             depset = other
         else:
             depset = self.__class__(other)
@@ -128,7 +128,7 @@ cdef class DepSet(_IndirectInit):
     def issuperset(self, other):
         cdef DepSet depset = None
 
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             depset = other
         else:
             depset = self.__class__(other)
@@ -136,22 +136,22 @@ cdef class DepSet(_IndirectInit):
         return C.pkgcraft_dep_set_is_subset(depset.ptr, self.ptr)
 
     def __lt__(self, other):
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             return self <= other and self != other
         return NotImplemented
 
     def __le__(self, other):
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             return C.pkgcraft_dep_set_is_subset(self.ptr, (<DepSet>other).ptr)
         return NotImplemented
 
     def __ge__(self, other):
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             return C.pkgcraft_dep_set_is_subset((<DepSet>other).ptr, self.ptr)
         return NotImplemented
 
     def __gt__(self, other):
-        if isinstance(other, DepSet):
+        if isinstance(other, self.__class__):
             return self >= other and self != other
         return NotImplemented
 
@@ -159,7 +159,7 @@ cdef class DepSet(_IndirectInit):
         depset = self.__class__(self)
 
         for obj in others:
-            if isinstance(obj, DepSet):
+            if isinstance(obj, self.__class__):
                 depset |= obj
             else:
                 depset |= self.__class__(obj)
@@ -170,7 +170,7 @@ cdef class DepSet(_IndirectInit):
         depset = self.__class__(self)
 
         for obj in others:
-            if isinstance(obj, DepSet):
+            if isinstance(obj, self.__class__):
                 depset &= obj
             else:
                 depset &= self.__class__(obj)
@@ -181,7 +181,7 @@ cdef class DepSet(_IndirectInit):
         depset = self.__class__(self)
 
         for obj in others:
-            if isinstance(obj, DepSet):
+            if isinstance(obj, self.__class__):
                 depset -= obj
             else:
                 depset -= self.__class__(obj)
@@ -192,7 +192,7 @@ cdef class DepSet(_IndirectInit):
         depset = self.__class__(self)
 
         for obj in others:
-            if isinstance(obj, DepSet):
+            if isinstance(obj, self.__class__):
                 depset ^= obj
             else:
                 depset ^= self.__class__(obj)
