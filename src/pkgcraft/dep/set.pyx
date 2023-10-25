@@ -200,6 +200,66 @@ cdef class DepSet(_IndirectInit):
 
         return depset
 
+    def update(self, *others):
+        for obj in others:
+            if isinstance(obj, self.__class__):
+                self |= obj
+            else:
+                self |= self.__class__(obj)
+
+        return self
+
+    def intersection_update(self, *others):
+        for obj in others:
+            if isinstance(obj, self.__class__):
+                self &= obj
+            else:
+                self &= self.__class__(obj)
+
+        return self
+
+    def difference_update(self, *others):
+        for obj in others:
+            if isinstance(obj, self.__class__):
+                self -= obj
+            else:
+                self -= self.__class__(obj)
+
+        return self
+
+    def symmetric_difference_update(self, *others):
+        for obj in others:
+            if isinstance(obj, self.__class__):
+                self ^= obj
+            else:
+                self ^= self.__class__(obj)
+
+        return self
+
+    def add(self, elem):
+        self.update(elem)
+
+    def remove(self, elem):
+        if elem in self:
+            self.difference_update(elem)
+        else:
+            raise KeyError(elem)
+
+    def discard(self, elem):
+        if elem in self:
+            self.difference_update(elem)
+
+    def pop(self):
+        if self:
+            dep = self[-1]
+            self.difference_update(dep)
+            return dep
+
+        raise KeyError("pop from an empty DepSet")
+
+    def clear(self):
+        self.intersection_update([])
+
     def __contains__(self, obj):
         cdef DepSpec dep = None
 
