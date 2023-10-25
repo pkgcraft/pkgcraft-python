@@ -13,31 +13,68 @@ from .spec cimport DepSpec
 from ..error import PkgcraftError
 
 
-cdef class DepSet(_IndirectInit):
+@cython.final
+cdef class DepSet:
     """Set of dependency objects."""
+
+    def __init__(self, obj="", eapi=None):
+        cdef const C.Eapi *eapi_ptr = NULL
+        cdef C.DepSetKind kind
+
+        if isinstance(self, Dependencies):
+            kind = C.DEP_SET_KIND_DEPENDENCIES
+        elif isinstance(self, License):
+            kind = C.DEP_SET_KIND_LICENSE
+        elif isinstance(self, Properties):
+            kind = C.DEP_SET_KIND_PROPERTIES
+        elif isinstance(self, RequiredUse):
+            kind = C.DEP_SET_KIND_REQUIRED_USE
+        elif isinstance(self, Restrict):
+            kind = C.DEP_SET_KIND_RESTRICT
+        elif isinstance(self, SrcUri):
+            kind = C.DEP_SET_KIND_SRC_URI
+        else:
+            raise TypeError(f'invalid DepSet subclass: {self.__class__.__name__}')
+
+        if isinstance(obj, str):
+            if eapi is not None:
+                eapi_ptr = Eapi._from_obj(eapi).ptr
+            ptr = C.pkgcraft_dep_set_parse(str(obj).encode(), eapi_ptr, kind)
+        elif isinstance(obj, Iterable):
+            ptr = self.from_iter(obj, kind)
+        else:
+            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
+
+        if ptr is NULL:
+            raise PkgcraftError
+
+        DepSet.from_ptr(ptr, self)
 
     @classmethod
     def dep_spec(cls, str s not None, eapi=None):
         """Parse a DepSpec using the related DepSet type."""
         cdef const C.Eapi *eapi_ptr = NULL
+        cdef C.DepSetKind kind
+
         if eapi is not None:
             eapi_ptr = Eapi._from_obj(eapi).ptr
 
         if issubclass(cls, Dependencies):
-            ptr = C.pkgcraft_dep_spec_dependencies(s.encode(), eapi_ptr)
+            kind = C.DEP_SET_KIND_DEPENDENCIES
         elif issubclass(cls, License):
-            ptr = C.pkgcraft_dep_spec_license(s.encode())
+            kind = C.DEP_SET_KIND_LICENSE
         elif issubclass(cls, Properties):
-            ptr = C.pkgcraft_dep_spec_properties(s.encode())
+            kind = C.DEP_SET_KIND_PROPERTIES
         elif issubclass(cls, RequiredUse):
-            ptr = C.pkgcraft_dep_spec_required_use(s.encode(), eapi_ptr)
+            kind = C.DEP_SET_KIND_REQUIRED_USE
         elif issubclass(cls, Restrict):
-            ptr = C.pkgcraft_dep_spec_restrict(s.encode())
+            kind = C.DEP_SET_KIND_RESTRICT
         elif issubclass(cls, SrcUri):
-            ptr = C.pkgcraft_dep_spec_src_uri(s.encode(), eapi_ptr)
+            kind = C.DEP_SET_KIND_SRC_URI
         else:
             raise TypeError(f'invalid DepSet subclass: {cls.__class__.__name__}')
 
+        ptr = C.pkgcraft_dep_spec_parse(s.encode(), eapi_ptr, kind)
         if ptr is NULL:
             raise PkgcraftError
 
@@ -389,120 +426,6 @@ cdef class DepSet(_IndirectInit):
 
     def __dealloc__(self):
         C.pkgcraft_dep_set_free(self.ptr)
-
-
-@cython.final
-cdef class Dependencies(DepSet):
-
-    def __init__(self, obj="", eapi=None):
-        cdef const C.Eapi *eapi_ptr = NULL
-
-        if isinstance(obj, str):
-            if eapi is not None:
-                eapi_ptr = Eapi._from_obj(eapi).ptr
-            ptr = C.pkgcraft_dep_set_dependencies(str(obj).encode(), eapi_ptr)
-        elif isinstance(obj, Iterable):
-            ptr = self.from_iter(obj, C.DEP_SET_KIND_DEPENDENCIES)
-        else:
-            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
-
-        if ptr is NULL:
-            raise PkgcraftError
-
-        DepSet.from_ptr(ptr, self)
-
-
-@cython.final
-cdef class License(DepSet):
-
-    def __init__(self, obj=""):
-        if isinstance(obj, str):
-            ptr = C.pkgcraft_dep_set_license(str(obj).encode())
-        elif isinstance(obj, Iterable):
-            ptr = self.from_iter(obj, C.DEP_SET_KIND_LICENSE)
-        else:
-            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
-
-        if ptr is NULL:
-            raise PkgcraftError
-
-        DepSet.from_ptr(ptr, self)
-
-
-@cython.final
-cdef class Properties(DepSet):
-
-    def __init__(self, obj=""):
-        if isinstance(obj, str):
-            ptr = C.pkgcraft_dep_set_properties(str(obj).encode())
-        elif isinstance(obj, Iterable):
-            ptr = self.from_iter(obj, C.DEP_SET_KIND_PROPERTIES)
-        else:
-            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
-
-        if ptr is NULL:
-            raise PkgcraftError
-
-        DepSet.from_ptr(ptr, self)
-
-
-@cython.final
-cdef class RequiredUse(DepSet):
-
-    def __init__(self, obj="", eapi=None):
-        cdef const C.Eapi *eapi_ptr = NULL
-
-        if isinstance(obj, str):
-            if eapi is not None:
-                eapi_ptr = Eapi._from_obj(eapi).ptr
-            ptr = C.pkgcraft_dep_set_required_use(str(obj).encode(), eapi_ptr)
-        elif isinstance(obj, Iterable):
-            ptr = self.from_iter(obj, C.DEP_SET_KIND_REQUIRED_USE)
-        else:
-            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
-
-        if ptr is NULL:
-            raise PkgcraftError
-
-        DepSet.from_ptr(ptr, self)
-
-
-@cython.final
-cdef class Restrict(DepSet):
-
-    def __init__(self, obj=""):
-        if isinstance(obj, str):
-            ptr = C.pkgcraft_dep_set_restrict(str(obj).encode())
-        elif isinstance(obj, Iterable):
-            ptr = self.from_iter(obj, C.DEP_SET_KIND_RESTRICT)
-        else:
-            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
-
-        if ptr is NULL:
-            raise PkgcraftError
-
-        DepSet.from_ptr(ptr, self)
-
-
-@cython.final
-cdef class SrcUri(DepSet):
-
-    def __init__(self, obj="", eapi=None):
-        cdef const C.Eapi *eapi_ptr = NULL
-
-        if isinstance(obj, str):
-            if eapi is not None:
-                eapi_ptr = Eapi._from_obj(eapi).ptr
-            ptr = C.pkgcraft_dep_set_src_uri(str(obj).encode(), eapi_ptr)
-        elif isinstance(obj, Iterable):
-            ptr = self.from_iter(obj, C.DEP_SET_KIND_SRC_URI)
-        else:
-            raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
-
-        if ptr is NULL:
-            raise PkgcraftError
-
-        DepSet.from_ptr(ptr, self)
 
 
 cdef class _IntoIter:

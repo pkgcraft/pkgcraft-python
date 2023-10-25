@@ -2,7 +2,7 @@ from .. cimport C
 from ..error cimport _IndirectInit
 
 
-cdef class DepSet(_IndirectInit):
+cdef class DepSet:
     cdef C.DepSet *ptr
 
     @staticmethod
