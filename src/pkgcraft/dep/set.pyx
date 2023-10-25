@@ -68,10 +68,11 @@ cdef class DepSet(_IndirectInit):
     cdef C.DepSet *from_iter(self, object obj, C.DepSetKind kind):
         """Create a DepSet pointer from an iterable of DepSpec objects or strings."""
         # convert iterable to DepSpec objects
-        objs = tuple(
-            x if isinstance(x, DepSpec) else self.dep_spec(x)
-            for x in obj
-        )
+        if isinstance(obj, DepSpec):
+            objs = [obj]
+        else:
+            objs = [x if isinstance(x, DepSpec) else self.dep_spec(x) for x in obj]
+
         array = <C.DepSpec **> PyMem_Malloc(len(objs) * sizeof(C.DepSpec *))
         if not array:  # pragma: no cover
             raise MemoryError
