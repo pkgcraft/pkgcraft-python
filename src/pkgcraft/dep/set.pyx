@@ -13,28 +13,14 @@ from .spec cimport DepSpec
 from ..error import PkgcraftError
 
 
-@cython.final
-cdef class DepSet:
+cdef class DepSet(_IndirectInit):
     """Set of dependency objects."""
+
+    kind = None
 
     def __init__(self, obj="", eapi=None):
         cdef const C.Eapi *eapi_ptr = NULL
-        cdef C.DepSetKind kind
-
-        if isinstance(self, Dependencies):
-            kind = C.DEP_SET_KIND_DEPENDENCIES
-        elif isinstance(self, License):
-            kind = C.DEP_SET_KIND_LICENSE
-        elif isinstance(self, Properties):
-            kind = C.DEP_SET_KIND_PROPERTIES
-        elif isinstance(self, RequiredUse):
-            kind = C.DEP_SET_KIND_REQUIRED_USE
-        elif isinstance(self, Restrict):
-            kind = C.DEP_SET_KIND_RESTRICT
-        elif isinstance(self, SrcUri):
-            kind = C.DEP_SET_KIND_SRC_URI
-        else:
-            raise TypeError(f'invalid DepSet subclass: {self.__class__.__name__}')
+        cdef C.DepSetKind kind = self.kind
 
         if isinstance(obj, str):
             if eapi is not None:
@@ -54,25 +40,10 @@ cdef class DepSet:
     def dep_spec(cls, str s not None, eapi=None):
         """Parse a DepSpec using the related DepSet type."""
         cdef const C.Eapi *eapi_ptr = NULL
-        cdef C.DepSetKind kind
+        cdef C.DepSetKind kind = cls.kind
 
         if eapi is not None:
             eapi_ptr = Eapi._from_obj(eapi).ptr
-
-        if issubclass(cls, Dependencies):
-            kind = C.DEP_SET_KIND_DEPENDENCIES
-        elif issubclass(cls, License):
-            kind = C.DEP_SET_KIND_LICENSE
-        elif issubclass(cls, Properties):
-            kind = C.DEP_SET_KIND_PROPERTIES
-        elif issubclass(cls, RequiredUse):
-            kind = C.DEP_SET_KIND_REQUIRED_USE
-        elif issubclass(cls, Restrict):
-            kind = C.DEP_SET_KIND_RESTRICT
-        elif issubclass(cls, SrcUri):
-            kind = C.DEP_SET_KIND_SRC_URI
-        else:
-            raise TypeError(f'invalid DepSet subclass: {cls.__class__.__name__}')
 
         ptr = C.pkgcraft_dep_spec_parse(s.encode(), eapi_ptr, kind)
         if ptr is NULL:
@@ -426,6 +397,42 @@ cdef class DepSet:
 
     def __dealloc__(self):
         C.pkgcraft_dep_set_free(self.ptr)
+
+
+@cython.final
+cdef class Dependencies(DepSet):
+
+    kind = C.DEP_SET_KIND_DEPENDENCIES
+
+
+@cython.final
+cdef class License(DepSet):
+
+    kind = C.DEP_SET_KIND_LICENSE
+
+
+@cython.final
+cdef class Properties(DepSet):
+
+    kind = C.DEP_SET_KIND_PROPERTIES
+
+
+@cython.final
+cdef class RequiredUse(DepSet):
+
+    kind = C.DEP_SET_KIND_REQUIRED_USE
+
+
+@cython.final
+cdef class Restrict(DepSet):
+
+    kind = C.DEP_SET_KIND_RESTRICT
+
+
+@cython.final
+cdef class SrcUri(DepSet):
+
+    kind = C.DEP_SET_KIND_SRC_URI
 
 
 cdef class _IntoIter:
