@@ -4,9 +4,10 @@ from ..error cimport _IndirectInit
 
 cdef class DepSet(_IndirectInit):
     cdef C.DepSet *ptr
+    cdef bint immutable
 
     @staticmethod
-    cdef DepSet from_ptr(C.DepSet *, DepSet obj=*)
+    cdef DepSet from_ptr(C.DepSet *, bint immutable=*, DepSet obj=*)
 
     cdef C.DepSet *from_iter(self, object obj, C.DepSetKind kind)
 

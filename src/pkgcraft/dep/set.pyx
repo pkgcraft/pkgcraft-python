@@ -34,7 +34,7 @@ cdef class DepSet(_IndirectInit):
         if ptr is NULL:
             raise PkgcraftError
 
-        DepSet.from_ptr(ptr, self)
+        DepSet.from_ptr(ptr, False, self)
 
     @classmethod
     def dep_spec(cls, str s not None, eapi=None):
@@ -52,7 +52,7 @@ cdef class DepSet(_IndirectInit):
         return DepSpec.from_ptr(ptr)
 
     @staticmethod
-    cdef DepSet from_ptr(C.DepSet *ptr, DepSet obj=None):
+    cdef DepSet from_ptr(C.DepSet *ptr, bint immutable=False, DepSet obj=None):
         """Create a DepSet from a DepSet pointer."""
         if ptr is not NULL:
             if obj is None:
@@ -70,6 +70,7 @@ cdef class DepSet(_IndirectInit):
                     obj = <SrcUri>SrcUri.__new__(SrcUri)
                 else:  # pragma: no cover
                     raise TypeError(f'unknown DepSet kind: {ptr.set}')
+            obj.immutable = immutable
             obj.ptr = ptr
         return obj
 
@@ -316,6 +317,9 @@ cdef class DepSet(_IndirectInit):
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __iand__(self, other):
+        if self.immutable:
+            raise TypeError("depset is immutable")
+
         op = C.SetOp.SET_OP_AND
         if isinstance(other, self.__class__):
             C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
@@ -324,6 +328,9 @@ cdef class DepSet(_IndirectInit):
             return NotImplemented
 
     def __ior__(self, other):
+        if self.immutable:
+            raise TypeError("depset is immutable")
+
         op = C.SetOp.SET_OP_OR
         if isinstance(other, self.__class__):
             C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
@@ -332,6 +339,9 @@ cdef class DepSet(_IndirectInit):
             return NotImplemented
 
     def __ixor__(self, other):
+        if self.immutable:
+            raise TypeError("depset is immutable")
+
         op = C.SetOp.SET_OP_XOR
         if isinstance(other, self.__class__):
             C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
@@ -340,6 +350,9 @@ cdef class DepSet(_IndirectInit):
             return NotImplemented
 
     def __isub__(self, other):
+        if self.immutable:
+            raise TypeError("depset is immutable")
+
         op = C.SetOp.SET_OP_SUB
         if isinstance(other, self.__class__):
             C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
@@ -350,7 +363,8 @@ cdef class DepSet(_IndirectInit):
     def __and__(self, other):
         op = C.SetOp.SET_OP_AND
         if isinstance(other, self.__class__):
-            return DepSet.from_ptr(C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr))
+            ptr = C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr)
+            return DepSet.from_ptr(ptr)
         else:
             return NotImplemented
 
@@ -362,7 +376,8 @@ cdef class DepSet(_IndirectInit):
     def __or__(self, other):
         op = C.SetOp.SET_OP_OR
         if isinstance(other, self.__class__):
-            return DepSet.from_ptr(C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr))
+            ptr = C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr)
+            return DepSet.from_ptr(ptr)
         else:
             return NotImplemented
 
@@ -374,7 +389,8 @@ cdef class DepSet(_IndirectInit):
     def __xor__(self, other):
         op = C.SetOp.SET_OP_XOR
         if isinstance(other, self.__class__):
-            return DepSet.from_ptr(C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr))
+            ptr = C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr)
+            return DepSet.from_ptr(ptr)
         else:
             return NotImplemented
 
@@ -386,7 +402,8 @@ cdef class DepSet(_IndirectInit):
     def __sub__(self, other):
         op = C.SetOp.SET_OP_SUB
         if isinstance(other, self.__class__):
-            return DepSet.from_ptr(C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr))
+            ptr = C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr)
+            return DepSet.from_ptr(ptr)
         else:
             return NotImplemented
 
