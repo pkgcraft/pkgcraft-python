@@ -1,4 +1,5 @@
 import textwrap
+from operator import iand, ior, isub, ixor
 
 import pytest
 
@@ -125,6 +126,11 @@ class TestEbuildPkg(BasePkgTests):
             assert list(val.iter_flatten()) == [Dep("cat/pkg")]
             assert list(map(str, val.iter_recursive())) == ["cat/pkg"]
             assert list(map(str, val)) == ["cat/pkg"]
+
+            # pkg depset attrs are immutable
+            for op_func in (iand, ior, isub, ixor):
+                with pytest.raises(TypeError):
+                    op_func(val, val)
 
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: "u? ( cat/pkg ) || ( a/b c/d )"})
             val = getattr(pkg, attr)
