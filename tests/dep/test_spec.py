@@ -20,35 +20,35 @@ class TestDepSpec:
 
         # variants
         d = RequiredUse.dep_spec("a")
-        assert isinstance(d, Enabled)
+        assert d.kind == DepSpecKind.Enabled
         assert len(d) == 1
 
         d = RequiredUse.dep_spec("!a")
-        assert isinstance(d, Disabled)
+        assert d.kind == DepSpecKind.Disabled
         assert len(d) == 1
 
         d = RequiredUse.dep_spec("( a b )")
-        assert isinstance(d, AllOf)
+        assert d.kind == DepSpecKind.AllOf
         assert len(d) == 2
 
         d = RequiredUse.dep_spec("|| ( a b )")
-        assert isinstance(d, AnyOf)
+        assert d.kind == DepSpecKind.AnyOf
         assert len(d) == 2
 
         d = RequiredUse.dep_spec("^^ ( a b )")
-        assert isinstance(d, ExactlyOneOf)
+        assert d.kind == DepSpecKind.ExactlyOneOf
         assert len(d) == 2
 
         d = RequiredUse.dep_spec("?? ( a b )")
-        assert isinstance(d, AtMostOneOf)
+        assert d.kind == DepSpecKind.AtMostOneOf
         assert len(d) == 2
 
         d = RequiredUse.dep_spec("u? ( a )")
-        assert isinstance(d, UseEnabled)
+        assert d.kind == DepSpecKind.UseEnabled
         assert len(d) == 1
 
         d = RequiredUse.dep_spec("!u1? ( a u2? ( b ) )")
-        assert isinstance(d, UseDisabled)
+        assert d.kind == DepSpecKind.UseDisabled
         assert len(d) == 2
 
     def test_contains(self):

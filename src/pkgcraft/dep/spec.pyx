@@ -1,10 +1,22 @@
 cimport cython
+from enum import IntFlag
 
 from .. cimport C
 from .._misc cimport CStringArray, cstring_to_str
 from ..error cimport _IndirectInit
 from .set cimport _IntoIter, _IntoIterConditionals, _IntoIterFlatten, _IntoIterRecursive
 from ..types import OrderedFrozenSet
+
+
+class DepSpecKind(IntFlag):
+    Enabled = C.DEP_SPEC_KIND_ENABLED
+    Disabled = C.DEP_SPEC_KIND_DISABLED
+    AllOf = C.DEP_SPEC_KIND_ALL_OF
+    AnyOf = C.DEP_SPEC_KIND_ANY_OF
+    ExactlyOneOf = C.DEP_SPEC_KIND_EXACTLY_ONE_OF
+    AtMostOneOf = C.DEP_SPEC_KIND_AT_MOST_ONE_OF
+    UseEnabled = C.DEP_SPEC_KIND_USE_ENABLED
+    UseDisabled = C.DEP_SPEC_KIND_USE_DISABLED
 
 
 @cython.final
@@ -14,25 +26,8 @@ cdef class DepSpec(_IndirectInit):
     @staticmethod
     cdef DepSpec from_ptr(C.DepSpec *ptr):
         """Create a DepSpec from a pointer and type."""
-        if ptr.kind == C.DEP_SPEC_KIND_ENABLED:
-            obj = <Enabled>Enabled.__new__(Enabled)
-        elif ptr.kind == C.DEP_SPEC_KIND_DISABLED:
-            obj = <Disabled>Disabled.__new__(Disabled)
-        elif ptr.kind == C.DEP_SPEC_KIND_ALL_OF:
-            obj = <AllOf>AllOf.__new__(AllOf)
-        elif ptr.kind == C.DEP_SPEC_KIND_ANY_OF:
-            obj = <AnyOf>AnyOf.__new__(AnyOf)
-        elif ptr.kind == C.DEP_SPEC_KIND_EXACTLY_ONE_OF:
-            obj = <ExactlyOneOf>ExactlyOneOf.__new__(ExactlyOneOf)
-        elif ptr.kind == C.DEP_SPEC_KIND_AT_MOST_ONE_OF:
-            obj = <AtMostOneOf>AtMostOneOf.__new__(AtMostOneOf)
-        elif ptr.kind == C.DEP_SPEC_KIND_USE_ENABLED:
-            obj = <UseEnabled>UseEnabled.__new__(UseEnabled)
-        elif ptr.kind == C.DEP_SPEC_KIND_USE_DISABLED:
-            obj = <UseDisabled>UseDisabled.__new__(UseDisabled)
-        else:  # pragma: no cover
-            raise TypeError(f'unknown DepSpec kind: {ptr.kind}')
-
+        obj = <DepSpec>DepSpec.__new__(DepSpec)
+        obj.kind = DepSpecKind(ptr.kind)
         obj.ptr = ptr
         return obj
 
@@ -113,8 +108,7 @@ cdef class DepSpec(_IndirectInit):
 
     def __repr__(self):
         addr = <size_t>&self.ptr
-        name = self.__class__.__name__
-        return f"<{name} '{self}' at 0x{addr:0x}>"
+        return f"<{self.kind.name} '{self}' at 0x{addr:0x}>"
 
     def __dealloc__(self):
         C.pkgcraft_dep_spec_free(self.ptr)
