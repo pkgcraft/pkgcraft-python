@@ -134,12 +134,13 @@ cdef class RepoSet:
         return C.pkgcraft_repo_set_hash(self.ptr)
 
     def __str__(self):
-        return str(self.repos)
+        s = ", ".join(map(repr, self.repos))
+        return f"{{{s}}}"
 
     def __repr__(self):
         addr = <size_t>&self.ptr
         name = self.__class__.__name__
-        return f"<{name} '{self}' at 0x{addr:0x}>"
+        return f"<{name} {self} at 0x{addr:0x}>"
 
     def __iand__(self, other):
         if self.immutable:
