@@ -63,7 +63,7 @@ class TestDepSpec:
         assert len(d) == 2
         assert str(d) == "!u1? ( a u2? ( b ) )"
 
-    def test_cmp(self, ebuild_repo):
+    def test_cmp(self):
         for d1, op, d2 in (
             ("a/b", "<", "b/a"),
             ("a/b", "<=", "b/a"),
@@ -89,7 +89,7 @@ class TestDepSpec:
                 with pytest.raises(TypeError):
                     op_func(obj, None)
 
-    def test_eq_and_hash(self, ebuild_repo):
+    def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing
         for d1, d2 in (
             # same
