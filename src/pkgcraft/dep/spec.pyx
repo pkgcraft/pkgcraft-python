@@ -108,7 +108,8 @@ cdef class DepSpec(_IndirectInit):
 
     def __repr__(self):
         addr = <size_t>&self.ptr
-        return f"<{self.kind.name} '{self}' at 0x{addr:0x}>"
+        name = self.__class__.__name__
+        return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __dealloc__(self):
         C.pkgcraft_dep_spec_free(self.ptr)

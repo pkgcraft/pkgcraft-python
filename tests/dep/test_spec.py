@@ -3,6 +3,8 @@ import pytest
 from pkgcraft.dep import *
 from pkgcraft.error import PkgcraftError
 
+from ..misc import OperatorMap
+
 
 class TestDepSpec:
     def test_parse(self):
@@ -22,34 +24,98 @@ class TestDepSpec:
         d = RequiredUse.dep_spec("a")
         assert d.kind == DepSpecKind.Enabled
         assert len(d) == 1
+        assert str(d) == "a"
+        assert repr(d).startswith("<DepSpec 'a' at 0x")
 
         d = RequiredUse.dep_spec("!a")
         assert d.kind == DepSpecKind.Disabled
         assert len(d) == 1
+        assert str(d) == "!a"
+        assert repr(d).startswith("<DepSpec '!a' at 0x")
 
         d = RequiredUse.dep_spec("( a b )")
         assert d.kind == DepSpecKind.AllOf
         assert len(d) == 2
+        assert str(d) == "( a b )"
 
         d = RequiredUse.dep_spec("|| ( a b )")
         assert d.kind == DepSpecKind.AnyOf
         assert len(d) == 2
+        assert str(d) == "|| ( a b )"
 
         d = RequiredUse.dep_spec("^^ ( a b )")
         assert d.kind == DepSpecKind.ExactlyOneOf
         assert len(d) == 2
+        assert str(d) == "^^ ( a b )"
 
         d = RequiredUse.dep_spec("?? ( a b )")
         assert d.kind == DepSpecKind.AtMostOneOf
         assert len(d) == 2
+        assert str(d) == "?? ( a b )"
 
         d = RequiredUse.dep_spec("u? ( a )")
         assert d.kind == DepSpecKind.UseEnabled
         assert len(d) == 1
+        assert str(d) == "u? ( a )"
 
         d = RequiredUse.dep_spec("!u1? ( a u2? ( b ) )")
         assert d.kind == DepSpecKind.UseDisabled
         assert len(d) == 2
+        assert str(d) == "!u1? ( a u2? ( b ) )"
+
+    def test_cmp(self, ebuild_repo):
+        for d1, op, d2 in (
+            ("a/b", "<", "b/a"),
+            ("a/b", "<=", "b/a"),
+            ("b/a", "<=", "b/a"),
+            ("b/a", "==", "b/a"),
+            ("b/a", "!=", "a/b"),
+            ("b/a", ">=", "a/b"),
+            ("b/a", ">", "a/b"),
+        ):
+            op_func = OperatorMap[op]
+            d1 = Dependencies.dep_spec(d1)
+            d2 = Dependencies.dep_spec(d2)
+            assert op_func(d1, d2), f"failed {d1} {op} {d2}"
+
+        # verify incompatible type comparisons
+        obj = RequiredUse.dep_spec("a")
+        for op, op_func in OperatorMap.items():
+            if op == "==":
+                assert not op_func(obj, None)
+            elif op == "!=":
+                assert op_func(obj, None)
+            else:
+                with pytest.raises(TypeError):
+                    op_func(obj, None)
+
+    def test_eq_and_hash(self, ebuild_repo):
+        # ordering that doesn't matter for equivalence and hashing
+        for d1, d2 in (
+            # same
+            ("a", "a"),
+            ("u? ( a )", "u? ( a )"),
+            ("u? ( a || ( a b ) )", "u? ( a || ( a b ) )"),
+            # different order, but equivalent
+            ("( a b )", "( b a )"),
+            ("u? ( a b )", "u? ( b a )"),
+            ("!u? ( a b )", "!u? ( b a )"),
+        ):
+            d1 = RequiredUse.dep_spec(d1)
+            d2 = RequiredUse.dep_spec(d2)
+            assert d1 == d2
+            assert len({d1, d2}) == 1
+
+        # ordering that matters for equivalence and hashing
+        for d1, d2 in (
+            ("|| ( a b )", "|| ( b a )"),
+            ("?? ( a b )", "?? ( b a )"),
+            ("^^ ( a b )", "^^ ( b a )"),
+        ):
+            d1 = RequiredUse.dep_spec(d1)
+            d2 = RequiredUse.dep_spec(d2)
+            assert d1 != d2
+            assert len({d1, d2}) == 2
 
     def test_contains(self):
         # simple DepSpecs don't contain themselves

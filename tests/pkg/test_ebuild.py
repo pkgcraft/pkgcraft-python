@@ -163,11 +163,11 @@ class TestEbuildPkg(BasePkgTests):
     def test_ownership(self, ebuild_repo):
         """Verify owned objects are used and persist when parents are dropped."""
         pkg = ebuild_repo.create_pkg("cat/pkg-1", depend="a/b")
-        deps = iter(pkg.depend)
         depend = pkg.depend
+        dep = pkg.depend[0]
         del pkg
-        assert str(next(deps)) == "a/b"
         assert str(depend) == "a/b"
+        assert str(dep) == "a/b"
 
     def test_license(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
