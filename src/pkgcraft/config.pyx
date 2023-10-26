@@ -98,7 +98,7 @@ cdef class Repos:
         """Return the set of all repos."""
         if self._all is None:
             ptr = C.pkgcraft_config_repos_set(self.config_ptr, C.REPOS_ALL)
-            self._all = RepoSet.from_ptr(ptr)
+            self._all = RepoSet.from_ptr(ptr, True)
         return self._all
 
     @property
@@ -106,7 +106,7 @@ cdef class Repos:
         """Return the set of all ebuild repos."""
         if self._ebuild is None:
             ptr = C.pkgcraft_config_repos_set(self.config_ptr, C.REPOS_EBUILD)
-            self._ebuild = RepoSet.from_ptr(ptr)
+            self._ebuild = RepoSet.from_ptr(ptr, True)
         return self._ebuild
 
     def __eq__(self, other):
