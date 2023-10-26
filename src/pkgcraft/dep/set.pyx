@@ -318,7 +318,7 @@ cdef class DepSet(_IndirectInit):
 
     def __iand__(self, other):
         if self.immutable:
-            raise TypeError("depset is immutable")
+            raise TypeError("object is immutable")
 
         op = C.SetOp.SET_OP_AND
         if isinstance(other, self.__class__):
@@ -329,7 +329,7 @@ cdef class DepSet(_IndirectInit):
 
     def __ior__(self, other):
         if self.immutable:
-            raise TypeError("depset is immutable")
+            raise TypeError("object is immutable")
 
         op = C.SetOp.SET_OP_OR
         if isinstance(other, self.__class__):
@@ -340,7 +340,7 @@ cdef class DepSet(_IndirectInit):
 
     def __ixor__(self, other):
         if self.immutable:
-            raise TypeError("depset is immutable")
+            raise TypeError("object is immutable")
 
         op = C.SetOp.SET_OP_XOR
         if isinstance(other, self.__class__):
@@ -351,7 +351,7 @@ cdef class DepSet(_IndirectInit):
 
     def __isub__(self, other):
         if self.immutable:
-            raise TypeError("depset is immutable")
+            raise TypeError("object is immutable")
 
         op = C.SetOp.SET_OP_SUB
         if isinstance(other, self.__class__):
