@@ -23,9 +23,9 @@ def test_globals():
 
 class TestEapi:
     def test_has(self):
-        assert not EAPI_LATEST_OFFICIAL.has("repo_ids")
-        assert EAPI_LATEST.has("repo_ids")
-        assert not EAPI_LATEST.has("nonexistent_feature")
+        assert not EAPI_LATEST_OFFICIAL.has("RepoIds")
+        assert EAPI_LATEST.has("RepoIds")
+        assert not EAPI_LATEST.has("Nonexistent")
 
         # invalid feature param type
         for obj in (object(), None):

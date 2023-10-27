@@ -117,14 +117,17 @@ cdef class Eapi(_IndirectInit):
     def has(self, str s not None):
         """Check if an EAPI has a given feature.
 
+        See https://docs.rs/pkgcraft/latest/pkgcraft/eapi/enum.Feature.html for
+        the full list of supported EAPI features.
+
         >>> from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 
         existing feature
-        >>> EAPI_LATEST_OFFICIAL.has('usev_two_args')
+        >>> EAPI_LATEST_OFFICIAL.has('UsevTwoArgs')
         True
 
         feature not existing in official EAPIs
-        >>> EAPI_LATEST_OFFICIAL.has('repo_ids')
+        >>> EAPI_LATEST_OFFICIAL.has('RepoIds')
         False
 
         nonexistent feature
