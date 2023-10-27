@@ -42,6 +42,9 @@ cdef class DepSet:
     @classmethod
     def dep_spec(cls, str s not None, eapi=None):
         """Parse a DepSpec using the related DepSet type."""
+        if cls._kind is None:
+            raise TypeError("DepSet base class cannot create DepSpec objects")
+
         cdef const C.Eapi *eapi_ptr = NULL
         cdef C.DepSetKind kind = cls._kind
 
