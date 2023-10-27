@@ -4,7 +4,7 @@ import pickle
 import pytest
 
 from pkgcraft.dep import Operator, Version
-from pkgcraft.error import InvalidVersion
+from pkgcraft.error import InvalidVersion, PkgcraftError
 
 from ..misc import TEST_DATA, OperatorIterMap, OperatorMap
 
@@ -63,15 +63,28 @@ class TestVersion:
         assert str(v) == ">=1_beta2-r3"
         assert repr(v).startswith("<Version '>=1_beta2-r3' at 0x")
 
-    def test_invalid(self):
+        # invalid
         for s in ("-1", "1a1", "a"):
             with pytest.raises(InvalidVersion, match=f"invalid version: {s}"):
                 Version(s)
 
-    def test_invalid_arg_type(self):
+        # invalid args
         for obj in (object(), None):
             with pytest.raises(TypeError):
                 Version(obj)
+
+    def test_valid(self):
+        assert Version.valid("1-r0")
+
+        # invalid
+        for s in ("-1", "1a1"):
+            with pytest.raises(PkgcraftError, match=f"invalid version: {s}"):
+                Version.valid(s)
+
+        # invalid args
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                Version.valid(obj)
 
     def test_cmp(self):
         for s in TEST_DATA.toml("version.toml")["compares"]:

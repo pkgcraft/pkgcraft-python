@@ -2,7 +2,7 @@ from enum import IntEnum
 
 from .. cimport C
 from .._misc cimport cstring_to_str
-from ..error import InvalidVersion
+from ..error import InvalidVersion, PkgcraftError
 
 
 class Operator(IntEnum):
@@ -56,6 +56,18 @@ cdef class Version:
         self.ptr = C.pkgcraft_version_new(s.encode())
         if self.ptr is NULL:
             raise InvalidVersion
+
+    @staticmethod
+    def valid(str s not None):
+        """Determine if a string is a valid package version.
+
+        >>> from pkgcraft.dep import Version
+        >>> Version.valid('1-r2')
+        True
+        """
+        if not C.pkgcraft_version_valid(s.encode()):
+            raise PkgcraftError
+        return True
 
     @staticmethod
     cdef Version from_ptr(C.Version *ptr):

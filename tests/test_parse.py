@@ -22,15 +22,6 @@ def test_package():
             parse.package(s)
 
 
-def test_version():
-    assert parse.version("1-r0")
-
-    # invalid
-    for s in ("-1", "1a1"):
-        with pytest.raises(PkgcraftError, match=f"invalid version: {s}"):
-            parse.version(s)
-
-
 def test_repo():
     assert parse.repo("repo")
 

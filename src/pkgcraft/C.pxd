@@ -1016,14 +1016,6 @@ cdef extern from "pkgcraft.h":
     # The argument should point to a UTF-8 string.
     const char *pkgcraft_parse_repo(const char *s)
 
-    # Parse a package version.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The argument should point to a UTF-8 string.
-    const char *pkgcraft_parse_version(const char *s)
-
     # Compare two packages returning -1, 0, or 1 if the first package is less than, equal to, or
     # greater than the second package, respectively.
     #
@@ -1806,3 +1798,11 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The version argument should be a non-null Version pointer.
     char *pkgcraft_version_str(Version *v)
+
+    # Confirm a string is a valid package version.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should point to a UTF-8 string.
+    const char *pkgcraft_version_valid(const char *s)

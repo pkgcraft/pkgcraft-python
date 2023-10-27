@@ -26,18 +26,6 @@ def package(str s not None):
     return True
 
 
-def version(str s not None):
-    """Parse a version string.
-
-    >>> from pkgcraft import parse
-    >>> parse.version('1-r2')
-    True
-    """
-    if not C.pkgcraft_parse_version(s.encode()):
-        raise PkgcraftError
-    return True
-
-
 def repo(str s not None):
     """Parse a repo string.
 
