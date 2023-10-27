@@ -13,12 +13,15 @@ from .spec cimport DepSpec
 from ..error import PkgcraftError
 
 
-cdef class DepSet(_IndirectInit):
+cdef class DepSet:
     """Set of dependency objects."""
 
     _kind = None
 
     def __init__(self, obj="", eapi=None):
+        if self._kind is None:
+            raise TypeError("DepSet base class objects cannot be directly created")
+
         cdef const C.Eapi *eapi_ptr = NULL
         cdef C.DepSetKind kind = self._kind
 
