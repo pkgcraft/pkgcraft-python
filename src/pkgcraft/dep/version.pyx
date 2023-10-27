@@ -2,7 +2,7 @@ from enum import IntEnum
 
 from .. cimport C
 from .._misc cimport cstring_to_str
-from ..error import InvalidVersion, PkgcraftError
+from ..error import InvalidVersion
 
 
 class Operator(IntEnum):
@@ -66,7 +66,7 @@ cdef class Version:
         True
         """
         if not C.pkgcraft_version_valid(s.encode()):
-            raise PkgcraftError
+            raise InvalidVersion
         return True
 
     @staticmethod

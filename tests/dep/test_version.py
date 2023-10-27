@@ -4,7 +4,7 @@ import pickle
 import pytest
 
 from pkgcraft.dep import Operator, Version
-from pkgcraft.error import InvalidVersion, PkgcraftError
+from pkgcraft.error import InvalidVersion
 
 from ..misc import TEST_DATA, OperatorIterMap, OperatorMap
 
@@ -78,7 +78,7 @@ class TestVersion:
 
         # invalid
         for s in ("-1", "1a1"):
-            with pytest.raises(PkgcraftError, match=f"invalid version: {s}"):
+            with pytest.raises(InvalidVersion, match=f"invalid version: {s}"):
                 Version.valid(s)
 
         # invalid args

@@ -6,7 +6,7 @@ from ..restrict cimport Restrict
 from . cimport Dep
 from .version cimport Version
 
-from ..error import InvalidCpv, PkgcraftError
+from ..error import InvalidCpv
 
 
 @cython.final
@@ -45,7 +45,7 @@ cdef class Cpv:
         True
         """
         if not C.pkgcraft_cpv_valid(s.encode()):
-            raise PkgcraftError
+            raise InvalidCpv
         return True
 
     @staticmethod

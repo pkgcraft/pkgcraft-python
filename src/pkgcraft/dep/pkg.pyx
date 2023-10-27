@@ -11,7 +11,7 @@ from . cimport Cpv
 from .version cimport Version
 
 from ..eapi import EAPI_LATEST
-from ..error import InvalidDep, PkgcraftError
+from ..error import InvalidDep
 
 
 # TODO: merge with Dep.cached function when cython bug is fixed
@@ -130,7 +130,7 @@ cdef class Dep:
             eapi_ptr = Eapi._from_obj(eapi).ptr
 
         if C.pkgcraft_dep_valid(s.encode(), eapi_ptr) is NULL:
-            raise PkgcraftError
+            raise InvalidDep
         return True
 
     @property

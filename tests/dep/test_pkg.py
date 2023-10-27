@@ -90,7 +90,7 @@ class TestDep:
         with pytest.raises(TypeError):
             Dep("cat/pkg", object())
 
-    def test_valid():
+    def test_valid(self):
         assert Dep.valid("cat/pkg")
 
         # extended EAPI default allows repo deps
@@ -98,12 +98,12 @@ class TestDep:
 
         # explicitly specifying an official EAPI fails
         for eapi in ("8", EAPIS["8"]):
-            with pytest.raises(PkgcraftError):
+            with pytest.raises(InvalidDep):
                 Dep.valid("=cat/pkg-1-r2:3/4[a,b,c]::repo", eapi)
 
         # invalid
         for s in ("cat", "=cat/pkg"):
-            with pytest.raises(PkgcraftError, match=f"invalid dep: {s}"):
+            with pytest.raises(InvalidDep, match=f"invalid dep: {s}"):
                 Dep.valid(s)
 
         # unknown EAPI
@@ -125,7 +125,7 @@ class TestDep:
         assert dep.matches(r)
         assert not dep.matches(~r)
 
-    def test_valid(self):
+    def test_toml_valid(self):
         attrs = []
         for attr, val in inspect.getmembers(Dep):
             if inspect.isgetsetdescriptor(val):
@@ -166,7 +166,7 @@ class TestDep:
                     with pytest.raises(InvalidDep, match=f"invalid dep: {re.escape(s)}"):
                         Dep(s, eapi)
 
-    def test_invalid(self):
+    def test_toml_invalid(self):
         for s in TEST_DATA.toml("dep.toml")["invalid"]:
             for eapi in EAPIS.values():
                 with pytest.raises(InvalidDep, match=f"invalid dep: {re.escape(s)}"):
