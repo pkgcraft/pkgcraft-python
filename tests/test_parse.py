@@ -29,12 +29,3 @@ def test_repo():
     for s in ("-repo", "repo-1"):
         with pytest.raises(PkgcraftError, match=f"invalid repo name: {s}"):
             parse.repo(s)
-
-
-def test_cpv():
-    assert parse.cpv("cat/pkg-1")
-
-    # invalid
-    for s in ("cat", "cat/pkg", "=cat/pkg-1"):
-        with pytest.raises(PkgcraftError, match=f"invalid cpv: {s}"):
-            parse.cpv(s)

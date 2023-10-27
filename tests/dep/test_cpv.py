@@ -3,7 +3,7 @@ import pickle
 import pytest
 
 from pkgcraft.dep import Cpv, Dep, Version
-from pkgcraft.error import InvalidCpv
+from pkgcraft.error import InvalidCpv, PkgcraftError
 from pkgcraft.restrict import Restrict
 
 from ..misc import TEST_DATA
@@ -24,6 +24,19 @@ class TestCpv:
         assert a.cpn == "cat/pkg"
         assert str(a) == "cat/pkg-1-r2"
         assert repr(a).startswith("<Cpv 'cat/pkg-1-r2' at 0x")
+
+    def test_valid(self):
+        assert Cpv.valid("cat/pkg-1")
+
+        # invalid
+        for s in ("cat", "cat/pkg", "=cat/pkg-1"):
+            with pytest.raises(PkgcraftError, match=f"invalid cpv: {s}"):
+                Cpv.valid(s)
+
+        # invalid args
+        for obj in [object(), None]:
+            with pytest.raises(TypeError):
+                Cpv.valid(obj)
 
     def test_matches(self):
         a = Cpv("cat/pkg-1")

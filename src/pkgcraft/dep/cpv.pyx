@@ -6,7 +6,7 @@ from ..restrict cimport Restrict
 from . cimport Dep
 from .version cimport Version
 
-from ..error import InvalidCpv
+from ..error import InvalidCpv, PkgcraftError
 
 
 @cython.final
@@ -35,6 +35,18 @@ cdef class Cpv:
         self.ptr = C.pkgcraft_cpv_new(s.encode())
         if self.ptr is NULL:
             raise InvalidCpv
+
+    @staticmethod
+    def valid(str s not None):
+        """Determine if a string is a valid package Cpv.
+
+        >>> from pkgcraft.dep import Cpv
+        >>> Cpv.valid('cat/pkg-1')
+        True
+        """
+        if not C.pkgcraft_cpv_valid(s.encode()):
+            raise PkgcraftError
+        return True
 
     @staticmethod
     cdef Cpv from_ptr(C.Cpv *ptr):

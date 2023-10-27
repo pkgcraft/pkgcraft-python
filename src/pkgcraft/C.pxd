@@ -397,6 +397,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Cpv pointer.
     char *pkgcraft_cpv_str(Cpv *c)
 
+    # Determine if a string is a valid package Cpv.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should point to a UTF-8 string.
+    const char *pkgcraft_cpv_valid(const char *s)
+
     # Get the version of a Cpv object.
     #
     # # Safety
@@ -874,7 +882,7 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Dep pointer.
     char **pkgcraft_dep_use_deps(Dep *d, uintptr_t *len)
 
-    # Confirm a string is a valid package dependency.
+    # Determine if a string is a valid package dependency.
     #
     # Returns NULL on error.
     #
@@ -991,14 +999,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument should point to a UTF-8 string.
     const char *pkgcraft_parse_category(const char *s)
-
-    # Parse a package CPV.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The argument should point to a UTF-8 string.
-    const char *pkgcraft_parse_cpv(const char *s)
 
     # Parse a package name.
     #
@@ -1799,7 +1799,7 @@ cdef extern from "pkgcraft.h":
     # The version argument should be a non-null Version pointer.
     char *pkgcraft_version_str(Version *v)
 
-    # Confirm a string is a valid package version.
+    # Determine if a string is a valid package version.
     #
     # Returns NULL on error.
     #

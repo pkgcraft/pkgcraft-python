@@ -36,15 +36,3 @@ def repo(str s not None):
     if not C.pkgcraft_parse_repo(s.encode()):
         raise PkgcraftError
     return True
-
-
-def cpv(str s not None):
-    """Parse a package CPV string.
-
-    >>> from pkgcraft import parse
-    >>> parse.cpv('cat/pkg-1')
-    True
-    """
-    if not C.pkgcraft_parse_cpv(s.encode()):
-        raise PkgcraftError
-    return True
