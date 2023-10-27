@@ -78,8 +78,9 @@ class TestVersion:
 
         # invalid
         for s in ("-1", "1a1"):
+            assert not Version.valid(s)
             with pytest.raises(InvalidVersion, match=f"invalid version: {s}"):
-                Version.valid(s)
+                Version.valid(s, raised=True)
 
         # invalid args
         for obj in (object(), None):

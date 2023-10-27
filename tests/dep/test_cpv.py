@@ -30,8 +30,9 @@ class TestCpv:
 
         # invalid
         for s in ("cat", "cat/pkg", "=cat/pkg-1"):
+            assert not Cpv.valid(s)
             with pytest.raises(InvalidCpv, match=f"invalid cpv: {s}"):
-                Cpv.valid(s)
+                Cpv.valid(s, raised=True)
 
         # invalid args
         for obj in [object(), None]:

@@ -118,7 +118,7 @@ cdef class Dep:
         return _cached_dep(cls, s, eapi)
 
     @staticmethod
-    def valid(str s not None, eapi=None):
+    def valid(str s not None, eapi=None, raised=False):
         """Determine if a string is a valid package dependency.
 
         >>> from pkgcraft.dep import Dep
@@ -129,9 +129,10 @@ cdef class Dep:
         if eapi is not None:
             eapi_ptr = Eapi._from_obj(eapi).ptr
 
-        if C.pkgcraft_dep_valid(s.encode(), eapi_ptr) is NULL:
+        valid = C.pkgcraft_dep_valid(s.encode(), eapi_ptr) is not NULL
+        if not valid and raised:
             raise InvalidDep
-        return True
+        return valid
 
     @property
     def blocker(self):

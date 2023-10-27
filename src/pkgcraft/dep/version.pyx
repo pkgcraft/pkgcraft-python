@@ -58,16 +58,17 @@ cdef class Version:
             raise InvalidVersion
 
     @staticmethod
-    def valid(str s not None):
+    def valid(str s not None, raised=False):
         """Determine if a string is a valid package version.
 
         >>> from pkgcraft.dep import Version
         >>> Version.valid('1-r2')
         True
         """
-        if not C.pkgcraft_version_valid(s.encode()):
+        valid = C.pkgcraft_version_valid(s.encode()) is not NULL
+        if not valid and raised:
             raise InvalidVersion
-        return True
+        return valid
 
     @staticmethod
     cdef Version from_ptr(C.Version *ptr):

@@ -9,8 +9,9 @@ def test_category():
 
     # invalid
     for s in ("cat egory", "-cat", "cat@"):
+        assert not parse.category(s)
         with pytest.raises(PkgcraftError, match=f"invalid category name: {s}"):
-            parse.category(s)
+            parse.category(s, raised=True)
 
 
 def test_package():
@@ -18,8 +19,9 @@ def test_package():
 
     # invalid
     for s in ("-pkg", "pkg-1"):
+        assert not parse.package(s)
         with pytest.raises(PkgcraftError, match=f"invalid package name: {s}"):
-            parse.package(s)
+            parse.package(s, raised=True)
 
 
 def test_repo():
@@ -27,5 +29,6 @@ def test_repo():
 
     # invalid
     for s in ("-repo", "repo-1"):
+        assert not parse.repo(s)
         with pytest.raises(PkgcraftError, match=f"invalid repo name: {s}"):
-            parse.repo(s)
+            parse.repo(s, raised=True)

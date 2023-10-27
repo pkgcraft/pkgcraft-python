@@ -6,7 +6,7 @@ import re
 import pytest
 
 from pkgcraft.dep import Blocker, Cpn, Cpv, Dep, Operator, SlotOperator, Version
-from pkgcraft.eapi import EAPIS, eapi_range
+from pkgcraft.eapi import EAPI_LATEST, EAPI_LATEST_OFFICIAL, EAPIS, eapi_range
 from pkgcraft.error import InvalidDep
 from pkgcraft.restrict import Restrict
 
@@ -77,10 +77,10 @@ class TestDep:
         assert str(dep) == "!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo"
         assert repr(dep).startswith("<Dep '!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
 
-        # explicitly specifying an official EAPI fails
-        for eapi in ("8", EAPIS["8"]):
+        # failures due to EAPI
+        for eapi in (str(EAPI_LATEST_OFFICIAL), EAPI_LATEST_OFFICIAL):
             with pytest.raises(InvalidDep):
-                Dep("cat/pkg::repo", eapi)
+                assert not Dep("cat/pkg::repo", eapi)
 
         # unknown EAPI
         with pytest.raises(ValueError, match="unknown EAPI"):
@@ -96,15 +96,18 @@ class TestDep:
         # extended EAPI default allows repo deps
         assert Dep.valid("=cat/pkg-1-r2:3/4[a,b,c]::repo")
 
-        # explicitly specifying an official EAPI fails
-        for eapi in ("8", EAPIS["8"]):
+        # explicitly specifying an EAPI
+        assert Dep.valid("=cat/pkg-1-r2:3/4[a,b,c]::repo", EAPI_LATEST)
+        for eapi in (str(EAPI_LATEST_OFFICIAL), EAPI_LATEST_OFFICIAL):
+            assert not Dep.valid("=cat/pkg-1-r2:3/4[a,b,c]::repo", eapi)
             with pytest.raises(InvalidDep):
-                Dep.valid("=cat/pkg-1-r2:3/4[a,b,c]::repo", eapi)
+                Dep.valid("=cat/pkg-1-r2:3/4[a,b,c]::repo", eapi, raised=True)
 
         # invalid
         for s in ("cat", "=cat/pkg"):
+            assert not Dep.valid(s)
             with pytest.raises(InvalidDep, match=f"invalid dep: {s}"):
-                Dep.valid(s)
+                Dep.valid(s, raised=True)
 
         # unknown EAPI
         with pytest.raises(ValueError, match="unknown EAPI"):

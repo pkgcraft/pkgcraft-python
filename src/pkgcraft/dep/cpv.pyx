@@ -37,16 +37,17 @@ cdef class Cpv:
             raise InvalidCpv
 
     @staticmethod
-    def valid(str s not None):
+    def valid(str s not None, raised=False):
         """Determine if a string is a valid package Cpv.
 
         >>> from pkgcraft.dep import Cpv
         >>> Cpv.valid('cat/pkg-1')
         True
         """
-        if not C.pkgcraft_cpv_valid(s.encode()):
+        valid = C.pkgcraft_cpv_valid(s.encode()) is not NULL
+        if not valid and raised:
             raise InvalidCpv
-        return True
+        return valid
 
     @staticmethod
     cdef Cpv from_ptr(C.Cpv *ptr):

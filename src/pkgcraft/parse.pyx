@@ -2,22 +2,25 @@ from . cimport C
 from .error import PkgcraftError
 
 
-def category(str s not None):
+def category(str s not None, raised=False):
     """Determine if a string is a valid category name."""
-    if not C.pkgcraft_parse_category(s.encode()):
+    valid = C.pkgcraft_parse_category(s.encode()) is not NULL
+    if not valid and raised:
         raise PkgcraftError
-    return True
+    return valid
 
 
-def package(str s not None):
+def package(str s not None, raised=False):
     """Determine if a string is a valid package name."""
-    if not C.pkgcraft_parse_package(s.encode()):
+    valid = C.pkgcraft_parse_package(s.encode()) is not NULL
+    if not valid and raised:
         raise PkgcraftError
-    return True
+    return valid
 
 
-def repo(str s not None):
+def repo(str s not None, raised=False):
     """Determine if a string is a valid repo name."""
-    if not C.pkgcraft_parse_repo(s.encode()):
+    valid = C.pkgcraft_parse_repo(s.encode()) is not NULL
+    if not valid and raised:
         raise PkgcraftError
-    return True
+    return valid
