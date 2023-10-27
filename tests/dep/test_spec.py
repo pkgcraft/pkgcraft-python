@@ -1,6 +1,7 @@
 import pytest
 
 from pkgcraft.dep import *
+from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 from pkgcraft.error import PkgcraftError
 
 from ..misc import OperatorMap
@@ -26,6 +27,9 @@ class TestDepSpec:
         assert len(d) == 1
         assert str(d) == "a"
         assert repr(d).startswith("<DepSpec 'a' at 0x")
+        # EAPI specific
+        assert d == RequiredUse.dep_spec("a", eapi=str(EAPI_LATEST_OFFICIAL))
+        assert d == RequiredUse.dep_spec("a", eapi=EAPI_LATEST_OFFICIAL)
 
         d = RequiredUse.dep_spec("!a")
         assert d.kind == DepSpecKind.Disabled

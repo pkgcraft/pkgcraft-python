@@ -6,6 +6,8 @@ from pkgcraft.eapi import *
 
 from .misc import OperatorMap
 
+EAPI_PREV_OFFICIAL = list(EAPIS_OFFICIAL.values())[-2]
+
 
 def test_globals():
     assert len(EAPIS) > len(EAPIS_OFFICIAL)
@@ -37,18 +39,19 @@ class TestEapi:
         assert "NONEXISTENT" not in EAPI_LATEST.metadata_keys
 
     def test_methods(self):
-        assert str(EAPI8) == "8"
-        assert repr(EAPI8).startswith("<Eapi '8' at 0x")
+        s = str(EAPI_LATEST_OFFICIAL)
+        assert s
+        assert repr(EAPI_LATEST_OFFICIAL).startswith(f"<Eapi '{s}' at 0x")
 
     def test_cmp(self):
-        assert EAPI7 < EAPI8
-        assert EAPI8 <= EAPI8
-        assert EAPI8 <= EAPI8
-        assert EAPI8 == EAPI8
-        assert EAPI7 != EAPI8
-        assert EAPI8 >= EAPI7
-        assert EAPI8 >= EAPI7
-        assert EAPI8 > EAPI7
+        assert EAPI_PREV_OFFICIAL < EAPI_LATEST_OFFICIAL
+        assert EAPI_PREV_OFFICIAL <= EAPI_LATEST_OFFICIAL
+        assert EAPI_LATEST_OFFICIAL <= EAPI_LATEST_OFFICIAL
+        assert EAPI_LATEST_OFFICIAL == EAPI_LATEST_OFFICIAL
+        assert EAPI_PREV_OFFICIAL != EAPI_LATEST_OFFICIAL
+        assert EAPI_LATEST_OFFICIAL >= EAPI_LATEST_OFFICIAL
+        assert EAPI_LATEST_OFFICIAL >= EAPI_PREV_OFFICIAL
+        assert EAPI_LATEST_OFFICIAL > EAPI_PREV_OFFICIAL
 
         # verify incompatible type comparisons
         obj = EAPI_LATEST
@@ -62,14 +65,14 @@ class TestEapi:
                     op_func(obj, None)
 
     def test_hash(self):
-        s = {EAPI7, EAPI8}
+        s = {EAPI_PREV_OFFICIAL, EAPI_LATEST_OFFICIAL}
         assert len(s) == 2
-        s = {EAPI8, EAPI8}
+        s = {EAPI_LATEST_OFFICIAL, EAPI_LATEST_OFFICIAL}
         assert len(s) == 1
 
     def test_from_obj(self):
-        assert Eapi.from_obj(EAPI8) is EAPI8
-        assert Eapi.from_obj("8") is EAPI8
+        assert Eapi.from_obj(EAPI_LATEST_OFFICIAL) is EAPI_LATEST_OFFICIAL
+        assert Eapi.from_obj(str(EAPI_LATEST_OFFICIAL)) is EAPI_LATEST_OFFICIAL
 
         # unknown EAPI
         with pytest.raises(ValueError):
@@ -80,6 +83,5 @@ class TestEapi:
             assert Eapi.from_obj(object())
 
     def test_eapi_pickle(self):
-        e1 = EAPI8
-        e2 = pickle.loads(pickle.dumps(e1))
-        assert e1 is e2
+        eapi = pickle.loads(pickle.dumps(EAPI_LATEST_OFFICIAL))
+        assert eapi is EAPI_LATEST_OFFICIAL

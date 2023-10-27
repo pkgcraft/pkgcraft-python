@@ -1,12 +1,16 @@
 import pytest
 
 from pkgcraft.dep import *
-from pkgcraft.eapi import EAPI8
+from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 from pkgcraft.error import PkgcraftError
 
 
 class TestDependencies:
     def test_parse(self):
+        # direct creation only available via subclasses
+        with pytest.raises(TypeError):
+            DepSet()
+
         # empty
         d1 = Dependencies()
         assert not d1
@@ -20,7 +24,7 @@ class TestDependencies:
         assert len(d1) == 1
         assert str(d1) == "a/b"
         assert repr(d1).startswith("<Dependencies 'a/b' at 0x")
-        assert d1 == Dependencies("a/b", EAPI8)
+        assert d1 == Dependencies("a/b", EAPI_LATEST_OFFICIAL)
 
         # multiple
         d1 = Dependencies("a/b || ( c/d e/f )")
@@ -31,7 +35,7 @@ class TestDependencies:
 
         # invalid
         with pytest.raises(PkgcraftError):
-            Dependencies("a/b::repo", EAPI8)
+            Dependencies("a/b::repo", EAPI_LATEST_OFFICIAL)
 
         # invalid type
         with pytest.raises(TypeError):
@@ -337,7 +341,7 @@ class TestRequiredUse:
         d1 = RequiredUse("use")
         assert str(d1) == "use"
         assert repr(d1).startswith("<RequiredUse 'use' at 0x")
-        d2 = RequiredUse("use", EAPI8)
+        d2 = RequiredUse("use", EAPI_LATEST_OFFICIAL)
         assert d1 == d2
 
         with pytest.raises(PkgcraftError):
@@ -401,7 +405,7 @@ class TestSrcUri:
         d1 = SrcUri("a")
         assert str(d1) == "a"
         assert repr(d1).startswith("<SrcUri 'a' at 0x")
-        d2 = SrcUri("a", EAPI8)
+        d2 = SrcUri("a", EAPI_LATEST_OFFICIAL)
         assert d1 == d2
 
         with pytest.raises(PkgcraftError):
