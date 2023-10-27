@@ -11,7 +11,7 @@ EAPI_PREV_OFFICIAL = list(EAPIS_OFFICIAL.values())[-2]
 
 def test_globals():
     assert len(EAPIS) > len(EAPIS_OFFICIAL)
-    # verify objects are shared between EAPIS_OFFICIAL and EAPIS
+    # verify objects are shared between EAPI globals
     for id, eapi in EAPIS_OFFICIAL.items():
         assert EAPIS[id] is eapi
         # official EAPIs have their own globals

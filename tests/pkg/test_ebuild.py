@@ -4,7 +4,7 @@ from operator import iand, ior, isub, ixor
 import pytest
 
 from pkgcraft.dep import Dep
-from pkgcraft.eapi import EAPI_LATEST, EAPIS
+from pkgcraft.eapi import EAPI_LATEST_OFFICIAL, EAPIS_OFFICIAL
 from pkgcraft.error import PkgcraftError
 
 from ..misc import TEST_DATA
@@ -28,10 +28,11 @@ def pkg(repo):
 
 class TestEbuildPkg(BasePkgTests):
     def test_eapi(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", eapi="7")
-        assert pkg.eapi is EAPIS["7"]
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", eapi="8")
-        assert pkg.eapi is EAPIS["8"]
+        EAPI_PREV_OFFICIAL = list(EAPIS_OFFICIAL.values())[-2]
+        pkg = ebuild_repo.create_pkg("cat/pkg-1", eapi=EAPI_PREV_OFFICIAL)
+        assert pkg.eapi is EAPI_PREV_OFFICIAL
+        pkg = ebuild_repo.create_pkg("cat/pkg-1", eapi=EAPI_LATEST_OFFICIAL)
+        assert pkg.eapi is EAPI_LATEST_OFFICIAL
 
     def test_path(self, ebuild_repo):
         path = ebuild_repo.create_ebuild()
@@ -111,7 +112,7 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.dependencies("bdepend") == pkg.dependencies("BDEPEND")
 
     def test_dep_attrs(self, ebuild_repo):
-        for attr in map(lambda x: x.lower(), EAPI_LATEST.dep_keys):
+        for attr in map(lambda x: x.lower(), EAPI_LATEST_OFFICIAL.dep_keys):
             # undefined
             pkg = ebuild_repo.create_pkg("cat/pkg-1")
             assert getattr(pkg, attr) is None
