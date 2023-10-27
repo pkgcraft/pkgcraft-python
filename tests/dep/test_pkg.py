@@ -90,6 +90,30 @@ class TestDep:
         with pytest.raises(TypeError):
             Dep("cat/pkg", object())
 
+    def test_valid():
+        assert Dep.valid("cat/pkg")
+
+        # extended EAPI default allows repo deps
+        assert Dep.valid("=cat/pkg-1-r2:3/4[a,b,c]::repo")
+
+        # explicitly specifying an official EAPI fails
+        for eapi in ("8", EAPIS["8"]):
+            with pytest.raises(PkgcraftError):
+                Dep.valid("=cat/pkg-1-r2:3/4[a,b,c]::repo", eapi)
+
+        # invalid
+        for s in ("cat", "=cat/pkg"):
+            with pytest.raises(PkgcraftError, match=f"invalid dep: {s}"):
+                Dep.valid(s)
+
+        # unknown EAPI
+        with pytest.raises(ValueError, match="unknown EAPI"):
+            Dep.valid("cat/pkg", "nonexistent")
+
+        # invalid EAPI type
+        with pytest.raises(TypeError):
+            Dep.valid("cat/pkg", object())
+
     def test_matches(self):
         dep = Dep("=cat/pkg-1")
         r = Restrict(dep)

@@ -1,22 +1,5 @@
 from . cimport C
-from .eapi cimport Eapi
 from .error import PkgcraftError
-
-
-def dep(str s not None, eapi=None):
-    """Parse a package dependency string.
-
-    >>> from pkgcraft import parse
-    >>> parse.dep('=cat/pkg-1')
-    True
-    """
-    cdef const C.Eapi *eapi_ptr = NULL
-    if eapi is not None:
-        eapi_ptr = Eapi._from_obj(eapi).ptr
-
-    if C.pkgcraft_parse_dep(s.encode(), eapi_ptr) is NULL:
-        raise PkgcraftError
-    return True
 
 
 def category(str s not None):

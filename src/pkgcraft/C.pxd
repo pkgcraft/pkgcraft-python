@@ -874,6 +874,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Dep pointer.
     char **pkgcraft_dep_use_deps(Dep *d, uintptr_t *len)
 
+    # Confirm a string is a valid package dependency.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The eapi argument may be NULL to use the default EAPI.
+    const char *pkgcraft_dep_valid(const char *s, const Eapi *eapi)
+
     # Get the version of a package dependency.
     # For example, the package dependency "=cat/pkg-1-r2" returns "1-r2".
     #
@@ -991,14 +999,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument should point to a UTF-8 string.
     const char *pkgcraft_parse_cpv(const char *s)
-
-    # Parse a package dependency.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The eapi argument may be NULL to use the default EAPI.
-    const char *pkgcraft_parse_dep(const char *s, const Eapi *eapi)
 
     # Parse a package name.
     #

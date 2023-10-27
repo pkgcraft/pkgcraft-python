@@ -11,7 +11,7 @@ from . cimport Cpv
 from .version cimport Version
 
 from ..eapi import EAPI_LATEST
-from ..error import InvalidDep
+from ..error import InvalidDep, PkgcraftError
 
 
 # TODO: merge with Dep.cached function when cython bug is fixed
@@ -116,6 +116,22 @@ cdef class Dep:
     def cached(cls, str s not None, eapi=None):
         """Return a cached Dep if one exists, otherwise return a new instance."""
         return _cached_dep(cls, s, eapi)
+
+    @staticmethod
+    def valid(str s not None, eapi=None):
+        """Determine if a string is a valid package dependency.
+
+        >>> from pkgcraft.dep import Dep
+        >>> Dep.valid('=cat/pkg-1')
+        True
+        """
+        cdef const C.Eapi *eapi_ptr = NULL
+        if eapi is not None:
+            eapi_ptr = Eapi._from_obj(eapi).ptr
+
+        if C.pkgcraft_dep_valid(s.encode(), eapi_ptr) is NULL:
+            raise PkgcraftError
+        return True
 
     @property
     def blocker(self):
