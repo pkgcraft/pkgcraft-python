@@ -15,7 +15,7 @@ from ..error import InvalidRepo
 cdef class Repo:
     """Package repo."""
 
-    format = None
+    _format = None
 
     def __init__(self, path not None, id=None, int priority=0):
         """Create a Repo from a path."""
@@ -23,9 +23,9 @@ cdef class Repo:
         id = str(id) if id is not None else path
 
         # When called using a subclass try to load that type, otherwise try types in order.
-        if self.format is not None:
+        if self._format is not None:
             ptr = C.pkgcraft_repo_from_format(
-                self.format, id.encode(), priority, path.encode(), True)
+                self._format, id.encode(), priority, path.encode(), True)
         else:
             ptr = C.pkgcraft_repo_from_path(id.encode(), priority, path.encode(), True)
 

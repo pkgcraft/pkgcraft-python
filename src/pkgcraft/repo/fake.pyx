@@ -12,7 +12,7 @@ from ..error import InvalidRepo, PkgcraftError
 cdef class FakeRepo(Repo):
     """Fake package repo."""
 
-    format = C.RepoFormat.REPO_FORMAT_FAKE
+    _format = C.RepoFormat.REPO_FORMAT_FAKE
 
     def __init__(self, cpvs_or_path=(), id=None, int priority=0):
         if isinstance(cpvs_or_path, (str, os.PathLike)):

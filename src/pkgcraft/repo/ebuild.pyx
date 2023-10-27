@@ -12,7 +12,7 @@ from ..types import OrderedFrozenSet
 cdef class EbuildRepo(Repo):
     """Ebuild package repo."""
 
-    format = C.RepoFormat.REPO_FORMAT_EBUILD
+    _format = C.RepoFormat.REPO_FORMAT_EBUILD
 
     @property
     def eapi(self):

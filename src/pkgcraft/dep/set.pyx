@@ -16,11 +16,11 @@ from ..error import PkgcraftError
 cdef class DepSet(_IndirectInit):
     """Set of dependency objects."""
 
-    kind = None
+    _kind = None
 
     def __init__(self, obj="", eapi=None):
         cdef const C.Eapi *eapi_ptr = NULL
-        cdef C.DepSetKind kind = self.kind
+        cdef C.DepSetKind kind = self._kind
 
         if isinstance(obj, str):
             if eapi is not None:
@@ -40,7 +40,7 @@ cdef class DepSet(_IndirectInit):
     def dep_spec(cls, str s not None, eapi=None):
         """Parse a DepSpec using the related DepSet type."""
         cdef const C.Eapi *eapi_ptr = NULL
-        cdef C.DepSetKind kind = cls.kind
+        cdef C.DepSetKind kind = cls._kind
 
         if eapi is not None:
             eapi_ptr = Eapi._from_obj(eapi).ptr
@@ -419,37 +419,37 @@ cdef class DepSet(_IndirectInit):
 @cython.final
 cdef class Dependencies(DepSet):
 
-    kind = C.DEP_SET_KIND_DEPENDENCIES
+    _kind = C.DEP_SET_KIND_DEPENDENCIES
 
 
 @cython.final
 cdef class License(DepSet):
 
-    kind = C.DEP_SET_KIND_LICENSE
+    _kind = C.DEP_SET_KIND_LICENSE
 
 
 @cython.final
 cdef class Properties(DepSet):
 
-    kind = C.DEP_SET_KIND_PROPERTIES
+    _kind = C.DEP_SET_KIND_PROPERTIES
 
 
 @cython.final
 cdef class RequiredUse(DepSet):
 
-    kind = C.DEP_SET_KIND_REQUIRED_USE
+    _kind = C.DEP_SET_KIND_REQUIRED_USE
 
 
 @cython.final
 cdef class Restrict(DepSet):
 
-    kind = C.DEP_SET_KIND_RESTRICT
+    _kind = C.DEP_SET_KIND_RESTRICT
 
 
 @cython.final
 cdef class SrcUri(DepSet):
 
-    kind = C.DEP_SET_KIND_SRC_URI
+    _kind = C.DEP_SET_KIND_SRC_URI
 
 
 cdef class _IntoIter:
