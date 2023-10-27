@@ -14,6 +14,8 @@ def test_globals():
     # verify objects are shared between EAPIS_OFFICIAL and EAPIS
     for id, eapi in EAPIS_OFFICIAL.items():
         assert EAPIS[id] is eapi
+        # official EAPIs have their own globals
+        globals()[f"EAPI{id}"] is eapi
     assert EAPIS[str(EAPI_LATEST_OFFICIAL)] is EAPI_LATEST_OFFICIAL
     assert EAPIS[str(EAPI_LATEST)] is EAPI_LATEST
     assert EAPI_LATEST_OFFICIAL is not EAPI_LATEST
