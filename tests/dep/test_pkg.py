@@ -114,6 +114,11 @@ class TestDep:
         with pytest.raises(TypeError):
             Dep.valid("cat/pkg", object())
 
+        # invalid args
+        for obj in [object(), None]:
+            with pytest.raises(TypeError):
+                Dep.valid(obj)
+
     def test_matches(self):
         dep = Dep("=cat/pkg-1")
         r = Restrict(dep)
