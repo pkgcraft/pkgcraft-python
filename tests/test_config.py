@@ -13,6 +13,7 @@ class TestConfig:
         assert not config.repos
         r = config.add_repo(path)
         assert config.repos[path] == r
+        assert config.repos[0] == r
         assert config.repos.get(path) == r
         assert path in config.repos
         assert config.repos.get("nonexistent") is None
@@ -30,11 +31,13 @@ class TestConfig:
         config = Config()
         r = config.add_repo(path)
         assert r == config.repos[str(path)]
+        assert r == config.repos[0]
 
         # custom
         config = Config()
         r = config.add_repo(path, "fake")
         assert r == config.repos["fake"]
+        assert r == config.repos[0]
 
         # existing
         with pytest.raises(ConfigError, match="existing repos: fake"):
@@ -54,6 +57,7 @@ class TestConfig:
         f.touch()
         r = config.add_repo(f)
         assert r == config.repos[str(f)]
+        assert r == config.repos[0]
         assert len(r) == 0
 
         # cpvs

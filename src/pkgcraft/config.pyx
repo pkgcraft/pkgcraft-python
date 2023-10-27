@@ -116,6 +116,8 @@ cdef class Repos:
         return obj in self._repos
 
     def __getitem__(self, key):
+        if isinstance(key, int):
+            return list(self._repos.values())[key]
         return self._repos[key]
 
     def get(self, key, default=None):
