@@ -26,7 +26,7 @@ class TestDepSpec:
         d = self.req_use("a")
         assert len(d) == 1
         assert str(d) == "a"
-        assert repr(d).startswith("<DepSpec 'a' at 0x")
+        assert repr(d).startswith("<DepSpec Enabled 'a' at 0x")
         # EAPI specific
         assert d == self.req_use("a", eapi=str(EAPI_LATEST_OFFICIAL))
         assert d == self.req_use("a", eapi=EAPI_LATEST_OFFICIAL)
@@ -34,31 +34,37 @@ class TestDepSpec:
         d = self.req_use("!a")
         assert len(d) == 1
         assert str(d) == "!a"
-        assert repr(d).startswith("<DepSpec '!a' at 0x")
+        assert repr(d).startswith("<DepSpec Disabled '!a' at 0x")
 
         d = self.req_use("( a b )")
         assert len(d) == 2
         assert str(d) == "( a b )"
+        assert repr(d).startswith("<DepSpec AllOf '( a b )' at 0x")
 
         d = self.req_use("|| ( a b )")
         assert len(d) == 2
         assert str(d) == "|| ( a b )"
+        assert repr(d).startswith("<DepSpec AnyOf '|| ( a b )' at 0x")
 
         d = self.req_use("^^ ( a b )")
         assert len(d) == 2
         assert str(d) == "^^ ( a b )"
+        assert repr(d).startswith("<DepSpec ExactlyOneOf '^^ ( a b )' at 0x")
 
         d = self.req_use("?? ( a b )")
         assert len(d) == 2
         assert str(d) == "?? ( a b )"
+        assert repr(d).startswith("<DepSpec AtMostOneOf '?? ( a b )' at 0x")
 
         d = self.req_use("u? ( a )")
         assert len(d) == 1
         assert str(d) == "u? ( a )"
+        assert repr(d).startswith("<DepSpec UseEnabled 'u? ( a )' at 0x")
 
         d = self.req_use("!u1? ( a u2? ( b ) )")
         assert len(d) == 2
         assert str(d) == "!u1? ( a u2? ( b ) )"
+        assert repr(d).startswith("<DepSpec UseDisabled '!u1? ( a u2? ( b ) )' at 0x")
 
     def test_cmp(self):
         for (set1, set2) in (

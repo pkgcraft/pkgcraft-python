@@ -139,7 +139,8 @@ cdef class DepSpec:
     def __repr__(self):
         addr = <size_t>&self.ptr
         name = self.__class__.__name__
-        return f"<{name} '{self}' at 0x{addr:0x}>"
+        kind = self.kind.name
+        return f"<{name} {kind} '{self}' at 0x{addr:0x}>"
 
     def __dealloc__(self):
         C.pkgcraft_dep_spec_free(self.ptr)
@@ -420,7 +421,8 @@ cdef class DepSet:
     def __repr__(self):
         addr = <size_t>&self.ptr
         name = self.__class__.__name__
-        return f"<{name} '{self}' at 0x{addr:0x}>"
+        set = self.set.name
+        return f"<{name} {set} '{self}' at 0x{addr:0x}>"
 
     def __iand__(self, other):
         if self.immutable:

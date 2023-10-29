@@ -18,14 +18,14 @@ class TestDependencies:
         assert not d1
         assert len(d1) == 0
         assert str(d1) == ""
-        assert repr(d1).startswith("<DepSet '' at 0x")
+        assert repr(d1).startswith("<DepSet Dependencies '' at 0x")
 
         # single
         d1 = self.depset("a/b")
         assert d1
         assert len(d1) == 1
         assert str(d1) == "a/b"
-        assert repr(d1).startswith("<DepSet 'a/b' at 0x")
+        assert repr(d1).startswith("<DepSet Dependencies 'a/b' at 0x")
         assert d1 == self.depset("a/b", EAPI_LATEST_OFFICIAL)
 
         # multiple
@@ -33,7 +33,7 @@ class TestDependencies:
         assert d1
         assert len(d1) == 2
         assert str(d1) == "a/b || ( c/d e/f )"
-        assert repr(d1).startswith("<DepSet 'a/b || ( c/d e/f )' at 0x")
+        assert repr(d1).startswith("<DepSet Dependencies 'a/b || ( c/d e/f )' at 0x")
 
         # invalid
         with pytest.raises(PkgcraftError):
@@ -286,7 +286,7 @@ class TestLicense:
     def test_parse(self):
         d1 = self.depset("a")
         assert str(d1) == "a"
-        assert repr(d1).startswith("<DepSet 'a' at 0x")
+        assert repr(d1).startswith("<DepSet License 'a' at 0x")
 
         with pytest.raises(PkgcraftError):
             self.depset("!a")
@@ -321,7 +321,7 @@ class TestProperties:
     def test_parse(self):
         d1 = self.depset("a")
         assert str(d1) == "a"
-        assert repr(d1).startswith("<DepSet 'a' at 0x")
+        assert repr(d1).startswith("<DepSet Properties 'a' at 0x")
 
         with pytest.raises(PkgcraftError):
             self.depset("!a")
@@ -356,7 +356,7 @@ class TestRequiredUse:
     def test_parse(self):
         d1 = self.depset("use")
         assert str(d1) == "use"
-        assert repr(d1).startswith("<DepSet 'use' at 0x")
+        assert repr(d1).startswith("<DepSet RequiredUse 'use' at 0x")
         d2 = self.depset("use", EAPI_LATEST_OFFICIAL)
         assert d1 == d2
 
@@ -393,7 +393,7 @@ class TestRestrict:
     def test_parse(self):
         d1 = self.depset("a")
         assert str(d1) == "a"
-        assert repr(d1).startswith("<DepSet 'a' at 0x")
+        assert repr(d1).startswith("<DepSet Restrict 'a' at 0x")
 
         with pytest.raises(PkgcraftError):
             self.depset("!a")
@@ -428,7 +428,7 @@ class TestSrcUri:
     def test_parse(self):
         d1 = self.depset("a")
         assert str(d1) == "a"
-        assert repr(d1).startswith("<DepSet 'a' at 0x")
+        assert repr(d1).startswith("<DepSet SrcUri 'a' at 0x")
         d2 = self.depset("a", EAPI_LATEST_OFFICIAL)
         assert d1 == d2
 
