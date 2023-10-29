@@ -68,19 +68,23 @@ class TestDepSpec:
         assert str(d) == "!u1? ( a u2? ( b ) )"
 
     def test_cmp(self):
-        for d1, op, d2 in (
-            ("a/b", "<", "b/a"),
-            ("a/b", "<=", "b/a"),
-            ("b/a", "<=", "b/a"),
-            ("b/a", "==", "b/a"),
-            ("b/a", "!=", "a/b"),
-            ("b/a", ">=", "a/b"),
-            ("b/a", ">", "a/b"),
+        for (cls1, cls2) in (
+            (RequiredUse, RequiredUse),
+            (RequiredUse, License),
         ):
-            op_func = OperatorMap[op]
-            d1 = Dependencies.dep_spec(d1)
-            d2 = Dependencies.dep_spec(d2)
-            assert op_func(d1, d2), f"failed {d1} {op} {d2}"
+            for d1, op, d2 in (
+                ("a", "<", "b"),
+                ("a", "<=", "b"),
+                ("b", "<=", "b"),
+                ("b", "==", "b"),
+                ("b", "!=", "a"),
+                ("b", ">=", "b"),
+                ("b", ">", "a"),
+            ):
+                op_func = OperatorMap[op]
+                d1 = cls1.dep_spec(d1)
+                d2 = cls2.dep_spec(d2)
+                assert op_func(d1, d2), f"failed {d1} {op} {d2}"
 
         # verify incompatible type comparisons
         obj = RequiredUse.dep_spec("a")
