@@ -32,22 +32,24 @@ cdef class Repo:
         if ptr is NULL:
             raise InvalidRepo
 
-        Repo.from_ptr(ptr, False, self)
+        self.ref = False
+        self.ptr = ptr
 
     @staticmethod
-    cdef Repo from_ptr(C.Repo *ptr, bint ref, Repo obj=None):
+    cdef Repo from_ptr(C.Repo *ptr, bint ref):
         """Create a Repo from a pointer."""
-        if obj is None:
-            format = C.pkgcraft_repo_format(ptr)
-            if format == C.RepoFormat.REPO_FORMAT_EBUILD:
-                obj = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
-            elif format == C.RepoFormat.REPO_FORMAT_FAKE:
-                obj = <FakeRepo>FakeRepo.__new__(FakeRepo)
-            else:  # pragma: no cover
-                raise NotImplementedError(f'unsupported repo format: {format}')
+        cdef Repo obj
 
-        obj.ptr = ptr
+        format = C.pkgcraft_repo_format(ptr)
+        if format == C.RepoFormat.REPO_FORMAT_EBUILD:
+            obj = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
+        elif format == C.RepoFormat.REPO_FORMAT_FAKE:
+            obj = <FakeRepo>FakeRepo.__new__(FakeRepo)
+        else:  # pragma: no cover
+            raise NotImplementedError(f'unsupported repo format: {format}')
+
         obj.ref = ref
+        obj.ptr = ptr
         return obj
 
     @property

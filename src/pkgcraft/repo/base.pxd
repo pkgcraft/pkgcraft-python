@@ -13,7 +13,7 @@ cdef class Repo:
     cdef int _hash
 
     @staticmethod
-    cdef Repo from_ptr(C.Repo *, bint, Repo obj=*)
+    cdef Repo from_ptr(C.Repo *, bint)
 
 
 cdef class _IterCpv:
