@@ -194,7 +194,7 @@ cdef class Dep:
         """
         if self._version is SENTINEL:
             ptr = C.pkgcraft_dep_version(self.ptr)
-            self._version = Version.from_ptr(ptr)
+            self._version = Version.from_ptr(ptr) if ptr is not NULL else None
         return self._version
 
     @property
