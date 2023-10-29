@@ -1,5 +1,5 @@
 from collections.abc import Iterable
-from enum import IntFlag
+from enum import IntEnum
 
 cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
@@ -14,7 +14,7 @@ from .pkg cimport Dep
 from ..error import PkgcraftError
 
 
-class DepSetKind(IntFlag):
+class DepSetKind(IntEnum):
     Dependencies = C.DEP_SET_KIND_DEPENDENCIES
     License = C.DEP_SET_KIND_LICENSE
     Properties = C.DEP_SET_KIND_PROPERTIES
@@ -23,7 +23,7 @@ class DepSetKind(IntFlag):
     SrcUri = C.DEP_SET_KIND_SRC_URI
 
 
-class DepSpecKind(IntFlag):
+class DepSpecKind(IntEnum):
     Enabled = C.DEP_SPEC_KIND_ENABLED
     Disabled = C.DEP_SPEC_KIND_DISABLED
     AllOf = C.DEP_SPEC_KIND_ALL_OF
@@ -40,7 +40,7 @@ cdef class DepSpec:
 
     def __init__(self, str s not None, /, eapi=None, set=DepSetKind.Dependencies):
         cdef const C.Eapi *eapi_ptr = NULL
-        cdef C.DepSetKind kind = set
+        cdef C.DepSetKind kind = DepSetKind(set)
 
         if eapi is not None:
             eapi_ptr = Eapi._from_obj(eapi).ptr
@@ -153,7 +153,7 @@ cdef class DepSet:
 
     def __init__(self, obj="", /, eapi=None, set=DepSetKind.Dependencies):
         cdef const C.Eapi *eapi_ptr = NULL
-        cdef C.DepSetKind kind = set
+        cdef C.DepSetKind kind = DepSetKind(set)
 
         if isinstance(obj, str):
             if eapi is not None:
