@@ -49,13 +49,14 @@ cdef class DepSpec:
         if ptr is NULL:
             raise PkgcraftError
 
-        DepSpec.from_ptr(ptr, self)
+        self.set = DepSetKind(ptr.set)
+        self.kind = DepSpecKind(ptr.kind)
+        self.ptr = ptr
 
     @staticmethod
-    cdef DepSpec from_ptr(C.DepSpec *ptr, DepSpec obj=None):
+    cdef DepSpec from_ptr(C.DepSpec *ptr):
         """Create a DepSpec from a pointer and type."""
-        if obj is None:
-            obj = <DepSpec>DepSpec.__new__(DepSpec)
+        obj = <DepSpec>DepSpec.__new__(DepSpec)
         obj.set = DepSetKind(ptr.set)
         obj.kind = DepSpecKind(ptr.kind)
         obj.ptr = ptr
@@ -168,17 +169,16 @@ cdef class DepSet:
         if ptr is NULL:
             raise PkgcraftError
 
-        DepSet.from_ptr(ptr, False, self)
+        self.set = DepSetKind(ptr.set)
+        self.ptr = ptr
 
     @staticmethod
-    cdef DepSet from_ptr(C.DepSet *ptr, bint immutable=False, DepSet obj=None):
+    cdef DepSet from_ptr(C.DepSet *ptr, bint immutable=False):
         """Create a DepSet from a DepSet pointer."""
-        if ptr is not NULL:
-            if obj is None:
-                obj = <DepSet>DepSet.__new__(DepSet)
-            obj.immutable = immutable
-            obj.set = DepSetKind(ptr.set)
-            obj.ptr = ptr
+        obj = <DepSet>DepSet.__new__(DepSet)
+        obj.immutable = immutable
+        obj.set = DepSetKind(ptr.set)
+        obj.ptr = ptr
         return obj
 
     cdef C.DepSet *from_iter(self, object obj, C.DepSetKind kind):

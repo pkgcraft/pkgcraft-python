@@ -115,11 +115,11 @@ class TestEbuildPkg(BasePkgTests):
         for attr in map(lambda x: x.lower(), EAPI_LATEST_OFFICIAL.dep_keys):
             # undefined
             pkg = ebuild_repo.create_pkg("cat/pkg-1")
-            assert getattr(pkg, attr) is None
+            assert not getattr(pkg, attr)
 
             # explicitly defined empty
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: ""})
-            assert getattr(pkg, attr) is None
+            assert not getattr(pkg, attr)
 
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: "cat/pkg"})
             val = getattr(pkg, attr)
@@ -172,7 +172,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_license(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert pkg.license is None
+        assert not pkg.license
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", license="BSD")
         assert str(pkg.license) == "BSD"
@@ -186,7 +186,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_properties(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert pkg.properties is None
+        assert not pkg.properties
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", properties="live")
         assert str(pkg.properties) == "live"
@@ -200,7 +200,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_required_use(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert pkg.required_use is None
+        assert not pkg.required_use
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", required_use="use")
         assert str(pkg.required_use) == "use"
@@ -214,7 +214,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_restrict(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert pkg.restrict is None
+        assert not pkg.restrict
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", restrict="fetch")
         assert str(pkg.restrict) == "fetch"
@@ -228,7 +228,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_src_uri(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert pkg.src_uri is None
+        assert not pkg.src_uri
 
         pkg = ebuild_repo.create_pkg("cat/pkg-1", src_uri="https://a.com/b.tar.gz")
         assert str(pkg.src_uri) == "https://a.com/b.tar.gz"

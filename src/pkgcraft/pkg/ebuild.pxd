@@ -1,4 +1,5 @@
 from .. cimport C
+from ..dep cimport DepSet
 from ..error cimport _IndirectInit
 from . cimport Pkg
 
@@ -8,16 +9,16 @@ cdef class EbuildPkg(Pkg):
     cdef str _description
     cdef str _slot
     cdef str _subslot
-    cdef object _depend
-    cdef object _bdepend
-    cdef object _idepend
-    cdef object _pdepend
-    cdef object _rdepend
-    cdef object _license
-    cdef object _properties
-    cdef object _required_use
-    cdef object _restrict
-    cdef object _src_uri
+    cdef DepSet _depend
+    cdef DepSet _bdepend
+    cdef DepSet _idepend
+    cdef DepSet _pdepend
+    cdef DepSet _rdepend
+    cdef DepSet _license
+    cdef DepSet _properties
+    cdef DepSet _required_use
+    cdef DepSet _restrict
+    cdef DepSet _src_uri
     cdef object _defined_phases
     cdef object _homepage
     cdef object _keywords

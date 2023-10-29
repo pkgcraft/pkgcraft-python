@@ -8,7 +8,7 @@ cdef class DepSpec:
     cdef object set
 
     @staticmethod
-    cdef DepSpec from_ptr(C.DepSpec *, DepSpec obj=*)
+    cdef DepSpec from_ptr(C.DepSpec *)
 
 
 cdef class DepSet:
@@ -17,7 +17,7 @@ cdef class DepSet:
     cdef object set
 
     @staticmethod
-    cdef DepSet from_ptr(C.DepSet *, bint immutable=*, DepSet obj=*)
+    cdef DepSet from_ptr(C.DepSet *, bint immutable=*)
 
     cdef C.DepSet *from_iter(self, object obj, C.DepSetKind kind)
 

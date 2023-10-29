@@ -1041,8 +1041,6 @@ cdef extern from "pkgcraft.h":
 
     # Return a package's BDEPEND.
     #
-    # Returns NULL on nonexistence.
-    #
     # # Safety
     # The argument must be a non-null Pkg pointer.
     DepSet *pkgcraft_pkg_ebuild_bdepend(Pkg *p)
@@ -1054,8 +1052,6 @@ cdef extern from "pkgcraft.h":
     char **pkgcraft_pkg_ebuild_defined_phases(Pkg *p, uintptr_t *len)
 
     # Return a package's DEPEND.
-    #
-    # Returns NULL on nonexistence.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
@@ -1091,8 +1087,6 @@ cdef extern from "pkgcraft.h":
 
     # Return a package's IDEPEND.
     #
-    # Returns NULL on nonexistence.
-    #
     # # Safety
     # The argument must be a non-null Pkg pointer.
     DepSet *pkgcraft_pkg_ebuild_idepend(Pkg *p)
@@ -1122,8 +1116,6 @@ cdef extern from "pkgcraft.h":
     char **pkgcraft_pkg_ebuild_keywords(Pkg *p, uintptr_t *len)
 
     # Return a package's LICENSE.
-    #
-    # Returns NULL on nonexistence.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
@@ -1158,15 +1150,11 @@ cdef extern from "pkgcraft.h":
 
     # Return a package's PDEPEND.
     #
-    # Returns NULL on nonexistence.
-    #
     # # Safety
     # The argument must be a non-null Pkg pointer.
     DepSet *pkgcraft_pkg_ebuild_pdepend(Pkg *p)
 
     # Return a package's PROPERTIES.
-    #
-    # Returns NULL on nonexistence.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
@@ -1174,23 +1162,17 @@ cdef extern from "pkgcraft.h":
 
     # Return a package's RDEPEND.
     #
-    # Returns NULL on nonexistence.
-    #
     # # Safety
     # The argument must be a non-null Pkg pointer.
     DepSet *pkgcraft_pkg_ebuild_rdepend(Pkg *p)
 
     # Return a package's REQUIRED_USE.
     #
-    # Returns NULL on nonexistence.
-    #
     # # Safety
     # The argument must be a non-null Pkg pointer.
     DepSet *pkgcraft_pkg_ebuild_required_use(Pkg *p)
 
     # Return a package's RESTRICT.
-    #
-    # Returns NULL on nonexistence.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
@@ -1203,8 +1185,6 @@ cdef extern from "pkgcraft.h":
     char *pkgcraft_pkg_ebuild_slot(Pkg *p)
 
     # Return a package's SRC_URI.
-    #
-    # Returns NULL on nonexistence.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.

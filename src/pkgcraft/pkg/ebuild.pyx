@@ -17,16 +17,6 @@ cdef class EbuildPkg(Pkg):
     """Generic ebuild package."""
 
     def __cinit__(self):
-        self._depend = SENTINEL
-        self._bdepend = SENTINEL
-        self._idepend = SENTINEL
-        self._pdepend = SENTINEL
-        self._rdepend = SENTINEL
-        self._license = SENTINEL
-        self._properties = SENTINEL
-        self._required_use = SENTINEL
-        self._restrict = SENTINEL
-        self._src_uri = SENTINEL
         self._upstream = SENTINEL
 
     @property
@@ -77,7 +67,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def bdepend(self):
         """Get a package's BDEPEND."""
-        if self._bdepend is SENTINEL:
+        if self._bdepend is None:
             ptr = C.pkgcraft_pkg_ebuild_bdepend(self.ptr)
             self._bdepend = DepSet.from_ptr(ptr, True)
         return self._bdepend
@@ -85,7 +75,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def depend(self):
         """Get a package's DEPEND."""
-        if self._depend is SENTINEL:
+        if self._depend is None:
             ptr = C.pkgcraft_pkg_ebuild_depend(self.ptr)
             self._depend = DepSet.from_ptr(ptr, True)
         return self._depend
@@ -93,7 +83,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def idepend(self):
         """Get a package's IDEPEND."""
-        if self._idepend is SENTINEL:
+        if self._idepend is None:
             ptr = C.pkgcraft_pkg_ebuild_idepend(self.ptr)
             self._idepend = DepSet.from_ptr(ptr, True)
         return self._idepend
@@ -101,7 +91,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def pdepend(self):
         """Get a package's PDEPEND."""
-        if self._pdepend is SENTINEL:
+        if self._pdepend is None:
             ptr = C.pkgcraft_pkg_ebuild_pdepend(self.ptr)
             self._pdepend = DepSet.from_ptr(ptr, True)
         return self._pdepend
@@ -109,7 +99,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def rdepend(self):
         """Get a package's RDEPEND."""
-        if self._rdepend is SENTINEL:
+        if self._rdepend is None:
             ptr = C.pkgcraft_pkg_ebuild_rdepend(self.ptr)
             self._rdepend = DepSet.from_ptr(ptr, True)
         return self._rdepend
@@ -117,7 +107,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def license(self):
         """Get a package's LICENSE."""
-        if self._license is SENTINEL:
+        if self._license is None:
             ptr = C.pkgcraft_pkg_ebuild_license(self.ptr)
             self._license = DepSet.from_ptr(ptr, True)
         return self._license
@@ -125,7 +115,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def properties(self):
         """Get a package's PROPERTIES."""
-        if self._properties is SENTINEL:
+        if self._properties is None:
             ptr = C.pkgcraft_pkg_ebuild_properties(self.ptr)
             self._properties = DepSet.from_ptr(ptr, True)
         return self._properties
@@ -133,7 +123,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def required_use(self):
         """Get a package's REQUIRED_USE."""
-        if self._required_use is SENTINEL:
+        if self._required_use is None:
             ptr = C.pkgcraft_pkg_ebuild_required_use(self.ptr)
             self._required_use = DepSet.from_ptr(ptr, True)
         return self._required_use
@@ -141,7 +131,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def restrict(self):
         """Get a package's RESTRICT."""
-        if self._restrict is SENTINEL:
+        if self._restrict is None:
             ptr = C.pkgcraft_pkg_ebuild_restrict(self.ptr)
             self._restrict = DepSet.from_ptr(ptr, True)
         return self._restrict
@@ -149,7 +139,7 @@ cdef class EbuildPkg(Pkg):
     @property
     def src_uri(self):
         """Get a package's SRC_URI."""
-        if self._src_uri is SENTINEL:
+        if self._src_uri is None:
             ptr = C.pkgcraft_pkg_ebuild_src_uri(self.ptr)
             self._src_uri = DepSet.from_ptr(ptr, True)
         return self._src_uri
