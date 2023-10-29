@@ -428,9 +428,10 @@ cdef class DepSet:
 
         op = C.SetOp.SET_OP_AND
         if isinstance(other, DepSet):
-            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr) is not NULL:
+            obj = <DepSet>other
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr) is not NULL:
                 return self
-            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
 
     def __ior__(self, other):
@@ -439,9 +440,10 @@ cdef class DepSet:
 
         op = C.SetOp.SET_OP_OR
         if isinstance(other, DepSet):
-            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr) is not NULL:
+            obj = <DepSet>other
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr) is not NULL:
                 return self
-            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
 
     def __ixor__(self, other):
@@ -450,9 +452,10 @@ cdef class DepSet:
 
         op = C.SetOp.SET_OP_XOR
         if isinstance(other, DepSet):
-            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr) is not NULL:
+            obj = <DepSet>other
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr) is not NULL:
                 return self
-            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
 
     def __isub__(self, other):
@@ -461,17 +464,19 @@ cdef class DepSet:
 
         op = C.SetOp.SET_OP_SUB
         if isinstance(other, DepSet):
-            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr) is not NULL:
+            obj = <DepSet>other
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr) is not NULL:
                 return self
-            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
 
     def __and__(self, other):
         op = C.SetOp.SET_OP_AND
         if isinstance(other, DepSet):
-            if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr):
+            obj = <DepSet>other
+            if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, obj.ptr):
                 return DepSet.from_ptr(ptr)
-            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
 
     def __rand__(self, other):
@@ -482,9 +487,10 @@ cdef class DepSet:
     def __or__(self, other):
         op = C.SetOp.SET_OP_OR
         if isinstance(other, DepSet):
-            if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr):
+            obj = <DepSet>other
+            if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, obj.ptr):
                 return DepSet.from_ptr(ptr)
-            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
 
     def __ror__(self, other):
@@ -495,9 +501,10 @@ cdef class DepSet:
     def __xor__(self, other):
         op = C.SetOp.SET_OP_XOR
         if isinstance(other, DepSet):
-            if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr):
+            obj = <DepSet>other
+            if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, obj.ptr):
                 return DepSet.from_ptr(ptr)
-            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
 
     def __rxor__(self, other):
@@ -508,9 +515,10 @@ cdef class DepSet:
     def __sub__(self, other):
         op = C.SetOp.SET_OP_SUB
         if isinstance(other, DepSet):
-            if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr):
+            obj = <DepSet>other
+            if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, obj.ptr):
                 return DepSet.from_ptr(ptr)
-            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
 
     def __rsub__(self, other):

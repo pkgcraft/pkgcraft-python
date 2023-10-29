@@ -24,8 +24,6 @@ class TestDepSpec:
 
         # variants
         d = self.req_use("a")
-        assert d.set == DepSetKind.RequiredUse
-        assert d.kind == DepSpecKind.Enabled
         assert len(d) == 1
         assert str(d) == "a"
         assert repr(d).startswith("<DepSpec 'a' at 0x")
@@ -34,38 +32,31 @@ class TestDepSpec:
         assert d == self.req_use("a", eapi=EAPI_LATEST_OFFICIAL)
 
         d = self.req_use("!a")
-        assert d.kind == DepSpecKind.Disabled
         assert len(d) == 1
         assert str(d) == "!a"
         assert repr(d).startswith("<DepSpec '!a' at 0x")
 
         d = self.req_use("( a b )")
-        assert d.kind == DepSpecKind.AllOf
         assert len(d) == 2
         assert str(d) == "( a b )"
 
         d = self.req_use("|| ( a b )")
-        assert d.kind == DepSpecKind.AnyOf
         assert len(d) == 2
         assert str(d) == "|| ( a b )"
 
         d = self.req_use("^^ ( a b )")
-        assert d.kind == DepSpecKind.ExactlyOneOf
         assert len(d) == 2
         assert str(d) == "^^ ( a b )"
 
         d = self.req_use("?? ( a b )")
-        assert d.kind == DepSpecKind.AtMostOneOf
         assert len(d) == 2
         assert str(d) == "?? ( a b )"
 
         d = self.req_use("u? ( a )")
-        assert d.kind == DepSpecKind.UseEnabled
         assert len(d) == 1
         assert str(d) == "u? ( a )"
 
         d = self.req_use("!u1? ( a u2? ( b ) )")
-        assert d.kind == DepSpecKind.UseDisabled
         assert len(d) == 2
         assert str(d) == "!u1? ( a u2? ( b ) )"
 
