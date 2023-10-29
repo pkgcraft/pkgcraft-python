@@ -17,7 +17,7 @@ cdef class Repo:
 
     _format = None
 
-    def __init__(self, path not None, id=None, int priority=0):
+    def __init__(self, path not None, /, id=None, int priority=0):
         """Create a Repo from a path."""
         path = str(path)
         id = str(id) if id is not None else path

@@ -97,7 +97,7 @@ cdef class Dep:
         self._use = SENTINEL
         self.eapi = EAPI_LATEST
 
-    def __init__(self, str s not None, eapi=None):
+    def __init__(self, str s not None, /, eapi=None):
         if eapi is not None:
             self.eapi = Eapi._from_obj(eapi)
 
