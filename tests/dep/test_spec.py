@@ -1,3 +1,5 @@
+from functools import partial
+
 import pytest
 
 from pkgcraft.dep import *
@@ -8,71 +10,71 @@ from ..misc import OperatorMap
 
 
 class TestDepSpec:
-    def test_parse(self):
-        # only valid in subclasses
-        with pytest.raises(TypeError):
-            DepSet.dep_spec("a/b")
 
+    req_use = partial(DepSpec, set=DepSetKind.RequiredUse)
+
+    def test_parse(self):
         # empty strings fail
         with pytest.raises(PkgcraftError):
-            Dependencies.dep_spec("")
+            DepSpec("")
 
         # multiple DepSpecs fail
         with pytest.raises(PkgcraftError):
-            Dependencies.dep_spec("a/b c/d")
+            DepSpec("a/b c/d")
 
         # variants
-        d = RequiredUse.dep_spec("a")
+        d = self.req_use("a")
+        assert d.set == DepSetKind.RequiredUse
         assert d.kind == DepSpecKind.Enabled
         assert len(d) == 1
         assert str(d) == "a"
         assert repr(d).startswith("<DepSpec 'a' at 0x")
         # EAPI specific
-        assert d == RequiredUse.dep_spec("a", eapi=str(EAPI_LATEST_OFFICIAL))
-        assert d == RequiredUse.dep_spec("a", eapi=EAPI_LATEST_OFFICIAL)
+        assert d == self.req_use("a", eapi=str(EAPI_LATEST_OFFICIAL))
+        assert d == self.req_use("a", eapi=EAPI_LATEST_OFFICIAL)
 
-        d = RequiredUse.dep_spec("!a")
+        d = self.req_use("!a")
         assert d.kind == DepSpecKind.Disabled
         assert len(d) == 1
         assert str(d) == "!a"
         assert repr(d).startswith("<DepSpec '!a' at 0x")
 
-        d = RequiredUse.dep_spec("( a b )")
+        d = self.req_use("( a b )")
         assert d.kind == DepSpecKind.AllOf
         assert len(d) == 2
         assert str(d) == "( a b )"
 
-        d = RequiredUse.dep_spec("|| ( a b )")
+        d = self.req_use("|| ( a b )")
         assert d.kind == DepSpecKind.AnyOf
         assert len(d) == 2
         assert str(d) == "|| ( a b )"
 
-        d = RequiredUse.dep_spec("^^ ( a b )")
+        d = self.req_use("^^ ( a b )")
         assert d.kind == DepSpecKind.ExactlyOneOf
         assert len(d) == 2
         assert str(d) == "^^ ( a b )"
 
-        d = RequiredUse.dep_spec("?? ( a b )")
+        d = self.req_use("?? ( a b )")
         assert d.kind == DepSpecKind.AtMostOneOf
         assert len(d) == 2
         assert str(d) == "?? ( a b )"
 
-        d = RequiredUse.dep_spec("u? ( a )")
+        d = self.req_use("u? ( a )")
         assert d.kind == DepSpecKind.UseEnabled
         assert len(d) == 1
         assert str(d) == "u? ( a )"
 
-        d = RequiredUse.dep_spec("!u1? ( a u2? ( b ) )")
+        d = self.req_use("!u1? ( a u2? ( b ) )")
         assert d.kind == DepSpecKind.UseDisabled
         assert len(d) == 2
         assert str(d) == "!u1? ( a u2? ( b ) )"
 
     def test_cmp(self):
-        for (cls1, cls2) in (
-            (RequiredUse, RequiredUse),
-            (RequiredUse, License),
+        for (set1, set2) in (
+            (DepSetKind.RequiredUse, DepSetKind.RequiredUse),
+            (DepSetKind.RequiredUse, DepSetKind.License),
         ):
-            for d1, op, d2 in (
+            for s1, op, s2 in (
                 ("a", "<", "b"),
                 ("a", "<=", "b"),
                 ("b", "<=", "b"),
@@ -82,12 +84,12 @@ class TestDepSpec:
                 ("b", ">", "a"),
             ):
                 op_func = OperatorMap[op]
-                d1 = cls1.dep_spec(d1)
-                d2 = cls2.dep_spec(d2)
+                d1 = DepSpec(s1, set=set1)
+                d2 = DepSpec(s2, set=set2)
                 assert op_func(d1, d2), f"failed {d1} {op} {d2}"
 
         # verify incompatible type comparisons
-        obj = RequiredUse.dep_spec("a")
+        obj = self.req_use("a")
         for op, op_func in OperatorMap.items():
             if op == "==":
                 assert not op_func(obj, None)
@@ -99,7 +101,7 @@ class TestDepSpec:
 
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing
-        for d1, d2 in (
+        for s1, s2 in (
             # same
             ("a", "a"),
             ("u? ( a )", "u? ( a )"),
@@ -109,66 +111,65 @@ class TestDepSpec:
             ("u? ( a b )", "u? ( b a )"),
             ("!u? ( a b )", "!u? ( b a )"),
         ):
-            d1 = RequiredUse.dep_spec(d1)
-            d2 = RequiredUse.dep_spec(d2)
+            d1 = self.req_use(s1)
+            d2 = self.req_use(s2)
             assert d1 == d2
             assert len({d1, d2}) == 1
 
         # ordering that matters for equivalence and hashing
-        for d1, d2 in (
+        for s1, s2 in (
             ("|| ( a b )", "|| ( b a )"),
             ("?? ( a b )", "?? ( b a )"),
             ("^^ ( a b )", "^^ ( b a )"),
         ):
-            d1 = RequiredUse.dep_spec(d1)
-            d2 = RequiredUse.dep_spec(d2)
+            d1 = self.req_use(s1)
+            d2 = self.req_use(s2)
             assert d1 != d2
             assert len({d1, d2}) == 2
 
     def test_contains(self):
         # simple DepSpecs don't contain themselves
-        assert RequiredUse.dep_spec("a") not in RequiredUse.dep_spec("a")
+        assert self.req_use("a") not in self.req_use("a")
 
         # only top-level DepSpec objects have membership
-        d = RequiredUse.dep_spec("!u1? ( a u2? ( b ) )")
-        assert RequiredUse.dep_spec("a") in d
-        assert RequiredUse.dep_spec("u2? ( b )") in d
-        assert RequiredUse.dep_spec("b") not in d
+        d = self.req_use("!u1? ( a u2? ( b ) )")
+        assert self.req_use("a") in d
+        assert self.req_use("u2? ( b )") in d
+        assert self.req_use("b") not in d
 
         # non-DepSpec objects return False
         assert None not in d
 
     def test_iter(self):
-        assert list(RequiredUse.dep_spec("a")) == []
-        assert list(iter(RequiredUse.dep_spec("!a"))) == []
-        assert list(map(str, RequiredUse.dep_spec("( a )"))) == ["a"]
-        assert list(map(str, RequiredUse.dep_spec("|| ( a b )"))) == ["a", "b"]
-        assert list(map(str, RequiredUse.dep_spec("|| ( a? ( b ) )"))) == ["a? ( b )"]
+        assert list(self.req_use("a")) == []
+        assert list(iter(self.req_use("!a"))) == []
+        assert list(map(str, self.req_use("( a )"))) == ["a"]
+        assert list(map(str, self.req_use("|| ( a b )"))) == ["a", "b"]
+        assert list(map(str, self.req_use("|| ( a? ( b ) )"))) == ["a? ( b )"]
 
     def test_iter_conditionals(self):
-        assert list(RequiredUse.dep_spec("a").iter_conditionals()) == []
-        assert list(RequiredUse.dep_spec("( a )").iter_conditionals()) == []
-        assert list(RequiredUse.dep_spec("u? ( a )").iter_conditionals()) == ["u"]
-        assert list(RequiredUse.dep_spec("!u? ( a )").iter_conditionals()) == ["u"]
-        assert list(RequiredUse.dep_spec("|| ( a? ( b !c? ( d ) ) )").iter_conditionals()) == ["a", "c"]
+        assert list(self.req_use("a").iter_conditionals()) == []
+        assert list(self.req_use("( a )").iter_conditionals()) == []
+        assert list(self.req_use("u? ( a )").iter_conditionals()) == ["u"]
+        assert list(self.req_use("!u? ( a )").iter_conditionals()) == ["u"]
+        assert list(self.req_use("|| ( a? ( b !c? ( d ) ) )").iter_conditionals()) == ["a", "c"]
 
     def test_iter_flatten(self):
-        assert list(RequiredUse.dep_spec("a").iter_flatten()) == ["a"]
-        assert list(RequiredUse.dep_spec("!a").iter_flatten()) == ["a"]
-        assert list(RequiredUse.dep_spec("( a )").iter_flatten()) == ["a"]
-        assert list(RequiredUse.dep_spec("|| ( a b )").iter_flatten()) == ["a", "b"]
-        assert list(RequiredUse.dep_spec("|| ( a? ( b ) )").iter_flatten()) == ["b"]
+        assert list(self.req_use("a").iter_flatten()) == ["a"]
+        assert list(self.req_use("!a").iter_flatten()) == ["a"]
+        assert list(self.req_use("( a )").iter_flatten()) == ["a"]
+        assert list(self.req_use("|| ( a b )").iter_flatten()) == ["a", "b"]
+        assert list(self.req_use("|| ( a? ( b ) )").iter_flatten()) == ["b"]
 
     def test_iter_recursive(self):
-        assert list(map(str, RequiredUse.dep_spec("a").iter_recursive())) == ["a"]
-        assert list(map(str, RequiredUse.dep_spec("!a").iter_recursive())) == ["!a"]
-        assert list(map(str, RequiredUse.dep_spec("( a )").iter_recursive())) == ["( a )", "a"]
-        assert list(map(str, RequiredUse.dep_spec("|| ( a b )").iter_recursive())) == ["|| ( a b )", "a", "b"]
-        assert list(map(str, RequiredUse.dep_spec("|| ( a? ( b ) )").iter_recursive())) == ["|| ( a? ( b ) )", "a? ( b )", "b"]
+        assert list(map(str, self.req_use("a").iter_recursive())) == ["a"]
+        assert list(map(str, self.req_use("!a").iter_recursive())) == ["!a"]
+        assert list(map(str, self.req_use("( a )").iter_recursive())) == ["( a )", "a"]
+        assert list(map(str, self.req_use("|| ( a b )").iter_recursive())) == ["|| ( a b )", "a", "b"]
+        assert list(map(str, self.req_use("|| ( a? ( b ) )").iter_recursive())) == ["|| ( a? ( b ) )", "a? ( b )", "b"]
 
     def test_evaluate(self):
-        req_use = RequiredUse.dep_spec
-        d = req_use("a")
+        d = self.req_use("a")
 
         # no conditionals
         assert d.evaluate() == [d]
@@ -177,26 +178,26 @@ class TestDepSpec:
         assert d.evaluate(False) == [d]
 
         # conditionally enabled
-        d1 = req_use("u? ( a )")
+        d1 = self.req_use("u? ( a )")
         assert d1.evaluate() == []
         assert d1.evaluate(["u"]) == [d]
         assert d1.evaluate(True) == [d]
         assert d1.evaluate(False) == []
-        d1 = req_use("u? ( a b )")
-        assert d1.evaluate(["u"]) == [req_use("a"), req_use("b")]
+        d1 = self.req_use("u? ( a b )")
+        assert d1.evaluate(["u"]) == [self.req_use("a"), self.req_use("b")]
 
         # conditionally disabled
-        d1 = req_use("!u? ( a )")
+        d1 = self.req_use("!u? ( a )")
         assert d1.evaluate() == [d]
         assert d1.evaluate(["u"]) == []
         assert d1.evaluate(True) == [d]
         assert d1.evaluate(False) == []
 
         # empty DepSpecs are discarded
-        d1 = req_use("|| ( u1? ( a !u2? ( b ) ) )")
+        d1 = self.req_use("|| ( u1? ( a !u2? ( b ) ) )")
         assert not d1.evaluate()
-        assert d1.evaluate(["u1"]) == [req_use("|| ( a b )")]
-        assert d1.evaluate(["u1", "u2"]) == [req_use("|| ( a )")]
+        assert d1.evaluate(["u1"]) == [self.req_use("|| ( a b )")]
+        assert d1.evaluate(["u1", "u2"]) == [self.req_use("|| ( a )")]
         assert d1.evaluate(["u2"]) == []
-        assert d1.evaluate(True) == [req_use("|| ( a b )")]
+        assert d1.evaluate(True) == [self.req_use("|| ( a b )")]
         assert not d1.evaluate(False)

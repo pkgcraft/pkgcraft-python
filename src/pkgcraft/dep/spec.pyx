@@ -35,13 +35,27 @@ class DepSpecKind(IntFlag):
 
 
 @cython.final
-cdef class DepSpec(_IndirectInit):
+cdef class DepSpec:
     """Dependency object."""
 
+    def __init__(self, str s not None, /, eapi=None, set=DepSetKind.Dependencies):
+        cdef const C.Eapi *eapi_ptr = NULL
+        cdef C.DepSetKind kind = set
+
+        if eapi is not None:
+            eapi_ptr = Eapi._from_obj(eapi).ptr
+
+        ptr = C.pkgcraft_dep_spec_parse(s.encode(), eapi_ptr, kind)
+        if ptr is NULL:
+            raise PkgcraftError
+
+        DepSpec.from_ptr(ptr, self)
+
     @staticmethod
-    cdef DepSpec from_ptr(C.DepSpec *ptr):
+    cdef DepSpec from_ptr(C.DepSpec *ptr, DepSpec obj=None):
         """Create a DepSpec from a pointer and type."""
-        obj = <DepSpec>DepSpec.__new__(DepSpec)
+        if obj is None:
+            obj = <DepSpec>DepSpec.__new__(DepSpec)
         obj.set = DepSetKind(ptr.set)
         obj.kind = DepSpecKind(ptr.kind)
         obj.ptr = ptr
@@ -131,17 +145,15 @@ cdef class DepSpec(_IndirectInit):
         C.pkgcraft_dep_spec_free(self.ptr)
 
 
+@cython.final
 cdef class DepSet:
     """Set of dependency objects."""
 
     _kind = None
 
-    def __init__(self, obj="", eapi=None):
-        if self._kind is None:
-            raise TypeError("DepSet base class objects cannot be directly created")
-
+    def __init__(self, obj="", /, eapi=None, set=DepSetKind.Dependencies):
         cdef const C.Eapi *eapi_ptr = NULL
-        cdef C.DepSetKind kind = self._kind
+        cdef C.DepSetKind kind = set
 
         if isinstance(obj, str):
             if eapi is not None:
@@ -157,44 +169,14 @@ cdef class DepSet:
 
         DepSet.from_ptr(ptr, False, self)
 
-    @classmethod
-    def dep_spec(cls, str s not None, eapi=None):
-        """Parse a DepSpec using the related DepSet type."""
-        if cls._kind is None:
-            raise TypeError("DepSet base class cannot create DepSpec objects")
-
-        cdef const C.Eapi *eapi_ptr = NULL
-        cdef C.DepSetKind kind = cls._kind
-
-        if eapi is not None:
-            eapi_ptr = Eapi._from_obj(eapi).ptr
-
-        ptr = C.pkgcraft_dep_spec_parse(s.encode(), eapi_ptr, kind)
-        if ptr is NULL:
-            raise PkgcraftError
-
-        return DepSpec.from_ptr(ptr)
-
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *ptr, bint immutable=False, DepSet obj=None):
         """Create a DepSet from a DepSet pointer."""
         if ptr is not NULL:
             if obj is None:
-                if ptr.set == C.DEP_SET_KIND_DEPENDENCIES:
-                    obj = <Dependencies>Dependencies.__new__(Dependencies)
-                elif ptr.set == C.DEP_SET_KIND_LICENSE:
-                    obj = <License>License.__new__(License)
-                elif ptr.set == C.DEP_SET_KIND_PROPERTIES:
-                    obj = <Properties>Properties.__new__(Properties)
-                elif ptr.set == C.DEP_SET_KIND_REQUIRED_USE:
-                    obj = <RequiredUse>RequiredUse.__new__(RequiredUse)
-                elif ptr.set == C.DEP_SET_KIND_RESTRICT:
-                    obj = <Restrict>Restrict.__new__(Restrict)
-                elif ptr.set == C.DEP_SET_KIND_SRC_URI:
-                    obj = <SrcUri>SrcUri.__new__(SrcUri)
-                else:  # pragma: no cover
-                    raise TypeError(f'unknown DepSet kind: {ptr.set}')
+                obj = <DepSet>DepSet.__new__(DepSet)
             obj.immutable = immutable
+            obj.set = DepSetKind(ptr.set)
             obj.ptr = ptr
         return obj
 
@@ -204,7 +186,7 @@ cdef class DepSet:
         if isinstance(obj, DepSpec):
             objs = [obj]
         else:
-            objs = [x if isinstance(x, DepSpec) else self.dep_spec(x) for x in obj]
+            objs = [x if isinstance(x, DepSpec) else DepSpec(x, set=kind) for x in obj]
 
         array = <C.DepSpec **> PyMem_Malloc(len(objs) * sizeof(C.DepSpec *))
         if not array:  # pragma: no cover
@@ -242,130 +224,130 @@ cdef class DepSet:
     def isdisjoint(self, other):
         cdef DepSet depset = None
 
-        if isinstance(other, self.__class__):
+        if isinstance(other, DepSet):
             depset = other
         else:
-            depset = self.__class__(other)
+            depset = DepSet(other, set=self.set)
 
         return C.pkgcraft_dep_set_is_disjoint(self.ptr, depset.ptr)
 
     def issubset(self, other):
         cdef DepSet depset = None
 
-        if isinstance(other, self.__class__):
+        if isinstance(other, DepSet):
             depset = other
         else:
-            depset = self.__class__(other)
+            depset = DepSet(other, set=self.set)
 
         return C.pkgcraft_dep_set_is_subset(self.ptr, depset.ptr)
 
     def issuperset(self, other):
         cdef DepSet depset = None
 
-        if isinstance(other, self.__class__):
+        if isinstance(other, DepSet):
             depset = other
         else:
-            depset = self.__class__(other)
+            depset = DepSet(other, set=self.set)
 
         return C.pkgcraft_dep_set_is_subset(depset.ptr, self.ptr)
 
     def __lt__(self, other):
-        if isinstance(other, self.__class__):
+        if isinstance(other, DepSet):
             return self <= other and self != other
         return NotImplemented
 
     def __le__(self, other):
-        if isinstance(other, self.__class__):
+        if isinstance(other, DepSet):
             return C.pkgcraft_dep_set_is_subset(self.ptr, (<DepSet>other).ptr)
         return NotImplemented
 
     def __ge__(self, other):
-        if isinstance(other, self.__class__):
+        if isinstance(other, DepSet):
             return C.pkgcraft_dep_set_is_subset((<DepSet>other).ptr, self.ptr)
         return NotImplemented
 
     def __gt__(self, other):
-        if isinstance(other, self.__class__):
+        if isinstance(other, DepSet):
             return self >= other and self != other
         return NotImplemented
 
     def union(self, *others):
-        depset = self.__class__(self)
+        depset = DepSet(self, set=self.set)
 
         for obj in others:
-            if isinstance(obj, self.__class__):
+            if isinstance(obj, DepSet):
                 depset |= obj
             else:
-                depset |= self.__class__(obj)
+                depset |= DepSet(obj, set=self.set)
 
         return depset
 
     def intersection(self, *others):
-        depset = self.__class__(self)
+        depset = DepSet(self, set=self.set)
 
         for obj in others:
-            if isinstance(obj, self.__class__):
+            if isinstance(obj, DepSet):
                 depset &= obj
             else:
-                depset &= self.__class__(obj)
+                depset &= DepSet(obj, set=self.set)
 
         return depset
 
     def difference(self, *others):
-        depset = self.__class__(self)
+        depset = DepSet(self, set=self.set)
 
         for obj in others:
-            if isinstance(obj, self.__class__):
+            if isinstance(obj, DepSet):
                 depset -= obj
             else:
-                depset -= self.__class__(obj)
+                depset -= DepSet(obj, set=self.set)
 
         return depset
 
     def symmetric_difference(self, *others):
-        depset = self.__class__(self)
+        depset = DepSet(self, set=self.set)
 
         for obj in others:
-            if isinstance(obj, self.__class__):
+            if isinstance(obj, DepSet):
                 depset ^= obj
             else:
-                depset ^= self.__class__(obj)
+                depset ^= DepSet(obj, set=self.set)
 
         return depset
 
     def update(self, *others):
         for obj in others:
-            if isinstance(obj, self.__class__):
+            if isinstance(obj, DepSet):
                 self |= obj
             else:
-                self |= self.__class__(obj)
+                self |= DepSet(obj, set=self.set)
 
         return self
 
     def intersection_update(self, *others):
         for obj in others:
-            if isinstance(obj, self.__class__):
+            if isinstance(obj, DepSet):
                 self &= obj
             else:
-                self &= self.__class__(obj)
+                self &= DepSet(obj, set=self.set)
 
         return self
 
     def difference_update(self, *others):
         for obj in others:
-            if isinstance(obj, self.__class__):
+            if isinstance(obj, DepSet):
                 self -= obj
             else:
-                self -= self.__class__(obj)
+                self -= DepSet(obj, set=self.set)
 
         return self
 
     def symmetric_difference_update(self, *others):
         for obj in others:
-            if isinstance(obj, self.__class__):
+            if isinstance(obj, DepSet):
                 self ^= obj
             else:
-                self ^= self.__class__(obj)
+                self ^= DepSet(obj, set=self.set)
 
         return self
 
@@ -399,7 +381,7 @@ cdef class DepSet:
         if isinstance(obj, DepSpec):
             dep = obj
         elif isinstance(obj, str):
-            dep = self.dep_spec(obj)
+            dep = DepSpec(obj, set=self.set)
 
         if dep is not None:
             return C.pkgcraft_dep_set_contains(self.ptr, dep.ptr)
@@ -416,7 +398,7 @@ cdef class DepSet:
             return deps
 
         # create new DepSet for slices
-        return self.__class__(deps)
+        return DepSet(deps, set=self.set)
 
     def __len__(self):
         return C.pkgcraft_dep_set_len(self.ptr)
@@ -445,52 +427,52 @@ cdef class DepSet:
             raise TypeError("object is immutable")
 
         op = C.SetOp.SET_OP_AND
-        if isinstance(other, self.__class__):
-            C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
-            return self
-        else:
-            return NotImplemented
+        if isinstance(other, DepSet):
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr) is not NULL:
+                return self
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+        return NotImplemented
 
     def __ior__(self, other):
         if self.immutable:
             raise TypeError("object is immutable")
 
         op = C.SetOp.SET_OP_OR
-        if isinstance(other, self.__class__):
-            C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
-            return self
-        else:
-            return NotImplemented
+        if isinstance(other, DepSet):
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr) is not NULL:
+                return self
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+        return NotImplemented
 
     def __ixor__(self, other):
         if self.immutable:
             raise TypeError("object is immutable")
 
         op = C.SetOp.SET_OP_XOR
-        if isinstance(other, self.__class__):
-            C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
-            return self
-        else:
-            return NotImplemented
+        if isinstance(other, DepSet):
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr) is not NULL:
+                return self
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+        return NotImplemented
 
     def __isub__(self, other):
         if self.immutable:
             raise TypeError("object is immutable")
 
         op = C.SetOp.SET_OP_SUB
-        if isinstance(other, self.__class__):
-            C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr)
-            return self
-        else:
-            return NotImplemented
+        if isinstance(other, DepSet):
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, (<DepSet>other).ptr) is not NULL:
+                return self
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+        return NotImplemented
 
     def __and__(self, other):
         op = C.SetOp.SET_OP_AND
-        if isinstance(other, self.__class__):
-            ptr = C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr)
-            return DepSet.from_ptr(ptr)
-        else:
-            return NotImplemented
+        if isinstance(other, DepSet):
+            if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr):
+                return DepSet.from_ptr(ptr)
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+        return NotImplemented
 
     def __rand__(self, other):
         if not isinstance(other, DepSet):
@@ -499,11 +481,11 @@ cdef class DepSet:
 
     def __or__(self, other):
         op = C.SetOp.SET_OP_OR
-        if isinstance(other, self.__class__):
-            ptr = C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr)
-            return DepSet.from_ptr(ptr)
-        else:
-            return NotImplemented
+        if isinstance(other, DepSet):
+            if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr):
+                return DepSet.from_ptr(ptr)
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+        return NotImplemented
 
     def __ror__(self, other):
         if not isinstance(other, DepSet):
@@ -512,11 +494,11 @@ cdef class DepSet:
 
     def __xor__(self, other):
         op = C.SetOp.SET_OP_XOR
-        if isinstance(other, self.__class__):
-            ptr = C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr)
-            return DepSet.from_ptr(ptr)
-        else:
-            return NotImplemented
+        if isinstance(other, DepSet):
+            if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr):
+                return DepSet.from_ptr(ptr)
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+        return NotImplemented
 
     def __rxor__(self, other):
         if not isinstance(other, DepSet):
@@ -525,11 +507,11 @@ cdef class DepSet:
 
     def __sub__(self, other):
         op = C.SetOp.SET_OP_SUB
-        if isinstance(other, self.__class__):
-            ptr = C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr)
-            return DepSet.from_ptr(ptr)
-        else:
-            return NotImplemented
+        if isinstance(other, DepSet):
+            if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, (<DepSet>other).ptr):
+                return DepSet.from_ptr(ptr)
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {other.set.name}")
+        return NotImplemented
 
     def __rsub__(self, other):
         if not isinstance(other, DepSet):
@@ -538,42 +520,6 @@ cdef class DepSet:
 
     def __dealloc__(self):
         C.pkgcraft_dep_set_free(self.ptr)
-
-
-@cython.final
-cdef class Dependencies(DepSet):
-
-    _kind = C.DEP_SET_KIND_DEPENDENCIES
-
-
-@cython.final
-cdef class License(DepSet):
-
-    _kind = C.DEP_SET_KIND_LICENSE
-
-
-@cython.final
-cdef class Properties(DepSet):
-
-    _kind = C.DEP_SET_KIND_PROPERTIES
-
-
-@cython.final
-cdef class RequiredUse(DepSet):
-
-    _kind = C.DEP_SET_KIND_REQUIRED_USE
-
-
-@cython.final
-cdef class Restrict(DepSet):
-
-    _kind = C.DEP_SET_KIND_RESTRICT
-
-
-@cython.final
-cdef class SrcUri(DepSet):
-
-    _kind = C.DEP_SET_KIND_SRC_URI
 
 
 cdef class _IntoIter:

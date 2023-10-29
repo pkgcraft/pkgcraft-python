@@ -2,47 +2,24 @@ from .. cimport C
 from ..error cimport _IndirectInit
 
 
-cdef class DepSpec(_IndirectInit):
+cdef class DepSpec:
     cdef C.DepSpec *ptr
     cdef readonly object kind
     cdef readonly object set
 
     @staticmethod
-    cdef DepSpec from_ptr(C.DepSpec *)
+    cdef DepSpec from_ptr(C.DepSpec *, DepSpec obj=*)
 
 
 cdef class DepSet:
     cdef C.DepSet *ptr
     cdef bint immutable
+    cdef readonly object set
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *, bint immutable=*, DepSet obj=*)
 
     cdef C.DepSet *from_iter(self, object obj, C.DepSetKind kind)
-
-
-cdef class Dependencies(DepSet):
-    pass
-
-
-cdef class License(DepSet):
-    pass
-
-
-cdef class Properties(DepSet):
-    pass
-
-
-cdef class RequiredUse(DepSet):
-    pass
-
-
-cdef class Restrict(DepSet):
-    pass
-
-
-cdef class SrcUri(DepSet):
-    pass
 
 
 cdef class _IntoIter:

@@ -1,3 +1,5 @@
+from functools import partial
+
 import pytest
 
 from pkgcraft.dep import *
@@ -6,100 +8,100 @@ from pkgcraft.error import PkgcraftError
 
 
 class TestDependencies:
-    def test_parse(self):
-        # direct creation only available via subclasses
-        with pytest.raises(TypeError):
-            DepSet()
 
+    depset = partial(DepSet, set=DepSetKind.Dependencies)
+    depspec = partial(DepSpec, set=DepSetKind.Dependencies)
+
+    def test_parse(self):
         # empty
-        d1 = Dependencies()
+        d1 = self.depset()
         assert not d1
         assert len(d1) == 0
         assert str(d1) == ""
-        assert repr(d1).startswith("<Dependencies '' at 0x")
+        assert repr(d1).startswith("<DepSet '' at 0x")
 
         # single
-        d1 = Dependencies("a/b")
+        d1 = self.depset("a/b")
         assert d1
         assert len(d1) == 1
         assert str(d1) == "a/b"
-        assert repr(d1).startswith("<Dependencies 'a/b' at 0x")
-        assert d1 == Dependencies("a/b", EAPI_LATEST_OFFICIAL)
+        assert repr(d1).startswith("<DepSet 'a/b' at 0x")
+        assert d1 == self.depset("a/b", EAPI_LATEST_OFFICIAL)
 
         # multiple
-        d1 = Dependencies("a/b || ( c/d e/f )")
+        d1 = self.depset("a/b || ( c/d e/f )")
         assert d1
         assert len(d1) == 2
         assert str(d1) == "a/b || ( c/d e/f )"
-        assert repr(d1).startswith("<Dependencies 'a/b || ( c/d e/f )' at 0x")
+        assert repr(d1).startswith("<DepSet 'a/b || ( c/d e/f )' at 0x")
 
         # invalid
         with pytest.raises(PkgcraftError):
-            Dependencies("a/b::repo", EAPI_LATEST_OFFICIAL)
+            self.depset("a/b::repo", EAPI_LATEST_OFFICIAL)
 
         # invalid type
         with pytest.raises(TypeError):
-            Dependencies(None)
+            self.depset(None)
 
     def test_from_iterable(self):
         # create from iterating over DepSet
-        d = Dependencies()
-        assert d == Dependencies(d)
-        d = Dependencies("a/b || ( c/d e/f )")
-        assert d == Dependencies(d)
-        assert d == Dependencies(list(d))
+        d = self.depset()
+        assert d == self.depset(d)
+        d = self.depset("a/b || ( c/d e/f )")
+        assert d == self.depset(d)
+        assert d == self.depset(list(d))
         assert d == d[:]
 
         # create from parsing DepSpec strings
-        assert d == Dependencies(["a/b", "|| ( c/d e/f )"])
+        assert d == self.depset(["a/b", "|| ( c/d e/f )"])
 
         # invalid types
-        d = RequiredUse("a")
+        d = DepSet("a", set=DepSetKind.RequiredUse)
         with pytest.raises(PkgcraftError):
-            Dependencies(d)
+            self.depset(d)
 
     def test_evaluate(self):
         # no conditionals
-        d = Dependencies("a/b")
+        d = self.depset("a/b")
         assert d.evaluate() == d
         assert d.evaluate(["u"]) == d
         assert d.evaluate(True) == d
         assert d.evaluate(False) == d
 
         # conditionally enabled
-        d1 = Dependencies("u? ( a/b )")
+        d1 = self.depset("u? ( a/b )")
         assert not d1.evaluate()
         assert d1.evaluate(["u"]) == d
         assert d1.evaluate(True) == d
         assert not d1.evaluate(False)
 
         # conditionally disabled
-        d1 = Dependencies("!u? ( a/b )")
+        d1 = self.depset("!u? ( a/b )")
         assert d1.evaluate() == d
         assert not d1.evaluate(["u"])
         assert d1.evaluate(True) == d
         assert not d1.evaluate(False)
 
         # empty DepSpecs are discarded
-        d1 = Dependencies("|| ( u1? ( a/b !u2? ( c/d ) ) )")
+        d1 = self.depset("|| ( u1? ( a/b !u2? ( c/d ) ) )")
         assert not d1.evaluate()
-        assert d1.evaluate(["u1"]) == Dependencies("|| ( a/b c/d )")
-        assert d1.evaluate(["u1", "u2"]) == Dependencies("|| ( a/b )")
+        assert d1.evaluate(["u1"]) == self.depset("|| ( a/b c/d )")
+        assert d1.evaluate(["u1", "u2"]) == self.depset("|| ( a/b )")
         assert not d1.evaluate(["u2"])
-        assert d1.evaluate(True) == Dependencies("|| ( a/b c/d )")
+        assert d1.evaluate(True) == self.depset("|| ( a/b c/d )")
         assert not d1.evaluate(False)
 
     def test_contains(self):
         # only top-level DepSpec objects have membership
-        assert Dependencies.dep_spec("a/b") in Dependencies("a/b")
-        assert Dependencies.dep_spec("a/b") not in Dependencies("u? ( a/b )")
+        assert self.depspec("a/b") in self.depset("a/b")
+        assert self.depspec("a/b") not in self.depset("u? ( a/b )")
 
         # valid DepSpec strings work
-        assert "a/b" in Dependencies("a/b")
-        assert "u? ( c/d )" in Dependencies("a/b u? ( c/d )")
+        assert "a/b" in self.depset("a/b")
+        assert "u? ( c/d )" in self.depset("a/b u? ( c/d )")
 
         # all other object types return False
-        assert None not in Dependencies("a/b")
+        assert None not in self.depset("a/b")
 
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing
@@ -112,28 +114,28 @@ class TestDependencies:
             ("a/b c/d", "c/d a/b"),
             ("use? ( a/b c/d )", "use? ( c/d a/b )"),
         ):
-            dep1 = Dependencies(s1)
-            dep2 = Dependencies(s2)
+            dep1 = self.depset(s1)
+            dep2 = self.depset(s2)
             assert dep1 == dep2, f"{dep1} != {dep2}"
             assert len({dep1, dep2}) == 1
 
         # ordering that matters for equivalence and hashing
         for s1, s2 in (("|| ( a/b c/d )", "|| ( c/d a/b )"),):
-            dep1 = Dependencies(s1)
-            dep2 = Dependencies(s2)
+            dep1 = self.depset(s1)
+            dep2 = self.depset(s2)
             assert dep1 != dep2, f"{dep1} != {dep2}"
             assert len({dep1, dep2}) == 2
 
         # verify incompatible type comparisons
-        dep = Dependencies("a/b")
+        dep = self.depset("a/b")
         assert not dep == None
         assert dep != None
 
     def test_set_functionality(self):
         # disjoint
-        d1 = Dependencies()
-        d2 = Dependencies("a/b")
-        d3 = Dependencies("u? ( c/d ) a/b")
+        d1 = self.depset()
+        d2 = self.depset("a/b")
+        d3 = self.depset("u? ( c/d ) a/b")
         assert d1.isdisjoint(d1)
         assert d1.isdisjoint(d2)
         assert d1.isdisjoint("")
@@ -172,262 +174,284 @@ class TestDependencies:
         with pytest.raises(TypeError):
             d2 > ""
 
+        req_use = partial(DepSet, set=DepSetKind.RequiredUse)
+
         # &= operator
-        d = Dependencies("a/a b/b c/c")
-        d &= Dependencies("a/a b/b")
-        assert d == Dependencies("a/a b/b")
-        d &= Dependencies("a/a")
-        assert d == Dependencies("a/a")
-        d &= Dependencies()
-        assert d == Dependencies()
+        d = self.depset("a/a b/b c/c")
+        d &= self.depset("a/a b/b")
+        assert d == self.depset("a/a b/b")
+        d &= self.depset("a/a")
+        assert d == self.depset("a/a")
+        d &= self.depset()
+        assert d == self.depset()
         # invalid
-        for obj in [None, "s", License()]:
+        for obj in [None, "s", req_use()]:
             with pytest.raises(TypeError):
                 d &= obj
 
         # |= operator
-        d = Dependencies()
-        d |= Dependencies("a/a b/b")
-        assert d == Dependencies("a/a b/b")
-        d |= Dependencies("c/c")
-        assert d == Dependencies("a/a b/b c/c")
+        d = self.depset()
+        d |= self.depset("a/a b/b")
+        assert d == self.depset("a/a b/b")
+        d |= self.depset("c/c")
+        assert d == self.depset("a/a b/b c/c")
         # all-of group doesn't combine with regular deps
-        d = Dependencies("a/a")
-        d |= Dependencies("( a/a )")
-        assert d == Dependencies("a/a ( a/a )")
+        d = self.depset("a/a")
+        d |= self.depset("( a/a )")
+        assert d == self.depset("a/a ( a/a )")
         # invalid
-        for obj in [None, "s", License()]:
+        for obj in [None, "s", req_use()]:
             with pytest.raises(TypeError):
                 d |= obj
 
         # ^= operator
-        d = Dependencies("a/a b/b c/c")
-        d ^= Dependencies("a/a b/b")
-        assert d == Dependencies("c/c")
-        d ^= Dependencies("c/c d/d")
-        assert d == Dependencies("d/d")
-        d ^= Dependencies("d/d")
-        assert d == Dependencies()
+        d = self.depset("a/a b/b c/c")
+        d ^= self.depset("a/a b/b")
+        assert d == self.depset("c/c")
+        d ^= self.depset("c/c d/d")
+        assert d == self.depset("d/d")
+        d ^= self.depset("d/d")
+        assert d == self.depset()
         # invalid
-        for obj in [None, "s", License()]:
+        for obj in [None, "s", req_use()]:
             with pytest.raises(TypeError):
                 d ^= obj
 
         # -= operator
-        d = Dependencies("a/a b/b c/c")
-        d -= Dependencies("a/a b/b")
-        assert d == Dependencies("c/c")
-        d -= Dependencies("d/d")
-        assert d == Dependencies("c/c")
-        d -= Dependencies("c/c")
-        assert d == Dependencies()
+        d = self.depset("a/a b/b c/c")
+        d -= self.depset("a/a b/b")
+        assert d == self.depset("c/c")
+        d -= self.depset("d/d")
+        assert d == self.depset("c/c")
+        d -= self.depset("c/c")
+        assert d == self.depset()
         # invalid
-        for obj in [None, "s", License()]:
+        for obj in [None, "s", req_use()]:
             with pytest.raises(TypeError):
                 d -= obj
 
         # & operator
-        d = Dependencies("a/a b/b c/c")
-        assert (d & Dependencies("a/a b/b")) == Dependencies("a/a b/b")
-        assert (d & Dependencies("c/c")) == Dependencies("c/c")
-        assert (d & Dependencies("d/d")) == Dependencies()
-        assert (d & Dependencies()) == Dependencies()
+        d = self.depset("a/a b/b c/c")
+        assert (d & self.depset("a/a b/b")) == self.depset("a/a b/b")
+        assert (d & self.depset("c/c")) == self.depset("c/c")
+        assert (d & self.depset("d/d")) == self.depset()
+        assert (d & self.depset()) == self.depset()
         # invalid
-        for obj in [None, "s", License()]:
+        for obj in [None, "s", req_use()]:
             for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
                     x & y
 
         # | operator
-        d = Dependencies("a/a")
-        assert (d | Dependencies("a/a b/b")) == Dependencies("a/a b/b")
-        assert (d | Dependencies("c/c")) == Dependencies("a/a c/c")
-        assert (d | Dependencies()) == Dependencies("a/a")
+        d = self.depset("a/a")
+        assert (d | self.depset("a/a b/b")) == self.depset("a/a b/b")
+        assert (d | self.depset("c/c")) == self.depset("a/a c/c")
+        assert (d | self.depset()) == self.depset("a/a")
         # invalid
-        for obj in [None, "s", License()]:
+        for obj in [None, "s", req_use()]:
             for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
                     x | y
 
         # ^ operator
-        d = Dependencies("a/a b/b c/c")
-        assert (d ^ Dependencies("b/b c/c")) == Dependencies("a/a")
-        assert (d ^ Dependencies("c/c")) == Dependencies("a/a b/b")
-        assert (d ^ Dependencies("d/d")) == Dependencies("a/a b/b c/c d/d")
-        assert (d ^ Dependencies()) == Dependencies("a/a b/b c/c")
+        d = self.depset("a/a b/b c/c")
+        assert (d ^ self.depset("b/b c/c")) == self.depset("a/a")
+        assert (d ^ self.depset("c/c")) == self.depset("a/a b/b")
+        assert (d ^ self.depset("d/d")) == self.depset("a/a b/b c/c d/d")
+        assert (d ^ self.depset()) == self.depset("a/a b/b c/c")
         # invalid
-        for obj in [None, "s", License()]:
+        for obj in [None, "s", req_use()]:
             for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
                     x ^ y
 
         # - operator
-        d = Dependencies("a/a b/b c/c")
-        assert (d - Dependencies("b/b c/c")) == Dependencies("a/a")
-        assert (d - Dependencies("c/c")) == Dependencies("a/a b/b")
-        assert (d - Dependencies("d/d")) == Dependencies("a/a b/b c/c")
-        assert (d - Dependencies()) == Dependencies("a/a b/b c/c")
+        d = self.depset("a/a b/b c/c")
+        assert (d - self.depset("b/b c/c")) == self.depset("a/a")
+        assert (d - self.depset("c/c")) == self.depset("a/a b/b")
+        assert (d - self.depset("d/d")) == self.depset("a/a b/b c/c")
+        assert (d - self.depset()) == self.depset("a/a b/b c/c")
         # invalid
-        for obj in [None, "s", License()]:
+        for obj in [None, "s", req_use()]:
             for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
                     x - y
 
 
 class TestLicense:
+
+    depset = partial(DepSet, set=DepSetKind.License)
+    depspec = partial(DepSpec, set=DepSetKind.License)
+
     def test_parse(self):
-        d1 = License("a")
+        d1 = self.depset("a")
         assert str(d1) == "a"
-        assert repr(d1).startswith("<License 'a' at 0x")
+        assert repr(d1).startswith("<DepSet 'a' at 0x")
 
         with pytest.raises(PkgcraftError):
-            License("!a")
+            self.depset("!a")
 
         # invalid type
         with pytest.raises(TypeError):
-            License(None)
+            self.depset(None)
 
     def test_from_iterable(self):
         # create from iterating over DepSet
-        d = License()
-        assert d == License(d)
-        d = License("a u? ( b c )")
-        assert d == License(d)
-        assert d == License(list(d))
+        d = self.depset()
+        assert d == self.depset(d)
+        d = self.depset("a u? ( b c )")
+        assert d == self.depset(d)
+        assert d == self.depset(list(d))
         assert d == d[:]
 
         # create from parsing DepSpec strings
-        assert d == License(["a", "u? ( b c )"])
+        assert d == self.depset(["a", "u? ( b c )"])
 
         # invalid types
-        d = RequiredUse("a")
+        d = DepSet("a", set=DepSetKind.RequiredUse)
         with pytest.raises(PkgcraftError):
-            License(d)
+            self.depset(d)
 
 
 class TestProperties:
+
+    depset = partial(DepSet, set=DepSetKind.Properties)
+    depspec = partial(DepSpec, set=DepSetKind.Properties)
+
     def test_parse(self):
-        d1 = Properties("a")
+        d1 = self.depset("a")
         assert str(d1) == "a"
-        assert repr(d1).startswith("<Properties 'a' at 0x")
+        assert repr(d1).startswith("<DepSet 'a' at 0x")
 
         with pytest.raises(PkgcraftError):
-            Properties("!a")
+            self.depset("!a")
 
         # invalid type
         with pytest.raises(TypeError):
-            Properties(None)
+            self.depset(None)
 
     def test_from_iterable(self):
         # create from iterating over DepSet
-        d = Properties()
-        assert d == Properties(d)
-        d = Properties("a u? ( b c )")
-        assert d == Properties(d)
-        assert d == Properties(list(d))
+        d = self.depset()
+        assert d == self.depset(d)
+        d = self.depset("a u? ( b c )")
+        assert d == self.depset(d)
+        assert d == self.depset(list(d))
         assert d == d[:]
 
         # create from parsing DepSpec strings
-        assert d == Properties(["a", "u? ( b c )"])
+        assert d == self.depset(["a", "u? ( b c )"])
 
         # invalid types
-        d = RequiredUse("a")
+        d = DepSet("a", set=DepSetKind.RequiredUse)
         with pytest.raises(PkgcraftError):
-            Properties(d)
+            self.depset(d)
 
 
 class TestRequiredUse:
+
+    depset = partial(DepSet, set=DepSetKind.RequiredUse)
+    depspec = partial(DepSpec, set=DepSetKind.RequiredUse)
+
     def test_parse(self):
-        d1 = RequiredUse("use")
+        d1 = self.depset("use")
         assert str(d1) == "use"
-        assert repr(d1).startswith("<RequiredUse 'use' at 0x")
-        d2 = RequiredUse("use", EAPI_LATEST_OFFICIAL)
+        assert repr(d1).startswith("<DepSet 'use' at 0x")
+        d2 = self.depset("use", EAPI_LATEST_OFFICIAL)
         assert d1 == d2
 
         with pytest.raises(PkgcraftError):
-            RequiredUse("use!")
+            self.depset("use!")
 
         # invalid type
         with pytest.raises(TypeError):
-            RequiredUse(None)
+            self.depset(None)
 
     def test_from_iterable(self):
         # create from iterating over DepSet
-        d = RequiredUse()
-        assert d == RequiredUse(d)
-        d = RequiredUse("a u? ( b c )")
-        assert d == RequiredUse(d)
-        assert d == RequiredUse(list(d))
+        d = self.depset()
+        assert d == self.depset(d)
+        d = self.depset("a u? ( b c )")
+        assert d == self.depset(d)
+        assert d == self.depset(list(d))
         assert d == d[:]
 
         # create from parsing DepSpec strings
-        assert d == RequiredUse(["a", "u? ( b c )"])
+        assert d == self.depset(["a", "u? ( b c )"])
 
         # invalid types
-        d = Properties("a")
+        d = DepSet("a", set=DepSetKind.Properties)
         with pytest.raises(PkgcraftError):
-            RequiredUse(d)
+            self.depset(d)
 
 
 class TestRestrict:
+
+    depset = partial(DepSet, set=DepSetKind.Restrict)
+    depspec = partial(DepSpec, set=DepSetKind.Restrict)
+
     def test_parse(self):
-        d1 = Restrict("a")
+        d1 = self.depset("a")
         assert str(d1) == "a"
-        assert repr(d1).startswith("<Restrict 'a' at 0x")
+        assert repr(d1).startswith("<DepSet 'a' at 0x")
 
         with pytest.raises(PkgcraftError):
-            Restrict("!a")
+            self.depset("!a")
 
         # invalid type
         with pytest.raises(TypeError):
-            Restrict(None)
+            self.depset(None)
 
     def test_from_iterable(self):
         # create from iterating over DepSet
-        d = Restrict()
-        assert d == Restrict(d)
-        d = Restrict("a u? ( b c )")
-        assert d == Restrict(d)
-        assert d == Restrict(list(d))
+        d = self.depset()
+        assert d == self.depset(d)
+        d = self.depset("a u? ( b c )")
+        assert d == self.depset(d)
+        assert d == self.depset(list(d))
         assert d == d[:]
 
         # create from parsing DepSpec strings
-        assert d == Restrict(["a", "u? ( b c )"])
+        assert d == self.depset(["a", "u? ( b c )"])
 
         # invalid types
-        d = Properties("a")
+        d = DepSet("a", set=DepSetKind.Properties)
         with pytest.raises(PkgcraftError):
-            Restrict(d)
+            self.depset(d)
 
 
 class TestSrcUri:
+
+    depset = partial(DepSet, set=DepSetKind.SrcUri)
+    depspec = partial(DepSpec, set=DepSetKind.SrcUri)
+
     def test_parse(self):
-        d1 = SrcUri("a")
+        d1 = self.depset("a")
         assert str(d1) == "a"
-        assert repr(d1).startswith("<SrcUri 'a' at 0x")
-        d2 = SrcUri("a", EAPI_LATEST_OFFICIAL)
+        assert repr(d1).startswith("<DepSet 'a' at 0x")
+        d2 = self.depset("a", EAPI_LATEST_OFFICIAL)
         assert d1 == d2
 
         with pytest.raises(PkgcraftError):
-            SrcUri("http://a/")
+            self.depset("http://a/")
 
         # invalid type
         with pytest.raises(TypeError):
-            SrcUri(None)
+            self.depset(None)
 
     def test_from_iterable(self):
         # create from iterating over DepSet
-        d = SrcUri()
-        assert d == SrcUri(d)
-        d = SrcUri("a u? ( b c )")
-        assert d == SrcUri(d)
-        assert d == SrcUri(list(d))
+        d = self.depset()
+        assert d == self.depset(d)
+        d = self.depset("a u? ( b c )")
+        assert d == self.depset(d)
+        assert d == self.depset(list(d))
         assert d == d[:]
 
         # create from parsing DepSpec strings
-        assert d == SrcUri(["a", "u? ( b c )"])
+        assert d == self.depset(["a", "u? ( b c )"])
 
         # invalid types
-        d = Properties("a")
+        d = DepSet("a", set=DepSetKind.Properties)
         with pytest.raises(PkgcraftError):
-            SrcUri(d)
+            self.depset(d)

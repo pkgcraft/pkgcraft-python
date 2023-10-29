@@ -577,9 +577,11 @@ cdef extern from "pkgcraft.h":
 
     # Perform a set operation on two DepSets, assigning to the first.
     #
+    # Returns NULL on error.
+    #
     # # Safety
     # The arguments must be non-null DepSet pointers.
-    void pkgcraft_dep_set_assign_op_set(SetOp op, DepSet *d1, DepSet *d2)
+    DepSet *pkgcraft_dep_set_assign_op_set(SetOp op, DepSet *d1, DepSet *d2)
 
     # Determine if a DepSet contains a given DepSpec.
     #
@@ -730,6 +732,8 @@ cdef extern from "pkgcraft.h":
     uintptr_t pkgcraft_dep_set_len(DepSet *d)
 
     # Perform a set operation on two DepSets, creating a new set.
+    #
+    # Returns NULL on error.
     #
     # # Safety
     # The arguments must be non-null DepSet pointers.
