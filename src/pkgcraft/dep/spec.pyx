@@ -431,7 +431,7 @@ cdef class DepSet:
         op = C.SetOp.SET_OP_AND
         if isinstance(other, DepSet):
             obj = <DepSet>other
-            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr) is not NULL:
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr):
                 return self
             raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
@@ -443,7 +443,7 @@ cdef class DepSet:
         op = C.SetOp.SET_OP_OR
         if isinstance(other, DepSet):
             obj = <DepSet>other
-            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr) is not NULL:
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr):
                 return self
             raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
@@ -455,7 +455,7 @@ cdef class DepSet:
         op = C.SetOp.SET_OP_XOR
         if isinstance(other, DepSet):
             obj = <DepSet>other
-            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr) is not NULL:
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr):
                 return self
             raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
@@ -467,7 +467,7 @@ cdef class DepSet:
         op = C.SetOp.SET_OP_SUB
         if isinstance(other, DepSet):
             obj = <DepSet>other
-            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr) is not NULL:
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr):
                 return self
             raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
