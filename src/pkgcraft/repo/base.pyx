@@ -179,8 +179,7 @@ cdef class _IterCpv:
         return self
 
     def __next__(self):
-        ptr = C.pkgcraft_repo_iter_cpv_next(self.ptr)
-        if ptr is not NULL:
+        if ptr := C.pkgcraft_repo_iter_cpv_next(self.ptr):
             return Cpv.from_ptr(ptr)
         raise StopIteration
 
@@ -198,8 +197,7 @@ cdef class _Iter:
         return self
 
     def __next__(self):
-        ptr = C.pkgcraft_repo_iter_next(self.ptr)
-        if ptr is not NULL:
+        if ptr := C.pkgcraft_repo_iter_next(self.ptr):
             return Pkg.from_ptr(ptr)
         raise StopIteration
 
@@ -218,8 +216,7 @@ cdef class _IterRestrict:
         return self
 
     def __next__(self):
-        ptr = C.pkgcraft_repo_iter_restrict_next(self.ptr)
-        if ptr is not NULL:
+        if ptr := C.pkgcraft_repo_iter_restrict_next(self.ptr):
             return Pkg.from_ptr(ptr)
         raise StopIteration
 

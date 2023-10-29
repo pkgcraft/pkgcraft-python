@@ -275,8 +275,7 @@ cdef class _Iter:
         return self
 
     def __next__(self):
-        ptr = C.pkgcraft_repo_set_iter_next(self.ptr)
-        if ptr is not NULL:
+        if ptr := C.pkgcraft_repo_set_iter_next(self.ptr):
             return Pkg.from_ptr(ptr)
         raise StopIteration
 

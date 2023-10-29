@@ -547,8 +547,7 @@ cdef class _IntoIter:
         return self
 
     def __next__(self):
-        ptr = C.pkgcraft_dep_set_into_iter_next(self.ptr)
-        if ptr is not NULL:
+        if ptr := C.pkgcraft_dep_set_into_iter_next(self.ptr):
             return DepSpec.from_ptr(ptr)
         raise StopIteration
 
@@ -571,8 +570,7 @@ cdef class _IntoIterConditionals:
         return self
 
     def __next__(self):
-        ptr = C.pkgcraft_dep_set_into_iter_conditionals_next(self.ptr)
-        if ptr is not NULL:
+        if ptr := C.pkgcraft_dep_set_into_iter_conditionals_next(self.ptr):
             return cstring_to_str(<char *>ptr)
         raise StopIteration
 
@@ -599,8 +597,7 @@ cdef class _IntoIterFlatten:
         return self
 
     def __next__(self):
-        ptr = C.pkgcraft_dep_set_into_iter_flatten_next(self.ptr)
-        if ptr is not NULL:
+        if ptr := C.pkgcraft_dep_set_into_iter_flatten_next(self.ptr):
             if self.set == C.DEP_SET_KIND_DEPENDENCIES:
                 return Dep.from_ptr(<C.Dep *>ptr)
             elif self.set == C.DEP_SET_KIND_SRC_URI:
@@ -628,8 +625,7 @@ cdef class _IntoIterRecursive:
         return self
 
     def __next__(self):
-        ptr = C.pkgcraft_dep_set_into_iter_recursive_next(self.ptr)
-        if ptr is not NULL:
+        if ptr := C.pkgcraft_dep_set_into_iter_recursive_next(self.ptr):
             return DepSpec.from_ptr(ptr)
         raise StopIteration
 
