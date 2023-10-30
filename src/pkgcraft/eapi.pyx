@@ -13,7 +13,7 @@ EAPIS_OFFICIAL = get_official_eapis()
 EAPIS = get_eapis()
 
 
-cdef object get_official_eapis():
+cdef get_official_eapis():
     """Get the mapping of all official EAPIs."""
     cdef size_t length
     c_eapis = C.pkgcraft_eapis_official(&length)
@@ -29,7 +29,7 @@ cdef object get_official_eapis():
     return MappingProxyType(d)
 
 
-cdef object get_eapis():
+cdef get_eapis():
     """Get the mapping of all known EAPIs."""
     cdef size_t length
     d = EAPIS_OFFICIAL.copy()
