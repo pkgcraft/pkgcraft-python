@@ -10,7 +10,6 @@ cdef class Pkg(_IndirectInit):
     # cached fields
     cdef Cpv _cpv
     cdef Eapi _eapi
-    cdef Version _version
     cdef int _hash
 
     @staticmethod

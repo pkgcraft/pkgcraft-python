@@ -1,6 +1,6 @@
 from .. cimport C
 from .._misc cimport cstring_to_str
-from ..dep cimport Cpv, Version
+from ..dep cimport Cpv
 from ..eapi cimport Eapi
 from ..error cimport _IndirectInit
 from ..repo cimport Repo
@@ -80,9 +80,7 @@ cdef class Pkg(_IndirectInit):
     @property
     def version(self):
         """Get a package's version."""
-        if self._version is None:
-            self._version = Version.from_ptr(C.pkgcraft_pkg_version(self.ptr))
-        return self._version
+        return self.cpv.version
 
     def matches(self, Restrict r not None):
         """Determine if a restriction matches a package."""
