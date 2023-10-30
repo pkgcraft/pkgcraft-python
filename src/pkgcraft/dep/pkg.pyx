@@ -4,7 +4,7 @@ from enum import IntEnum
 cimport cython
 
 from .. cimport C
-from .._misc cimport SENTINEL, cstring_array_to_tuple, cstring_to_str
+from .._misc cimport SENTINEL, CStringIter, cstring_to_str
 from ..eapi cimport Eapi
 from ..restrict cimport Restrict
 from . cimport Cpv
@@ -12,6 +12,7 @@ from .version cimport Version
 
 from ..eapi import EAPI_LATEST
 from ..error import InvalidDep
+from ..types import OrderedFrozenSet
 
 
 # TODO: merge with Dep.cached function when cython bug is fixed
@@ -80,8 +81,8 @@ cdef class Dep:
     '0'
     >>> dep.subslot
     '2'
-    >>> dep.use
-    ('a', 'b')
+    >>> list(dep.use)
+    ['a', 'b']
     >>> dep.repo
     'repo'
 
@@ -296,19 +297,21 @@ cdef class Dep:
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2[a,b,c]')
-        >>> dep.use
-        ('a', 'b', 'c')
+        >>> list(dep.use)
+        ['a', 'b', 'c']
         >>> dep = Dep('=cat/pkg-1-r2[-a(-),b(+)=,!c(-)?]')
-        >>> dep.use
-        ('-a(-)', 'b(+)=', '!c(-)?')
+        >>> list(dep.use)
+        ['-a(-)', 'b(+)=', '!c(-)?']
         >>> dep = Dep('=cat/pkg-1-r2')
         >>> dep.use is None
         True
         """
         cdef size_t length
         if self._use is SENTINEL:
-            c_strs = C.pkgcraft_dep_use_deps(self.ptr, &length)
-            self._use = cstring_array_to_tuple(c_strs, length)
+            if c_strs := C.pkgcraft_dep_use_deps(self.ptr, &length):
+                self._use = OrderedFrozenSet(CStringIter.create(c_strs, length))
+            else:
+                self._use = None
         return self._use
 
     @property

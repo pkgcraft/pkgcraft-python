@@ -9,6 +9,7 @@ from pkgcraft.dep import Blocker, Cpn, Cpv, Dep, Operator, Revision, SlotOperato
 from pkgcraft.eapi import EAPI_LATEST, EAPI_LATEST_OFFICIAL, EAPIS, eapi_range
 from pkgcraft.error import InvalidDep
 from pkgcraft.restrict import Restrict
+from pkgcraft.types import OrderedFrozenSet
 
 from ..misc import TEST_DATA, OperatorIterMap, OperatorMap
 
@@ -61,7 +62,7 @@ class TestDep:
         assert dep.subslot == "2"
         assert dep.slot_op == SlotOperator.Equal
         assert dep.slot_op == "="
-        assert dep.use == ("a", "b", "c")
+        assert dep.use == ["a", "b", "c"]
         assert dep.repo == "repo"
         assert dep.version == Version(">=1-r2")
         assert dep.op == Operator.GreaterOrEqual
@@ -140,7 +141,7 @@ class TestDep:
             "revision": Revision,
             "version": Version,
             "slot_op": SlotOperator.from_str,
-            "use": tuple,
+            "use": OrderedFrozenSet,
         }
 
         for entry in TEST_DATA.toml("dep.toml")["valid"]:
