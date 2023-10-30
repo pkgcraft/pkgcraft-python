@@ -2,6 +2,7 @@ from enum import IntEnum
 
 from .. cimport C
 from .._misc cimport cstring_to_str
+
 from ..error import InvalidVersion
 
 
@@ -30,6 +31,76 @@ class Operator(IntEnum):
         return int(self) == other
 
 
+cdef class Revision:
+    """Package revision."""
+
+    def __init__(self, str s not None):
+        self.ptr = C.pkgcraft_revision_new(s.encode())
+        if self.ptr is NULL:
+            raise InvalidVersion
+
+    @staticmethod
+    cdef Revision from_ptr(C.Revision *ptr):
+        """Convert a Revision pointer to a Revision object."""
+        obj = <Revision>Revision.__new__(Revision)
+        obj.ptr = ptr
+        return obj
+
+    def __bool__(self):
+        return bool(str(self))
+
+    def __lt__(self, other):
+        if isinstance(other, Revision):
+            return C.pkgcraft_revision_cmp(self.ptr, (<Revision>other).ptr) == -1
+        return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, Revision):
+            return C.pkgcraft_revision_cmp(self.ptr, (<Revision>other).ptr) <= 0
+        return NotImplemented
+
+    def __eq__(self, other):
+        if isinstance(other, Revision):
+            return C.pkgcraft_revision_cmp(self.ptr, (<Revision>other).ptr) == 0
+        elif other is None:
+            return not self
+        return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, Revision):
+            return C.pkgcraft_revision_cmp(self.ptr, (<Revision>other).ptr) != 0
+        return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, Revision):
+            return C.pkgcraft_revision_cmp(self.ptr, (<Revision>other).ptr) >= 0
+        return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, Revision):
+            return C.pkgcraft_revision_cmp(self.ptr, (<Revision>other).ptr) == 1
+        return NotImplemented
+
+    def __str__(self):
+        return cstring_to_str(C.pkgcraft_revision_str(self.ptr))
+
+    def __repr__(self):
+        addr = <size_t>&self.ptr
+        name = self.__class__.__name__
+        return f"<{name} '{self}' at 0x{addr:0x}>"
+
+    def __hash__(self):
+        if not self._hash:
+            self._hash = C.pkgcraft_revision_hash(self.ptr)
+        return self._hash
+
+    def __reduce__(self):
+        return self.__class__, (str(self),)
+
+    def __dealloc__(self):
+        C.pkgcraft_revision_free(self.ptr)
+
+
 cdef class Version:
     """Package version.
 
@@ -37,12 +108,12 @@ cdef class Version:
 
     Simple version
     >>> v = Version('1')
-    >>> v.revision is None
+    >>> v.revision == None
     True
 
     Revisioned version
     >>> v = Version('1-r2')
-    >>> v.revision
+    >>> str(v.revision)
     '2'
 
     Invalid version
@@ -116,16 +187,18 @@ cdef class Version:
 
         >>> from pkgcraft.dep import Version
         >>> v = Version('1-r2')
-        >>> v.revision
+        >>> str(v.revision)
         '2'
         >>> v = Version('1')
-        >>> v.revision is None
-        True
+        >>> str(v.revision)
+        ''
         >>> v = Version('1-r0')
-        >>> v.revision
+        >>> str(v.revision)
         '0'
         """
-        return cstring_to_str(C.pkgcraft_version_revision(self.ptr))
+        if self._revision is None:
+            self._revision = Revision.from_ptr(C.pkgcraft_version_revision(self.ptr))
+        return self._revision
 
     def intersects(self, Version other not None):
         """Determine if two versions intersect.

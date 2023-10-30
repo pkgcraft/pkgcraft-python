@@ -2,7 +2,7 @@ import pickle
 
 import pytest
 
-from pkgcraft.dep import Cpv, Dep, Version
+from pkgcraft.dep import Cpv, Dep, Revision, Version
 from pkgcraft.error import InvalidCpv
 from pkgcraft.restrict import Restrict
 
@@ -15,7 +15,7 @@ class TestCpv:
         assert a.category == "cat"
         assert a.package == "pkg"
         assert a.version == Version("1-r2")
-        assert a.revision == "2"
+        assert a.revision == Revision("2")
         assert a.p == "pkg-1"
         assert a.pf == "pkg-1-r2"
         assert a.pr == "r2"

@@ -5,7 +5,7 @@ import re
 
 import pytest
 
-from pkgcraft.dep import Blocker, Cpn, Cpv, Dep, Operator, SlotOperator, Version
+from pkgcraft.dep import Blocker, Cpn, Cpv, Dep, Operator, Revision, SlotOperator, Version
 from pkgcraft.eapi import EAPI_LATEST, EAPI_LATEST_OFFICIAL, EAPIS, eapi_range
 from pkgcraft.error import InvalidDep
 from pkgcraft.restrict import Restrict
@@ -66,7 +66,7 @@ class TestDep:
         assert dep.version == Version(">=1-r2")
         assert dep.op == Operator.GreaterOrEqual
         assert dep.op == ">="
-        assert dep.revision == "2"
+        assert dep.revision == Revision("2")
         assert dep.p == "pkg-1"
         assert dep.pf == "pkg-1-r2"
         assert dep.pr == "r2"
@@ -137,6 +137,7 @@ class TestDep:
         # converters for toml data
         converters = {
             "blocker": Blocker.from_str,
+            "revision": Revision,
             "version": Version,
             "slot_op": SlotOperator.from_str,
             "use": tuple,

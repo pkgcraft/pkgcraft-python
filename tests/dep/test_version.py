@@ -3,7 +3,7 @@ import pickle
 
 import pytest
 
-from pkgcraft.dep import Operator, Version
+from pkgcraft.dep import Operator, Revision, Version
 from pkgcraft.error import InvalidVersion
 
 from ..misc import TEST_DATA, OperatorIterMap, OperatorMap
@@ -27,7 +27,7 @@ class TestVersion:
         v = Version("1")
         assert v.op is None
         assert v.base == "1"
-        assert v.revision is None
+        assert v.revision == None
         assert str(v) == "1"
         assert repr(v).startswith("<Version '1' at 0x")
 
@@ -35,7 +35,7 @@ class TestVersion:
         v = Version("1-r1")
         assert v.op is None
         assert v.base == "1"
-        assert v.revision == "1"
+        assert v.revision == Revision("1")
         assert str(v) == "1-r1"
         assert repr(v).startswith("<Version '1-r1' at 0x")
 
@@ -43,7 +43,7 @@ class TestVersion:
         v = Version("1-r0")
         assert v.op is None
         assert v.base == "1"
-        assert v.revision == "0"
+        assert v.revision == Revision("0")
         assert str(v) == "1-r0"
         assert repr(v).startswith("<Version '1-r0' at 0x")
 
@@ -51,7 +51,7 @@ class TestVersion:
         v = Version("<1_alpha")
         assert v.op == "<"
         assert v.base == "1_alpha"
-        assert v.revision is None
+        assert v.revision == None
         assert str(v) == "<1_alpha"
         assert repr(v).startswith("<Version '<1_alpha' at 0x")
 
@@ -59,7 +59,7 @@ class TestVersion:
         v = Version(">=1_beta2-r3")
         assert v.op == ">="
         assert v.base == "1_beta2"
-        assert v.revision == "3"
+        assert v.revision == Revision("3")
         assert str(v) == ">=1_beta2-r3"
         assert repr(v).startswith("<Version '>=1_beta2-r3' at 0x")
 

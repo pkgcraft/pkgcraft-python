@@ -102,13 +102,13 @@ cdef class Cpv:
 
         >>> from pkgcraft.dep import Cpv
         >>> cpv = Cpv('cat/pkg-1-r2')
-        >>> cpv.revision
+        >>> str(cpv.revision)
         '2'
         >>> cpv = Cpv('cat/pkg-1-r0')
-        >>> cpv.revision
+        >>> str(cpv.revision)
         '0'
         >>> cpv = Cpv('cat/pkg-1')
-        >>> cpv.revision is None
+        >>> cpv.revision == None
         True
         """
         return self.version.revision

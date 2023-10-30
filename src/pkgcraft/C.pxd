@@ -162,6 +162,9 @@ cdef extern from "pkgcraft.h":
     cdef struct Restrict:
         pass
 
+    cdef struct Revision:
+        pass
+
     # Uri object.
     cdef struct Uri:
         pass
@@ -1678,6 +1681,39 @@ cdef extern from "pkgcraft.h":
     # The arguments must be Restrict pointers.
     Restrict *pkgcraft_restrict_xor(Restrict *r1, Restrict *r2)
 
+    # Compare two revisions returning -1, 0, or 1 if the first is less than, equal to, or greater
+    # than the second, respectively.
+    #
+    # # Safety
+    # The revision arguments should be non-null Revision pointers.
+    int pkgcraft_revision_cmp(Revision *r1, Revision *r2)
+
+    # Free a revision.
+    #
+    # # Safety
+    # The revision argument should be a non-null Revision pointer.
+    void pkgcraft_revision_free(Revision *r)
+
+    # Return the hash value for a revision.
+    #
+    # # Safety
+    # The revision argument should be a non-null Revision pointer.
+    uint64_t pkgcraft_revision_hash(Revision *r)
+
+    # Parse a string into a revision.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a valid UTF-8 string.
+    Revision *pkgcraft_revision_new(const char *s)
+
+    # Return a revision's string value.
+    #
+    # # Safety
+    # The revision argument should be a non-null Revision pointer.
+    char *pkgcraft_revision_str(Revision *r)
+
     # Free an array of strings.
     #
     # # Safety
@@ -1720,8 +1756,8 @@ cdef extern from "pkgcraft.h":
     # The version argument should be a non-null Version pointer.
     char *pkgcraft_version_base(Version *v)
 
-    # Compare two versions returning -1, 0, or 1 if the first version is less than, equal to, or greater
-    # than the second version, respectively.
+    # Compare two versions returning -1, 0, or 1 if the first is less than, equal to, or greater than
+    # the second, respectively.
     #
     # # Safety
     # The version arguments should be non-null Version pointers.
@@ -1771,11 +1807,9 @@ cdef extern from "pkgcraft.h":
 
     # Return a version's revision, e.g. the version "1-r2" has a revision of "2".
     #
-    # Returns NULL on nonexistence.
-    #
     # # Safety
     # The version argument should be a non-null Version pointer.
-    char *pkgcraft_version_revision(Version *v)
+    Revision *pkgcraft_version_revision(Version *v)
 
     # Return a version's string value without operator.
     #
