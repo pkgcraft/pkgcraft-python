@@ -386,14 +386,6 @@ cdef extern from "pkgcraft.h":
     # The arguments must be valid Restrict and Cpv pointers.
     bool pkgcraft_cpv_restrict_matches(Cpv *c, Restrict *r)
 
-    # Get the revision of a Cpv object.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Cpv pointer.
-    char *pkgcraft_cpv_revision(Cpv *c)
-
     # Return the string for a Cpv object.
     #
     # # Safety
@@ -568,15 +560,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The arguments must be valid Restrict and Dep pointers.
     bool pkgcraft_dep_restrict_matches(Dep *d, Restrict *r)
-
-    # Get the revision of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "2".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Dep pointer.
-    char *pkgcraft_dep_revision(Dep *d)
 
     # Perform a set operation on two DepSets, assigning to the first.
     #
