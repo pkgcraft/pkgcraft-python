@@ -1790,6 +1790,8 @@ cdef extern from "pkgcraft.h":
 
     # Return a version's revision, e.g. the version "1-r2" has a revision of "2".
     #
+    # Returns NULL on nonexistence.
+    #
     # # Safety
     # The version argument should be a non-null Version pointer.
     Revision *pkgcraft_version_revision(Version *v)

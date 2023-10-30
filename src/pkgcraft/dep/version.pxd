@@ -14,7 +14,7 @@ cdef class Version:
     cdef C.Version *ptr
     # cached fields
     cdef int _hash
-    cdef Revision _revision
+    cdef object _revision
 
     @staticmethod
     cdef Version from_ptr(C.Version *)

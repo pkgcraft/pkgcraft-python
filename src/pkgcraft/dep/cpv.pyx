@@ -108,7 +108,7 @@ cdef class Cpv:
         >>> str(cpv.revision)
         '0'
         >>> cpv = Cpv('cat/pkg-1')
-        >>> cpv.revision == None
+        >>> cpv.revision is None
         True
         """
         return self.version.revision

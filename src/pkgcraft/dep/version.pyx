@@ -1,7 +1,7 @@
 from enum import IntEnum
 
 from .. cimport C
-from .._misc cimport cstring_to_str
+from .._misc cimport SENTINEL, cstring_to_str
 
 from ..error import InvalidVersion
 
@@ -108,7 +108,7 @@ cdef class Version:
 
     Simple version
     >>> v = Version('1')
-    >>> v.revision == None
+    >>> v.revision is None
     True
 
     Revisioned version
@@ -123,6 +123,9 @@ cdef class Version:
     pkgcraft.error.InvalidVersion: parsing failure: invalid version: 1a-1
     ...
     """
+    def __cinit__(self):
+        self._revision = SENTINEL
+
     def __init__(self, str s not None):
         self.ptr = C.pkgcraft_version_new(s.encode())
         if self.ptr is NULL:
@@ -190,14 +193,15 @@ cdef class Version:
         >>> str(v.revision)
         '2'
         >>> v = Version('1')
-        >>> str(v.revision)
-        ''
+        >>> v.revision is None
+        True
         >>> v = Version('1-r0')
         >>> str(v.revision)
         '0'
         """
-        if self._revision is None:
-            self._revision = Revision.from_ptr(C.pkgcraft_version_revision(self.ptr))
+        if self._revision is SENTINEL:
+            ptr = C.pkgcraft_version_revision(self.ptr)
+            self._revision = Revision.from_ptr(ptr) if ptr is not NULL else None
         return self._revision
 
     def intersects(self, Version other not None):

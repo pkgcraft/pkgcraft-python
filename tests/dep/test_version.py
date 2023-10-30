@@ -27,7 +27,7 @@ class TestVersion:
         v = Version("1")
         assert v.op is None
         assert v.base == "1"
-        assert v.revision == None
+        assert v.revision is None
         assert str(v) == "1"
         assert repr(v).startswith("<Version '1' at 0x")
 
@@ -51,7 +51,7 @@ class TestVersion:
         v = Version("<1_alpha")
         assert v.op == "<"
         assert v.base == "1_alpha"
-        assert v.revision == None
+        assert v.revision is None
         assert str(v) == "<1_alpha"
         assert repr(v).startswith("<Version '<1_alpha' at 0x")
 
