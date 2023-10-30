@@ -27,10 +27,9 @@ cdef class EbuildPkg(Pkg):
     @property
     def ebuild(self):
         """Get a package's ebuild file content."""
-        s = cstring_to_str(C.pkgcraft_pkg_ebuild_ebuild(self.ptr))
-        if s is None:
-            raise PkgcraftError
-        return s
+        if data := cstring_to_str(C.pkgcraft_pkg_ebuild_ebuild(self.ptr)):
+            return data
+        raise PkgcraftError
 
     @property
     def description(self):
@@ -59,10 +58,9 @@ cdef class EbuildPkg(Pkg):
         Returns a DepSet encompassing all dependencies when no descriptors are passed.
         """
         array = CStringArray(keys)
-        ptr = C.pkgcraft_pkg_ebuild_dependencies(self.ptr, array.ptr, len(array))
-        if ptr is NULL:
-            raise PkgcraftError
-        return DepSet.from_ptr(ptr)
+        if ptr := C.pkgcraft_pkg_ebuild_dependencies(self.ptr, array.ptr, len(array)):
+            return DepSet.from_ptr(ptr)
+        raise PkgcraftError
 
     @property
     def bdepend(self):

@@ -22,13 +22,12 @@ cdef C.Restrict *str_to_restrict(str s) except NULL:
         pass
 
     restrict_bytes = s.encode()
-    r = C.pkgcraft_restrict_parse_dep(restrict_bytes)
-    if r is NULL:
-        r = C.pkgcraft_restrict_parse_pkg(restrict_bytes)
-    if r is NULL:
-        raise InvalidRestrict(f'invalid restriction string: {s}')
+    if r := C.pkgcraft_restrict_parse_dep(restrict_bytes):
+        return r
+    elif r := C.pkgcraft_restrict_parse_pkg(restrict_bytes):
+        return r
 
-    return r
+    raise InvalidRestrict(f'invalid restriction string: {s}')
 
 
 @cython.final
@@ -57,18 +56,16 @@ cdef class Restrict:
     @staticmethod
     def dep(str s not None):
         """Convert a string into a dependency-based restriction."""
-        ptr = C.pkgcraft_restrict_parse_dep(s.encode())
-        if ptr is NULL:
-            raise InvalidRestrict
-        return Restrict.from_ptr(ptr)
+        if ptr := C.pkgcraft_restrict_parse_dep(s.encode()):
+            return Restrict.from_ptr(ptr)
+        raise InvalidRestrict
 
     @staticmethod
     def pkg(str s not None):
         """Convert a string into a package-based restriction."""
-        ptr = C.pkgcraft_restrict_parse_pkg(s.encode())
-        if ptr is NULL:
-            raise InvalidRestrict
-        return Restrict.from_ptr(ptr)
+        if ptr := C.pkgcraft_restrict_parse_pkg(s.encode()):
+            return Restrict.from_ptr(ptr)
+        raise InvalidRestrict
 
     def matches(self, obj not None):
         """Determine if a restriction matches a given object.
