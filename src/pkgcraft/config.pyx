@@ -36,7 +36,7 @@ cdef class Config:
         path = str(path)
         id = str(id) if id is not None else path
 
-        cdef C.Repo *ptr = C.pkgcraft_config_add_repo_path(
+        ptr = C.pkgcraft_config_add_repo_path(
             self.ptr, id.encode(), int(priority), path.encode(), external)
         if ptr is NULL:
             raise PkgcraftError
@@ -59,8 +59,7 @@ cdef class Config:
 
     def load(self):
         """Load pkgcraft config files, if none are found revert to loading portage files."""
-        cdef C.Config *ptr = C.pkgcraft_config_load(self.ptr)
-        if ptr is NULL:
+        if C.pkgcraft_config_load(self.ptr) is NULL:
             raise PkgcraftError
 
         # force repos attr refresh
@@ -69,8 +68,7 @@ cdef class Config:
     def load_portage_conf(self, path=None):
         """Load portage config files from a given directory, falling back to default locations."""
         path = str(path).encode() if path is not None else None
-        cdef C.Config *ptr = C.pkgcraft_config_load_portage_conf(self.ptr, path)
-        if ptr is NULL:
+        if C.pkgcraft_config_load_portage_conf(self.ptr, path) is NULL:
             raise PkgcraftError
 
         # force repos attr refresh
