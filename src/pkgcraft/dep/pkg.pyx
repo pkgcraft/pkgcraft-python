@@ -160,7 +160,10 @@ cdef class Dep:
         'cat/pkg:4/5[a,b]'
         >>> str(d.without(DepFields.UseDeps | DepFields.Version))
         'cat/pkg:4/5'
-        >>> fields = DepFields.UseDeps | DepFields.Version | DepFields.Slot | DepFields.Subslot
+        >>> fields = DepFields.UseDeps | DepFields.Version | DepFields.Subslot
+        >>> str(d.without(fields))
+        'cat/pkg:4'
+        >>> fields = DepFields.UseDeps | DepFields.Version | DepFields.Slot
         >>> str(d.without(fields))
         'cat/pkg'
         """
