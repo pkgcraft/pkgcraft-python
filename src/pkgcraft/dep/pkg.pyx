@@ -1,10 +1,10 @@
 import functools
-from enum import IntEnum
+from enum import IntEnum, IntFlag
 
 cimport cython
 
 from .. cimport C
-from .._misc cimport SENTINEL, CStringArray, CStringIter, cstring_to_str
+from .._misc cimport SENTINEL, CStringIter, cstring_to_str
 from ..eapi cimport Eapi
 from ..restrict cimport Restrict
 from . cimport Cpv
@@ -62,6 +62,17 @@ class SlotOperator(IntEnum):
         if isinstance(other, str):
             return str(self) == other
         return int(self) == other
+
+
+# TODO: use values exported from pkgcraft
+class DepFields(IntFlag):
+    Blocker = 1
+    Version = 1 << 1
+    Slot = 1 << 2
+    Subslot = 1 << 3
+    SlotOp = 1 << 4
+    UseDeps = 1 << 5
+    Repo = 1 << 6
 
 
 cdef class Dep:
@@ -135,26 +146,25 @@ cdef class Dep:
             raise InvalidDep
         return valid
 
-    def without(self, *fields):
-        """Return a Dep dropping named fields.
+    def without(self, int fields):
+        """Return a Dep dropping the specified fields.
 
-        >>> from pkgcraft.dep import Dep
+        Note that when using this in a tight loop, the fields argument should
+        be precalculated to avoid IntFlag enum overhead.
+
+        >>> from pkgcraft.dep import Dep, DepFields
         >>> d = Dep('>=cat/pkg-1.2-r3:4/5[a,b]')
-        >>> d is d.without()
-        True
-        >>> str(d.without("use_deps"))
+        >>> str(d.without(DepFields.UseDeps))
         '>=cat/pkg-1.2-r3:4/5'
-        >>> str(d.without("version"))
+        >>> str(d.without(DepFields.Version))
         'cat/pkg:4/5[a,b]'
-        >>> str(d.without("use_deps", "version"))
+        >>> str(d.without(DepFields.UseDeps | DepFields.Version))
         'cat/pkg:4/5'
-        >>> str(d.without("use_deps", "version"))
-        'cat/pkg:4/5'
-        >>> str(d.without("use_deps", "version", "slot", "subslot"))
+        >>> fields = DepFields.UseDeps | DepFields.Version | DepFields.Slot | DepFields.Subslot
+        >>> str(d.without(fields))
         'cat/pkg'
         """
-        array = CStringArray(fields)
-        ptr = C.pkgcraft_dep_without(self.ptr, array.ptr, len(array))
+        ptr = C.pkgcraft_dep_without(self.ptr, fields)
         if ptr == self.ptr:
             return self
         elif ptr is NULL:
