@@ -4,14 +4,14 @@ from enum import IntEnum
 cimport cython
 
 from .. cimport C
-from .._misc cimport SENTINEL, CStringIter, cstring_to_str
+from .._misc cimport SENTINEL, CStringArray, CStringIter, cstring_to_str
 from ..eapi cimport Eapi
 from ..restrict cimport Restrict
 from . cimport Cpv
 from .version cimport Version
 
 from ..eapi import EAPI_LATEST
-from ..error import InvalidDep
+from ..error import InvalidDep, PkgcraftError
 from ..types import OrderedFrozenSet
 
 
@@ -135,21 +135,26 @@ cdef class Dep:
             raise InvalidDep
         return valid
 
-    @property
-    def no_use_deps(self):
-        """Return a Dep without USE dependencies.
+    def without(self, *fields):
+        """Return a Dep dropping named fields.
 
         >>> from pkgcraft.dep import Dep
-        >>> d1 = Dep('cat/pkg[a,b]')
-        >>> d1.use_deps == ["a", "b"]
-        True
-        >>> d2 = d1.no_use_deps
-        >>> d2.use_deps is None
-        True
+        >>> d = Dep('>=cat/pkg-1.2-r3[a,b]')
+        >>> str(d)
+        '>=cat/pkg-1.2-r3[a,b]'
+        >>> str(d.without("use_deps"))
+        '>=cat/pkg-1.2-r3'
+        >>> str(d.without("version"))
+        'cat/pkg[a,b]'
+        >>> str(d.without("use_deps", "version"))
+        'cat/pkg'
         """
-        ptr = C.pkgcraft_dep_no_use_deps(self.ptr)
+        array = CStringArray(fields)
+        ptr = C.pkgcraft_dep_without(self.ptr, array.ptr, len(array))
         if ptr == self.ptr:
             return self
+        elif ptr is NULL:
+            raise PkgcraftError
         return Dep.from_ptr(ptr)
 
     @property

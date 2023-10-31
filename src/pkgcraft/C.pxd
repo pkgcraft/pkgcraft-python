@@ -492,12 +492,6 @@ cdef extern from "pkgcraft.h":
     # The argument must be a UTF-8 string.
     Dep *pkgcraft_dep_new_cpn(const char *s)
 
-    # Return a given package dependency without USE dependencies.
-    #
-    # # Safety
-    # The argument must be a non-null Dep pointer.
-    Dep *pkgcraft_dep_no_use_deps(Dep *d)
-
     # Get the package and revision of a package dependency.
     # For example, the package dependency "=cat/pkg-1-r2" returns "pkg-1".
     #
@@ -894,6 +888,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Dep pointer.
     Version *pkgcraft_dep_version(Dep *d)
+
+    # Return a given package dependency without the named fields.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer and valid field names.
+    Dep *pkgcraft_dep_without(Dep *d, char **names, uintptr_t len)
 
     # Return an EAPI's identifier.
     #
