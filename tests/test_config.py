@@ -1,4 +1,5 @@
 import textwrap
+from operator import iand, ior, isub, ixor
 
 import pytest
 
@@ -95,6 +96,11 @@ class TestConfig:
         r2 = make_fake_repo(config=config)
         assert config.repos.all == RepoSet(r1, r2)
         assert config.repos.ebuild == RepoSet(r1)
+
+        # repo_set attrs are immutable
+        for op_func in (iand, ior, isub, ixor):
+            with pytest.raises(TypeError):
+                op_func(config.repos.all, RepoSet())
 
     def test_load_portage_conf(self, config, make_raw_ebuild_repo, tmp_path):
         repo_path = make_raw_ebuild_repo().path
