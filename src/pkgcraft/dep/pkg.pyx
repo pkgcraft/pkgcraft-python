@@ -81,7 +81,7 @@ cdef class Dep:
     '0'
     >>> dep.subslot
     '2'
-    >>> list(dep.use)
+    >>> list(dep.use_deps)
     ['a', 'b']
     >>> dep.repo
     'repo'
@@ -95,7 +95,7 @@ cdef class Dep:
     """
     def __cinit__(self):
         self._version = SENTINEL
-        self._use = SENTINEL
+        self._use_deps = SENTINEL
         self.eapi = EAPI_LATEST
 
     def __init__(self, str s not None, /, eapi=None):
@@ -141,10 +141,10 @@ cdef class Dep:
 
         >>> from pkgcraft.dep import Dep
         >>> d1 = Dep('cat/pkg[a,b]')
-        >>> d1.use == ["a", "b"]
+        >>> d1.use_deps == ["a", "b"]
         True
         >>> d2 = d1.no_use_deps
-        >>> d2.use is None
+        >>> d2.use_deps is None
         True
         """
         ptr = C.pkgcraft_dep_no_use_deps(self.ptr)
@@ -309,27 +309,27 @@ cdef class Dep:
         return None
 
     @property
-    def use(self):
+    def use_deps(self):
         """Get the USE dependencies of a package dependency.
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2[a,b,c]')
-        >>> list(dep.use)
+        >>> list(dep.use_deps)
         ['a', 'b', 'c']
         >>> dep = Dep('=cat/pkg-1-r2[-a(-),b(+)=,!c(-)?]')
-        >>> list(dep.use)
+        >>> list(dep.use_deps)
         ['-a(-)', 'b(+)=', '!c(-)?']
         >>> dep = Dep('=cat/pkg-1-r2')
-        >>> dep.use is None
+        >>> dep.use_deps is None
         True
         """
         cdef size_t length
-        if self._use is SENTINEL:
+        if self._use_deps is SENTINEL:
             if c_strs := C.pkgcraft_dep_use_deps(self.ptr, &length):
-                self._use = OrderedFrozenSet(CStringIter.create(c_strs, length))
+                self._use_deps = OrderedFrozenSet(CStringIter.create(c_strs, length))
             else:
-                self._use = None
-        return self._use
+                self._use_deps = None
+        return self._use_deps
 
     @property
     def repo(self):

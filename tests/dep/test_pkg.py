@@ -38,7 +38,7 @@ class TestDep:
         assert dep.slot is None
         assert dep.subslot is None
         assert dep.slot_op is None
-        assert dep.use is None
+        assert dep.use_deps is None
         assert dep.repo is None
         assert dep.version is None
         assert dep.revision is None
@@ -62,7 +62,7 @@ class TestDep:
         assert dep.subslot == "2"
         assert dep.slot_op == SlotOperator.Equal
         assert dep.slot_op == "="
-        assert dep.use == ["a", "b", "c"]
+        assert dep.use_deps == ["a", "b", "c"]
         assert dep.repo == "repo"
         assert dep.version == Version(">=1-r2")
         assert dep.op == Operator.GreaterOrEqual
@@ -164,7 +164,7 @@ class TestDep:
                     assert dep.slot == entry.get("slot")
                     assert dep.subslot == entry.get("subslot")
                     assert dep.slot_op == entry.get("slot_op")
-                    assert dep.use == entry.get("use")
+                    assert dep.use_deps == entry.get("use")
                     assert str(dep) == s
                     assert repr(dep).startswith(f"<Dep {s!r} at 0x")
                 else:
@@ -269,7 +269,7 @@ class TestCpn:
         assert dep.slot is None
         assert dep.subslot is None
         assert dep.slot_op is None
-        assert dep.use is None
+        assert dep.use_deps is None
         assert dep.repo is None
         assert dep.version is None
         assert dep.revision is None

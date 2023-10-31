@@ -9,7 +9,7 @@ cdef class Dep:
     cdef str _category
     cdef str _package
     cdef object _version
-    cdef object _use
+    cdef object _use_deps
     cdef int _hash
 
     @staticmethod
