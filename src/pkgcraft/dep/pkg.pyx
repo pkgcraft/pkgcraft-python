@@ -139,14 +139,18 @@ cdef class Dep:
         """Return a Dep dropping named fields.
 
         >>> from pkgcraft.dep import Dep
-        >>> d = Dep('>=cat/pkg-1.2-r3[a,b]')
-        >>> str(d)
-        '>=cat/pkg-1.2-r3[a,b]'
+        >>> d = Dep('>=cat/pkg-1.2-r3:4/5[a,b]')
+        >>> d is d.without()
+        True
         >>> str(d.without("use_deps"))
-        '>=cat/pkg-1.2-r3'
+        '>=cat/pkg-1.2-r3:4/5'
         >>> str(d.without("version"))
-        'cat/pkg[a,b]'
+        'cat/pkg:4/5[a,b]'
         >>> str(d.without("use_deps", "version"))
+        'cat/pkg:4/5'
+        >>> str(d.without("use_deps", "version"))
+        'cat/pkg:4/5'
+        >>> str(d.without("use_deps", "version", "slot", "subslot"))
         'cat/pkg'
         """
         array = CStringArray(fields)
