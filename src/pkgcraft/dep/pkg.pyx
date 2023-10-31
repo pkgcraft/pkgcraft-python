@@ -136,6 +136,23 @@ cdef class Dep:
         return valid
 
     @property
+    def no_use_deps(self):
+        """Return a Dep without USE dependencies.
+
+        >>> from pkgcraft.dep import Dep
+        >>> d1 = Dep('cat/pkg[a,b]')
+        >>> d1.use == ["a", "b"]
+        True
+        >>> d2 = d1.no_use_deps
+        >>> d2.use is None
+        True
+        """
+        ptr = C.pkgcraft_dep_no_use_deps(self.ptr)
+        if ptr == self.ptr:
+            return self
+        return Dep.from_ptr(ptr)
+
+    @property
     def blocker(self):
         """Get the blocker of a package dependency.
 
