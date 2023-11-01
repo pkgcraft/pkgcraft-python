@@ -1,13 +1,8 @@
 import glob
 import operator
 import os
+import tomllib
 from pathlib import Path
-
-# TODO: drop tomli usage when only supporting >=python-3.11
-try:
-    import tomllib
-except ImportError:
-    import tomli as tomllib
 
 from pkgcraft.config import Config
 from pkgcraft.dep import Dep
