@@ -11,7 +11,7 @@ from . cimport Cpv
 from .version cimport Version
 
 from ..eapi import EAPI_LATEST
-from ..error import InvalidDep, PkgcraftError
+from ..error import InvalidDep
 from ..types import OrderedFrozenSet
 
 
@@ -170,8 +170,6 @@ cdef class Dep:
         ptr = C.pkgcraft_dep_without(self.ptr, fields)
         if ptr == self.ptr:
             return self
-        elif ptr is NULL:
-            raise PkgcraftError
         return Dep.from_ptr(ptr)
 
     @property
