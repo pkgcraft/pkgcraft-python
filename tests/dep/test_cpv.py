@@ -2,7 +2,7 @@ import pickle
 
 import pytest
 
-from pkgcraft.dep import Cpv, Dep, Revision, Version
+from pkgcraft.dep import *
 from pkgcraft.error import InvalidCpv
 from pkgcraft.restrict import Restrict
 
