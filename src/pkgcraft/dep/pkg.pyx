@@ -74,6 +74,11 @@ class DepFields(IntFlag):
     UseDeps = 1 << 5
     Repo = 1 << 6
 
+    @classmethod
+    def all(cls):
+        """Return IntFlag object enabling all values."""
+        return ~cls(0)
+
 
 cdef class Dep:
     """Package dependency.
