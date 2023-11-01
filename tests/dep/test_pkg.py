@@ -1,11 +1,12 @@
 import inspect
-import itertools
 import pickle
 import re
+from functools import reduce
+from itertools import chain, combinations, permutations
 
 import pytest
 
-from pkgcraft.dep import Blocker, Cpn, Cpv, Dep, Operator, Revision, SlotOperator, Version
+from pkgcraft.dep import *
 from pkgcraft.eapi import EAPI_LATEST, EAPI_LATEST_OFFICIAL, EAPIS, eapi_range
 from pkgcraft.error import InvalidDep
 from pkgcraft.restrict import Restrict
@@ -123,6 +124,33 @@ class TestDep:
             with pytest.raises(TypeError):
                 Dep.valid(obj)
 
+    def test_without(self):
+        dep = Dep("!!>=cat/pkg-1.2-r3:4/5=[u]::repo")
+        assert str(dep.without(DepFields.Blocker)) == ">=cat/pkg-1.2-r3:4/5=[u]::repo"
+        assert str(dep.without(DepFields.Version)) == "!!cat/pkg:4/5=[u]::repo"
+        assert str(dep.without(DepFields.Slot)) == "!!>=cat/pkg-1.2-r3[u]::repo"
+        assert str(dep.without(DepFields.Subslot)) == "!!>=cat/pkg-1.2-r3:4=[u]::repo"
+        assert str(dep.without(DepFields.SlotOp)) == "!!>=cat/pkg-1.2-r3:4/5[u]::repo"
+        assert str(dep.without(DepFields.UseDeps)) == "!!>=cat/pkg-1.2-r3:4/5=::repo"
+        assert str(dep.without(DepFields.Repo)) == "!!>=cat/pkg-1.2-r3:4/5=[u]"
+        assert str(dep.without(DepFields.all())) == "cat/pkg"
+
+        # returns the same object when no fields are removed
+        dep = Dep(">=cat/pkg-1.2-r3::repo")
+        assert dep.without(DepFields.UseDeps) is dep
+        # unmatched dep field bits are ignored
+        assert dep.without(0) is dep
+        assert dep.without(2**15) is dep
+        assert str(dep.without(2**15 | DepFields.Repo)) == ">=cat/pkg-1.2-r3"
+
+        # verify all combinations of dep fields create valid deps
+        dep = Dep("!!>=cat/pkg-1.2-r3:4/5=[a,b]::repo")
+        fields = list(DepFields.all())
+        for vals in chain.from_iterable(combinations(fields, r) for r in range(len(fields)+1)):
+            val = reduce(lambda x, y: x | y, vals, 0)
+            d = dep.without(val)
+            assert d == Dep(str(d))
+
     def test_matches(self):
         dep = Dep("=cat/pkg-1")
         r = Restrict(dep)
@@ -218,7 +246,7 @@ class TestDep:
 
         for d in TEST_DATA.toml("dep.toml")["intersects"]:
             # test intersections between all pairs of distinct values
-            for s1, s2 in itertools.permutations(d["vals"], 2):
+            for s1, s2 in permutations(d["vals"], 2):
                 (obj1, obj2) = (parse(s1), parse(s2))
 
                 # objects intersect themselves
