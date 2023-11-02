@@ -116,7 +116,7 @@ jobs:
       run: tox -c tox.ini -e coverage
 
     - name: Upload build artifacts
-      if: ${{ inputs.python-version == '' && matrix.python-version == '3.x' }}
+      if: ${{ inputs.event-type == '' && matrix.python-version == '3.x' }}
       uses: actions/upload-artifact@v3
       with:
         name: coverage
@@ -124,7 +124,7 @@ jobs:
         if-no-files-found: error
 
   coverage:
-    if: ${{ github.ref_name == 'main' }}
+    if: ${{ inputs.event-type == '' && github.ref_name == 'main' }}
     needs: test
     runs-on: ubuntu-latest
     continue-on-error: true
