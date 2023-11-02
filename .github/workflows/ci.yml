@@ -120,5 +120,7 @@ jobs:
       run: tox -c tox.ini -e coverage
 
     - name: Upload coverage to Codecov
-      if: ${{ inputs.python-version == '' }}
+      if: ${{ github.ref_name == 'main' && inputs.python-version == '' }}
       uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
