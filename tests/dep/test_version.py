@@ -24,44 +24,44 @@ class TestOperator:
 class TestVersion:
     def test_creation(self):
         # no revision
-        v = Version("1")
-        assert v.op is None
-        assert v.base == "1"
-        assert v.revision is None
-        assert str(v) == "1"
-        assert repr(v).startswith("<Version '1' at 0x")
+        ver = Version("1")
+        assert ver.op is None
+        assert ver.base == "1"
+        assert ver.revision is None
+        assert str(ver) == "1"
+        assert repr(ver).startswith("<Version '1' at 0x")
 
         # revisioned
-        v = Version("1-r1")
-        assert v.op is None
-        assert v.base == "1"
-        assert v.revision == Revision("1")
-        assert str(v) == "1-r1"
-        assert repr(v).startswith("<Version '1-r1' at 0x")
+        ver = Version("1-r1")
+        assert ver.op is None
+        assert ver.base == "1"
+        assert ver.revision == Revision("1")
+        assert str(ver) == "1-r1"
+        assert repr(ver).startswith("<Version '1-r1' at 0x")
 
         # explicit '0' revision
-        v = Version("1-r0")
-        assert v.op is None
-        assert v.base == "1"
-        assert v.revision == Revision("0")
-        assert str(v) == "1-r0"
-        assert repr(v).startswith("<Version '1-r0' at 0x")
+        ver = Version("1-r0")
+        assert ver.op is None
+        assert ver.base == "1"
+        assert ver.revision == Revision("0")
+        assert str(ver) == "1-r0"
+        assert repr(ver).startswith("<Version '1-r0' at 0x")
 
         # unrevisioned with operator
-        v = Version("<1_alpha")
-        assert v.op == "<"
-        assert v.base == "1_alpha"
-        assert v.revision is None
-        assert str(v) == "<1_alpha"
-        assert repr(v).startswith("<Version '<1_alpha' at 0x")
+        ver = Version("<1_alpha")
+        assert ver.op == "<"
+        assert ver.base == "1_alpha"
+        assert ver.revision is None
+        assert str(ver) == "<1_alpha"
+        assert repr(ver).startswith("<Version '<1_alpha' at 0x")
 
         # revisioned with operator
-        v = Version(">=1_beta2-r3")
-        assert v.op == ">="
-        assert v.base == "1_beta2"
-        assert v.revision == Revision("3")
-        assert str(v) == ">=1_beta2-r3"
-        assert repr(v).startswith("<Version '>=1_beta2-r3' at 0x")
+        ver = Version(">=1_beta2-r3")
+        assert ver.op == ">="
+        assert ver.base == "1_beta2"
+        assert ver.revision == Revision("3")
+        assert str(ver) == ">=1_beta2-r3"
+        assert repr(ver).startswith("<Version '>=1_beta2-r3' at 0x")
 
         # invalid
         for s in ("-1", "1a1", "a"):
@@ -89,11 +89,11 @@ class TestVersion:
 
     def test_cmp(self):
         for s in TEST_DATA.toml("version.toml")["compares"]:
-            a, op, b = s.split()
-            v1 = Version(a)
-            v2 = Version(b)
+            s1, op, s2 = s.split()
+            ver1 = Version(s1)
+            ver2 = Version(s2)
             for op_func in OperatorIterMap[op]:
-                assert op_func(v1, v2), f"failed comparison: {s}"
+                assert op_func(ver1, ver2), f"failed comparison: {s}"
 
         # verify incompatible type comparisons
         obj = Version("0")
@@ -110,17 +110,17 @@ class TestVersion:
         for d in TEST_DATA.toml("version.toml")["intersects"]:
             # test intersections between all pairs of distinct values
             for s1, s2 in itertools.permutations(d["vals"], 2):
-                (v1, v2) = (Version(s1), Version(s2))
+                (ver1, ver2) = (Version(s1), Version(s2))
 
                 # elements intersect themselves
-                assert v1.intersects(v1)
-                assert v2.intersects(v2)
+                assert ver1.intersects(ver1)
+                assert ver2.intersects(ver2)
 
                 # intersect or not depending on status
                 if d["status"]:
-                    assert v1.intersects(v2)
+                    assert ver1.intersects(ver2)
                 else:
-                    assert not v1.intersects(v2)
+                    assert not ver1.intersects(ver2)
 
     def test_sort(self):
         for d in TEST_DATA.toml("version.toml")["sorting"]:
@@ -133,12 +133,73 @@ class TestVersion:
 
     def test_hash(self):
         for d in TEST_DATA.toml("version.toml")["hashing"]:
-            s = {Version(x) for x in d["versions"]}
+            vers = {Version(x) for x in d["versions"]}
             length = 1 if d["equal"] else len(d["versions"])
-            assert len(s) == length
+            assert len(vers) == length
 
     def test_pickle(self):
         for s in ("1-r1", ">=1-r1"):
-            a = Version(s)
-            b = pickle.loads(pickle.dumps(a))
-            assert a == b
+            ver1 = Version(s)
+            ver2 = pickle.loads(pickle.dumps(ver1))
+            assert ver1 == ver2
+
+
+class TestRevision:
+    def test_creation(self):
+        # valid
+        for s in ("", "0", "00", "1", "01", "10"):
+            rev = Revision(s)
+            assert str(rev) == s
+            assert repr(rev).startswith(f"<Revision '{s}' at 0x")
+            assert bool(s) == bool(rev)
+
+        # invalid
+        for s in ("a", "1a", "1.0"):
+            with pytest.raises(InvalidVersion):
+                Revision(s)
+
+    def test_cmp(self):
+        # nonexistent revision equal to '0'
+        assert Revision("") == Revision("0") == Revision("00")
+        # nonexistent revision equal to None, but explicit '0' is not
+        assert Revision("") == None
+        assert Revision("0") != None
+
+        rev1 = Revision("1")
+        rev2 = Revision("2")
+        obj = object()
+
+        assert rev1 < rev2
+        with pytest.raises(TypeError):
+            assert rev1 < obj
+
+        assert rev1 <= rev2
+        assert rev2 <= rev2
+        with pytest.raises(TypeError):
+            assert rev1 <= obj
+
+        assert rev1 == rev1
+        assert not rev1 == obj
+
+        assert rev1 != rev2
+        assert rev1 != obj
+
+        assert rev2 >= rev1
+        assert rev2 >= rev2
+        with pytest.raises(TypeError):
+            assert rev2 >= obj
+
+        assert rev2 > rev1
+        with pytest.raises(TypeError):
+            assert rev2 > obj
+
+    def test_hash(self):
+        revs = {Revision(s) for s in ["", "0", "00"]}
+        assert len(revs) == 1
+        revs = {Revision(s) for s in ["0", "01", "10", "11"]}
+        assert len(revs) == 4
+
+    def test_pickle(self):
+        rev1 = Revision("1")
+        rev2 = pickle.loads(pickle.dumps(rev1))
+        assert rev1 == rev2
