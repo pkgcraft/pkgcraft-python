@@ -252,25 +252,16 @@ cdef class DepSet:
 
         return C.pkgcraft_dep_set_is_subset(depset.ptr, self.ptr)
 
-    def __lt__(self, other):
-        if isinstance(other, DepSet):
-            return self <= other and self != other
-        return NotImplemented
+    def intersection(self, *others):
+        depset = DepSet(self, set=self.set)
 
-    def __le__(self, other):
-        if isinstance(other, DepSet):
-            return C.pkgcraft_dep_set_is_subset(self.ptr, (<DepSet>other).ptr)
-        return NotImplemented
+        for obj in others:
+            if isinstance(obj, DepSet):
+                depset &= obj
+            else:
+                depset &= DepSet(obj, set=self.set)
 
-    def __ge__(self, other):
-        if isinstance(other, DepSet):
-            return C.pkgcraft_dep_set_is_subset((<DepSet>other).ptr, self.ptr)
-        return NotImplemented
-
-    def __gt__(self, other):
-        if isinstance(other, DepSet):
-            return self >= other and self != other
-        return NotImplemented
+        return depset
 
     def union(self, *others):
         depset = DepSet(self, set=self.set)
@@ -280,17 +271,6 @@ cdef class DepSet:
                 depset |= obj
             else:
                 depset |= DepSet(obj, set=self.set)
-
-        return depset
-
-    def intersection(self, *others):
-        depset = DepSet(self, set=self.set)
-
-        for obj in others:
-            if isinstance(obj, DepSet):
-                depset &= obj
-            else:
-                depset &= DepSet(obj, set=self.set)
 
         return depset
 
@@ -412,15 +392,35 @@ cdef class DepSet:
         # create new DepSet for slices
         return DepSet(deps, set=self.set)
 
+    def __bool__(self):
+        return not C.pkgcraft_dep_set_is_empty(self.ptr)
+
     def __len__(self):
         return C.pkgcraft_dep_set_len(self.ptr)
 
-    def __bool__(self):
-        return not C.pkgcraft_dep_set_is_empty(self.ptr)
+    def __lt__(self, other):
+        if isinstance(other, DepSet):
+            return self <= other and self != other
+        return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, DepSet):
+            return C.pkgcraft_dep_set_is_subset(self.ptr, (<DepSet>other).ptr)
+        return NotImplemented
 
     def __eq__(self, other):
         if isinstance(other, DepSet):
             return C.pkgcraft_dep_set_eq(self.ptr, (<DepSet>other).ptr)
+        return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, DepSet):
+            return C.pkgcraft_dep_set_is_subset((<DepSet>other).ptr, self.ptr)
+        return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, DepSet):
+            return self >= other and self != other
         return NotImplemented
 
     def __hash__(self):
