@@ -353,11 +353,21 @@ cdef class DepSet:
         return self
 
     def add(self, elem):
-        self.update(elem)
+        if isinstance(elem, DepSpec):
+            obj = elem
+        else:
+            obj = DepSpec(elem, set=self.set)
+
+        self.update(obj)
 
     def remove(self, elem):
-        if elem in self:
-            self.difference_update(elem)
+        if isinstance(elem, DepSpec):
+            obj = elem
+        else:
+            obj = DepSpec(elem, set=self.set)
+
+        if obj in self:
+            self.difference_update(obj)
         else:
             raise KeyError(elem)
 
