@@ -23,25 +23,25 @@ class BaseRepoTests:
 
         # create pkg
         repo.create_pkg("cat1/pkga-1")
-        assert repo.categories == ("cat1",)
-        assert repo.packages("cat1") == ("pkga",)
-        assert repo.versions("cat1", "pkga") == (Version("1"),)
+        assert repo.categories == ["cat1"]
+        assert repo.packages("cat1") == ["pkga"]
+        assert repo.versions("cat1", "pkga") == [Version("1")]
 
         # create new pkg version
         repo.create_pkg("cat1/pkga-2")
-        assert repo.categories == ("cat1",)
-        assert repo.packages("cat1") == ("pkga",)
-        assert repo.versions("cat1", "pkga") == (Version("1"), Version("2"))
+        assert repo.categories == ["cat1"]
+        assert repo.packages("cat1") == ["pkga"]
+        assert repo.versions("cat1", "pkga") == [Version("1"), Version("2")]
 
         # create new pkg
         repo.create_pkg("cat1/pkgb-1")
-        assert repo.categories == ("cat1",)
-        assert repo.packages("cat1") == ("pkga", "pkgb")
+        assert repo.categories == ["cat1"]
+        assert repo.packages("cat1") == ["pkga", "pkgb"]
 
         # create new pkg in new category
         repo.create_pkg("cat2/pkga-1")
-        assert repo.categories == ("cat1", "cat2")
-        assert repo.packages("cat2") == ("pkga",)
+        assert repo.categories == ["cat1", "cat2"]
+        assert repo.packages("cat2") == ["pkga"]
 
     def test_cmp_base(self, make_repo):
         for r1_args, op, r2_args in (

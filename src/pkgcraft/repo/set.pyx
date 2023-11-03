@@ -2,7 +2,7 @@ cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport C
-from .._misc cimport cstring_array_to_tuple
+from .._misc cimport CStringIter
 from ..config cimport repos_to_dict
 from ..dep cimport Version
 from ..pkg cimport Pkg
@@ -71,21 +71,21 @@ cdef class RepoSet:
         """Get a repo set's categories."""
         cdef size_t length
         c_strs = C.pkgcraft_repo_set_categories(self.ptr, &length)
-        return cstring_array_to_tuple(c_strs, length)
+        return OrderedFrozenSet(CStringIter.create(c_strs, length))
 
     def packages(self, str cat not None):
         """Get a repo set's packages for a category."""
         cdef size_t length
         if parse.category(cat):
             c_strs = C.pkgcraft_repo_set_packages(self.ptr, cat.encode(), &length)
-            return cstring_array_to_tuple(c_strs, length)
+            return OrderedFrozenSet(CStringIter.create(c_strs, length))
 
     def versions(self, str cat not None, str pkg not None):
         """Get a repo set's versions for a package."""
         cdef size_t length
         if parse.category(cat) and parse.package(pkg):
             c_versions = C.pkgcraft_repo_set_versions(self.ptr, cat.encode(), pkg.encode(), &length)
-            versions = tuple(Version.from_ptr(c_versions[i]) for i in range(length))
+            versions = OrderedFrozenSet(Version.from_ptr(c_versions[i]) for i in range(length))
             C.pkgcraft_array_free(<void **>c_versions, length)
             return versions
 

@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from .. cimport C
-from .._misc cimport cstring_array_to_tuple, cstring_to_str
+from .._misc cimport CStringIter, cstring_to_str
 from ..dep cimport Cpv, Version
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
@@ -10,6 +10,7 @@ from . cimport EbuildRepo, FakeRepo
 
 from .. import parse
 from ..error import InvalidRepo
+from ..types import OrderedFrozenSet
 
 
 cdef class Repo:
@@ -71,21 +72,21 @@ cdef class Repo:
         """Get a repo's categories."""
         cdef size_t length
         c_strs = C.pkgcraft_repo_categories(self.ptr, &length)
-        return cstring_array_to_tuple(c_strs, length)
+        return OrderedFrozenSet(CStringIter.create(c_strs, length))
 
     def packages(self, str cat not None):
         """Get a repo's packages for a category."""
         cdef size_t length
         if parse.category(cat):
             c_strs = C.pkgcraft_repo_packages(self.ptr, cat.encode(), &length)
-            return cstring_array_to_tuple(c_strs, length)
+            return OrderedFrozenSet(CStringIter.create(c_strs, length))
 
     def versions(self, str cat not None, str pkg not None):
         """Get a repo's versions for a package."""
         cdef size_t length
         if parse.category(cat) and parse.package(pkg):
             c_versions = C.pkgcraft_repo_versions(self.ptr, cat.encode(), pkg.encode(), &length)
-            versions = tuple(Version.from_ptr(c_versions[i]) for i in range(length))
+            versions = OrderedFrozenSet(Version.from_ptr(c_versions[i]) for i in range(length))
             C.pkgcraft_array_free(<void **>c_versions, length)
             return versions
 

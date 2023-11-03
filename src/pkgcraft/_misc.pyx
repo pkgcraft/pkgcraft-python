@@ -18,16 +18,6 @@ cdef str cstring_to_str(char *c_str, bint free=True):
     return None
 
 
-cdef tuple cstring_array_to_tuple(char **c_strs, size_t length, bint free=True):
-    """Convert a char** to a tuple of strings, optionally freeing the array.
-
-    Returns None if char** is NULL.
-    """
-    if c_strs is not NULL:
-        return tuple(CStringIter.create(c_strs, length, free))
-    return None
-
-
 cdef class CStringIter(_IndirectInit):
     """Iterator over a char** converting char* to str, optionally freeing the array."""
 
