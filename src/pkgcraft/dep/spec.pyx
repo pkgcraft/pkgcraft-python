@@ -384,7 +384,8 @@ cdef class DepSet:
         raise KeyError("pop from an empty DepSet")
 
     def clear(self):
-        self.intersection_update([])
+        if self:
+            self.intersection_update([])
 
     def __contains__(self, obj):
         cdef DepSpec dep = None
