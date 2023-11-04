@@ -49,8 +49,7 @@ cdef extern from "pkgcraft.h":
         LOG_LEVEL_ERROR,
 
     cdef enum Operator:
-        OPERATOR_NONE,
-        OPERATOR_LESS,
+        OPERATOR_LESS # = 1,
         OPERATOR_LESS_OR_EQUAL,
         OPERATOR_EQUAL,
         OPERATOR_EQUAL_GLOB,
@@ -892,7 +891,7 @@ cdef extern from "pkgcraft.h":
     # Return a given package dependency without the specified fields.
     #
     # # Safety
-    # The arguments must be a non-null Dep pointer and a fields bitflag.
+    # The arguments must be a non-null Dep pointer and a DepFields bitflag.
     Dep *pkgcraft_dep_without(Dep *d, uint32_t fields)
 
     # Return an EAPI's identifier.
@@ -1779,17 +1778,21 @@ cdef extern from "pkgcraft.h":
     # The version argument should point to a valid string.
     Version *pkgcraft_version_new(const char *s)
 
-    # Return a version's operator.
+    # Return a version operator's raw value.
+    #
+    # Returns a value of 0 for nonexistence.
     #
     # # Safety
     # The argument must be a non-null Version pointer.
-    Operator pkgcraft_version_op(Version *v)
+    uint32_t pkgcraft_version_op(Version *v)
 
-    # Parse a string into an Operator.
+    # Parse a string into an Operator's raw value.
+    #
+    # Returns a value of 0 for nonexistence.
     #
     # # Safety
     # The argument should be a UTF-8 string.
-    Operator pkgcraft_version_op_from_str(const char *s)
+    uint32_t pkgcraft_version_op_from_str(const char *s)
 
     # Return the string for an Operator.
     char *pkgcraft_version_op_str(Operator op)
