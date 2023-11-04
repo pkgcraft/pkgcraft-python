@@ -9,8 +9,7 @@ cdef extern from *:
 cdef extern from "pkgcraft.h":
 
     cdef enum Blocker:
-        BLOCKER_NONE,
-        BLOCKER_STRONG,
+        BLOCKER_STRONG # = 1,
         BLOCKER_WEAK,
 
     # DepSet variants.
@@ -81,8 +80,7 @@ cdef extern from "pkgcraft.h":
         SET_OP_SUB,
 
     cdef enum SlotOperator:
-        SLOT_OPERATOR_NONE,
-        SLOT_OPERATOR_EQUAL,
+        SLOT_OPERATOR_EQUAL # = 1,
         SLOT_OPERATOR_STAR,
 
     # System config
@@ -405,18 +403,22 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Cpv pointer.
     Version *pkgcraft_cpv_version(Cpv *c)
 
-    # Get the blocker of a package dependency.
+    # Get a package dependency's raw blocker value.
     # For example, the package dependency "!cat/pkg" has a weak blocker.
+    #
+    # Returns a value of 0 for nonexistence.
     #
     # # Safety
     # The argument must be a non-null Dep pointer.
-    Blocker pkgcraft_dep_blocker(Dep *d)
+    uint32_t pkgcraft_dep_blocker(Dep *d)
 
-    # Parse a string into a Blocker.
+    # Parse a string into a Blocker's raw value.
+    #
+    # Returns a value of 0 for nonexistence.
     #
     # # Safety
     # The argument must be a UTF-8 string.
-    Blocker pkgcraft_dep_blocker_from_str(const char *s)
+    uint32_t pkgcraft_dep_blocker_from_str(const char *s)
 
     # Return the string for a Blocker.
     char *pkgcraft_dep_blocker_str(Blocker b)
@@ -747,18 +749,22 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Dep pointer.
     char *pkgcraft_dep_slot(Dep *d)
 
-    # Get the slot operator of a package dependency.
+    # Get a package dependency's raw slot operator value.
     # For example, the package dependency "=cat/pkg-1-r2:0=" has an equal slot operator.
+    #
+    # Returns a value of 0 for nonexistence.
     #
     # # Safety
     # The argument must be a non-null Dep pointer.
-    SlotOperator pkgcraft_dep_slot_op(Dep *d)
+    uint32_t pkgcraft_dep_slot_op(Dep *d)
 
-    # Parse a string into a SlotOperator.
+    # Parse a string into a SlotOperator's raw value.
+    #
+    # Returns a value of 0 for nonexistence.
     #
     # # Safety
     # The argument must be a UTF-8 string.
-    SlotOperator pkgcraft_dep_slot_op_from_str(const char *s)
+    uint32_t pkgcraft_dep_slot_op_from_str(const char *s)
 
     # Return the string for a SlotOperator.
     char *pkgcraft_dep_slot_op_str(SlotOperator op)

@@ -22,7 +22,7 @@ class TestOperator:
 
 
 class TestVersion:
-    def test_creation(self):
+    def test_new_and_valid(self):
         # no revision
         ver = Version("1")
         assert ver.op is None
@@ -63,27 +63,23 @@ class TestVersion:
         assert str(ver) == ">=1_beta2-r3"
         assert repr(ver).startswith("<Version '>=1_beta2-r3' at 0x")
 
+        # valid
+        for s in TEST_DATA.toml("version.toml")["valid"]:
+            assert Version.valid(s), f"{s} isn't valid"
+            Version(s)
+
         # invalid
-        for s in ("-1", "1a1", "a"):
+        for s in TEST_DATA.toml("version.toml")["invalid"]:
+            assert not Version.valid(s), f"{s} is valid"
+            with pytest.raises(InvalidVersion, match=f"invalid version: {s}"):
+                Version.valid(s, raised=True)
             with pytest.raises(InvalidVersion, match=f"invalid version: {s}"):
                 Version(s)
 
-        # invalid args
+        # invalid types
         for obj in (object(), None):
             with pytest.raises(TypeError):
                 Version(obj)
-
-    def test_valid(self):
-        assert Version.valid("1-r0")
-
-        # invalid
-        for s in ("-1", "1a1"):
-            assert not Version.valid(s)
-            with pytest.raises(InvalidVersion, match=f"invalid version: {s}"):
-                Version.valid(s, raised=True)
-
-        # invalid args
-        for obj in (object(), None):
             with pytest.raises(TypeError):
                 Version.valid(obj)
 
