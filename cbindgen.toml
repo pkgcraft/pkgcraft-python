@@ -15,3 +15,6 @@ header = '"pkgcraft.h"'
 [parse]
 parse_deps = true
 include = ["pkgcraft"]
+
+[export]
+include = ["DepField"]

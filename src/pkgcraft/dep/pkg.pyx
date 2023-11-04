@@ -64,15 +64,14 @@ class SlotOperator(IntEnum):
         return int(self) == other
 
 
-# TODO: use values exported from pkgcraft
 class DepFields(IntFlag):
-    Blocker = 1
-    Version = 1 << 1
-    Slot = 1 << 2
-    Subslot = 1 << 3
-    SlotOp = 1 << 4
-    UseDeps = 1 << 5
-    Repo = 1 << 6
+    Blocker = C.DEP_FIELD_BLOCKER
+    Version = C.DEP_FIELD_VERSION
+    Slot = C.DEP_FIELD_SLOT
+    Subslot = C.DEP_FIELD_SUBSLOT
+    SlotOp = C.DEP_FIELD_SLOT_OP
+    UseDeps = C.DEP_FIELD_USE_DEPS
+    Repo = C.DEP_FIELD_REPO
 
     @classmethod
     def all(cls):

@@ -12,6 +12,16 @@ cdef extern from "pkgcraft.h":
         BLOCKER_STRONG # = 1,
         BLOCKER_WEAK,
 
+    cdef enum:
+        DEP_FIELD_BLOCKER # = 1,
+        DEP_FIELD_VERSION # = (1 << 1),
+        DEP_FIELD_SLOT # = (1 << 2),
+        DEP_FIELD_SUBSLOT # = (1 << 3),
+        DEP_FIELD_SLOT_OP # = (1 << 4),
+        DEP_FIELD_USE_DEPS # = (1 << 5),
+        DEP_FIELD_REPO # = (1 << 6),
+    ctypedef uint32_t DepField
+
     # DepSet variants.
     cdef enum DepSetKind:
         DEP_SET_KIND_DEPENDENCIES,
