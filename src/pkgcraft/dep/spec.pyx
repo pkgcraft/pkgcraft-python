@@ -414,8 +414,10 @@ cdef class DepSet:
                 C.pkgcraft_dep_spec_free(ptr)
             return
 
-        # TODO: handle slices
-        raise TypeError(f"{self.__class__.__name__} indices must be integers")
+        # alter DepSet for slices
+        deps = list(self)
+        deps[key] = list(DepSet(value, set=self.set))
+        self.ptr = DepSet.from_iter(deps, self.set)
 
     def __bool__(self):
         return not C.pkgcraft_dep_set_is_empty(self.ptr)

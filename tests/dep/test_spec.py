@@ -685,8 +685,15 @@ class TestDepSet:
                 d[obj]
 
     def test_setitem(self):
+        # slices alter ranges of DepSpecs
         d = DepSet("a/b || ( c/d e/f )")
+        d[:] = [DepSpec("a/b")]
+        assert d == DepSet("a/b")
+        d[10:] = ["c/d", "a/b"]
+        assert d == DepSet("a/b c/d")
 
+        # integers alter individual DepSpecs
+        d = DepSet("a/b || ( c/d e/f )")
         d[0] = DepSpec("cat/pkg")
         assert d == DepSet("cat/pkg || ( c/d e/f )")
         d[-1] = DepSpec("u? ( a/b )")
@@ -700,10 +707,6 @@ class TestDepSet:
         for idx in [5, -5]:
             with pytest.raises(IndexError):
                 d[idx] = DepSpec("cat/pkg")
-
-        # slices currently aren't supported
-        with pytest.raises(TypeError):
-            d[:] = DepSpec("a/b")
 
         # invalid arg types
         for obj in [None, "a/b", object()]:
