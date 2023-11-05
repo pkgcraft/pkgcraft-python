@@ -1,5 +1,6 @@
 # valgrind suppressions for pkgcraft
 
+# TODO: remove when CI has >=3.22.0
 {
 	wcscat_avx2
 	Memcheck:Cond
@@ -8,6 +9,7 @@
 	...
 }
 
+# TODO: remove when CI has >=3.22.0
 {
 	wcsncpy_avx2
 	Memcheck:Addr32
