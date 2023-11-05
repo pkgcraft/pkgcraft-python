@@ -162,7 +162,7 @@ cdef class DepSet:
                 eapi_ptr = Eapi._from_obj(eapi).ptr
             ptr = C.pkgcraft_dep_set_parse(str(obj).encode(), eapi_ptr, kind)
         elif isinstance(obj, Iterable):
-            ptr = self.from_iter(obj, kind)
+            ptr = DepSet.from_iter(obj, kind)
         else:
             raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
 
@@ -181,7 +181,8 @@ cdef class DepSet:
         obj.ptr = ptr
         return obj
 
-    cdef C.DepSet *from_iter(self, object obj, C.DepSetKind kind):
+    @staticmethod
+    cdef C.DepSet *from_iter(object obj, C.DepSetKind kind):
         """Create a DepSet pointer from an iterable of DepSpec objects or strings."""
         # convert iterable to DepSpec objects
         if isinstance(obj, DepSpec):

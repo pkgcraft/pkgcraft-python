@@ -19,7 +19,8 @@ cdef class DepSet:
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *, bint immutable=*)
 
-    cdef C.DepSet *from_iter(self, object obj, C.DepSetKind kind)
+    @staticmethod
+    cdef C.DepSet *from_iter(object obj, C.DepSetKind kind)
 
 
 cdef class _IntoIter:
