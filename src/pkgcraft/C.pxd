@@ -618,6 +618,14 @@ cdef extern from "pkgcraft.h":
     # The argument should be an array of similarly-typed DepSpec objects.
     DepSet *pkgcraft_dep_set_from_iter(DepSpec **deps, uintptr_t len, DepSetKind kind)
 
+    # Returns the DepSpec element for a given index.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null DepSet pointer.
+    DepSpec *pkgcraft_dep_set_get_index(DepSet *d, uintptr_t index)
+
     # Return the hash value for a DepSet.
     #
     # # Safety

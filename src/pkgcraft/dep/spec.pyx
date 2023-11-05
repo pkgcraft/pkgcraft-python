@@ -383,13 +383,15 @@ cdef class DepSet:
         return _IntoIter(self)
 
     def __getitem__(self, key):
-        deps = list(self)[key]
-
         # return singular DepSpec for integers
         if isinstance(key, int):
-            return deps
+            key = key if key >= 0 else len(self) + key
+            if ptr := C.pkgcraft_dep_set_get_index(self.ptr, key):
+                return DepSpec.from_ptr(ptr)
+            raise IndexError(f"{self.__class__.__name__} index out of range")
 
         # create new DepSet for slices
+        deps = list(self)[key]
         return DepSet(deps, set=self.set)
 
     def __bool__(self):
