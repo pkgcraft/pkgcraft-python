@@ -442,7 +442,9 @@ cdef class DepSet:
         elif isinstance(key, slice):
             deps = list(self)
             deps[key] = iterable_to_dep_specs(value, self.set)
-            self.ptr = DepSet.from_iter(deps, self.set)
+            if set_ptr := DepSet.from_iter(deps, self.set):
+                C.pkgcraft_dep_set_free(self.ptr)
+                self.ptr = set_ptr
         else:
             raise TypeError(f"{self.__class__.__name__} indices must be integers or slices")
 
