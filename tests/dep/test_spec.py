@@ -666,11 +666,11 @@ class TestDepSet:
     def test_getitem(self):
         d = DepSet("a/b || ( c/d e/f )")
 
-        # slices return new DepSets
+        # slices
         assert d[:] == d and d[:] is not d
         assert d[:1] == DepSet("a/b")
 
-        # integer indexes return DepSpec objects if they exist
+        # integers
         assert d[0] == DepSpec("a/b")
         assert d[-1] == DepSpec("|| ( c/d e/f )")
 
@@ -685,26 +685,39 @@ class TestDepSet:
                 d[obj]
 
     def test_setitem(self):
-        # slices alter ranges of DepSpecs
+        # slices
         d = DepSet("a/b || ( c/d e/f )")
         d[:] = [DepSpec("a/b")]
         assert d == DepSet("a/b")
         d[10:] = ["c/d", "a/b"]
         assert d == DepSet("a/b c/d")
 
-        # integers alter individual DepSpecs
+        # integers
         d = DepSet("a/b || ( c/d e/f )")
         d[0] = DepSpec("cat/pkg")
         assert d == DepSet("cat/pkg || ( c/d e/f )")
         d[-1] = DepSpec("u? ( a/b )")
         assert d == DepSet("cat/pkg u? ( a/b )")
-        # valid DepSpec strings are converted
         d[-1] = "cat/pkg[u1,u2]"
         assert d == DepSet("cat/pkg cat/pkg[u1,u2]")
 
-        # inserting an already existing value removes the value at the specified index
-        d[-1] = DepSpec("cat/pkg")
-        assert d == DepSet("cat/pkg")
+        # DepSpec and valid DepSpec strings
+        d = DepSet("a/b || ( c/d e/f )")
+        d["a/b"] = "c/d"
+        assert d == DepSet("c/d || ( c/d e/f )")
+        d["c/d"] = DepSpec("e/f")
+        assert d == DepSet("e/f || ( c/d e/f )")
+        d[DepSpec("|| ( c/d e/f )")] = "a/b"
+        assert d == DepSet("e/f a/b")
+        d[DepSpec("e/f")] = DepSpec("c/d")
+        assert d == DepSet("c/d a/b")
+
+        # inserting an existing value removes the value at the specified index
+        d = DepSet("a/b c/d e/f")
+        d[-1] = DepSpec("a/b")
+        assert d == DepSet("a/b c/d")
+        d["a/b"] = "c/d"
+        assert d == DepSet("c/d")
 
         # nonexistent indices
         for idx in [5, -5]:
@@ -712,14 +725,16 @@ class TestDepSet:
                 d[idx] = DepSpec("cat/pkg")
 
         # invalid arg types
-        for obj in [None, "a/b", object()]:
-            with pytest.raises(TypeError):
-                d[obj] = DepSpec("a/b")
+        d = DepSet("a/b")
+        for obj in [None, object(), "a/b"]:
             with pytest.raises(TypeError):
                 d[:] = obj
         for obj in [None, object()]:
             with pytest.raises(TypeError):
-                d[0] = obj
+                d[obj] = DepSpec("a/b")
+            for key in [0, "a/b", DepSpec("a/b")]:
+                with pytest.raises(TypeError):
+                    d[key] = obj
 
     def test_iand(self):
         d = DepSet("a/a b/b c/c")

@@ -415,10 +415,16 @@ cdef class DepSet:
                 key = len(self) + key
             if key < 0 or key >= len(self):
                 raise IndexError(f"{self.__class__.__name__} index out of range")
-
             if isinstance(value, str):
                 value = DepSpec(value, set=self.set)
             if ptr := C.pkgcraft_dep_set_replace_index(self.ptr, key, (<DepSpec?>value).ptr):
+                C.pkgcraft_dep_spec_free(ptr)
+        elif isinstance(key, (DepSpec, str)):
+            if isinstance(key, str):
+                key = DepSpec(key, set=self.set)
+            if isinstance(value, str):
+                value = DepSpec(value, set=self.set)
+            if ptr := C.pkgcraft_dep_set_replace(self.ptr, (<DepSpec?>key).ptr, (<DepSpec?>value).ptr):
                 C.pkgcraft_dep_spec_free(ptr)
         elif isinstance(key, slice):
             deps = list(self)

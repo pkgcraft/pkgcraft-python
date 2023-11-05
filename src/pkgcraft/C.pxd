@@ -760,6 +760,14 @@ cdef extern from "pkgcraft.h":
     # The argument should be a UTF-8 string.
     DepSet *pkgcraft_dep_set_parse(const char *s, const Eapi *eapi, DepSetKind kind)
 
+    # Replace a DepSpec with another DepSpec in a DepSet, returning the replaced value.
+    #
+    # Returns NULL on nonexistence or if the DepSet already contains the given DepSpec.
+    #
+    # # Safety
+    # The arguments must be non-null DepSet and DepSpec pointers.
+    DepSpec *pkgcraft_dep_set_replace(DepSet *d, const DepSpec *key, DepSpec *value)
+
     # Replace a DepSpec for a given index in a DepSet, returning the replaced value.
     #
     # Returns NULL on index nonexistence or if the DepSet already contains the given DepSpec.
