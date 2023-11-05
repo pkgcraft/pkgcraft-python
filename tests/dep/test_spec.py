@@ -144,6 +144,13 @@ class TestDepSpec:
         assert list(map(str, self.req_use("|| ( a b )"))) == ["a", "b"]
         assert list(map(str, self.req_use("|| ( u? ( a ) )"))) == ["u? ( a )"]
 
+    def test_reversed(self):
+        assert list(reversed(self.req_use("a"))) == []
+        assert list(reversed(self.req_use("!a"))) == []
+        assert list(map(str, reversed(self.req_use("( a )")))) == ["a"]
+        assert list(map(str, reversed(self.req_use("|| ( a b )")))) == ["b", "a"]
+        assert list(map(str, reversed(self.req_use("|| ( u? ( a ) )")))) == ["u? ( a )"]
+
     def test_iter_conditionals(self):
         assert list(self.req_use("a").iter_conditionals()) == []
         assert list(self.req_use("( a )").iter_conditionals()) == []
@@ -289,6 +296,13 @@ class TestDepSet:
         assert list(DepSet("( a/b )")) == [DepSpec("( a/b )")]
         assert list(DepSet("a/b || ( c/d e/f )")) == [DepSpec("a/b"), DepSpec("|| ( c/d e/f )")]
         assert list(DepSet("|| ( u? ( a/b ) )")) == [DepSpec("|| ( u? ( a/b ) )")]
+
+    def test_reversed(self):
+        assert list(reversed(DepSet())) == []
+        assert list(reversed(DepSet("a/b"))) == [DepSpec("a/b")]
+        assert list(reversed(DepSet("( a/b )"))) == [DepSpec("( a/b )")]
+        assert list(reversed(DepSet("a/b || ( c/d e/f )"))) == [DepSpec("|| ( c/d e/f )"), DepSpec("a/b")]
+        assert list(reversed(DepSet("|| ( u? ( a/b ) )"))) == [DepSpec("|| ( u? ( a/b ) )")]
 
     def test_iter_conditionals(self):
         assert list(DepSet("a/b").iter_conditionals()) == []

@@ -98,6 +98,9 @@ cdef class DepSpec:
     def __iter__(self):
         return _IntoIter(self)
 
+    def __reversed__(self):
+        return _IntoIterReversed(self)
+
     def __len__(self):
         return C.pkgcraft_dep_spec_len(self.ptr)
 
@@ -383,6 +386,9 @@ cdef class DepSet:
     def __iter__(self):
         return _IntoIter(self)
 
+    def __reversed__(self):
+        return _IntoIterReversed(self)
+
     def __getitem__(self, key):
         # return singular DepSpec for integers
         if isinstance(key, int):
@@ -575,6 +581,15 @@ cdef class _IntoIter:
 
     def __dealloc__(self):
         C.pkgcraft_dep_set_into_iter_free(self.ptr)
+
+
+cdef class _IntoIterReversed(_IntoIter):
+    """Reversed iterator over a DepSet or DepSpec object."""
+
+    def __next__(self):
+        if ptr := C.pkgcraft_dep_set_into_iter_next_back(self.ptr):
+            return DepSpec.from_ptr(ptr)
+        raise StopIteration
 
 
 cdef class _IntoIterConditionals:

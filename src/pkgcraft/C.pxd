@@ -692,6 +692,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSpecIntoIter pointer.
     DepSpec *pkgcraft_dep_set_into_iter_next(DepSpecIntoIter *i)
 
+    # Return the next object from the end of a DepSet iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a non-null DepSpecIntoIter pointer.
+    DepSpec *pkgcraft_dep_set_into_iter_next_back(DepSpecIntoIter *i)
+
     # Return a recursive iterator for a DepSet.
     #
     # # Safety

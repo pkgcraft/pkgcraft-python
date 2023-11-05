@@ -27,6 +27,10 @@ cdef class _IntoIter:
     cdef C.DepSpecIntoIter *ptr
 
 
+cdef class _IntoIterReversed(_IntoIter):
+    pass
+
+
 cdef class _IntoIterConditionals:
     cdef C.DepSpecIntoIterConditionals *ptr
 
