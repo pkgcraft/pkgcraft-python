@@ -659,8 +659,11 @@ class TestDepSet:
         # integer indexes return DepSpec objects if they exist
         assert d[0] == DepSpec("a/b")
         assert d[-1] == DepSpec("|| ( c/d e/f )")
-        with pytest.raises(IndexError):
-            d[2]
+
+        # nonexistent indices
+        for idx in [5, -5]:
+            with pytest.raises(IndexError):
+                d[idx]
 
         # invalid arg types
         for obj in [None, "a/b", object()]:
@@ -678,6 +681,11 @@ class TestDepSet:
         # inserting an already existing value removes the value at the specified index
         d[-1] = DepSpec("cat/pkg")
         assert d == DepSet("cat/pkg")
+
+        # nonexistent indices
+        for idx in [5, -5]:
+            with pytest.raises(IndexError):
+                d[idx] = DepSpec("cat/pkg")
 
         # slices currently aren't supported
         with pytest.raises(TypeError):

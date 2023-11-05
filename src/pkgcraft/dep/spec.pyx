@@ -387,9 +387,11 @@ cdef class DepSet:
         if isinstance(key, int):
             if key < 0:
                 key = len(self) + key
+            if key < 0 or key >= len(self):
+                raise IndexError(f"{self.__class__.__name__} index out of range")
             if ptr := C.pkgcraft_dep_set_get_index(self.ptr, key):
                 return DepSpec.from_ptr(ptr)
-            raise IndexError(f"{self.__class__.__name__} index out of range")
+            raise PkgcraftError  # pragma: no cover
 
         # create new DepSet for slices
         deps = list(self)[key]
@@ -399,7 +401,7 @@ cdef class DepSet:
         if isinstance(key, int):
             if key < 0:
                 key = len(self) + key
-            if key >= len(self):
+            if key < 0 or key >= len(self):
                 raise IndexError(f"{self.__class__.__name__} index out of range")
             if ptr := C.pkgcraft_dep_set_replace_index(self.ptr, key, (<DepSpec?>value).ptr):
                 C.pkgcraft_dep_spec_free(ptr)
