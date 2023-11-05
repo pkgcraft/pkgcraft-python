@@ -80,7 +80,9 @@ cdef class Pkg(_IndirectInit):
     @property
     def version(self):
         """Get a package's version."""
-        return self.cpv.version
+        if self._version is None:
+            self._version = self.cpv.version
+        return self._version
 
     def matches(self, Restrict r not None):
         """Determine if a restriction matches a package."""
