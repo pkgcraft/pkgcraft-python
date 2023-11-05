@@ -712,9 +712,12 @@ class TestDepSet:
                 d[idx] = DepSpec("cat/pkg")
 
         # invalid arg types
-        for obj in [None, object()]:
+        for obj in [None, "a/b", object()]:
             with pytest.raises(TypeError):
                 d[obj] = DepSpec("a/b")
+            with pytest.raises(TypeError):
+                d[:] = obj
+        for obj in [None, object()]:
             with pytest.raises(TypeError):
                 d[0] = obj
 

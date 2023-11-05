@@ -34,6 +34,14 @@ class DepSpecKind(IntEnum):
     UseDisabled = C.DEP_SPEC_KIND_USE_DISABLED
 
 
+cdef list iterable_to_dep_specs(object obj, C.DepSetKind kind):
+    """Convert an iterable to a list of DepSpec objects."""
+    try:
+        return [x if isinstance(x, DepSpec) else DepSpec(x, set=kind) for x in obj]
+    except PkgcraftError:
+        raise TypeError(f"invalid DepSpec iterable type: {obj.__class__.__name__}")
+
+
 @cython.final
 cdef class DepSpec:
     """Dependency object."""
@@ -191,7 +199,7 @@ cdef class DepSet:
         if isinstance(obj, DepSpec):
             objs = [obj]
         else:
-            objs = [x if isinstance(x, DepSpec) else DepSpec(x, set=kind) for x in obj]
+            objs = iterable_to_dep_specs(obj, kind)
 
         array = <C.DepSpec **> PyMem_Malloc(len(objs) * sizeof(C.DepSpec *))
         if not array:  # pragma: no cover
@@ -390,7 +398,6 @@ cdef class DepSet:
         return _IntoIterReversed(self)
 
     def __getitem__(self, key):
-        # return singular DepSpec for integers
         if isinstance(key, int):
             if key < 0:
                 key = len(self) + key
@@ -399,10 +406,10 @@ cdef class DepSet:
             if ptr := C.pkgcraft_dep_set_get_index(self.ptr, key):
                 return DepSpec.from_ptr(ptr)
             raise PkgcraftError  # pragma: no cover
-
-        # create new DepSet for slices
-        deps = list(self)[key]
-        return DepSet(deps, set=self.set)
+        elif isinstance(key, slice):
+            deps = list(self)[key]
+            return DepSet(deps, set=self.set)
+        raise TypeError(f"{self.__class__.__name__} indices must be integers or slices")
 
     def __setitem__(self, key, value not None):
         if isinstance(key, int):
@@ -415,12 +422,12 @@ cdef class DepSet:
                 value = DepSpec(value, set=self.set)
             if ptr := C.pkgcraft_dep_set_replace_index(self.ptr, key, (<DepSpec?>value).ptr):
                 C.pkgcraft_dep_spec_free(ptr)
-            return
-
-        # alter DepSet for slices
-        deps = list(self)
-        deps[key] = [x if isinstance(x, DepSpec) else DepSpec(x, set=self.set) for x in value]
-        self.ptr = DepSet.from_iter(deps, self.set)
+        elif isinstance(key, slice):
+            deps = list(self)
+            deps[key] = iterable_to_dep_specs(value, self.set)
+            self.ptr = DepSet.from_iter(deps, self.set)
+        else:
+            raise TypeError(f"{self.__class__.__name__} indices must be integers or slices")
 
     def __bool__(self):
         return not C.pkgcraft_dep_set_is_empty(self.ptr)
