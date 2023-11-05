@@ -132,6 +132,10 @@ class TestEbuildPkg(BasePkgTests):
             for op_func in (iand, ior, isub, ixor):
                 with pytest.raises(TypeError):
                     op_func(val, val)
+                with pytest.raises(TypeError):
+                    val[0] = "cat/pkg"
+                with pytest.raises(TypeError):
+                    val[:] = ["cat/pkg"]
 
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: "u? ( cat/pkg ) || ( a/b c/d )"})
             val = getattr(pkg, attr)

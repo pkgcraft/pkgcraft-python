@@ -410,6 +410,9 @@ cdef class DepSet:
         raise TypeError(f"{self.__class__.__name__} indices must be integers or slices")
 
     def __setitem__(self, key, value not None):
+        if self.immutable:
+            raise TypeError("object is immutable")
+
         cdef DepSpec dep_key
         cdef DepSpec dep_val
 
