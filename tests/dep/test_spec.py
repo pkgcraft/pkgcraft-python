@@ -662,6 +662,35 @@ class TestDepSet:
         with pytest.raises(IndexError):
             d[2]
 
+        # invalid arg types
+        for obj in [None, "a/b", object()]:
+            with pytest.raises(TypeError):
+                d[obj]
+
+    def test_setitem(self):
+        d = DepSet("a/b || ( c/d e/f )")
+        dep = DepSpec("c/d")
+
+        d[0] = DepSpec("cat/pkg")
+        assert d == DepSet("cat/pkg || ( c/d e/f )")
+        d[-1] = DepSpec("u? ( a/b )")
+        assert d == DepSet("cat/pkg u? ( a/b )")
+
+        # inserting an already existing value removes the value at the specified index
+        d[-1] = DepSpec("cat/pkg")
+        assert d == DepSet("cat/pkg")
+
+        # slices currently aren't supported
+        with pytest.raises(TypeError):
+            d[:] = DepSpec("a/b")
+
+        # invalid arg types
+        for obj in [None, "a/b", object()]:
+            with pytest.raises(TypeError):
+                d[obj] = DepSpec("a/b")
+            with pytest.raises(TypeError):
+                d[0] = obj
+
     def test_iand(self):
         d = DepSet("a/a b/b c/c")
         d &= DepSet("a/a b/b")

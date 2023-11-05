@@ -385,7 +385,8 @@ cdef class DepSet:
     def __getitem__(self, key):
         # return singular DepSpec for integers
         if isinstance(key, int):
-            key = key if key >= 0 else len(self) + key
+            if key < 0:
+                key = len(self) + key
             if ptr := C.pkgcraft_dep_set_get_index(self.ptr, key):
                 return DepSpec.from_ptr(ptr)
             raise IndexError(f"{self.__class__.__name__} index out of range")
@@ -393,6 +394,19 @@ cdef class DepSet:
         # create new DepSet for slices
         deps = list(self)[key]
         return DepSet(deps, set=self.set)
+
+    def __setitem__(self, key, value not None):
+        if isinstance(key, int):
+            if key < 0:
+                key = len(self) + key
+            if key >= len(self):
+                raise IndexError(f"{self.__class__.__name__} index out of range")
+            if ptr := C.pkgcraft_dep_set_replace_index(self.ptr, key, (<DepSpec?>value).ptr):
+                C.pkgcraft_dep_spec_free(ptr)
+            return
+
+        # TODO: handle slices
+        raise TypeError(f"{self.__class__.__name__} indices must be integers")
 
     def __bool__(self):
         return not C.pkgcraft_dep_set_is_empty(self.ptr)

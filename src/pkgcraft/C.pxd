@@ -620,7 +620,7 @@ cdef extern from "pkgcraft.h":
 
     # Returns the DepSpec element for a given index.
     #
-    # Returns NULL on error.
+    # Returns NULL on index nonexistence.
     #
     # # Safety
     # The argument must be a non-null DepSet pointer.
@@ -751,6 +751,14 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument should be a UTF-8 string.
     DepSet *pkgcraft_dep_set_parse(const char *s, const Eapi *eapi, DepSetKind kind)
+
+    # Replace a DepSpec for a given index in a DepSet, returning the replaced value.
+    #
+    # Returns NULL on index nonexistence or if the DepSet already contains the given DepSpec.
+    #
+    # # Safety
+    # The arguments must be non-null DepSet and DepSpec pointers.
+    DepSpec *pkgcraft_dep_set_replace_index(DepSet *d, uintptr_t index, DepSpec *value)
 
     # Return the formatted string for a DepSet object.
     #
