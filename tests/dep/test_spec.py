@@ -698,6 +698,9 @@ class TestDepSet:
         assert d == DepSet("cat/pkg || ( c/d e/f )")
         d[-1] = DepSpec("u? ( a/b )")
         assert d == DepSet("cat/pkg u? ( a/b )")
+        # valid DepSpec strings are converted
+        d[-1] = "cat/pkg[u1,u2]"
+        assert d == DepSet("cat/pkg cat/pkg[u1,u2]")
 
         # inserting an already existing value removes the value at the specified index
         d[-1] = DepSpec("cat/pkg")
@@ -709,7 +712,7 @@ class TestDepSet:
                 d[idx] = DepSpec("cat/pkg")
 
         # invalid arg types
-        for obj in [None, "a/b", object()]:
+        for obj in [None, object()]:
             with pytest.raises(TypeError):
                 d[obj] = DepSpec("a/b")
             with pytest.raises(TypeError):
