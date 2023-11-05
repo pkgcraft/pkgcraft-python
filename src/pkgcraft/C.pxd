@@ -632,6 +632,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null DepSet pointer.
     uint64_t pkgcraft_dep_set_hash(DepSet *d)
 
+    # Insert a DepSpec into a DepSet.
+    #
+    # Returns false if an equivalent value already exists, otherwise true.
+    #
+    # # Safety
+    # The arguments must be non-null DepSet and DepSpec pointers.
+    bool pkgcraft_dep_set_insert(DepSet *d, DepSpec *value)
+
     # Return an iterator for a DepSet.
     #
     # # Safety
@@ -759,6 +767,14 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument should be a UTF-8 string.
     DepSet *pkgcraft_dep_set_parse(const char *s, const Eapi *eapi, DepSetKind kind)
+
+    # Remove the last value from a DepSet.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null DepSet pointer.
+    DepSpec *pkgcraft_dep_set_pop(DepSet *d)
 
     # Replace a DepSpec with another DepSpec in a DepSet, returning the replaced value.
     #

@@ -343,12 +343,14 @@ cdef class DepSet:
         return self
 
     def add(self, elem):
-        if isinstance(elem, DepSpec):
-            obj = elem
-        else:
-            obj = DepSpec(elem, set=self.set)
+        cdef DepSpec value
 
-        self.update(obj)
+        if isinstance(elem, DepSpec):
+            value = elem
+        else:
+            value = DepSpec(elem, set=self.set)
+
+        C.pkgcraft_dep_set_insert(self.ptr, value.ptr)
 
     def remove(self, elem):
         if isinstance(elem, DepSpec):
@@ -366,11 +368,8 @@ cdef class DepSet:
             self.difference_update(elem)
 
     def pop(self):
-        if self:
-            dep = self[-1]
-            self.difference_update(dep)
-            return dep
-
+        if ptr := C.pkgcraft_dep_set_pop(self.ptr):
+            return DepSpec.from_ptr(ptr)
         raise KeyError("pop from an empty DepSet")
 
     def clear(self):
