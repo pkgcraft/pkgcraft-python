@@ -410,21 +410,34 @@ cdef class DepSet:
         raise TypeError(f"{self.__class__.__name__} indices must be integers or slices")
 
     def __setitem__(self, key, value not None):
+        cdef DepSpec dep_key
+        cdef DepSpec dep_val
+
         if isinstance(key, int):
             if key < 0:
                 key = len(self) + key
             if key < 0 or key >= len(self):
                 raise IndexError(f"{self.__class__.__name__} index out of range")
+
             if isinstance(value, str):
-                value = DepSpec(value, set=self.set)
-            if ptr := C.pkgcraft_dep_set_replace_index(self.ptr, key, (<DepSpec?>value).ptr):
+                dep_val = DepSpec(value, set=self.set)
+            else:
+                dep_val = value
+
+            if ptr := C.pkgcraft_dep_set_replace_index(self.ptr, key, dep_val.ptr):
                 C.pkgcraft_dep_spec_free(ptr)
         elif isinstance(key, (DepSpec, str)):
             if isinstance(key, str):
-                key = DepSpec(key, set=self.set)
+                dep_key = DepSpec(key, set=self.set)
+            else:
+                dep_key = key
+
             if isinstance(value, str):
-                value = DepSpec(value, set=self.set)
-            if ptr := C.pkgcraft_dep_set_replace(self.ptr, (<DepSpec?>key).ptr, (<DepSpec?>value).ptr):
+                dep_val = DepSpec(value, set=self.set)
+            else:
+                dep_val = value
+
+            if ptr := C.pkgcraft_dep_set_replace(self.ptr, dep_key.ptr, dep_val.ptr):
                 C.pkgcraft_dep_spec_free(ptr)
         elif isinstance(key, slice):
             deps = list(self)
