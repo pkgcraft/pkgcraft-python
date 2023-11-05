@@ -13,14 +13,21 @@ cdef class DepSpec:
 
 cdef class DepSet:
     cdef C.DepSet *ptr
-    cdef bint immutable
     cdef object set
 
     @staticmethod
-    cdef DepSet from_ptr(C.DepSet *, bint immutable=*)
+    cdef from_ptr(C.DepSet *)
+
+    cdef create(self, C.DepSet *)
 
     @staticmethod
     cdef C.DepSet *from_iter(object obj, C.DepSetKind kind)
+
+
+cdef class MutableDepSet(DepSet):
+
+    @staticmethod
+    cdef from_ptr(C.DepSet *)
 
 
 cdef class _IntoIter:

@@ -158,9 +158,8 @@ cdef class DepSpec:
         C.pkgcraft_dep_spec_free(self.ptr)
 
 
-@cython.final
 cdef class DepSet:
-    """Set of dependency objects."""
+    """Immutable set of dependency objects."""
 
     def __init__(self, obj="", /, eapi=None, set=DepSetKind.Dependencies):
         cdef const C.Eapi *eapi_ptr = NULL
@@ -182,10 +181,19 @@ cdef class DepSet:
         self.ptr = ptr
 
     @staticmethod
-    cdef DepSet from_ptr(C.DepSet *ptr, bint immutable=False):
-        """Create a DepSet from a DepSet pointer."""
+    cdef from_ptr(C.DepSet *ptr):
+        """Create a DepSet from a pointer."""
         obj = <DepSet>DepSet.__new__(DepSet)
-        obj.immutable = immutable
+        obj.set = DepSetKind(ptr.set)
+        obj.ptr = ptr
+        return obj
+
+    cdef create(self, C.DepSet *ptr):
+        """Create a DepSet using the instance class from a pointer."""
+        if isinstance(self, MutableDepSet):
+            obj = <MutableDepSet>MutableDepSet.__new__(MutableDepSet)
+        else:
+            obj = <DepSet>DepSet.__new__(DepSet)
         obj.set = DepSetKind(ptr.set)
         obj.ptr = ptr
         return obj
@@ -218,7 +226,7 @@ cdef class DepSet:
             array = CStringArray(enabled)
             ptr = C.pkgcraft_dep_set_evaluate(self.ptr, array.ptr, len(array))
 
-        return DepSet.from_ptr(ptr)
+        return self.create(ptr)
 
     def iter_conditionals(self):
         """Iterate over the conditionals of a DepSet."""
@@ -306,76 +314,6 @@ cdef class DepSet:
 
         return depset
 
-    def update(self, *others):
-        for obj in others:
-            if isinstance(obj, DepSet):
-                self |= obj
-            else:
-                self |= DepSet(obj, set=self.set)
-
-        return self
-
-    def intersection_update(self, *others):
-        for obj in others:
-            if isinstance(obj, DepSet):
-                self &= obj
-            else:
-                self &= DepSet(obj, set=self.set)
-
-        return self
-
-    def difference_update(self, *others):
-        for obj in others:
-            if isinstance(obj, DepSet):
-                self -= obj
-            else:
-                self -= DepSet(obj, set=self.set)
-
-        return self
-
-    def symmetric_difference_update(self, *others):
-        for obj in others:
-            if isinstance(obj, DepSet):
-                self ^= obj
-            else:
-                self ^= DepSet(obj, set=self.set)
-
-        return self
-
-    def add(self, elem):
-        cdef DepSpec value
-
-        if isinstance(elem, DepSpec):
-            value = elem
-        else:
-            value = DepSpec(elem, set=self.set)
-
-        C.pkgcraft_dep_set_insert(self.ptr, value.ptr)
-
-    def remove(self, elem):
-        if isinstance(elem, DepSpec):
-            obj = elem
-        else:
-            obj = DepSpec(elem, set=self.set)
-
-        if obj in self:
-            self.difference_update(obj)
-        else:
-            raise KeyError(elem)
-
-    def discard(self, elem):
-        if elem in self:
-            self.difference_update(elem)
-
-    def pop(self):
-        if ptr := C.pkgcraft_dep_set_pop(self.ptr):
-            return DepSpec.from_ptr(ptr)
-        raise KeyError("pop from an empty DepSet")
-
-    def clear(self):
-        if self:
-            self.intersection_update([])
-
     def __contains__(self, obj):
         cdef DepSpec dep = None
 
@@ -405,50 +343,8 @@ cdef class DepSet:
             raise PkgcraftError  # pragma: no cover
         elif isinstance(key, slice):
             deps = list(self)[key]
-            return DepSet(deps, set=self.set)
+            return self.__class__(deps, set=self.set)
         raise TypeError(f"{self.__class__.__name__} indices must be integers or slices")
-
-    def __setitem__(self, key, value not None):
-        if self.immutable:
-            raise TypeError("object is immutable")
-
-        cdef DepSpec dep_key
-        cdef DepSpec dep_val
-
-        if isinstance(key, int):
-            if key < 0:
-                key = len(self) + key
-            if key < 0 or key >= len(self):
-                raise IndexError(f"{self.__class__.__name__} index out of range")
-
-            if isinstance(value, str):
-                dep_val = DepSpec(value, set=self.set)
-            else:
-                dep_val = value
-
-            if ptr := C.pkgcraft_dep_set_replace_index(self.ptr, key, dep_val.ptr):
-                C.pkgcraft_dep_spec_free(ptr)
-        elif isinstance(key, (DepSpec, str)):
-            if isinstance(key, str):
-                dep_key = DepSpec(key, set=self.set)
-            else:
-                dep_key = key
-
-            if isinstance(value, str):
-                dep_val = DepSpec(value, set=self.set)
-            else:
-                dep_val = value
-
-            if ptr := C.pkgcraft_dep_set_replace(self.ptr, dep_key.ptr, dep_val.ptr):
-                C.pkgcraft_dep_spec_free(ptr)
-        elif isinstance(key, slice):
-            deps = list(self)
-            deps[key] = iterable_to_dep_specs(value, self.set)
-            if set_ptr := DepSet.from_iter(deps, self.set):
-                C.pkgcraft_dep_set_free(self.ptr)
-                self.ptr = set_ptr
-        else:
-            raise TypeError(f"{self.__class__.__name__} indices must be integers or slices")
 
     def __bool__(self):
         return not C.pkgcraft_dep_set_is_empty(self.ptr)
@@ -493,60 +389,12 @@ cdef class DepSet:
         set = self.set.name
         return f"<{name} {set} '{self}' at 0x{addr:0x}>"
 
-    def __iand__(self, other):
-        if self.immutable:
-            raise TypeError("object is immutable")
-
-        op = C.SetOp.SET_OP_AND
-        if isinstance(other, DepSet):
-            obj = <DepSet>other
-            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr):
-                return self
-            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
-        return NotImplemented
-
-    def __ior__(self, other):
-        if self.immutable:
-            raise TypeError("object is immutable")
-
-        op = C.SetOp.SET_OP_OR
-        if isinstance(other, DepSet):
-            obj = <DepSet>other
-            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr):
-                return self
-            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
-        return NotImplemented
-
-    def __ixor__(self, other):
-        if self.immutable:
-            raise TypeError("object is immutable")
-
-        op = C.SetOp.SET_OP_XOR
-        if isinstance(other, DepSet):
-            obj = <DepSet>other
-            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr):
-                return self
-            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
-        return NotImplemented
-
-    def __isub__(self, other):
-        if self.immutable:
-            raise TypeError("object is immutable")
-
-        op = C.SetOp.SET_OP_SUB
-        if isinstance(other, DepSet):
-            obj = <DepSet>other
-            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr):
-                return self
-            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
-        return NotImplemented
-
     def __and__(self, other):
         op = C.SetOp.SET_OP_AND
         if isinstance(other, DepSet):
             obj = <DepSet>other
             if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, obj.ptr):
-                return DepSet.from_ptr(ptr)
+                return self.create(ptr)
             raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
 
@@ -558,7 +406,7 @@ cdef class DepSet:
         if isinstance(other, DepSet):
             obj = <DepSet>other
             if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, obj.ptr):
-                return DepSet.from_ptr(ptr)
+                return self.create(ptr)
             raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
 
@@ -570,7 +418,7 @@ cdef class DepSet:
         if isinstance(other, DepSet):
             obj = <DepSet>other
             if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, obj.ptr):
-                return DepSet.from_ptr(ptr)
+                return self.create(ptr)
             raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
 
@@ -582,7 +430,7 @@ cdef class DepSet:
         if isinstance(other, DepSet):
             obj = <DepSet>other
             if ptr := C.pkgcraft_dep_set_op_set(op, self.ptr, obj.ptr):
-                return DepSet.from_ptr(ptr)
+                return self.create(ptr)
             raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
         return NotImplemented
 
@@ -591,6 +439,164 @@ cdef class DepSet:
 
     def __dealloc__(self):
         C.pkgcraft_dep_set_free(self.ptr)
+
+
+@cython.final
+cdef class MutableDepSet(DepSet):
+    """Mutable set of dependency objects."""
+
+    @staticmethod
+    cdef from_ptr(C.DepSet *ptr):
+        """Create a MutableDepSet from a pointer."""
+        obj = <MutableDepSet>MutableDepSet.__new__(MutableDepSet)
+        obj.set = DepSetKind(ptr.set)
+        obj.ptr = ptr
+        return obj
+
+    def add(self, elem):
+        cdef DepSpec value
+
+        if isinstance(elem, DepSpec):
+            value = elem
+        else:
+            value = DepSpec(elem, set=self.set)
+
+        C.pkgcraft_dep_set_insert(self.ptr, value.ptr)
+
+    def remove(self, elem):
+        if isinstance(elem, DepSpec):
+            obj = elem
+        else:
+            obj = DepSpec(elem, set=self.set)
+
+        if obj in self:
+            self.difference_update(obj)
+        else:
+            raise KeyError(elem)
+
+    def discard(self, elem):
+        if elem in self:
+            self.difference_update(elem)
+
+    def pop(self):
+        if ptr := C.pkgcraft_dep_set_pop(self.ptr):
+            return DepSpec.from_ptr(ptr)
+        raise KeyError("pop from an empty DepSet")
+
+    def clear(self):
+        if self:
+            self.intersection_update([])
+
+    def update(self, *others):
+        for obj in others:
+            if isinstance(obj, DepSet):
+                self |= obj
+            else:
+                self |= DepSet(obj, set=self.set)
+
+        return self
+
+    def intersection_update(self, *others):
+        for obj in others:
+            if isinstance(obj, DepSet):
+                self &= obj
+            else:
+                self &= DepSet(obj, set=self.set)
+
+        return self
+
+    def difference_update(self, *others):
+        for obj in others:
+            if isinstance(obj, DepSet):
+                self -= obj
+            else:
+                self -= DepSet(obj, set=self.set)
+
+        return self
+
+    def symmetric_difference_update(self, *others):
+        for obj in others:
+            if isinstance(obj, DepSet):
+                self ^= obj
+            else:
+                self ^= DepSet(obj, set=self.set)
+
+        return self
+
+    def __iand__(self, other):
+        op = C.SetOp.SET_OP_AND
+        if isinstance(other, DepSet):
+            obj = <DepSet>other
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr):
+                return self
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
+        return NotImplemented
+
+    def __ior__(self, other):
+        op = C.SetOp.SET_OP_OR
+        if isinstance(other, DepSet):
+            obj = <DepSet>other
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr):
+                return self
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
+        return NotImplemented
+
+    def __ixor__(self, other):
+        op = C.SetOp.SET_OP_XOR
+        if isinstance(other, DepSet):
+            obj = <DepSet>other
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr):
+                return self
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
+        return NotImplemented
+
+    def __isub__(self, other):
+        op = C.SetOp.SET_OP_SUB
+        if isinstance(other, DepSet):
+            obj = <DepSet>other
+            if C.pkgcraft_dep_set_assign_op_set(op, self.ptr, obj.ptr):
+                return self
+            raise TypeError(f"unsupported DepSet types: {self.set.name} and {obj.set.name}")
+        return NotImplemented
+
+    def __setitem__(self, key, value not None):
+        cdef DepSpec dep_key
+        cdef DepSpec dep_val
+
+        if isinstance(key, int):
+            if key < 0:
+                key = len(self) + key
+            if key < 0 or key >= len(self):
+                raise IndexError(f"{self.__class__.__name__} index out of range")
+
+            if isinstance(value, str):
+                dep_val = DepSpec(value, set=self.set)
+            else:
+                dep_val = value
+
+            if ptr := C.pkgcraft_dep_set_replace_index(self.ptr, key, dep_val.ptr):
+                C.pkgcraft_dep_spec_free(ptr)
+        elif isinstance(key, (DepSpec, str)):
+            if isinstance(key, str):
+                dep_key = DepSpec(key, set=self.set)
+            else:
+                dep_key = key
+
+            if isinstance(value, str):
+                dep_val = DepSpec(value, set=self.set)
+            else:
+                dep_val = value
+
+            if ptr := C.pkgcraft_dep_set_replace(self.ptr, dep_key.ptr, dep_val.ptr):
+                C.pkgcraft_dep_spec_free(ptr)
+        elif isinstance(key, slice):
+            deps = list(self)
+            deps[key] = iterable_to_dep_specs(value, self.set)
+            if set_ptr := DepSet.from_iter(deps, self.set):
+                C.pkgcraft_dep_set_free(self.ptr)
+                self.ptr = set_ptr
+        else:
+            raise TypeError(f"{self.__class__.__name__} indices must be integers or slices")
 
 
 cdef class _IntoIter:

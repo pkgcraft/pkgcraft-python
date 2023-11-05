@@ -4,7 +4,7 @@ cimport cython
 
 from .. cimport C
 from .._misc cimport SENTINEL, CStringArray, CStringIter, cstring_to_str
-from ..dep cimport DepSet
+from ..dep cimport DepSet, MutableDepSet
 from ..error cimport _IndirectInit
 from . cimport Pkg
 
@@ -55,11 +55,11 @@ cdef class EbuildPkg(Pkg):
     def dependencies(self, *keys):
         """Get a package's dependencies for the given descriptors.
 
-        Returns a DepSet encompassing all dependencies when no descriptors are passed.
+        Returns all dependencies when no descriptors are passed.
         """
         array = CStringArray(keys)
         if ptr := C.pkgcraft_pkg_ebuild_dependencies(self.ptr, array.ptr, len(array)):
-            return DepSet.from_ptr(ptr)
+            return MutableDepSet.from_ptr(ptr)
         raise PkgcraftError
 
     @property
@@ -67,7 +67,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's BDEPEND."""
         if self._bdepend is None:
             ptr = C.pkgcraft_pkg_ebuild_bdepend(self.ptr)
-            self._bdepend = DepSet.from_ptr(ptr, True)
+            self._bdepend = DepSet.from_ptr(ptr)
         return self._bdepend
 
     @property
@@ -75,7 +75,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's DEPEND."""
         if self._depend is None:
             ptr = C.pkgcraft_pkg_ebuild_depend(self.ptr)
-            self._depend = DepSet.from_ptr(ptr, True)
+            self._depend = DepSet.from_ptr(ptr)
         return self._depend
 
     @property
@@ -83,7 +83,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's IDEPEND."""
         if self._idepend is None:
             ptr = C.pkgcraft_pkg_ebuild_idepend(self.ptr)
-            self._idepend = DepSet.from_ptr(ptr, True)
+            self._idepend = DepSet.from_ptr(ptr)
         return self._idepend
 
     @property
@@ -91,7 +91,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's PDEPEND."""
         if self._pdepend is None:
             ptr = C.pkgcraft_pkg_ebuild_pdepend(self.ptr)
-            self._pdepend = DepSet.from_ptr(ptr, True)
+            self._pdepend = DepSet.from_ptr(ptr)
         return self._pdepend
 
     @property
@@ -99,7 +99,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's RDEPEND."""
         if self._rdepend is None:
             ptr = C.pkgcraft_pkg_ebuild_rdepend(self.ptr)
-            self._rdepend = DepSet.from_ptr(ptr, True)
+            self._rdepend = DepSet.from_ptr(ptr)
         return self._rdepend
 
     @property
@@ -107,7 +107,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's LICENSE."""
         if self._license is None:
             ptr = C.pkgcraft_pkg_ebuild_license(self.ptr)
-            self._license = DepSet.from_ptr(ptr, True)
+            self._license = DepSet.from_ptr(ptr)
         return self._license
 
     @property
@@ -115,7 +115,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's PROPERTIES."""
         if self._properties is None:
             ptr = C.pkgcraft_pkg_ebuild_properties(self.ptr)
-            self._properties = DepSet.from_ptr(ptr, True)
+            self._properties = DepSet.from_ptr(ptr)
         return self._properties
 
     @property
@@ -123,7 +123,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's REQUIRED_USE."""
         if self._required_use is None:
             ptr = C.pkgcraft_pkg_ebuild_required_use(self.ptr)
-            self._required_use = DepSet.from_ptr(ptr, True)
+            self._required_use = DepSet.from_ptr(ptr)
         return self._required_use
 
     @property
@@ -131,7 +131,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's RESTRICT."""
         if self._restrict is None:
             ptr = C.pkgcraft_pkg_ebuild_restrict(self.ptr)
-            self._restrict = DepSet.from_ptr(ptr, True)
+            self._restrict = DepSet.from_ptr(ptr)
         return self._restrict
 
     @property
@@ -139,7 +139,7 @@ cdef class EbuildPkg(Pkg):
         """Get a package's SRC_URI."""
         if self._src_uri is None:
             ptr = C.pkgcraft_pkg_ebuild_src_uri(self.ptr)
-            self._src_uri = DepSet.from_ptr(ptr, True)
+            self._src_uri = DepSet.from_ptr(ptr)
         return self._src_uri
 
     @property

@@ -529,140 +529,6 @@ class TestDepSet:
         assert d.symmetric_difference(DepSpec("b/b")) == DepSet("a/a")
         assert d.symmetric_difference(DepSpec("a/a"), DepSpec("c/c")) == DepSet("b/b c/c")
 
-    def test_update(self):
-        d = DepSet("a/a b/b")
-
-        # no args
-        d1 = d[:]
-        assert d1 == d1.update() and d1 is d1.update()
-
-        # empty iterable
-        assert d == DepSet(d).update([])
-
-        # DepSet args
-        assert d == DepSet(d).update(DepSet())
-        assert DepSet(d).update(DepSet("a/a"), DepSet("b/b c/c")) == DepSet("a/a b/b c/c")
-
-        # DepSet string args
-        assert d == DepSet(d).update("")
-        assert DepSet(d).update("a/a", "b/b c/c") == DepSet("a/a b/b c/c")
-
-        # DepSpec args
-        assert DepSet(d).update(DepSpec("c/c")) == DepSet("a/a b/b c/c")
-        assert DepSet(d).update(DepSpec("a/a"), DepSpec("c/c")) == DepSet("a/a b/b c/c")
-
-    def test_intersection_update(self):
-        d = DepSet("a/a b/b")
-
-        # no args
-        d1 = d[:]
-        assert d1 == d1.intersection_update() and d1 is d1.intersection_update()
-
-        # empty iterable
-        assert not DepSet(d).intersection_update([])
-
-        # DepSet args
-        assert not DepSet(d).intersection_update(DepSet())
-        assert d == DepSet(d).intersection_update(d)
-        assert DepSet(d).intersection_update(DepSet("a/a b/b"), DepSet("b/b")) == DepSet("b/b")
-
-        # DepSet string args
-        assert not DepSet(d).intersection_update("")
-        assert DepSet(d).intersection_update("a/a b/b", "b/b") == DepSet("b/b")
-
-        # DepSpec args
-        assert DepSet(d).intersection_update(DepSpec("a/a")) == DepSet("a/a")
-        assert DepSet(d).intersection_update(DepSpec("a/a"), DepSpec("c/c")) == DepSet()
-
-    def test_difference_update(self):
-        d = DepSet("a/a b/b")
-
-        # no args
-        d1 = d[:]
-        assert d1 == d1.difference_update() and d1 is d1.difference_update()
-
-        # empty iterable
-        assert d == DepSet(d).difference_update([])
-
-        # DepSet args
-        assert d == DepSet(d).difference_update(DepSet())
-        assert DepSet(d).difference_update(DepSet("a/a"), DepSet("b/b c/c")) == DepSet()
-
-        # DepSet string args
-        assert d == DepSet(d).difference_update("")
-        assert DepSet(d).difference_update("a/a", "b/b c/c") == DepSet()
-
-        # DepSpec args
-        assert DepSet(d).difference_update(DepSpec("b/b")) == DepSet("a/a")
-        assert DepSet(d).difference_update(DepSpec("a/a"), DepSpec("c/c")) == DepSet("b/b")
-
-    def test_symmetric_difference_update(self):
-        d = DepSet("a/a b/b")
-
-        # no args
-        d1 = d[:]
-        assert d1 == d1.symmetric_difference_update() and d1 is d1.symmetric_difference_update()
-
-        # empty iterable
-        assert d == DepSet(d).symmetric_difference_update([])
-
-        # DepSet args
-        assert d == DepSet(d).symmetric_difference_update(DepSet())
-        assert DepSet(d).symmetric_difference_update(DepSet("a/a"), DepSet("b/b c/c")) == DepSet("c/c")
-
-        # DepSet string args
-        assert d == DepSet(d).symmetric_difference_update("")
-        assert DepSet(d).symmetric_difference_update("a/a", "b/b c/c") == DepSet("c/c")
-
-        # DepSpec args
-        assert DepSet(d).symmetric_difference_update(DepSpec("b/b")) == DepSet("a/a")
-        assert DepSet(d).symmetric_difference_update(DepSpec("a/a"), DepSpec("c/c")) == DepSet("b/b c/c")
-
-    def test_add(self):
-        d = DepSet("a/a")
-        d.add("a/a")
-        assert d == DepSet("a/a")
-        d.add(DepSpec("b/b"))
-        assert d == DepSet("a/a b/b")
-
-        # arguments must be DepSpec objects or strings
-        for obj in [None, DepSet("c/c")]:
-            with pytest.raises(TypeError):
-                d.add(obj)
-
-    def test_remove(self):
-        d = DepSet("a/a b/b")
-        d.remove("a/a")
-        d.remove(DepSpec("b/b"))
-        for obj in ["a/a", DepSpec("c/c")]:
-            with pytest.raises(KeyError):
-                d.remove(obj)
-        assert d == DepSet()
-
-        # arguments must be DepSpec objects or strings
-        for obj in [None, DepSet("c/c")]:
-            with pytest.raises(TypeError):
-                d.remove(obj)
-
-    def test_discard(self):
-        d = DepSet("a/a b/b")
-        for obj in [None, "a/a", DepSpec("b/b"), DepSet("c/c")]:
-            d.discard(obj)
-        assert d == DepSet()
-
-    def test_pop(self):
-        d = DepSet("a/a")
-        assert d.pop() == DepSpec("a/a")
-        with pytest.raises(KeyError):
-            d.pop()
-        assert d == DepSet()
-
-    def test_clear(self):
-        d = DepSet("a/a")
-        d.clear()
-        assert d == DepSet()
-        d.clear()
-
     def test_getitem(self):
         d = DepSet("a/b || ( c/d e/f )")
 
@@ -683,58 +549,6 @@ class TestDepSet:
         for obj in [None, "a/b", object()]:
             with pytest.raises(TypeError):
                 d[obj]
-
-    def test_setitem(self):
-        # slices
-        d = DepSet("a/b || ( c/d e/f )")
-        d[:] = [DepSpec("a/b")]
-        assert d == DepSet("a/b")
-        d[10:] = ["c/d", "a/b"]
-        assert d == DepSet("a/b c/d")
-
-        # integers
-        d = DepSet("a/b || ( c/d e/f )")
-        d[0] = DepSpec("cat/pkg")
-        assert d == DepSet("cat/pkg || ( c/d e/f )")
-        d[-1] = DepSpec("u? ( a/b )")
-        assert d == DepSet("cat/pkg u? ( a/b )")
-        d[-1] = "cat/pkg[u1,u2]"
-        assert d == DepSet("cat/pkg cat/pkg[u1,u2]")
-
-        # DepSpec and valid DepSpec strings
-        d = DepSet("a/b || ( c/d e/f )")
-        d["a/b"] = "c/d"
-        assert d == DepSet("c/d || ( c/d e/f )")
-        d["c/d"] = DepSpec("e/f")
-        assert d == DepSet("e/f || ( c/d e/f )")
-        d[DepSpec("|| ( c/d e/f )")] = "a/b"
-        assert d == DepSet("e/f a/b")
-        d[DepSpec("e/f")] = DepSpec("c/d")
-        assert d == DepSet("c/d a/b")
-
-        # inserting an existing value removes the value at the specified index
-        d = DepSet("a/b c/d e/f")
-        d[-1] = DepSpec("a/b")
-        assert d == DepSet("a/b c/d")
-        d["a/b"] = "c/d"
-        assert d == DepSet("c/d")
-
-        # nonexistent indices
-        for idx in [5, -5]:
-            with pytest.raises(IndexError):
-                d[idx] = DepSpec("cat/pkg")
-
-        # invalid arg types
-        d = DepSet("a/b")
-        for obj in [None, object(), "a/b"]:
-            with pytest.raises(TypeError):
-                d[:] = obj
-        for obj in [None, object()]:
-            with pytest.raises(TypeError):
-                d[obj] = DepSpec("a/b")
-            for key in [0, "a/b", DepSpec("a/b")]:
-                with pytest.raises(TypeError):
-                    d[key] = obj
 
     def test_iand(self):
         d = DepSet("a/a b/b c/c")
@@ -837,3 +651,192 @@ class TestDepSet:
             for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
                     x - y
+
+
+class TestMutableDepSet:
+
+    def test_add(self):
+        d = MutableDepSet("a/a")
+        d.add("a/a")
+        assert d == MutableDepSet("a/a")
+        d.add(DepSpec("b/b"))
+        assert d == MutableDepSet("a/a b/b")
+
+        # arguments must be DepSpec objects or strings
+        for obj in [None, DepSet("c/c")]:
+            with pytest.raises(TypeError):
+                d.add(obj)
+
+    def test_remove(self):
+        d = MutableDepSet("a/a b/b")
+        d.remove("a/a")
+        d.remove(DepSpec("b/b"))
+        for obj in ["a/a", DepSpec("c/c")]:
+            with pytest.raises(KeyError):
+                d.remove(obj)
+        assert d == MutableDepSet()
+
+        # arguments must be DepSpec objects or strings
+        for obj in [None, DepSet("c/c")]:
+            with pytest.raises(TypeError):
+                d.remove(obj)
+
+    def test_discard(self):
+        d = MutableDepSet("a/a b/b")
+        for obj in [None, "a/a", DepSpec("b/b"), MutableDepSet("c/c")]:
+            d.discard(obj)
+        assert d == MutableDepSet()
+
+    def test_pop(self):
+        d = MutableDepSet("a/a")
+        assert d.pop() == DepSpec("a/a")
+        with pytest.raises(KeyError):
+            d.pop()
+        assert d == MutableDepSet()
+
+    def test_clear(self):
+        d = MutableDepSet("a/a")
+        d.clear()
+        assert d == MutableDepSet()
+        d.clear()
+
+    def test_setitem(self):
+        # slices
+        d = MutableDepSet("a/b || ( c/d e/f )")
+        d[:] = [DepSpec("a/b")]
+        assert d == MutableDepSet("a/b")
+        d[10:] = ["c/d", "a/b"]
+        assert d == MutableDepSet("a/b c/d")
+
+        # integers
+        d = MutableDepSet("a/b || ( c/d e/f )")
+        d[0] = DepSpec("cat/pkg")
+        assert d == MutableDepSet("cat/pkg || ( c/d e/f )")
+        d[-1] = DepSpec("u? ( a/b )")
+        assert d == MutableDepSet("cat/pkg u? ( a/b )")
+        d[-1] = "cat/pkg[u1,u2]"
+        assert d == MutableDepSet("cat/pkg cat/pkg[u1,u2]")
+
+        # DepSpec and valid DepSpec strings
+        d = MutableDepSet("a/b || ( c/d e/f )")
+        d["a/b"] = "c/d"
+        assert d == MutableDepSet("c/d || ( c/d e/f )")
+        d["c/d"] = DepSpec("e/f")
+        assert d == MutableDepSet("e/f || ( c/d e/f )")
+        d[DepSpec("|| ( c/d e/f )")] = "a/b"
+        assert d == MutableDepSet("e/f a/b")
+        d[DepSpec("e/f")] = DepSpec("c/d")
+        assert d == MutableDepSet("c/d a/b")
+
+        # inserting an existing value removes the value at the specified index
+        d = MutableDepSet("a/b c/d e/f")
+        d[-1] = DepSpec("a/b")
+        assert d == MutableDepSet("a/b c/d")
+        d["a/b"] = "c/d"
+        assert d == MutableDepSet("c/d")
+
+        # nonexistent indices
+        for idx in [5, -5]:
+            with pytest.raises(IndexError):
+                d[idx] = DepSpec("cat/pkg")
+
+        # invalid arg types
+        d = MutableDepSet("a/b")
+        for obj in [None, object(), "a/b"]:
+            with pytest.raises(TypeError):
+                d[:] = obj
+        for obj in [None, object()]:
+            with pytest.raises(TypeError):
+                d[obj] = DepSpec("a/b")
+            for key in [0, "a/b", DepSpec("a/b")]:
+                with pytest.raises(TypeError):
+                    d[key] = obj
+
+    def test_update(self):
+        d = MutableDepSet("a/a b/b")
+
+        # no args
+        d1 = d[:]
+        assert d1 == d1.update() and d1 is d1.update()
+
+        # empty iterable
+        assert d == MutableDepSet(d).update([])
+
+        # DepSet args
+        assert d == MutableDepSet(d).update(MutableDepSet())
+        assert MutableDepSet(d).update(MutableDepSet("a/a"), MutableDepSet("b/b c/c")) == MutableDepSet("a/a b/b c/c")
+
+        # DepSet string args
+        assert d == MutableDepSet(d).update("")
+        assert MutableDepSet(d).update("a/a", "b/b c/c") == MutableDepSet("a/a b/b c/c")
+
+        # DepSpec args
+        assert MutableDepSet(d).update(DepSpec("c/c")) == MutableDepSet("a/a b/b c/c")
+        assert MutableDepSet(d).update(DepSpec("a/a"), DepSpec("c/c")) == MutableDepSet("a/a b/b c/c")
+
+    def test_intersection_update(self):
+        d = MutableDepSet("a/a b/b")
+
+        # no args
+        d1 = d[:]
+        assert d1 == d1.intersection_update() and d1 is d1.intersection_update()
+
+        # empty iterable
+        assert not MutableDepSet(d).intersection_update([])
+
+        # DepSet args
+        assert not MutableDepSet(d).intersection_update(MutableDepSet())
+        assert d == MutableDepSet(d).intersection_update(d)
+        assert MutableDepSet(d).intersection_update(MutableDepSet("a/a b/b"), MutableDepSet("b/b")) == MutableDepSet("b/b")
+
+        # DepSet string args
+        assert not MutableDepSet(d).intersection_update("")
+        assert MutableDepSet(d).intersection_update("a/a b/b", "b/b") == MutableDepSet("b/b")
+
+        # DepSpec args
+        assert MutableDepSet(d).intersection_update(DepSpec("a/a")) == MutableDepSet("a/a")
+        assert MutableDepSet(d).intersection_update(DepSpec("a/a"), DepSpec("c/c")) == MutableDepSet()
+
+    def test_difference_update(self):
+        d = MutableDepSet("a/a b/b")
+
+        # no args
+        d1 = d[:]
+        assert d1 == d1.difference_update() and d1 is d1.difference_update()
+
+        # empty iterable
+        assert d == MutableDepSet(d).difference_update([])
+
+        # DepSet args
+        assert d == MutableDepSet(d).difference_update(MutableDepSet())
+        assert MutableDepSet(d).difference_update(MutableDepSet("a/a"), MutableDepSet("b/b c/c")) == MutableDepSet()
+
+        # DepSet string args
+        assert d == MutableDepSet(d).difference_update("")
+        assert MutableDepSet(d).difference_update("a/a", "b/b c/c") == MutableDepSet()
+
+        # DepSpec args
+        assert MutableDepSet(d).difference_update(DepSpec("b/b")) == MutableDepSet("a/a")
+        assert MutableDepSet(d).difference_update(DepSpec("a/a"), DepSpec("c/c")) == MutableDepSet("b/b")
+
+    def test_symmetric_difference_update(self):
+        d = MutableDepSet("a/a b/b")
+
+        # no args
+        d1 = d[:]
+        assert d1 == d1.symmetric_difference_update() and d1 is d1.symmetric_difference_update()
+
+        # empty iterable
+        assert d == MutableDepSet(d).symmetric_difference_update([])
+
+        # DepSet args
+        assert d == MutableDepSet(d).symmetric_difference_update(MutableDepSet())
+        assert MutableDepSet(d).symmetric_difference_update(MutableDepSet("a/a"), MutableDepSet("b/b c/c")) == MutableDepSet("c/c")
+
+        # DepSet string args
+        assert d == MutableDepSet(d).symmetric_difference_update("")
+        assert MutableDepSet(d).symmetric_difference_update("a/a", "b/b c/c") == MutableDepSet("c/c")
+
+        # DepSpec args
+        assert MutableDepSet(d).symmetric_difference_update(DepSpec("b/b")) == MutableDepSet("a/a")
+        assert MutableDepSet(d).symmetric_difference_update(DepSpec("a/a"), DepSpec("c/c")) == MutableDepSet("b/b c/c")

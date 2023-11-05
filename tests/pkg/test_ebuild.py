@@ -128,14 +128,16 @@ class TestEbuildPkg(BasePkgTests):
             assert list(map(str, val.iter_recursive())) == ["cat/pkg"]
             assert list(map(str, val)) == ["cat/pkg"]
 
-            # pkg depset attrs are immutable
+            # modifying operations return new sets
             for op_func in (iand, ior, isub, ixor):
-                with pytest.raises(TypeError):
-                    op_func(val, val)
-                with pytest.raises(TypeError):
-                    val[0] = "cat/pkg"
-                with pytest.raises(TypeError):
-                    val[:] = ["cat/pkg"]
+                v = op_func(val, val)
+                assert v is not val
+
+            # pkg depset attrs are immutable
+            with pytest.raises(TypeError):
+                val[0] = "cat/pkg"
+            with pytest.raises(TypeError):
+                val[:] = ["cat/pkg"]
 
             pkg = ebuild_repo.create_pkg("cat/pkg-1", **{attr: "u? ( cat/pkg ) || ( a/b c/d )"})
             val = getattr(pkg, attr)
