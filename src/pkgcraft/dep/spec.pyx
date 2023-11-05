@@ -162,8 +162,6 @@ cdef class DepSpec:
 cdef class DepSet:
     """Set of dependency objects."""
 
-    _kind = None
-
     def __init__(self, obj="", /, eapi=None, set=DepSetKind.Dependencies):
         cdef const C.Eapi *eapi_ptr = NULL
         cdef C.DepSetKind kind = DepSetKind(set)
