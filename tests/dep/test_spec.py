@@ -840,3 +840,7 @@ class TestMutableDepSet:
         # DepSpec args
         assert MutableDepSet(d).symmetric_difference_update(DepSpec("b/b")) == MutableDepSet("a/a")
         assert MutableDepSet(d).symmetric_difference_update(DepSpec("a/a"), DepSpec("c/c")) == MutableDepSet("b/b c/c")
+
+    def test_hash(self):
+        with pytest.raises(TypeError):
+            hash(MutableDepSet())

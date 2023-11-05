@@ -598,6 +598,9 @@ cdef class MutableDepSet(DepSet):
         else:
             raise TypeError(f"{self.__class__.__name__} indices must be integers or slices")
 
+    def __eq__(self, other):
+        return super().__eq__(other)
+
 
 cdef class _IntoIter:
     """Iterator over a DepSet or DepSpec object."""
