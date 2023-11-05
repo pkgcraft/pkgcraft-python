@@ -416,7 +416,7 @@ cdef class DepSet:
 
         # alter DepSet for slices
         deps = list(self)
-        deps[key] = list(DepSet(value, set=self.set))
+        deps[key] = [x if isinstance(x, DepSpec) else DepSpec(x, set=self.set) for x in value]
         self.ptr = DepSet.from_iter(deps, self.set)
 
     def __bool__(self):
