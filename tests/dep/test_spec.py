@@ -669,7 +669,6 @@ class TestDepSet:
 
     def test_setitem(self):
         d = DepSet("a/b || ( c/d e/f )")
-        dep = DepSpec("c/d")
 
         d[0] = DepSpec("cat/pkg")
         assert d == DepSet("cat/pkg || ( c/d e/f )")
