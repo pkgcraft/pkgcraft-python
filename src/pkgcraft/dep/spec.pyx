@@ -181,7 +181,7 @@ cdef class DepSet:
         self.ptr = ptr
 
     @staticmethod
-    cdef from_ptr(C.DepSet *ptr):
+    cdef DepSet from_ptr(C.DepSet *ptr):
         """Create a DepSet from a pointer."""
         obj = <DepSet>DepSet.__new__(DepSet)
         obj.set = DepSetKind(ptr.set)
@@ -189,14 +189,10 @@ cdef class DepSet:
         return obj
 
     cdef create(self, C.DepSet *ptr):
-        """Create a DepSet using the instance class from a pointer."""
+        """Create a DepSet from a pointer using the instance class."""
         if isinstance(self, MutableDepSet):
-            obj = <MutableDepSet>MutableDepSet.__new__(MutableDepSet)
-        else:
-            obj = <DepSet>DepSet.__new__(DepSet)
-        obj.set = DepSetKind(ptr.set)
-        obj.ptr = ptr
-        return obj
+            return MutableDepSet.from_ptr(ptr)
+        return DepSet.from_ptr(ptr)
 
     @staticmethod
     cdef C.DepSet *from_iter(object obj, C.DepSetKind kind):
@@ -446,7 +442,7 @@ cdef class MutableDepSet(DepSet):
     """Mutable set of dependency objects."""
 
     @staticmethod
-    cdef from_ptr(C.DepSet *ptr):
+    cdef MutableDepSet from_ptr(C.DepSet *ptr):
         """Create a MutableDepSet from a pointer."""
         obj = <MutableDepSet>MutableDepSet.__new__(MutableDepSet)
         obj.set = DepSetKind(ptr.set)

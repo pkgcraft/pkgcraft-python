@@ -16,7 +16,7 @@ cdef class DepSet:
     cdef object set
 
     @staticmethod
-    cdef from_ptr(C.DepSet *)
+    cdef DepSet from_ptr(C.DepSet *)
 
     cdef create(self, C.DepSet *)
 
@@ -27,7 +27,7 @@ cdef class DepSet:
 cdef class MutableDepSet(DepSet):
 
     @staticmethod
-    cdef from_ptr(C.DepSet *)
+    cdef MutableDepSet from_ptr(C.DepSet *)
 
 
 cdef class _IntoIter:
