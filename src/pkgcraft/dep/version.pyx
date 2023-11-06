@@ -16,7 +16,7 @@ class Operator(IntEnum):
     Greater = C.OPERATOR_GREATER
 
     @staticmethod
-    def from_str(str s not None):
+    def from_str(s: str):
         op = C.pkgcraft_version_op_from_str(s.encode())
         if op > 0:
             return Operator(op)
@@ -34,7 +34,7 @@ class Operator(IntEnum):
 cdef class Revision:
     """Package revision."""
 
-    def __init__(self, str s not None):
+    def __init__(self, s: str):
         self.ptr = C.pkgcraft_revision_new(s.encode())
         if self.ptr is NULL:
             raise InvalidVersion
@@ -126,13 +126,13 @@ cdef class Version:
     def __cinit__(self):
         self._revision = SENTINEL
 
-    def __init__(self, str s not None):
+    def __init__(self, s: str):
         self.ptr = C.pkgcraft_version_new(s.encode())
         if self.ptr is NULL:
             raise InvalidVersion
 
     @staticmethod
-    def valid(str s not None, raised=False):
+    def valid(s: str, raised=False):
         """Determine if a string is a valid package version.
 
         >>> from pkgcraft.dep import Version
@@ -204,7 +204,7 @@ cdef class Version:
             self._revision = Revision.from_ptr(ptr) if ptr is not NULL else None
         return self._revision
 
-    def intersects(self, Version other not None):
+    def intersects(self, other: Version):
         """Determine if two versions intersect.
 
         >>> from pkgcraft.dep import Version

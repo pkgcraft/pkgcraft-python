@@ -74,14 +74,14 @@ cdef class Repo:
         c_strs = C.pkgcraft_repo_categories(self.ptr, &length)
         return OrderedFrozenSet(CStringIter.create(c_strs, length))
 
-    def packages(self, str cat not None):
+    def packages(self, cat: str):
         """Get a repo's packages for a category."""
         cdef size_t length
         if parse.category(cat):
             c_strs = C.pkgcraft_repo_packages(self.ptr, cat.encode(), &length)
             return OrderedFrozenSet(CStringIter.create(c_strs, length))
 
-    def versions(self, str cat not None, str pkg not None):
+    def versions(self, cat: str, pkg: str):
         """Get a repo's versions for a package."""
         cdef size_t length
         if parse.category(cat) and parse.package(pkg):
@@ -175,7 +175,7 @@ cdef class Repo:
 cdef class _IterCpv:
     """Iterator over the Cpv objects from a repo."""
 
-    def __cinit__(self, Repo r not None):
+    def __cinit__(self, r: Repo):
         self.ptr = C.pkgcraft_repo_iter_cpv(r.ptr)
 
     def __iter__(self):
@@ -193,7 +193,7 @@ cdef class _IterCpv:
 cdef class _Iter:
     """Iterator over a repo."""
 
-    def __cinit__(self, Repo r not None):
+    def __cinit__(self, r: Repo):
         self.ptr = C.pkgcraft_repo_iter(r.ptr)
 
     def __iter__(self):
@@ -211,7 +211,7 @@ cdef class _Iter:
 cdef class _IterRestrict:
     """Iterator that applies a restriction over a repo iterator."""
 
-    def __cinit__(self, Repo repo not None, object obj not None):
+    def __cinit__(self, repo: Repo, object obj not None):
         cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
         self.ptr = C.pkgcraft_repo_iter_restrict(repo.ptr, r.ptr)
 

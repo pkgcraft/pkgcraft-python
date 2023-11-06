@@ -34,7 +34,7 @@ cdef C.LogLevel convert_level(int level):
     return C.LOG_LEVEL_OFF
 
 
-def _pkgcraft_log_test(str message not None, int level):
+def _pkgcraft_log_test(message: str, int level):
     """Inject log messages into pkgcraft to replay for test purposes."""
     C.pkgcraft_log_test(message.encode(), convert_level(level))
 

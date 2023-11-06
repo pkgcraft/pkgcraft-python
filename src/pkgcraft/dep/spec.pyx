@@ -46,7 +46,7 @@ cdef list iterable_to_dep_specs(object obj, C.DepSetKind kind):
 cdef class DepSpec:
     """Dependency object."""
 
-    def __init__(self, str s not None, /, eapi=None, set=DepSetKind.Dependencies):
+    def __init__(self, s: str, /, eapi=None, set=DepSetKind.Dependencies):
         cdef const C.Eapi *eapi_ptr = NULL
         cdef C.DepSetKind kind = DepSetKind(set)
 

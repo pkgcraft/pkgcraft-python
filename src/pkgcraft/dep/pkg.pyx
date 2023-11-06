@@ -28,7 +28,7 @@ class Blocker(IntEnum):
     Weak = C.BLOCKER_WEAK
 
     @staticmethod
-    def from_str(str s not None):
+    def from_str(s: str):
         blocker = C.pkgcraft_dep_blocker_from_str(s.encode())
         if blocker > 0:
             return Blocker(blocker)
@@ -49,7 +49,7 @@ class SlotOperator(IntEnum):
     Star = C.SLOT_OPERATOR_STAR
 
     @staticmethod
-    def from_str(str s not None):
+    def from_str(s: str):
         slot_op = C.pkgcraft_dep_slot_op_from_str(s.encode())
         if slot_op > 0:
             return SlotOperator(slot_op)
@@ -113,7 +113,7 @@ cdef class Dep:
         self._use_deps = SENTINEL
         self.eapi = EAPI_LATEST
 
-    def __init__(self, str s not None, /, eapi=None):
+    def __init__(self, s: str, /, eapi=None):
         if eapi is not None:
             self.eapi = Eapi._from_obj(eapi)
 
@@ -129,12 +129,12 @@ cdef class Dep:
         return obj
 
     @classmethod
-    def cached(cls, str s not None, eapi=None):
+    def cached(cls, s: str, eapi=None):
         """Return a cached Dep if one exists, otherwise return a new instance."""
         return _cached_dep(cls, s, eapi)
 
     @staticmethod
-    def valid(str s not None, eapi=None, raised=False):
+    def valid(s: str, eapi=None, raised=False):
         """Determine if a string is a valid package dependency.
 
         >>> from pkgcraft.dep import Dep
@@ -477,7 +477,7 @@ cdef class Dep:
         """
         return cstring_to_str(C.pkgcraft_dep_cpv(self.ptr))
 
-    def matches(self, Restrict r not None):
+    def matches(self, r: Restrict):
         """Determine if a restriction matches a package dependency."""
         return C.pkgcraft_dep_restrict_matches(self.ptr, r.ptr)
 
@@ -550,7 +550,7 @@ cdef class Dep:
 cdef class Cpn(Dep):
     """Unversioned Package dependency."""
 
-    def __init__(self, str s not None):
+    def __init__(self, s: str):
         self.ptr = C.pkgcraft_dep_new_cpn(s.encode())
         if self.ptr is NULL:
             raise InvalidDep

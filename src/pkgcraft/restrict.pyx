@@ -54,14 +54,14 @@ cdef class Restrict:
         return obj
 
     @staticmethod
-    def dep(str s not None):
+    def dep(s: str):
         """Convert a string into a dependency-based restriction."""
         if ptr := C.pkgcraft_restrict_parse_dep(s.encode()):
             return Restrict.from_ptr(ptr)
         raise InvalidRestrict
 
     @staticmethod
-    def pkg(str s not None):
+    def pkg(s: str):
         """Convert a string into a package-based restriction."""
         if ptr := C.pkgcraft_restrict_parse_pkg(s.encode()):
             return Restrict.from_ptr(ptr)

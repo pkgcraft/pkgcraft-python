@@ -41,7 +41,7 @@ cdef get_eapis():
     return MappingProxyType(d)
 
 
-def eapi_range(str s not None):
+def eapi_range(s: str):
     """Convert EAPI range into an ordered set of Eapi objects.
 
     >>> from pkgcraft.eapi import *
@@ -114,7 +114,7 @@ cdef class Eapi(_IndirectInit):
         """Try to convert an object to an Eapi object."""
         return Eapi._from_obj(obj)
 
-    def has(self, str s not None):
+    def has(self, s: str):
         """Check if an EAPI has a given feature.
 
         See https://docs.rs/pkgcraft/latest/pkgcraft/eapi/enum.Feature.html for

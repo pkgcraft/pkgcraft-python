@@ -66,6 +66,11 @@ class TestDepSpec:
         assert str(d) == "!u1? ( a u2? ( b ) )"
         assert repr(d).startswith("<DepSpec UseDisabled '!u1? ( a u2? ( b ) )' at 0x")
 
+        # invalid args
+        for obj in [None, object()]:
+            with pytest.raises(TypeError):
+                DepSpec(obj)
+
     def test_cmp(self):
         for (set1, set2) in (
             (DepSetKind.RequiredUse, DepSetKind.RequiredUse),

@@ -84,7 +84,7 @@ cdef class Pkg(_IndirectInit):
             self._version = self.cpv.version
         return self._version
 
-    def matches(self, Restrict r not None):
+    def matches(self, r: Restrict):
         """Determine if a restriction matches a package."""
         return C.pkgcraft_pkg_restrict_matches(self.ptr, r.ptr)
 

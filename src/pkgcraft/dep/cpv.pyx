@@ -31,13 +31,13 @@ cdef class Cpv:
     pkgcraft.error.InvalidCpv: parsing failure: invalid cpv: >cat/pkg-1
     ...
     """
-    def __init__(self, str s not None):
+    def __init__(self, s: str):
         self.ptr = C.pkgcraft_cpv_new(s.encode())
         if self.ptr is NULL:
             raise InvalidCpv
 
     @staticmethod
-    def valid(str s not None, raised=False):
+    def valid(s: str, raised=False):
         """Determine if a string is a valid package Cpv.
 
         >>> from pkgcraft.dep import Cpv
@@ -203,7 +203,7 @@ cdef class Cpv:
         """
         return cstring_to_str(C.pkgcraft_cpv_cpn(self.ptr))
 
-    def matches(self, Restrict r not None):
+    def matches(self, r: Restrict):
         """Determine if a restriction matches a Cpv."""
         return C.pkgcraft_cpv_restrict_matches(self.ptr, r.ptr)
 
@@ -220,8 +220,7 @@ cdef class Cpv:
             return C.pkgcraft_cpv_intersects(self.ptr, (<Cpv>other).ptr)
         elif isinstance(other, Dep):
             return C.pkgcraft_cpv_intersects_dep(self.ptr, (<Dep>other).ptr)
-        else:
-            raise TypeError(f"{other.__class__.__name__!r} unsupported type")
+        raise TypeError(f"{other.__class__.__name__!r} unsupported type")
 
     def __lt__(self, other):
         if isinstance(other, Cpv):

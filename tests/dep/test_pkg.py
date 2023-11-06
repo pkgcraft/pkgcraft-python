@@ -21,6 +21,11 @@ class TestBlocker:
             with pytest.raises(ValueError):
                 Blocker.from_str(s)
 
+        # invalid args
+        for obj in [None, object()]:
+            with pytest.raises(TypeError):
+                Blocker.from_str(obj)
+
 
 class TestSlotOperator:
     def test_from_str(self):
@@ -28,9 +33,14 @@ class TestSlotOperator:
             with pytest.raises(ValueError):
                 SlotOperator.from_str(s)
 
+        # invalid args
+        for obj in [None, object()]:
+            with pytest.raises(TypeError):
+                SlotOperator.from_str(obj)
+
 
 class TestDep:
-    def test_init(self):
+    def test_creation(self):
         # no version
         dep = Dep("cat/pkg")
         assert dep.category == "cat"
@@ -91,6 +101,11 @@ class TestDep:
         # invalid EAPI type
         with pytest.raises(TypeError):
             Dep("cat/pkg", object())
+
+        # invalid args
+        for obj in [None, object()]:
+            with pytest.raises(TypeError):
+                Dep(obj)
 
     def test_valid(self):
         assert Dep.valid("cat/pkg")
@@ -289,7 +304,7 @@ class TestDep:
 
 
 class TestCpn:
-    def test_init(self):
+    def test_creation(self):
         dep = Cpn("cat/pkg")
         assert dep.category == "cat"
         assert dep.package == "pkg"
@@ -315,6 +330,11 @@ class TestCpn:
         for s in ("=cat/pkg-3", "cat/pkg-3", ""):
             with pytest.raises(ValueError, match="invalid unversioned dep"):
                 Cpn(s)
+
+        # invalid args
+        for obj in [None, object()]:
+            with pytest.raises(TypeError):
+                Cpn(obj)
 
     def test_pickle(self):
         dep = Cpn("cat/pkg")

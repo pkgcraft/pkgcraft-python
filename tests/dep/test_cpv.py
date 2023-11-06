@@ -10,7 +10,7 @@ from ..misc import TEST_DATA
 
 
 class TestCpv:
-    def test_init(self):
+    def test_creation(self):
         a = Cpv("cat/pkg-1-r2")
         assert a.category == "cat"
         assert a.package == "pkg"
@@ -24,6 +24,11 @@ class TestCpv:
         assert a.cpn == "cat/pkg"
         assert str(a) == "cat/pkg-1-r2"
         assert repr(a).startswith("<Cpv 'cat/pkg-1-r2' at 0x")
+
+        # invalid args
+        for obj in [None, object()]:
+            with pytest.raises(TypeError):
+                Cpv(obj)
 
     def test_valid(self):
         assert Cpv.valid("cat/pkg-1")

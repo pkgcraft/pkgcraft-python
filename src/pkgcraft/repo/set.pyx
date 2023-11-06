@@ -73,14 +73,14 @@ cdef class RepoSet:
         c_strs = C.pkgcraft_repo_set_categories(self.ptr, &length)
         return OrderedFrozenSet(CStringIter.create(c_strs, length))
 
-    def packages(self, str cat not None):
+    def packages(self, cat: str):
         """Get a repo set's packages for a category."""
         cdef size_t length
         if parse.category(cat):
             c_strs = C.pkgcraft_repo_set_packages(self.ptr, cat.encode(), &length)
             return OrderedFrozenSet(CStringIter.create(c_strs, length))
 
-    def versions(self, str cat not None, str pkg not None):
+    def versions(self, cat: str, pkg: str):
         """Get a repo set's versions for a package."""
         cdef size_t length
         if parse.category(cat) and parse.package(pkg):
@@ -261,7 +261,7 @@ cdef class RepoSet:
 cdef class _Iter:
     """Iterator over a repo set, optionally applying a restriction."""
 
-    def __cinit__(self, RepoSet s not None, obj=None):
+    def __cinit__(self, s: RepoSet, obj=None):
         cdef C.Restrict *restrict_ptr = NULL
         cdef Restrict r
 

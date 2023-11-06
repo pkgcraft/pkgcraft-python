@@ -20,6 +20,11 @@ class TestOperator:
             with pytest.raises(ValueError):
                 Operator.from_str(s)
 
+        # invalid args
+        for obj in [None, object()]:
+            with pytest.raises(TypeError):
+                Operator.from_str(obj)
+
 
 class TestVersion:
     def test_new_and_valid(self):
@@ -118,6 +123,12 @@ class TestVersion:
                 else:
                     assert not ver1.intersects(ver2)
 
+        # invalid args
+        v = Version("1")
+        for obj in [None, object()]:
+            with pytest.raises(TypeError):
+                v.intersects(obj)
+
     def test_sort(self):
         for d in TEST_DATA.toml("version.toml")["sorting"]:
             expected = [Version(s) for s in d["sorted"]]
@@ -153,6 +164,11 @@ class TestRevision:
         for s in ("a", "1a", "1.0"):
             with pytest.raises(InvalidVersion):
                 Revision(s)
+
+        # invalid args
+        for obj in [None, object()]:
+            with pytest.raises(TypeError):
+                Revision(obj)
 
     def test_cmp(self):
         # nonexistent revision equal to '0'
