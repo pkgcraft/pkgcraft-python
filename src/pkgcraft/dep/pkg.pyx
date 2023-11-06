@@ -548,7 +548,7 @@ cdef class Dep:
 
 @cython.final
 cdef class Cpn(Dep):
-    """Unversioned Package dependency."""
+    """Unversioned package dependency."""
 
     def __init__(self, s: str):
         self.ptr = C.pkgcraft_dep_new_cpn(s.encode())
