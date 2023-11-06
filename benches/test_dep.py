@@ -32,6 +32,18 @@ def test_bench_dep_random(benchmark, random_str, _lib, func):
     benchmark(random_dep, func, random_str)
 
 
+@pytest.mark.parametrize("lib", ("pkgcraft", "portage"))
+def test_bench_dep_valid(benchmark, lib):
+    dep = ">=cat/pkg-1-r2:3/4=[a,b,c]"
+    match lib:
+        case "pkgcraft":
+            from pkgcraft.dep import Dep
+            benchmark(Dep.valid, dep)
+        case "portage":
+            from portage.dep import isvalidatom
+            benchmark(isvalidatom, dep)
+
+
 @pytest.mark.parametrize("_lib,func", dep_funcs)
 def test_bench_dep_property(benchmark, _lib, func):
     dep = func("=cat/pkg-1-r2:3/4=[a,b,c]")
