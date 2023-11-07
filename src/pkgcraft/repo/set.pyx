@@ -13,9 +13,8 @@ from .. import parse
 from ..types import OrderedFrozenSet
 
 
-@cython.final
 cdef class RepoSet:
-    """Ordered repo set."""
+    """Immutable, ordered repo set."""
 
     def __init__(self, *repos):
         array = <C.Repo **> PyMem_Malloc(len(repos) * sizeof(C.Repo *))
@@ -27,12 +26,17 @@ cdef class RepoSet:
         PyMem_Free(array)
 
     @staticmethod
-    cdef RepoSet from_ptr(C.RepoSet *ptr, bint immutable=False):
+    cdef RepoSet from_ptr(C.RepoSet *ptr):
         """Create a RepoSet from a pointer."""
         obj = <RepoSet>RepoSet.__new__(RepoSet)
-        obj.immutable = immutable
         obj.ptr = ptr
         return obj
+
+    cdef create(self, C.RepoSet *ptr):
+        """Create a RepoSet from a pointer using the instance class."""
+        if isinstance(self, MutableRepoSet):
+            return MutableRepoSet.from_ptr(ptr)
+        return RepoSet.from_ptr(ptr)
 
     def __iter__(self):
         return _Iter(self)
@@ -142,10 +146,70 @@ cdef class RepoSet:
         name = self.__class__.__name__
         return f"<{name} {self} at 0x{addr:0x}>"
 
-    def __iand__(self, other):
-        if self.immutable:
-            raise TypeError("object is immutable")
+    def __and__(self, other):
+        op = C.SetOp.SET_OP_AND
+        if isinstance(other, RepoSet):
+            return self.create(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
+        elif isinstance(other, Repo):
+            return self.create(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
+        else:
+            return NotImplemented
 
+    def __rand__(self, other):
+        return self.__and__(other)
+
+    def __or__(self, other):
+        op = C.SetOp.SET_OP_OR
+        if isinstance(other, RepoSet):
+            return self.create(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
+        elif isinstance(other, Repo):
+            return self.create(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
+        else:
+            return NotImplemented
+
+    def __ror__(self, other):
+        return self.__or__(other)
+
+    def __xor__(self, other):
+        op = C.SetOp.SET_OP_XOR
+        if isinstance(other, RepoSet):
+            return self.create(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
+        elif isinstance(other, Repo):
+            return self.create(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
+        else:
+            return NotImplemented
+
+    def __rxor__(self, other):
+        return self.__xor__(other)
+
+    def __sub__(self, other):
+        op = C.SetOp.SET_OP_SUB
+        if isinstance(other, RepoSet):
+            return self.create(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
+        elif isinstance(other, Repo):
+            return self.create(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
+        else:
+            return NotImplemented
+
+    def __rsub__(self, other):
+        return self.__sub__(other)
+
+    def __dealloc__(self):
+        C.pkgcraft_repo_set_free(self.ptr)
+
+
+@cython.final
+cdef class MutableRepoSet(RepoSet):
+    """Mutable, ordered repo set."""
+
+    @staticmethod
+    cdef MutableRepoSet from_ptr(C.RepoSet *ptr):
+        """Create a MutableRepoSet from a pointer."""
+        obj = <MutableRepoSet>MutableRepoSet.__new__(MutableRepoSet)
+        obj.ptr = ptr
+        return obj
+
+    def __iand__(self, other):
         op = C.SetOp.SET_OP_AND
         if isinstance(other, RepoSet):
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
@@ -159,9 +223,6 @@ cdef class RepoSet:
         return self
 
     def __ior__(self, other):
-        if self.immutable:
-            raise TypeError("object is immutable")
-
         op = C.SetOp.SET_OP_OR
         if isinstance(other, RepoSet):
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
@@ -175,9 +236,6 @@ cdef class RepoSet:
         return self
 
     def __ixor__(self, other):
-        if self.immutable:
-            raise TypeError("object is immutable")
-
         op = C.SetOp.SET_OP_XOR
         if isinstance(other, RepoSet):
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
@@ -191,9 +249,6 @@ cdef class RepoSet:
         return self
 
     def __isub__(self, other):
-        if self.immutable:
-            raise TypeError("object is immutable")
-
         op = C.SetOp.SET_OP_SUB
         if isinstance(other, RepoSet):
             C.pkgcraft_repo_set_assign_op_set(op, self.ptr, (<RepoSet>other).ptr)
@@ -206,56 +261,8 @@ cdef class RepoSet:
         self._repos = None
         return self
 
-    def __and__(self, other):
-        op = C.SetOp.SET_OP_AND
-        if isinstance(other, RepoSet):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
-        elif isinstance(other, Repo):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
-        else:
-            return NotImplemented
-
-    def __rand__(self, other):
-        return self.__and__(other)
-
-    def __or__(self, other):
-        op = C.SetOp.SET_OP_OR
-        if isinstance(other, RepoSet):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
-        elif isinstance(other, Repo):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
-        else:
-            return NotImplemented
-
-    def __ror__(self, other):
-        return self.__or__(other)
-
-    def __xor__(self, other):
-        op = C.SetOp.SET_OP_XOR
-        if isinstance(other, RepoSet):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
-        elif isinstance(other, Repo):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
-        else:
-            return NotImplemented
-
-    def __rxor__(self, other):
-        return self.__xor__(other)
-
-    def __sub__(self, other):
-        op = C.SetOp.SET_OP_SUB
-        if isinstance(other, RepoSet):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_set(op, self.ptr, (<RepoSet>other).ptr))
-        elif isinstance(other, Repo):
-            return RepoSet.from_ptr(C.pkgcraft_repo_set_op_repo(op, self.ptr, (<Repo>other).ptr))
-        else:
-            return NotImplemented
-
-    def __rsub__(self, other):
-        return self.__sub__(other)
-
-    def __dealloc__(self):
-        C.pkgcraft_repo_set_free(self.ptr)
+    def __eq__(self, other):
+        return super().__eq__(other)
 
 
 cdef class _Iter:

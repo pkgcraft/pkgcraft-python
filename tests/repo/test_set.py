@@ -3,12 +3,13 @@ import pytest
 from pkgcraft.config import Config
 from pkgcraft.dep import Cpv, Dep, Version
 from pkgcraft.error import InvalidRestrict
-from pkgcraft.repo import RepoSet
+from pkgcraft.repo import MutableRepoSet, RepoSet
 
 from ..misc import OperatorMap
 
 
 class TestRepoSet:
+
     def test_attrs(self, make_fake_repo):
         r1 = make_fake_repo()
         r2 = make_fake_repo()
@@ -352,3 +353,10 @@ class TestRepoSet:
             for x, y in [(s, obj), (obj, s)]:
                 with pytest.raises(TypeError):
                     x - y
+
+
+class TestMutableRepoSet:
+
+    def test_hash(self):
+        with pytest.raises(TypeError):
+            hash(MutableRepoSet())
