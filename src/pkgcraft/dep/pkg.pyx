@@ -29,8 +29,7 @@ class Blocker(IntEnum):
 
     @staticmethod
     def from_str(s: str):
-        blocker = C.pkgcraft_dep_blocker_from_str(s.encode())
-        if blocker > 0:
+        if blocker := C.pkgcraft_dep_blocker_from_str(s.encode()):
             return Blocker(blocker)
         raise ValueError(f'invalid blocker: {s}')
 
@@ -50,8 +49,7 @@ class SlotOperator(IntEnum):
 
     @staticmethod
     def from_str(s: str):
-        slot_op = C.pkgcraft_dep_slot_op_from_str(s.encode())
-        if slot_op > 0:
+        if slot_op := C.pkgcraft_dep_slot_op_from_str(s.encode()):
             return SlotOperator(slot_op)
         raise ValueError(f'invalid slot operator: {s}')
 
@@ -191,8 +189,7 @@ cdef class Dep:
         >>> dep.blocker is Blocker.Strong
         True
         """
-        cdef int blocker = C.pkgcraft_dep_blocker(self.ptr)
-        if blocker > 0:
+        if blocker := C.pkgcraft_dep_blocker(self.ptr):
             return Blocker(blocker)
         return None
 
@@ -325,8 +322,7 @@ cdef class Dep:
         >>> dep.slot_op is SlotOperator.Star
         True
         """
-        cdef int slot_op = C.pkgcraft_dep_slot_op(self.ptr)
-        if slot_op > 0:
+        if slot_op := C.pkgcraft_dep_slot_op(self.ptr):
             return SlotOperator(slot_op)
         return None
 

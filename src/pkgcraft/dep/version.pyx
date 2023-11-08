@@ -17,8 +17,7 @@ class Operator(IntEnum):
 
     @staticmethod
     def from_str(s: str):
-        op = C.pkgcraft_version_op_from_str(s.encode())
-        if op > 0:
+        if op := C.pkgcraft_version_op_from_str(s.encode()):
             return Operator(op)
         raise ValueError(f'invalid operator: {s}')
 
@@ -165,8 +164,7 @@ cdef class Version:
         >>> v.op == '>='
         True
         """
-        cdef int op = C.pkgcraft_version_op(self.ptr)
-        if op > 0:
+        if op := C.pkgcraft_version_op(self.ptr):
             return Operator(op)
         return None
 
