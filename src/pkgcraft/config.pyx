@@ -4,7 +4,9 @@ cimport cython
 
 from . cimport C
 from ._misc cimport cstring_to_str
+from .error cimport _IndirectInit
 from .repo cimport Repo, RepoSet
+
 from .error import ConfigError, PkgcraftError
 
 
@@ -29,7 +31,7 @@ cdef class Config:
     def repos(self):
         """Return the config's repo mapping."""
         if self._repos is None:
-            self._repos = Repos.from_config(self.ptr)
+            self._repos = _Repos.from_config(self.ptr)
         return self._repos
 
     cdef Repo add_repo_path(self, object path, object id, int priority, bint external=True):
@@ -79,14 +81,13 @@ cdef class Config:
         C.pkgcraft_config_free(self.ptr)
 
 
-@cython.final
-cdef class Repos:
+cdef class _Repos(_IndirectInit):
 
     @staticmethod
-    cdef Repos from_config(C.Config *ptr):
+    cdef _Repos from_config(C.Config *ptr):
         cdef size_t length
         c_repos = <C.Repo **>C.pkgcraft_config_repos(ptr, &length)
-        obj = <Repos>Repos.__new__(Repos)
+        obj = <_Repos>_Repos.__new__(_Repos)
         obj.ptr = ptr
         obj._repos = repos_to_dict(c_repos, length, True)
         C.pkgcraft_array_free(<void **>c_repos, length)

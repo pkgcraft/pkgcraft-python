@@ -1,4 +1,5 @@
 from . cimport C
+from .error cimport _IndirectInit
 from .repo cimport Repo, RepoSet
 
 
@@ -8,12 +9,12 @@ cdef class Config:
     cdef C.Config *ptr
 
     # cached fields
-    cdef Repos _repos
+    cdef _Repos _repos
 
     cdef Repo add_repo_path(self, object, object, int, bint external=*)
 
 
-cdef class Repos:
+cdef class _Repos(_IndirectInit):
     cdef C.Config *ptr
 
     # cached fields
@@ -22,4 +23,4 @@ cdef class Repos:
     cdef RepoSet _ebuild
 
     @staticmethod
-    cdef Repos from_config(C.Config *)
+    cdef _Repos from_config(C.Config *)
