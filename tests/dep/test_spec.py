@@ -10,7 +10,6 @@ from ..misc import OperatorMap
 
 
 class TestDepSpec:
-
     req_use = partial(DepSpec, set=DepSetKind.RequiredUse)
 
     def test_creation(self):
@@ -72,7 +71,7 @@ class TestDepSpec:
                 DepSpec(obj)
 
     def test_cmp(self):
-        for (set1, set2) in (
+        for set1, set2 in (
             (DepSetKind.RequiredUse, DepSetKind.RequiredUse),
             (DepSetKind.RequiredUse, DepSetKind.License),
         ):
@@ -174,8 +173,16 @@ class TestDepSpec:
         assert list(map(str, self.req_use("a").iter_recursive())) == ["a"]
         assert list(map(str, self.req_use("!a").iter_recursive())) == ["!a"]
         assert list(map(str, self.req_use("( a )").iter_recursive())) == ["( a )", "a"]
-        assert list(map(str, self.req_use("|| ( a b )").iter_recursive())) == ["|| ( a b )", "a", "b"]
-        assert list(map(str, self.req_use("|| ( u? ( a ) )").iter_recursive())) == ["|| ( u? ( a ) )", "u? ( a )", "a"]
+        assert list(map(str, self.req_use("|| ( a b )").iter_recursive())) == [
+            "|| ( a b )",
+            "a",
+            "b",
+        ]
+        assert list(map(str, self.req_use("|| ( u? ( a ) )").iter_recursive())) == [
+            "|| ( u? ( a ) )",
+            "u? ( a )",
+            "a",
+        ]
 
     def test_evaluate(self):
         d = self.req_use("a")
@@ -213,7 +220,6 @@ class TestDepSpec:
 
 
 class TestDepSet:
-
     req_use = partial(DepSet, set=DepSetKind.RequiredUse)
 
     def test_creation(self):
@@ -273,14 +279,14 @@ class TestDepSet:
         assert d1 != d3
 
         # DepSet set kwargs
-        for (s, kind) in [
-                ("a/b", DepSetKind.Dependencies),
-                ("a", DepSetKind.License),
-                ("a", DepSetKind.Properties),
-                ("a", DepSetKind.RequiredUse),
-                ("a", DepSetKind.Restrict),
-                ("a", DepSetKind.SrcUri),
-            ]:
+        for s, kind in [
+            ("a/b", DepSetKind.Dependencies),
+            ("a", DepSetKind.License),
+            ("a", DepSetKind.Properties),
+            ("a", DepSetKind.RequiredUse),
+            ("a", DepSetKind.Restrict),
+            ("a", DepSetKind.SrcUri),
+        ]:
             d = DepSet(s, set=kind)
             assert len(d) == 1
 
@@ -306,7 +312,10 @@ class TestDepSet:
         assert list(reversed(DepSet())) == []
         assert list(reversed(DepSet("a/b"))) == [DepSpec("a/b")]
         assert list(reversed(DepSet("( a/b )"))) == [DepSpec("( a/b )")]
-        assert list(reversed(DepSet("a/b || ( c/d e/f )"))) == [DepSpec("|| ( c/d e/f )"), DepSpec("a/b")]
+        assert list(reversed(DepSet("a/b || ( c/d e/f )"))) == [
+            DepSpec("|| ( c/d e/f )"),
+            DepSpec("a/b"),
+        ]
         assert list(reversed(DepSet("|| ( u? ( a/b ) )"))) == [DepSpec("|| ( u? ( a/b ) )")]
 
     def test_iter_conditionals(self):
@@ -327,8 +336,16 @@ class TestDepSet:
         assert list(DepSet("a/b").iter_recursive()) == [DepSpec("a/b")]
         assert list(DepSet("!a/b").iter_recursive()) == [DepSpec("!a/b")]
         assert list(DepSet("( a/b )").iter_recursive()) == [DepSpec("( a/b )"), DepSpec("a/b")]
-        assert list(DepSet("|| ( a/b c/d )").iter_recursive()) == [DepSpec("|| ( a/b c/d )"), DepSpec("a/b"), DepSpec("c/d")]
-        assert list(DepSet("|| ( u? ( a/b ) )").iter_recursive()) == [DepSpec("|| ( u? ( a/b ) )"), DepSpec("u? ( a/b )"), DepSpec("a/b")]
+        assert list(DepSet("|| ( a/b c/d )").iter_recursive()) == [
+            DepSpec("|| ( a/b c/d )"),
+            DepSpec("a/b"),
+            DepSpec("c/d"),
+        ]
+        assert list(DepSet("|| ( u? ( a/b ) )").iter_recursive()) == [
+            DepSpec("|| ( u? ( a/b ) )"),
+            DepSpec("u? ( a/b )"),
+            DepSpec("a/b"),
+        ]
 
     def test_evaluate(self):
         # no conditionals
@@ -659,7 +676,6 @@ class TestDepSet:
 
 
 class TestMutableDepSet:
-
     def test_add(self):
         d = MutableDepSet("a/a")
         d.add("a/a")
@@ -769,7 +785,9 @@ class TestMutableDepSet:
 
         # DepSet args
         assert d == MutableDepSet(d).update(MutableDepSet())
-        assert MutableDepSet(d).update(MutableDepSet("a/a"), MutableDepSet("b/b c/c")) == MutableDepSet("a/a b/b c/c")
+        assert MutableDepSet(d).update(
+            MutableDepSet("a/a"), MutableDepSet("b/b c/c")
+        ) == MutableDepSet("a/a b/b c/c")
 
         # DepSet string args
         assert d == MutableDepSet(d).update("")
@@ -777,7 +795,9 @@ class TestMutableDepSet:
 
         # DepSpec args
         assert MutableDepSet(d).update(DepSpec("c/c")) == MutableDepSet("a/a b/b c/c")
-        assert MutableDepSet(d).update(DepSpec("a/a"), DepSpec("c/c")) == MutableDepSet("a/a b/b c/c")
+        assert MutableDepSet(d).update(DepSpec("a/a"), DepSpec("c/c")) == MutableDepSet(
+            "a/a b/b c/c"
+        )
 
     def test_intersection_update(self):
         d = MutableDepSet("a/a b/b")
@@ -792,7 +812,9 @@ class TestMutableDepSet:
         # DepSet args
         assert not MutableDepSet(d).intersection_update(MutableDepSet())
         assert d == MutableDepSet(d).intersection_update(d)
-        assert MutableDepSet(d).intersection_update(MutableDepSet("a/a b/b"), MutableDepSet("b/b")) == MutableDepSet("b/b")
+        assert MutableDepSet(d).intersection_update(
+            MutableDepSet("a/a b/b"), MutableDepSet("b/b")
+        ) == MutableDepSet("b/b")
 
         # DepSet string args
         assert not MutableDepSet(d).intersection_update("")
@@ -800,7 +822,9 @@ class TestMutableDepSet:
 
         # DepSpec args
         assert MutableDepSet(d).intersection_update(DepSpec("a/a")) == MutableDepSet("a/a")
-        assert MutableDepSet(d).intersection_update(DepSpec("a/a"), DepSpec("c/c")) == MutableDepSet()
+        assert (
+            MutableDepSet(d).intersection_update(DepSpec("a/a"), DepSpec("c/c")) == MutableDepSet()
+        )
 
     def test_difference_update(self):
         d = MutableDepSet("a/a b/b")
@@ -814,7 +838,10 @@ class TestMutableDepSet:
 
         # DepSet args
         assert d == MutableDepSet(d).difference_update(MutableDepSet())
-        assert MutableDepSet(d).difference_update(MutableDepSet("a/a"), MutableDepSet("b/b c/c")) == MutableDepSet()
+        assert (
+            MutableDepSet(d).difference_update(MutableDepSet("a/a"), MutableDepSet("b/b c/c"))
+            == MutableDepSet()
+        )
 
         # DepSet string args
         assert d == MutableDepSet(d).difference_update("")
@@ -822,7 +849,9 @@ class TestMutableDepSet:
 
         # DepSpec args
         assert MutableDepSet(d).difference_update(DepSpec("b/b")) == MutableDepSet("a/a")
-        assert MutableDepSet(d).difference_update(DepSpec("a/a"), DepSpec("c/c")) == MutableDepSet("b/b")
+        assert MutableDepSet(d).difference_update(DepSpec("a/a"), DepSpec("c/c")) == MutableDepSet(
+            "b/b"
+        )
 
     def test_symmetric_difference_update(self):
         d = MutableDepSet("a/a b/b")
@@ -836,15 +865,21 @@ class TestMutableDepSet:
 
         # DepSet args
         assert d == MutableDepSet(d).symmetric_difference_update(MutableDepSet())
-        assert MutableDepSet(d).symmetric_difference_update(MutableDepSet("a/a"), MutableDepSet("b/b c/c")) == MutableDepSet("c/c")
+        assert MutableDepSet(d).symmetric_difference_update(
+            MutableDepSet("a/a"), MutableDepSet("b/b c/c")
+        ) == MutableDepSet("c/c")
 
         # DepSet string args
         assert d == MutableDepSet(d).symmetric_difference_update("")
-        assert MutableDepSet(d).symmetric_difference_update("a/a", "b/b c/c") == MutableDepSet("c/c")
+        assert MutableDepSet(d).symmetric_difference_update("a/a", "b/b c/c") == MutableDepSet(
+            "c/c"
+        )
 
         # DepSpec args
         assert MutableDepSet(d).symmetric_difference_update(DepSpec("b/b")) == MutableDepSet("a/a")
-        assert MutableDepSet(d).symmetric_difference_update(DepSpec("a/a"), DepSpec("c/c")) == MutableDepSet("b/b c/c")
+        assert MutableDepSet(d).symmetric_difference_update(
+            DepSpec("a/a"), DepSpec("c/c")
+        ) == MutableDepSet("b/b c/c")
 
     def test_hash(self):
         with pytest.raises(TypeError):

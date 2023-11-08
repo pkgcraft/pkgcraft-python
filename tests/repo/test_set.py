@@ -9,7 +9,6 @@ from ..misc import OperatorMap
 
 
 class BaseTests:
-
     cls = None
 
     def test_attrs(self, make_fake_repo):
@@ -352,7 +351,6 @@ class BaseTests:
 
 
 class TestRepoSet(BaseTests):
-
     cls = RepoSet
 
     def test_hash(self, make_fake_repo):
@@ -371,7 +369,6 @@ class TestRepoSet(BaseTests):
 
 
 class TestMutableRepoSet(BaseTests):
-
     cls = MutableRepoSet
 
     def test_hash(self):

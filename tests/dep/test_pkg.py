@@ -161,7 +161,7 @@ class TestDep:
         # verify all combinations of dep fields create valid deps
         dep = Dep("!!>=cat/pkg-1.2-r3:4/5=[a,b]::repo")
         fields = list(DepFields.all())
-        for vals in chain.from_iterable(combinations(fields, r) for r in range(len(fields)+1)):
+        for vals in chain.from_iterable(combinations(fields, r) for r in range(len(fields) + 1)):
             val = reduce(lambda x, y: x | y, vals, 0)
             d = dep.without(val)
             assert d == Dep(str(d))
