@@ -18,10 +18,11 @@ cdef dict repos_to_dict(C.Repo **c_repos, size_t length, bint ref):
     return d
 
 
+@cython.final
 cdef class Config:
     """Config for the system."""
 
-    def __init__(self):
+    def __cinit__(self):
         self.ptr = C.pkgcraft_config_new()
 
     @property
