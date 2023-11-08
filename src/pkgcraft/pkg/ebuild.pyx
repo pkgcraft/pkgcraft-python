@@ -216,8 +216,10 @@ cdef class EbuildPkg(Pkg):
     def upstream(self):
         """Get a package's upstream info."""
         if self._upstream is SENTINEL:
-            ptr = C.pkgcraft_pkg_ebuild_upstream(self.ptr)
-            self._upstream = Upstream.from_ptr(ptr)
+            if ptr := C.pkgcraft_pkg_ebuild_upstream(self.ptr):
+                self._upstream = Upstream.from_ptr(ptr)
+            else:
+                self._upstream = None
         return self._upstream
 
 
@@ -307,17 +309,13 @@ cdef class Upstream(_IndirectInit):
     @staticmethod
     cdef Upstream from_ptr(C.Upstream *u):
         """Create an Upstream from a pointer."""
-        obj = None
-
-        if u is not NULL:
-            obj = <Upstream>Upstream.__new__(Upstream)
-            obj.remote_ids = tuple(
-                RemoteId.from_ptr(u.remote_ids[i]) for i in range(u.remote_ids_len))
-            obj.maintainers = tuple(
-                UpstreamMaintainer.from_ptr(u.maintainers[i]) for i in range(u.maintainers_len))
-            obj.bugs_to = cstring_to_str(u.bugs_to, free=False)
-            obj.changelog = cstring_to_str(u.changelog, free=False)
-            obj.doc = cstring_to_str(u.doc, free=False)
-            C.pkgcraft_pkg_ebuild_upstream_free(u)
-
+        obj = <Upstream>Upstream.__new__(Upstream)
+        obj.remote_ids = tuple(
+            RemoteId.from_ptr(u.remote_ids[i]) for i in range(u.remote_ids_len))
+        obj.maintainers = tuple(
+            UpstreamMaintainer.from_ptr(u.maintainers[i]) for i in range(u.maintainers_len))
+        obj.bugs_to = cstring_to_str(u.bugs_to, free=False)
+        obj.changelog = cstring_to_str(u.changelog, free=False)
+        obj.doc = cstring_to_str(u.doc, free=False)
+        C.pkgcraft_pkg_ebuild_upstream_free(u)
         return obj
