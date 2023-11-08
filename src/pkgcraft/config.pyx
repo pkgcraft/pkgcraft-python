@@ -86,7 +86,7 @@ cdef class Repos:
         cdef size_t length
         c_repos = <C.Repo **>C.pkgcraft_config_repos(ptr, &length)
         obj = <Repos>Repos.__new__(Repos)
-        obj.config_ptr = ptr
+        obj.ptr = ptr
         obj._repos = repos_to_dict(c_repos, length, True)
         C.pkgcraft_array_free(<void **>c_repos, length)
         return obj
@@ -95,7 +95,7 @@ cdef class Repos:
     def all(self):
         """Return the set of all repos."""
         if self._all is None:
-            ptr = C.pkgcraft_config_repos_set(self.config_ptr, C.REPOS_ALL)
+            ptr = C.pkgcraft_config_repos_set(self.ptr, C.REPOS_ALL)
             self._all = RepoSet.from_ptr(ptr)
         return self._all
 
@@ -103,7 +103,7 @@ cdef class Repos:
     def ebuild(self):
         """Return the set of all ebuild repos."""
         if self._ebuild is None:
-            ptr = C.pkgcraft_config_repos_set(self.config_ptr, C.REPOS_EBUILD)
+            ptr = C.pkgcraft_config_repos_set(self.ptr, C.REPOS_EBUILD)
             self._ebuild = RepoSet.from_ptr(ptr)
         return self._ebuild
 

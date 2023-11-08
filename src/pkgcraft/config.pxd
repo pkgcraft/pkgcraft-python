@@ -14,7 +14,7 @@ cdef class Config:
 
 
 cdef class Repos:
-    cdef C.Config *config_ptr
+    cdef C.Config *ptr
 
     # cached fields
     cdef dict _repos
