@@ -8,29 +8,31 @@ from pkgcraft.repo import MutableRepoSet, RepoSet
 from ..misc import OperatorMap
 
 
-class TestRepoSet:
+class BaseTests:
+
+    cls = None
 
     def test_attrs(self, make_fake_repo):
         r1 = make_fake_repo()
         r2 = make_fake_repo()
-        s = RepoSet(r1, r2)
+        s = self.cls(r1, r2)
         assert str(s)
-        assert repr(s).startswith("<RepoSet ")
+        assert repr(s).startswith(f"<{self.cls.__name__} ")
 
     def test_repos(self, make_fake_repo):
         r1 = make_fake_repo()
         r2 = make_fake_repo()
-        s = RepoSet(r1, r2)
+        s = self.cls(r1, r2)
         assert s.repos == [r1, r2]
 
         r1 = make_fake_repo(priority=1)
         r2 = make_fake_repo(priority=2)
-        s = RepoSet(r1, r2)
+        s = self.cls(r1, r2)
         assert s.repos == [r2, r1]
 
     def test_pkg_methods(self, make_fake_repo):
         # empty repo set
-        s = RepoSet()
+        s = self.cls()
         assert not s.categories
         assert not s.packages("cat")
         assert not s.versions("cat", "pkg")
@@ -38,7 +40,7 @@ class TestRepoSet:
         # single pkg
         r1 = make_fake_repo(["cat/pkg-1"])
         r2 = make_fake_repo()
-        s = RepoSet(r1, r2)
+        s = self.cls(r1, r2)
         assert s.categories == ["cat"]
         assert s.packages("cat") == ["pkg"]
         assert s.versions("cat", "pkg") == [Version("1")]
@@ -46,7 +48,7 @@ class TestRepoSet:
         # multiple new pkg version
         r1 = make_fake_repo(["cat/pkg-1", "cat/pkg-2"])
         r2 = make_fake_repo()
-        s = RepoSet(r1, r2)
+        s = self.cls(r1, r2)
         assert s.categories == ["cat"]
         assert s.packages("cat") == ["pkg"]
         assert s.versions("cat", "pkg") == [Version("1"), Version("2")]
@@ -54,7 +56,7 @@ class TestRepoSet:
         # matching pkg in other repo
         r1 = make_fake_repo(["cat/pkg-1", "cat/pkg-2"])
         r2 = make_fake_repo(["cat/pkg-1"])
-        s = RepoSet(r1, r2)
+        s = self.cls(r1, r2)
         assert s.categories == ["cat"]
         assert s.packages("cat") == ["pkg"]
         assert s.versions("cat", "pkg") == [Version("1"), Version("2")]
@@ -62,7 +64,7 @@ class TestRepoSet:
         # new pkg in new category in other repo
         r1 = make_fake_repo(["cat/pkg-1", "cat/pkg-2"])
         r2 = make_fake_repo(["cat/pkg-1", "a/b-1"])
-        s = RepoSet(r1, r2)
+        s = self.cls(r1, r2)
         assert s.categories == ["a", "cat"]
         assert s.packages("a") == ["b"]
         assert s.versions("a", "b") == [Version("1")]
@@ -78,12 +80,12 @@ class TestRepoSet:
             config = Config()
             op_func = OperatorMap[op]
             err = f"failed {r1} {op} {r2}"
-            s1 = RepoSet(make_fake_repo(config=config, **r1))
-            s2 = RepoSet(make_fake_repo(config=config, **r2))
+            s1 = self.cls(make_fake_repo(config=config, **r1))
+            s2 = self.cls(make_fake_repo(config=config, **r2))
             assert op_func(s1, s2), err
 
         # verify incompatible type comparisons
-        obj = RepoSet(make_fake_repo())
+        obj = self.cls(make_fake_repo())
         for op, op_func in OperatorMap.items():
             if op == "==":
                 assert not op_func(obj, None)
@@ -93,26 +95,12 @@ class TestRepoSet:
                 with pytest.raises(TypeError):
                     op_func(obj, None)
 
-    def test_hash(self, make_fake_repo):
-        r1 = make_fake_repo()
-        r2 = make_fake_repo()
-        r3 = make_fake_repo()
-
-        # equal sets
-        s1 = RepoSet(r1, r2)
-        s2 = RepoSet(r2, r1)
-        assert s2 in {s1}
-
-        # unequal sets
-        s3 = RepoSet(r1, r3)
-        assert s1 not in {s3}
-
     def test_contains(self, make_fake_repo):
         r1 = make_fake_repo()
         r2 = make_fake_repo()
         pkg1 = r1.create_pkg("cat/pkg-1")
         pkg2 = r2.create_pkg("cat/pkg-1")
-        s = RepoSet(r1, r2)
+        s = self.cls(r1, r2)
 
         # Cpv strings
         assert "cat/pkg-1" in s
@@ -146,7 +134,7 @@ class TestRepoSet:
 
     def test_getitem(self, make_fake_repo):
         # empty set
-        s = RepoSet()
+        s = self.cls()
         assert s[:] == s
         with pytest.raises(IndexError):
             s[0]
@@ -155,7 +143,7 @@ class TestRepoSet:
 
         # empty repo
         r = make_fake_repo()
-        s = RepoSet(r)
+        s = self.cls(r)
         assert s[:] == s
         assert s[0] == r
         with pytest.raises(KeyError):
@@ -164,7 +152,7 @@ class TestRepoSet:
         # single repo with pkg
         r1 = make_fake_repo(id="r1")
         pkg = r1.create_pkg("cat/pkg-1")
-        s = RepoSet(r1)
+        s = self.cls(r1)
         assert s[:] == s
         assert s[0] == r1
         assert s["cat/pkg"] == pkg
@@ -176,7 +164,7 @@ class TestRepoSet:
         r2 = make_fake_repo(id="r2")
         pkg1 = r2.create_pkg("cat/pkg-1")
         pkg2 = r2.create_pkg("cat/pkg-2")
-        s = RepoSet(r1, r2)
+        s = self.cls(r1, r2)
         assert s[:] == s
         assert s[-1] == r2
         assert s["cat/pkg"] == pkg
@@ -185,21 +173,21 @@ class TestRepoSet:
         assert s["cat/pkg-2"] == pkg2
 
     def test_bool_and_len(self, make_fake_repo):
-        s = RepoSet()
+        s = self.cls()
         assert not s
         assert len(s) == 0
 
-        s = RepoSet(make_fake_repo())
+        s = self.cls(make_fake_repo())
         assert not s
         assert len(s) == 0
 
         repo = make_fake_repo(["cat/pkg-1"])
-        s = RepoSet(repo)
+        s = self.cls(repo)
         assert s
         assert len(s) == 1
 
     def test_iter(self, make_fake_repo):
-        s = RepoSet()
+        s = self.cls()
 
         # calling next() directly on a repo object fails
         with pytest.raises(TypeError):
@@ -214,17 +202,17 @@ class TestRepoSet:
         # single pkg
         r1 = make_fake_repo(["cat/pkg-1"], id="r1", priority=1)
         r2 = make_fake_repo(id="r2", priority=2)
-        s = RepoSet(r1, r2)
+        s = self.cls(r1, r2)
         assert list(map(str, s)) == ["cat/pkg-1::r1"]
 
         # multiple pkgs
         r1 = make_fake_repo(["cat/pkg-1"], id="r1", priority=1)
         r2 = make_fake_repo(["cat/pkg-2"], id="r2", priority=2)
-        s = RepoSet(r1, r2)
+        s = self.cls(r1, r2)
         assert list(map(str, s)) == ["cat/pkg-2::r2", "cat/pkg-1::r1"]
 
     def test_iter_restrict(self, make_fake_repo):
-        s = RepoSet()
+        s = self.cls()
 
         # unsupported object type
         with pytest.raises(TypeError):
@@ -238,7 +226,7 @@ class TestRepoSet:
         r1 = make_fake_repo(["cat/pkg-1"], id="r1")
         r2 = make_fake_repo(["cat/pkg-2"], id="r2")
         r3 = make_fake_repo(["cat/pkg-1"], id="r3", priority=1)
-        s = RepoSet(r1, r2, r3)
+        s = self.cls(r1, r2, r3)
 
         # non-empty repo -- no matches
         nonexistent = Cpv("nonexistent/pkg-1")
@@ -265,8 +253,9 @@ class TestRepoSet:
         r3 = make_fake_repo(priority=3)
 
         # &= operator
-        s = RepoSet(r1, r2, r3)
-        s &= RepoSet(r1, r2)
+        s = self.cls(r1, r2, r3)
+        s &= self.cls(r1, r2)
+        assert isinstance(s, self.cls)
         assert s.repos == [r2, r1]
         s &= r1
         assert s.repos == [r1]
@@ -278,8 +267,9 @@ class TestRepoSet:
                 s &= obj
 
         # |= operator
-        s = RepoSet()
-        s |= RepoSet(r1, r2)
+        s = self.cls()
+        s |= self.cls(r1, r2)
+        assert isinstance(s, self.cls)
         assert s.repos == [r2, r1]
         s |= r3
         assert s.repos == [r3, r2, r1]
@@ -289,8 +279,9 @@ class TestRepoSet:
                 s |= obj
 
         # ^= operator
-        s = RepoSet(r1, r2, r3)
-        s ^= RepoSet(r1, r2)
+        s = self.cls(r1, r2, r3)
+        s ^= self.cls(r1, r2)
+        assert isinstance(s, self.cls)
         assert s.repos == [r3]
         s ^= r3
         assert s.repos == []
@@ -300,8 +291,9 @@ class TestRepoSet:
                 s ^= obj
 
         # -= operator
-        s = RepoSet(r1, r2, r3)
-        s -= RepoSet(r1, r2)
+        s = self.cls(r1, r2, r3)
+        s -= self.cls(r1, r2)
+        assert isinstance(s, self.cls)
         assert s.repos == [r3]
         s -= r3
         assert s.repos == []
@@ -311,10 +303,11 @@ class TestRepoSet:
                 s -= obj
 
         # & operator
-        s = RepoSet(r1, r2, r3)
-        assert (s & RepoSet(r1, r2)).repos == [r2, r1]
+        s = self.cls(r1, r2, r3)
+        assert (s & self.cls(r1, r2)).repos == [r2, r1]
         assert (s & r3).repos == [r3]
         assert (r3 & s).repos == [r3]
+        assert isinstance(s & s, self.cls)
         # invalid
         for obj in [None, "s"]:
             for x, y in [(s, obj), (obj, s)]:
@@ -322,10 +315,11 @@ class TestRepoSet:
                     x & y
 
         # | operator
-        s = RepoSet(r1)
-        assert (s | RepoSet(r2, r3)).repos == [r3, r2, r1]
+        s = self.cls(r1)
+        assert (s | self.cls(r2, r3)).repos == [r3, r2, r1]
         assert (s | r2).repos == [r2, r1]
         assert (r2 | s).repos == [r2, r1]
+        assert isinstance(s | s, self.cls)
         # invalid
         for obj in [None, "s"]:
             for x, y in [(s, obj), (obj, s)]:
@@ -333,10 +327,11 @@ class TestRepoSet:
                     x | y
 
         # ^ operator
-        s = RepoSet(r1, r2, r3)
-        assert (s ^ RepoSet(r2, r3)).repos == [r1]
+        s = self.cls(r1, r2, r3)
+        assert (s ^ self.cls(r2, r3)).repos == [r1]
         assert (s ^ r3).repos == [r2, r1]
         assert (r3 ^ s).repos == [r2, r1]
+        assert isinstance(s ^ s, self.cls)
         # invalid
         for obj in [None, "s"]:
             for x, y in [(s, obj), (obj, s)]:
@@ -344,10 +339,11 @@ class TestRepoSet:
                     x ^ y
 
         # - operator
-        s = RepoSet(r1, r2)
-        assert (s - RepoSet(r1, r2)).repos == []
+        s = self.cls(r1, r2)
+        assert (s - self.cls(r1, r2)).repos == []
         assert (s - r3).repos == [r2, r1]
         assert (s - r2).repos == [r1]
+        assert isinstance(s - s, self.cls)
         # invalid
         for obj in [None, "s"]:
             for x, y in [(s, obj), (obj, s)]:
@@ -355,7 +351,28 @@ class TestRepoSet:
                     x - y
 
 
-class TestMutableRepoSet:
+class TestRepoSet(BaseTests):
+
+    cls = RepoSet
+
+    def test_hash(self, make_fake_repo):
+        r1 = make_fake_repo()
+        r2 = make_fake_repo()
+        r3 = make_fake_repo()
+
+        # equal sets
+        s1 = RepoSet(r1, r2)
+        s2 = RepoSet(r2, r1)
+        assert s2 in {s1}
+
+        # unequal sets
+        s3 = RepoSet(r1, r3)
+        assert s1 not in {s3}
+
+
+class TestMutableRepoSet(BaseTests):
+
+    cls = MutableRepoSet
 
     def test_hash(self):
         with pytest.raises(TypeError):
