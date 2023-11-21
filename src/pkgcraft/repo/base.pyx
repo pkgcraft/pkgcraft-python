@@ -37,7 +37,7 @@ cdef class Repo:
         self.ptr = ptr
 
     @staticmethod
-    cdef Repo from_ptr(C.Repo *ptr, bint ref):
+    cdef Repo from_ptr(C.Repo *ptr, bint ref=False):
         """Create a Repo from a pointer."""
         cdef Repo obj
 

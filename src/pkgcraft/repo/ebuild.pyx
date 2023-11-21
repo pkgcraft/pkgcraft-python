@@ -27,7 +27,7 @@ cdef class EbuildRepo(Repo):
         cdef size_t length
         if self._masters is None:
             repos = C.pkgcraft_repo_ebuild_masters(self.ptr, &length)
-            self._masters = tuple(EbuildRepo.from_ptr(repos[i], False) for i in range(length))
+            self._masters = tuple(Repo.from_ptr(repos[i]) for i in range(length))
         return self._masters
 
     @property

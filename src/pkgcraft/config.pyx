@@ -47,7 +47,7 @@ cdef class Config:
         # force repos attr refresh
         self._repos = None
 
-        return Repo.from_ptr(ptr, False)
+        return Repo.from_ptr(ptr)
 
     def add_repo(self, repo not None, id=None, priority=0, external=True):
         """Add a repo via its file path or from a Repo object and return the Repo object."""
