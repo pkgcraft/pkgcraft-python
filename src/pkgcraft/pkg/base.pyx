@@ -74,8 +74,10 @@ cdef class Pkg(_IndirectInit):
     @property
     def repo(self):
         """Get a package's repo."""
-        ptr = C.pkgcraft_pkg_repo(self.ptr)
-        return Repo.from_ptr(<C.Repo *>ptr, True)
+        if self._repo is None:
+            ptr = C.pkgcraft_pkg_repo(self.ptr)
+            self._repo = Repo.from_ptr(<C.Repo *>ptr, True)
+        return self._repo
 
     @property
     def version(self):

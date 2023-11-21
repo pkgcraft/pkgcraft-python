@@ -11,6 +11,7 @@ cdef class Pkg(_IndirectInit):
     cdef Cpv _cpv
     cdef Version _version
     cdef Eapi _eapi
+    cdef object _repo  # uses generic object type to avoid circular imports
     cdef int _hash
 
     @staticmethod
