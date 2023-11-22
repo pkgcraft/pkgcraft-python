@@ -188,6 +188,7 @@ cdef class DepSet:
         obj.ptr = ptr
         return obj
 
+    # TODO: use @classmethod once cdef methods support them
     cdef create(self, C.DepSet *ptr):
         """Create a DepSet from a pointer using the instance class."""
         if isinstance(self, MutableDepSet):
