@@ -46,14 +46,20 @@ cdef list iterable_to_dep_specs(object obj, C.DepSetKind kind):
 cdef class DepSpec:
     """Dependency object."""
 
-    def __init__(self, s: str, /, eapi=None, set=DepSetKind.Dependencies):
+    def __init__(self, object obj not None, /, eapi=None, set=DepSetKind.Dependencies):
         cdef const C.Eapi *eapi_ptr = NULL
         cdef C.DepSetKind kind = DepSetKind(set)
 
         if eapi is not None:
             eapi_ptr = Eapi._from_obj(eapi).ptr
 
-        ptr = C.pkgcraft_dep_spec_parse(s.encode(), eapi_ptr, kind)
+        if isinstance(obj, str):
+            ptr = C.pkgcraft_dep_spec_parse(obj.encode(), eapi_ptr, kind)
+        elif isinstance(obj, Dep):
+            ptr = C.pkgcraft_dep_spec_from_dep((<Dep>obj).ptr)
+        else:
+            raise TypeError(f"invalid DepSpec type: {obj.__class__.__name__!r}")
+
         if ptr is NULL:
             raise PkgcraftError
 

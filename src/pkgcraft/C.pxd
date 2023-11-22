@@ -861,6 +861,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a DepSpec pointer or NULL.
     void pkgcraft_dep_spec_free(DepSpec *r)
 
+    # Create a DepSpec from a Dep.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be valid Dep pointer.
+    DepSpec *pkgcraft_dep_spec_from_dep(Dep *d)
+
     # Return the hash value for a DepSpec.
     #
     # # Safety
