@@ -577,31 +577,31 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on error.
     #
     # # Safety
-    # The arguments must be non-null DepSet pointers.
+    # The arguments must be valid DepSet pointers.
     DepSet *pkgcraft_dep_set_assign_op_set(SetOp op, DepSet *d1, DepSet *d2)
 
     # Determine if a DepSet contains a given DepSpec.
     #
     # # Safety
-    # The arguments must be non-null DepSet and DepSpec pointers.
-    bool pkgcraft_dep_set_contains(DepSet *s, DepSpec *d)
+    # The arguments must be valid DepSet and DepSpec pointers.
+    bool pkgcraft_dep_set_contains_dep_spec(DepSet *s, DepSpec *d)
 
     # Determine if two DepSets are equal.
     #
     # # Safety
-    # The arguments must be non-null DepSet pointers.
+    # The arguments must be valid DepSet pointers.
     bool pkgcraft_dep_set_eq(DepSet *d1, DepSet *d2)
 
     # Evaluate a DepSet.
     #
     # # Safety
-    # The argument must be a non-null DepSet pointer.
+    # The argument must be a valid DepSet pointer.
     DepSet *pkgcraft_dep_set_evaluate(DepSet *d, char **options, uintptr_t len)
 
     # Forcibly evaluate a DepSet.
     #
     # # Safety
-    # The argument must be a non-null DepSet pointer.
+    # The argument must be a valid DepSet pointer.
     DepSet *pkgcraft_dep_set_evaluate_force(DepSet *d, bool force)
 
     # Free a DepSet.
@@ -623,13 +623,13 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on index nonexistence.
     #
     # # Safety
-    # The argument must be a non-null DepSet pointer.
+    # The argument must be a valid DepSet pointer.
     DepSpec *pkgcraft_dep_set_get_index(DepSet *d, uintptr_t index)
 
     # Return the hash value for a DepSet.
     #
     # # Safety
-    # The argument must be a non-null DepSet pointer.
+    # The argument must be a valid DepSet pointer.
     uint64_t pkgcraft_dep_set_hash(DepSet *d)
 
     # Insert a DepSpec into a DepSet.
@@ -637,25 +637,25 @@ cdef extern from "pkgcraft.h":
     # Returns false if an equivalent value already exists, otherwise true.
     #
     # # Safety
-    # The arguments must be non-null DepSet and DepSpec pointers.
+    # The arguments must be valid DepSet and DepSpec pointers.
     bool pkgcraft_dep_set_insert(DepSet *d, DepSpec *value)
 
     # Return an iterator for a DepSet.
     #
     # # Safety
-    # The argument must be a non-null DepSet pointer.
+    # The argument must be a valid DepSet pointer.
     DepSpecIntoIter *pkgcraft_dep_set_into_iter(DepSet *d)
 
     # Return a conditionals iterator for a DepSet.
     #
     # # Safety
-    # The argument must be a non-null DepSet pointer.
+    # The argument must be a valid DepSet pointer.
     DepSpecIntoIterConditionals *pkgcraft_dep_set_into_iter_conditionals(DepSet *d)
 
     # Free a conditionals iterator.
     #
     # # Safety
-    # The argument must be a non-null DepSpecIntoIterConditionals pointer or NULL.
+    # The argument must be a valid DepSpecIntoIterConditionals pointer or NULL.
     void pkgcraft_dep_set_into_iter_conditionals_free(DepSpecIntoIterConditionals *i)
 
     # Return the next object from a conditionals iterator.
@@ -663,19 +663,19 @@ cdef extern from "pkgcraft.h":
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null DepSpecIntoIterConditionals pointer.
+    # The argument must be a valid DepSpecIntoIterConditionals pointer.
     char *pkgcraft_dep_set_into_iter_conditionals_next(DepSpecIntoIterConditionals *i)
 
     # Return a flatten iterator for a DepSet.
     #
     # # Safety
-    # The argument must be a non-null DepSet pointer.
+    # The argument must be a valid DepSet pointer.
     DepSpecIntoIterFlatten *pkgcraft_dep_set_into_iter_flatten(DepSet *d)
 
     # Free a flatten iterator.
     #
     # # Safety
-    # The argument must be a non-null DepSpecIntoIterFlatten pointer or NULL.
+    # The argument must be a valid DepSpecIntoIterFlatten pointer or NULL.
     void pkgcraft_dep_set_into_iter_flatten_free(DepSpecIntoIterFlatten *i)
 
     # Return the next object from a flatten iterator.
@@ -683,13 +683,13 @@ cdef extern from "pkgcraft.h":
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null DepSpecIntoIterFlatten pointer.
+    # The argument must be a valid DepSpecIntoIterFlatten pointer.
     void *pkgcraft_dep_set_into_iter_flatten_next(DepSpecIntoIterFlatten *i)
 
     # Free a DepSet iterator.
     #
     # # Safety
-    # The argument must be a non-null DepSpecIntoIter pointer or NULL.
+    # The argument must be a valid DepSpecIntoIter pointer or NULL.
     void pkgcraft_dep_set_into_iter_free(DepSpecIntoIter *i)
 
     # Return the next object from a DepSet iterator.
@@ -697,7 +697,7 @@ cdef extern from "pkgcraft.h":
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null DepSpecIntoIter pointer.
+    # The argument must be a valid DepSpecIntoIter pointer.
     DepSpec *pkgcraft_dep_set_into_iter_next(DepSpecIntoIter *i)
 
     # Return the next object from the end of a DepSet iterator.
@@ -705,19 +705,19 @@ cdef extern from "pkgcraft.h":
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null DepSpecIntoIter pointer.
+    # The argument must be a valid DepSpecIntoIter pointer.
     DepSpec *pkgcraft_dep_set_into_iter_next_back(DepSpecIntoIter *i)
 
     # Return a recursive iterator for a DepSet.
     #
     # # Safety
-    # The argument must be a non-null DepSet pointer.
+    # The argument must be a valid DepSet pointer.
     DepSpecIntoIterRecursive *pkgcraft_dep_set_into_iter_recursive(DepSet *d)
 
     # Free a recursive iterator.
     #
     # # Safety
-    # The argument must be a non-null DepSpecIntoIterRecursive pointer or NULL.
+    # The argument must be a valid DepSpecIntoIterRecursive pointer or NULL.
     void pkgcraft_dep_set_into_iter_recursive_free(DepSpecIntoIterRecursive *i)
 
     # Return the next object from a recursive iterator.
@@ -725,31 +725,31 @@ cdef extern from "pkgcraft.h":
     # Returns NULL when the iterator is empty.
     #
     # # Safety
-    # The argument must be a non-null DepSpecIntoIterRecursive pointer.
+    # The argument must be a valid DepSpecIntoIterRecursive pointer.
     DepSpec *pkgcraft_dep_set_into_iter_recursive_next(DepSpecIntoIterRecursive *i)
 
     # Returns true if two DepSets have no elements in common.
     #
     # # Safety
-    # The arguments must be a non-null DepSet pointers.
+    # The arguments must be a valid DepSet pointers.
     bool pkgcraft_dep_set_is_disjoint(DepSet *d1, DepSet *d2)
 
     # Returns true if a DepSet is empty.
     #
     # # Safety
-    # The argument must be a non-null DepSet pointer.
+    # The argument must be a valid DepSet pointer.
     bool pkgcraft_dep_set_is_empty(DepSet *d)
 
     # Returns true if all the elements of the first DepSet are contained in the second.
     #
     # # Safety
-    # The arguments must be a non-null DepSet pointers.
+    # The arguments must be a valid DepSet pointers.
     bool pkgcraft_dep_set_is_subset(DepSet *d1, DepSet *d2)
 
     # Return a DepSet's length.
     #
     # # Safety
-    # The argument must be a non-null DepSet pointer.
+    # The argument must be a valid DepSet pointer.
     uintptr_t pkgcraft_dep_set_len(DepSet *d)
 
     # Perform a set operation on two DepSets, creating a new set.
@@ -757,7 +757,7 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on error.
     #
     # # Safety
-    # The arguments must be non-null DepSet pointers.
+    # The arguments must be valid DepSet pointers.
     DepSet *pkgcraft_dep_set_op_set(SetOp op, DepSet *d1, DepSet *d2)
 
     # Parse a string into a specified DepSet type.
@@ -773,7 +773,7 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on nonexistence.
     #
     # # Safety
-    # The argument must be a non-null DepSet pointer.
+    # The argument must be a valid DepSet pointer.
     DepSpec *pkgcraft_dep_set_pop(DepSet *d)
 
     # Replace a DepSpec with another DepSpec in a DepSet, returning the replaced value.
@@ -781,7 +781,7 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on nonexistence or if the DepSet already contains the given DepSpec.
     #
     # # Safety
-    # The arguments must be non-null DepSet and DepSpec pointers.
+    # The arguments must be valid DepSet and DepSpec pointers.
     DepSpec *pkgcraft_dep_set_replace(DepSet *d, const DepSpec *key, DepSpec *value)
 
     # Replace a DepSpec for a given index in a DepSet, returning the replaced value.
@@ -789,13 +789,13 @@ cdef extern from "pkgcraft.h":
     # Returns NULL on index nonexistence or if the DepSet already contains the given DepSpec.
     #
     # # Safety
-    # The arguments must be non-null DepSet and DepSpec pointers.
+    # The arguments must be valid DepSet and DepSpec pointers.
     DepSpec *pkgcraft_dep_set_replace_index(DepSet *d, uintptr_t index, DepSpec *value)
 
     # Return the formatted string for a DepSet object.
     #
     # # Safety
-    # The argument must be a non-null DepSet pointer.
+    # The argument must be a valid DepSet pointer.
     char *pkgcraft_dep_set_str(DepSet *d)
 
     # Get the slot of a package dependency.
@@ -831,19 +831,19 @@ cdef extern from "pkgcraft.h":
     # than the second, respectively.
     #
     # # Safety
-    # The arguments must be non-null DepSpec pointers.
+    # The arguments must be valid DepSpec pointers.
     int pkgcraft_dep_spec_cmp(DepSpec *d1, DepSpec *d2)
 
     # Determine if a DepSpec contains a given DepSpec.
     #
     # # Safety
-    # The arguments must be non-null DepSpec pointers.
-    bool pkgcraft_dep_spec_contains(DepSpec *d1, DepSpec *d2)
+    # The arguments must be valid DepSpec pointers.
+    bool pkgcraft_dep_spec_contains_dep_spec(DepSpec *d1, DepSpec *d2)
 
     # Evaluate a DepSpec.
     #
     # # Safety
-    # The argument must be a non-null DepSpec pointer.
+    # The argument must be a valid DepSpec pointer.
     DepSpec **pkgcraft_dep_spec_evaluate(DepSpec *d,
                                          char **options,
                                          uintptr_t len,
@@ -852,7 +852,7 @@ cdef extern from "pkgcraft.h":
     # Forcibly evaluate a DepSpec.
     #
     # # Safety
-    # The argument must be a non-null DepSpec pointer.
+    # The argument must be a valid DepSpec pointer.
     DepSpec **pkgcraft_dep_spec_evaluate_force(DepSpec *d, bool force, uintptr_t *deps_len)
 
     # Free a DepSpec object.
@@ -872,37 +872,37 @@ cdef extern from "pkgcraft.h":
     # Return the hash value for a DepSpec.
     #
     # # Safety
-    # The argument must be a non-null DepSpec pointer.
+    # The argument must be a valid DepSpec pointer.
     uint64_t pkgcraft_dep_spec_hash(DepSpec *d)
 
     # Return an iterator for a DepSpec.
     #
     # # Safety
-    # The argument must be a non-null DepSpec pointer.
+    # The argument must be a valid DepSpec pointer.
     DepSpecIntoIter *pkgcraft_dep_spec_into_iter(DepSpec *d)
 
     # Return a conditionals iterator for a DepSpec.
     #
     # # Safety
-    # The argument must be a non-null DepSpec pointer.
+    # The argument must be a valid DepSpec pointer.
     DepSpecIntoIterConditionals *pkgcraft_dep_spec_into_iter_conditionals(DepSpec *d)
 
     # Return a flatten iterator for a DepSpec.
     #
     # # Safety
-    # The argument must be a non-null DepSpec pointer.
+    # The argument must be a valid DepSpec pointer.
     DepSpecIntoIterFlatten *pkgcraft_dep_spec_into_iter_flatten(DepSpec *d)
 
     # Return a recursive iterator for a DepSpec.
     #
     # # Safety
-    # The argument must be a non-null DepSpec pointer.
+    # The argument must be a valid DepSpec pointer.
     DepSpecIntoIterRecursive *pkgcraft_dep_spec_into_iter_recursive(DepSpec *d)
 
     # Return a DepSpec's length.
     #
     # # Safety
-    # The argument must be a non-null DepSpec pointer.
+    # The argument must be a valid DepSpec pointer.
     uintptr_t pkgcraft_dep_spec_len(DepSpec *d)
 
     # Parse a string into a specified DepSpec type.
@@ -916,7 +916,7 @@ cdef extern from "pkgcraft.h":
     # Return the formatted string for a DepSpec object.
     #
     # # Safety
-    # The argument must be a non-null DepSpec pointer.
+    # The argument must be a valid DepSpec pointer.
     char *pkgcraft_dep_spec_str(DepSpec *d)
 
     # Return the string for a package dependency.
@@ -1795,7 +1795,7 @@ cdef extern from "pkgcraft.h":
     # Free a Uri object.
     #
     # # Safety
-    # The argument must be a non-null Uri pointer or NULL.
+    # The argument must be a valid Uri pointer or NULL.
     void pkgcraft_uri_free(Uri *u)
 
     # Return the formatted string for a Uri object.

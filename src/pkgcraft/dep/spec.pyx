@@ -106,7 +106,7 @@ cdef class DepSpec:
 
     def __contains__(self, obj):
         if isinstance(obj, DepSpec):
-            return C.pkgcraft_dep_spec_contains(self.ptr, (<DepSpec>obj).ptr)
+            return C.pkgcraft_dep_spec_contains_dep_spec(self.ptr, (<DepSpec>obj).ptr)
         return False
 
     def __iter__(self):
@@ -326,7 +326,7 @@ cdef class DepSet:
             dep = DepSpec(obj, set=self.set)
 
         if dep is not None:
-            return C.pkgcraft_dep_set_contains(self.ptr, dep.ptr)
+            return C.pkgcraft_dep_set_contains_dep_spec(self.ptr, dep.ptr)
         return False
 
     def __iter__(self):
