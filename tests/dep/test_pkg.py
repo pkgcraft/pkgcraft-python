@@ -168,8 +168,10 @@ class TestDep:
 
     def test_with_repo(self):
         dep = Dep("cat/pkg")
-        assert str(dep.with_repo("repo")) == "cat/pkg::repo"
-        dep = Dep("cat/pkg::repo")
+        dep = dep.with_repo("test")
+        assert dep.repo == "test"
+        dep = dep.with_repo("repo")
+        assert dep.repo == "repo"
         assert dep.with_repo("repo") is dep
 
         # invalid
