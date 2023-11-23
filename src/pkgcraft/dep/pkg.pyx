@@ -81,7 +81,7 @@ cdef class Dep:
     """Package dependency.
 
     >>> from pkgcraft.dep import Dep
-    >>> dep = Dep('=cat/pkg-1-r2:0/2[a,b]::repo')
+    >>> dep = Dep('=cat/pkg-1-r2:0/2::repo[a,b]')
     >>> dep.category
     'cat'
     >>> dep.package

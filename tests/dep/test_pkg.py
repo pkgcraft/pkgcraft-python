@@ -64,7 +64,7 @@ class TestDep:
         assert repr(dep).startswith("<Dep 'cat/pkg' at 0x")
 
         # all fields -- extended EAPI default allows repo deps
-        dep = Dep("!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo")
+        dep = Dep("!!>=cat/pkg-1-r2:0/2=::repo[a,b,c]")
         assert dep.category == "cat"
         assert dep.package == "pkg"
         assert dep.blocker == Blocker.Strong
@@ -86,8 +86,8 @@ class TestDep:
         assert dep.pvr == "1-r2"
         assert dep.cpn == "cat/pkg"
         assert dep.cpv == "cat/pkg-1-r2"
-        assert str(dep) == "!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo"
-        assert repr(dep).startswith("<Dep '!!>=cat/pkg-1-r2:0/2=[a,b,c]::repo' at 0x")
+        assert str(dep) == "!!>=cat/pkg-1-r2:0/2=::repo[a,b,c]"
+        assert repr(dep).startswith("<Dep '!!>=cat/pkg-1-r2:0/2=::repo[a,b,c]' at 0x")
 
         # failures due to EAPI
         for eapi in (str(EAPI_LATEST_OFFICIAL), EAPI_LATEST_OFFICIAL):
@@ -111,14 +111,14 @@ class TestDep:
         assert Dep.valid("cat/pkg")
 
         # extended EAPI default allows repo deps
-        assert Dep.valid("=cat/pkg-1-r2:3/4[a,b,c]::repo")
+        assert Dep.valid("=cat/pkg-1-r2:3/4::repo[a,b,c]")
 
         # explicitly specifying an EAPI
-        assert Dep.valid("=cat/pkg-1-r2:3/4[a,b,c]::repo", EAPI_LATEST)
+        assert Dep.valid("=cat/pkg-1-r2:3/4::repo[a,b,c]", EAPI_LATEST)
         for eapi in (str(EAPI_LATEST_OFFICIAL), EAPI_LATEST_OFFICIAL):
-            assert not Dep.valid("=cat/pkg-1-r2:3/4[a,b,c]::repo", eapi)
+            assert not Dep.valid("=cat/pkg-1-r2:3/4::repo[a,b,c]", eapi)
             with pytest.raises(InvalidDep):
-                Dep.valid("=cat/pkg-1-r2:3/4[a,b,c]::repo", eapi, raised=True)
+                Dep.valid("=cat/pkg-1-r2:3/4::repo[a,b,c]", eapi, raised=True)
 
         # invalid
         for s in ("cat", "=cat/pkg"):
@@ -140,12 +140,12 @@ class TestDep:
                 Dep.valid(obj)
 
     def test_without(self):
-        dep = Dep("!!>=cat/pkg-1.2-r3:4/5=[u]::repo")
-        assert str(dep.without(DepFields.Blocker)) == ">=cat/pkg-1.2-r3:4/5=[u]::repo"
-        assert str(dep.without(DepFields.Version)) == "!!cat/pkg:4/5=[u]::repo"
-        assert str(dep.without(DepFields.Slot)) == "!!>=cat/pkg-1.2-r3[u]::repo"
-        assert str(dep.without(DepFields.Subslot)) == "!!>=cat/pkg-1.2-r3:4=[u]::repo"
-        assert str(dep.without(DepFields.SlotOp)) == "!!>=cat/pkg-1.2-r3:4/5[u]::repo"
+        dep = Dep("!!>=cat/pkg-1.2-r3:4/5=::repo[u]")
+        assert str(dep.without(DepFields.Blocker)) == ">=cat/pkg-1.2-r3:4/5=::repo[u]"
+        assert str(dep.without(DepFields.Version)) == "!!cat/pkg:4/5=::repo[u]"
+        assert str(dep.without(DepFields.Slot)) == "!!>=cat/pkg-1.2-r3::repo[u]"
+        assert str(dep.without(DepFields.Subslot)) == "!!>=cat/pkg-1.2-r3:4=::repo[u]"
+        assert str(dep.without(DepFields.SlotOp)) == "!!>=cat/pkg-1.2-r3:4/5::repo[u]"
         assert str(dep.without(DepFields.UseDeps)) == "!!>=cat/pkg-1.2-r3:4/5=::repo"
         assert str(dep.without(DepFields.Repo)) == "!!>=cat/pkg-1.2-r3:4/5=[u]"
         assert str(dep.without(DepFields.all())) == "cat/pkg"
@@ -159,7 +159,7 @@ class TestDep:
         assert str(dep.without(2**15 | DepFields.Repo)) == ">=cat/pkg-1.2-r3"
 
         # verify all combinations of dep fields create valid deps
-        dep = Dep("!!>=cat/pkg-1.2-r3:4/5=[a,b]::repo")
+        dep = Dep("!!>=cat/pkg-1.2-r3:4/5=::repo[a,b]")
         fields = list(DepFields.all())
         for vals in chain.from_iterable(combinations(fields, r) for r in range(len(fields) + 1)):
             val = reduce(lambda x, y: x | y, vals, 0)
