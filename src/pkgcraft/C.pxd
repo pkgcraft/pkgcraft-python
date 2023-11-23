@@ -792,7 +792,7 @@ cdef extern from "pkgcraft.h":
     # The arguments must be valid DepSet and DepSpec pointers.
     DepSpec *pkgcraft_dep_set_replace_index(DepSet *d, uintptr_t index, DepSpec *value)
 
-    # Sort a DepSet.
+    # Recursively sort a DepSet.
     #
     # # Safety
     # The argument must be a valid DepSet pointer.
