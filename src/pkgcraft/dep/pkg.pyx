@@ -174,6 +174,21 @@ cdef class Dep:
             return self
         return Dep.from_ptr(ptr)
 
+    def with_repo(self, str s not None):
+        """Return a Dep with the given repo name.
+
+        >>> from pkgcraft.dep import Dep
+        >>> d = Dep('cat/pkg')
+        >>> str(d.with_repo('repo'))
+        'cat/pkg::repo'
+        """
+        ptr = C.pkgcraft_dep_with_repo(self.ptr, s.encode())
+        if ptr is NULL:
+            raise InvalidDep
+        elif ptr == self.ptr:
+            return self
+        return Dep.from_ptr(ptr)
+
     @property
     def blocker(self):
         """Get the blocker of a package dependency.

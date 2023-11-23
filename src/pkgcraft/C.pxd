@@ -960,6 +960,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Dep pointer.
     Version *pkgcraft_dep_version(Dep *d)
 
+    # Return a given package dependency with the specified repo name.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The arguments must be a non-null Dep pointer and valid repo name.
+    Dep *pkgcraft_dep_with_repo(Dep *d, const char *repo)
+
     # Return a given package dependency without the specified fields.
     #
     # # Safety

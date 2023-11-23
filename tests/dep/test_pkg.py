@@ -166,6 +166,17 @@ class TestDep:
             d = dep.without(val)
             assert d == Dep(str(d))
 
+    def test_with_repo(self):
+        dep = Dep("cat/pkg")
+        assert str(dep.with_repo("repo")) == "cat/pkg::repo"
+        dep = Dep("cat/pkg::repo")
+        assert dep.with_repo("repo") is dep
+
+        # invalid
+        for s in ("", "+repo"):
+            with pytest.raises(InvalidDep, match="invalid repo name"):
+                dep.with_repo(s)
+
     def test_matches(self):
         dep = Dep("=cat/pkg-1")
         r = Restrict(dep)
