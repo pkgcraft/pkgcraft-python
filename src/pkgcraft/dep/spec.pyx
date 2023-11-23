@@ -457,6 +457,22 @@ cdef class MutableDepSet(DepSet):
         return obj
 
     def sort(self):
+        """Recursively sort a DepSet.
+
+        >>> from pkgcraft.dep import MutableDepSet
+        >>> d = MutableDepSet('a/c a/b')
+        >>> str(d)
+        'a/c a/b'
+        >>> d.sort()
+        >>> str(d)
+        'a/b a/c'
+
+        DepSpec objects are ordered by type and recursively sorted if possible.
+        >>> d = MutableDepSet('( a/c a/b ( b/d b/c ) ) || ( a/c a/b ) a/z')
+        >>> d.sort()
+        >>> str(d)
+        'a/z ( a/b a/c ( b/c b/d ) ) || ( a/c a/b )'
+        """
         C.pkgcraft_dep_set_sort(self.ptr)
 
     def add(self, elem):
