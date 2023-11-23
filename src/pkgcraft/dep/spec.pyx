@@ -456,6 +456,9 @@ cdef class MutableDepSet(DepSet):
         obj.ptr = ptr
         return obj
 
+    def sort(self):
+        C.pkgcraft_dep_set_sort(self.ptr)
+
     def add(self, elem):
         cdef DepSpec value
 
