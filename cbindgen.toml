@@ -1,4 +1,4 @@
-autogen_warning = "# This file is auto-generated from pkgcraft-c using cbindgen."
+autogen_warning = "# This file is auto-generated using cbindgen via:\n# PKGCRAFT_C_PATH=path/to/pkgcraft-c/dir tox -e cbindgen"
 language = "cython"
 tab_width = 4
 line_length = 100

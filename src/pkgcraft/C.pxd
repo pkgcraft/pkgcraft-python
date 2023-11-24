@@ -1,4 +1,5 @@
-# This file is auto-generated from pkgcraft-c using cbindgen.
+# This file is auto-generated using cbindgen via:
+# PKGCRAFT_C_PATH=path/to/pkgcraft-c/dir tox -e cbindgen
 
 from libc.stdint cimport int8_t, int16_t, int32_t, int64_t, intptr_t
 from libc.stdint cimport uint8_t, uint16_t, uint32_t, uint64_t, uintptr_t
