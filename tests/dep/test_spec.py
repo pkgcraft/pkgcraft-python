@@ -25,7 +25,7 @@ class TestDepSpec:
         d = self.req_use("a")
         assert len(d) == 1
         assert str(d) == "a"
-        assert repr(d).startswith("<DepSpec Enabled 'a' at 0x")
+        assert "Enabled 'a' at 0x" in repr(d)
         # EAPI specific
         assert d == self.req_use("a", eapi=str(EAPI_LATEST_OFFICIAL))
         assert d == self.req_use("a", eapi=EAPI_LATEST_OFFICIAL)
@@ -33,37 +33,43 @@ class TestDepSpec:
         d = self.req_use("!a")
         assert len(d) == 1
         assert str(d) == "!a"
-        assert repr(d).startswith("<DepSpec Disabled '!a' at 0x")
+        assert "Disabled '!a' at 0x" in repr(d)
 
         d = self.req_use("( a b )")
         assert len(d) == 2
         assert str(d) == "( a b )"
-        assert repr(d).startswith("<DepSpec AllOf '( a b )' at 0x")
+        assert "AllOf '( a b )' at 0x" in repr(d)
 
         d = self.req_use("|| ( a b )")
         assert len(d) == 2
         assert str(d) == "|| ( a b )"
-        assert repr(d).startswith("<DepSpec AnyOf '|| ( a b )' at 0x")
+        assert "AnyOf '|| ( a b )' at 0x" in repr(d)
 
         d = self.req_use("^^ ( a b )")
         assert len(d) == 2
         assert str(d) == "^^ ( a b )"
-        assert repr(d).startswith("<DepSpec ExactlyOneOf '^^ ( a b )' at 0x")
+        assert "ExactlyOneOf '^^ ( a b )' at 0x" in repr(d)
 
         d = self.req_use("?? ( a b )")
         assert len(d) == 2
         assert str(d) == "?? ( a b )"
-        assert repr(d).startswith("<DepSpec AtMostOneOf '?? ( a b )' at 0x")
+        assert "AtMostOneOf '?? ( a b )' at 0x" in repr(d)
 
         d = self.req_use("u? ( a )")
         assert len(d) == 1
         assert str(d) == "u? ( a )"
-        assert repr(d).startswith("<DepSpec UseEnabled 'u? ( a )' at 0x")
+        assert "UseEnabled 'u? ( a )' at 0x" in repr(d)
 
         d = self.req_use("!u1? ( a u2? ( b ) )")
         assert len(d) == 2
         assert str(d) == "!u1? ( a u2? ( b ) )"
-        assert repr(d).startswith("<DepSpec UseDisabled '!u1? ( a u2? ( b ) )' at 0x")
+        assert "UseDisabled '!u1? ( a u2? ( b ) )' at 0x" in repr(d)
+
+        # raw Deps
+        d = DepSpec(Dep("a/b"))
+        assert len(d) == 1
+        assert str(d) == "a/b"
+        assert "Enabled 'a/b' at 0x" in repr(d)
 
         # invalid args
         for obj in [None, object()]:
@@ -221,67 +227,65 @@ class TestDepSpec:
         assert not d1.evaluate(False)
 
 
-class TestDepSet:
-    req_use = partial(DepSet, set=DepSetKind.RequiredUse)
-
+class DepSetBase:
     def test_creation(self):
         # empty DepSets
-        d = DepSet()
-        assert d == DepSet("")
+        d = self.cls()
+        assert d == self.cls("")
         assert not d
         assert len(d) == 0
         assert str(d) == ""
-        assert repr(d).startswith("<DepSet Dependencies '' at 0x")
+        assert "Dependencies '' at 0x" in repr(d)
 
         dep1 = DepSpec("a/b")
         dep2 = DepSpec("u? ( c/d )")
 
         # DepSpec arg
-        d = DepSet(dep1)
-        assert d == DepSet("a/b")
+        d = self.cls(dep1)
+        assert d == self.cls("a/b")
         assert d
         assert len(d) == 1
         assert str(d) == "a/b"
-        assert repr(d).startswith("<DepSet Dependencies 'a/b' at 0x")
+        assert "Dependencies 'a/b' at 0x" in repr(d)
 
         # iterable of DepSpecs
-        d = DepSet([dep1, dep2])
-        assert d == DepSet("a/b u? ( c/d )")
+        d = self.cls([dep1, dep2])
+        assert d == self.cls("a/b u? ( c/d )")
         assert d
         assert len(d) == 2
         assert str(d) == "a/b u? ( c/d )"
-        assert repr(d).startswith("<DepSet Dependencies 'a/b u? ( c/d )' at 0x")
+        assert "Dependencies 'a/b u? ( c/d )' at 0x" in repr(d)
 
         # iterable of DepSpec strings
-        d = DepSet(["a/b", "|| ( c/d e/f )"])
-        assert d == DepSet("a/b || ( c/d e/f )")
+        d = self.cls(["a/b", "|| ( c/d e/f )"])
+        assert d == self.cls("a/b || ( c/d e/f )")
         assert d
         assert len(d) == 2
         assert str(d) == "a/b || ( c/d e/f )"
-        assert repr(d).startswith("<DepSet Dependencies 'a/b || ( c/d e/f )' at 0x")
+        assert "Dependencies 'a/b || ( c/d e/f )' at 0x" in repr(d)
 
         # empty iterables
-        assert DepSet([]) == DepSet(DepSet())
+        assert self.cls([]) == self.cls(self.cls())
 
         # DepSet iterables
-        d1 = DepSet("a/b c/d")
-        d2 = DepSet(d1)
+        d1 = self.cls("a/b c/d")
+        d2 = self.cls(d1)
         assert d2 == d1
-        assert d2 == DepSet(list(d2))
+        assert d2 == self.cls(list(d2))
 
-        # immmutable re-creation creates a clone
-        d1 = DepSet("a/b")
-        d2 = DepSet(d1)
+        # re-creation creates a clone
+        d1 = self.cls("a/b")
+        d2 = self.cls(d1)
         assert d1 == d2 and d1 is not d2
 
         # EAPI kwargs
-        d1 = DepSet("a/b", eapi=EAPI_LATEST_OFFICIAL)
-        d2 = DepSet("a/b", eapi=str(EAPI_LATEST_OFFICIAL))
+        d1 = self.cls("a/b", eapi=EAPI_LATEST_OFFICIAL)
+        d2 = self.cls("a/b", eapi=str(EAPI_LATEST_OFFICIAL))
         assert d1 == d2
-        d3 = DepSet("a/b::repo", eapi=EAPI_LATEST)
+        d3 = self.cls("a/b::repo", eapi=EAPI_LATEST)
         assert d1 != d3
 
-        # DepSet set kwargs
+        # kwargs
         for s, kind in [
             ("a/b", DepSetKind.Dependencies),
             ("a", DepSetKind.License),
@@ -290,61 +294,61 @@ class TestDepSet:
             ("a", DepSetKind.Restrict),
             ("a", DepSetKind.SrcUri),
         ]:
-            d = DepSet(s, set=kind)
+            d = self.cls(s, set=kind)
             assert len(d) == 1
 
-        # invalid DepSets
+        # invalid
         with pytest.raises(PkgcraftError):
-            DepSet("a")
+            self.cls("a")
         with pytest.raises(PkgcraftError):
-            DepSet("a/b::repo", EAPI_LATEST_OFFICIAL)
+            self.cls("a/b::repo", EAPI_LATEST_OFFICIAL)
 
         # invalid args
         for obj in [None, object()]:
             with pytest.raises(TypeError):
-                DepSet(obj)
+                self.cls(obj)
 
     def test_iter(self):
-        assert list(DepSet()) == []
-        assert list(iter(DepSet("a/b"))) == [DepSpec("a/b")]
-        assert list(DepSet("( a/b )")) == [DepSpec("( a/b )")]
-        assert list(DepSet("a/b || ( c/d e/f )")) == [DepSpec("a/b"), DepSpec("|| ( c/d e/f )")]
-        assert list(DepSet("|| ( u? ( a/b ) )")) == [DepSpec("|| ( u? ( a/b ) )")]
+        assert list(self.cls()) == []
+        assert list(iter(self.cls("a/b"))) == [DepSpec("a/b")]
+        assert list(self.cls("( a/b )")) == [DepSpec("( a/b )")]
+        assert list(self.cls("a/b || ( c/d e/f )")) == [DepSpec("a/b"), DepSpec("|| ( c/d e/f )")]
+        assert list(self.cls("|| ( u? ( a/b ) )")) == [DepSpec("|| ( u? ( a/b ) )")]
 
     def test_reversed(self):
-        assert list(reversed(DepSet())) == []
-        assert list(reversed(DepSet("a/b"))) == [DepSpec("a/b")]
-        assert list(reversed(DepSet("( a/b )"))) == [DepSpec("( a/b )")]
-        assert list(reversed(DepSet("a/b || ( c/d e/f )"))) == [
+        assert list(reversed(self.cls())) == []
+        assert list(reversed(self.cls("a/b"))) == [DepSpec("a/b")]
+        assert list(reversed(self.cls("( a/b )"))) == [DepSpec("( a/b )")]
+        assert list(reversed(self.cls("a/b || ( c/d e/f )"))) == [
             DepSpec("|| ( c/d e/f )"),
             DepSpec("a/b"),
         ]
-        assert list(reversed(DepSet("|| ( u? ( a/b ) )"))) == [DepSpec("|| ( u? ( a/b ) )")]
+        assert list(reversed(self.cls("|| ( u? ( a/b ) )"))) == [DepSpec("|| ( u? ( a/b ) )")]
 
     def test_iter_conditionals(self):
-        assert list(DepSet("a/b").iter_conditionals()) == []
-        assert list(DepSet("( a/b )").iter_conditionals()) == []
-        assert list(DepSet("u? ( a/b )").iter_conditionals()) == ["u"]
-        assert list(DepSet("!u? ( a/b )").iter_conditionals()) == ["u"]
-        assert list(DepSet("|| ( u1? ( a/b !u2? ( c/d ) ) )").iter_conditionals()) == ["u1", "u2"]
+        assert list(self.cls("a/b").iter_conditionals()) == []
+        assert list(self.cls("( a/b )").iter_conditionals()) == []
+        assert list(self.cls("u? ( a/b )").iter_conditionals()) == ["u"]
+        assert list(self.cls("!u? ( a/b )").iter_conditionals()) == ["u"]
+        assert list(self.cls("|| ( u1? ( a/b !u2? ( c/d ) ) )").iter_conditionals()) == ["u1", "u2"]
 
     def test_iter_flatten(self):
-        assert list(DepSet("a/b").iter_flatten()) == [Dep("a/b")]
-        assert list(DepSet("!a/b").iter_flatten()) == [Dep("!a/b")]
-        assert list(DepSet("( a/b )").iter_flatten()) == [Dep("a/b")]
-        assert list(DepSet("|| ( a/b c/d )").iter_flatten()) == [Dep("a/b"), Dep("c/d")]
-        assert list(DepSet("|| ( u? ( a/b ) )").iter_flatten()) == [Dep("a/b")]
+        assert list(self.cls("a/b").iter_flatten()) == [Dep("a/b")]
+        assert list(self.cls("!a/b").iter_flatten()) == [Dep("!a/b")]
+        assert list(self.cls("( a/b )").iter_flatten()) == [Dep("a/b")]
+        assert list(self.cls("|| ( a/b c/d )").iter_flatten()) == [Dep("a/b"), Dep("c/d")]
+        assert list(self.cls("|| ( u? ( a/b ) )").iter_flatten()) == [Dep("a/b")]
 
     def test_iter_recursive(self):
-        assert list(DepSet("a/b").iter_recursive()) == [DepSpec("a/b")]
-        assert list(DepSet("!a/b").iter_recursive()) == [DepSpec("!a/b")]
-        assert list(DepSet("( a/b )").iter_recursive()) == [DepSpec("( a/b )"), DepSpec("a/b")]
-        assert list(DepSet("|| ( a/b c/d )").iter_recursive()) == [
+        assert list(self.cls("a/b").iter_recursive()) == [DepSpec("a/b")]
+        assert list(self.cls("!a/b").iter_recursive()) == [DepSpec("!a/b")]
+        assert list(self.cls("( a/b )").iter_recursive()) == [DepSpec("( a/b )"), DepSpec("a/b")]
+        assert list(self.cls("|| ( a/b c/d )").iter_recursive()) == [
             DepSpec("|| ( a/b c/d )"),
             DepSpec("a/b"),
             DepSpec("c/d"),
         ]
-        assert list(DepSet("|| ( u? ( a/b ) )").iter_recursive()) == [
+        assert list(self.cls("|| ( u? ( a/b ) )").iter_recursive()) == [
             DepSpec("|| ( u? ( a/b ) )"),
             DepSpec("u? ( a/b )"),
             DepSpec("a/b"),
@@ -352,46 +356,46 @@ class TestDepSet:
 
     def test_evaluate(self):
         # no conditionals
-        d = DepSet("a/b")
+        d = self.cls("a/b")
         assert d.evaluate() == d
         assert d.evaluate(["u"]) == d
         assert d.evaluate(True) == d
         assert d.evaluate(False) == d
 
         # conditionally enabled
-        d1 = DepSet("u? ( a/b )")
+        d1 = self.cls("u? ( a/b )")
         assert not d1.evaluate()
         assert d1.evaluate(["u"]) == d
         assert d1.evaluate(True) == d
         assert not d1.evaluate(False)
 
         # conditionally disabled
-        d1 = DepSet("!u? ( a/b )")
+        d1 = self.cls("!u? ( a/b )")
         assert d1.evaluate() == d
         assert not d1.evaluate(["u"])
         assert d1.evaluate(True) == d
         assert not d1.evaluate(False)
 
         # empty DepSpecs are discarded
-        d1 = DepSet("|| ( u1? ( a/b !u2? ( c/d ) ) )")
+        d1 = self.cls("|| ( u1? ( a/b !u2? ( c/d ) ) )")
         assert not d1.evaluate()
-        assert d1.evaluate(["u1"]) == DepSet("|| ( a/b c/d )")
-        assert d1.evaluate(["u1", "u2"]) == DepSet("|| ( a/b )")
+        assert d1.evaluate(["u1"]) == self.cls("|| ( a/b c/d )")
+        assert d1.evaluate(["u1", "u2"]) == self.cls("|| ( a/b )")
         assert not d1.evaluate(["u2"])
-        assert d1.evaluate(True) == DepSet("|| ( a/b c/d )")
+        assert d1.evaluate(True) == self.cls("|| ( a/b c/d )")
         assert not d1.evaluate(False)
 
     def test_contains(self):
         # only top-level DepSpec objects have membership
-        assert DepSpec("a/b") in DepSet("a/b")
-        assert DepSpec("a/b") not in DepSet("u? ( a/b )")
+        assert DepSpec("a/b") in self.cls("a/b")
+        assert DepSpec("a/b") not in self.cls("u? ( a/b )")
 
         # valid DepSpec strings work
-        assert "a/b" in DepSet("a/b")
-        assert "u? ( c/d )" in DepSet("a/b u? ( c/d )")
+        assert "a/b" in self.cls("a/b")
+        assert "u? ( c/d )" in self.cls("a/b u? ( c/d )")
 
         # all other object types return False
-        assert None not in DepSet("a/b")
+        assert None not in self.cls("a/b")
 
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing
@@ -405,30 +409,32 @@ class TestDepSet:
             ("u? ( a/b c/d )", "u? ( c/d a/b )"),
             ("|| ( a/b u? ( c/d b/d ) )", "|| ( a/b u? ( b/d c/d ) )"),
         ):
-            dep1 = DepSet(s1)
-            dep2 = DepSet(s2)
+            dep1 = self.cls(s1)
+            dep2 = self.cls(s2)
             assert dep1 == dep2, f"{dep1} != {dep2}"
-            assert len({dep1, dep2}) == 1
+            if self.cls == DepSet:
+                assert len({dep1, dep2}) == 1
 
         # ordering that matters for equivalence and hashing
         for s1, s2 in (
             ("|| ( a/b c/d )", "|| ( c/d a/b )"),
             ("u? ( a/b || ( c/d b/d ) )", "u? ( a/b || ( b/d c/d ) )"),
         ):
-            dep1 = DepSet(s1)
-            dep2 = DepSet(s2)
+            dep1 = self.cls(s1)
+            dep2 = self.cls(s2)
             assert dep1 != dep2, f"{dep1} != {dep2}"
-            assert len({dep1, dep2}) == 2
+            if self.cls == DepSet:
+                assert len({dep1, dep2}) == 2
 
         # verify incompatible type comparisons
-        dep = DepSet("a/b")
+        dep = self.cls("a/b")
         assert not dep == None
         assert dep != None
 
     def test_isdisjoint(self):
-        d1 = DepSet()
-        d2 = DepSet("a/b")
-        d3 = DepSet("u? ( c/d ) a/b")
+        d1 = self.cls()
+        d2 = self.cls("a/b")
+        d3 = self.cls("u? ( c/d ) a/b")
         assert d1.isdisjoint(d1)
         assert d1.isdisjoint(d2)
         assert d1.isdisjoint("")
@@ -438,9 +444,9 @@ class TestDepSet:
         assert not d2.isdisjoint(d3)
 
     def test_subset(self):
-        d1 = DepSet()
-        d2 = DepSet("a/b")
-        d3 = DepSet("u? ( c/d ) a/b")
+        d1 = self.cls()
+        d2 = self.cls("a/b")
+        d3 = self.cls("u? ( c/d ) a/b")
         assert d1 <= d1
         assert d1.issubset(d1)
         assert not d1 < d1
@@ -456,9 +462,9 @@ class TestDepSet:
             d1 < "a/b"
 
     def test_superset(self):
-        d1 = DepSet()
-        d2 = DepSet("a/b")
-        d3 = DepSet("u? ( c/d ) a/b")
+        d1 = self.cls()
+        d2 = self.cls("a/b")
+        d3 = self.cls("u? ( c/d ) a/b")
         assert d1 >= d1
         assert d1.issuperset(d1)
         assert not d1 > d1
@@ -474,7 +480,10 @@ class TestDepSet:
             d2 > ""
 
     def test_union(self):
-        d = DepSet("a/a b/b")
+        d = self.cls("a/a b/b")
+
+        # new depset matches the instance class
+        assert d.union().__class__ == self.cls
 
         # no args
         assert d == d.union() and d is not d.union()
@@ -483,19 +492,22 @@ class TestDepSet:
         assert d == d.union([])
 
         # DepSet args
-        assert d == d.union(DepSet())
-        assert d.union(DepSet("a/a"), DepSet("b/b c/c")) == DepSet("a/a b/b c/c")
+        assert d == d.union(self.cls())
+        assert d.union(self.cls("a/a"), self.cls("b/b c/c")) == self.cls("a/a b/b c/c")
 
         # DepSet string args
         assert d == d.union("")
-        assert d.union("a/a", "b/b c/c") == DepSet("a/a b/b c/c")
+        assert d.union("a/a", "b/b c/c") == self.cls("a/a b/b c/c")
 
         # DepSpec args
-        assert d.union(DepSpec("c/c")) == DepSet("a/a b/b c/c")
-        assert d.union(DepSpec("a/a"), DepSpec("c/c")) == DepSet("a/a b/b c/c")
+        assert d.union(DepSpec("c/c")) == self.cls("a/a b/b c/c")
+        assert d.union(DepSpec("a/a"), DepSpec("c/c")) == self.cls("a/a b/b c/c")
 
     def test_intersection(self):
-        d = DepSet("a/a b/b")
+        d = self.cls("a/a b/b")
+
+        # new depset matches the instance class
+        assert d.intersection().__class__ == self.cls
 
         # no args
         assert d == d.intersection() and d is not d.intersection()
@@ -504,20 +516,23 @@ class TestDepSet:
         assert not d.intersection([])
 
         # DepSet args
-        assert not d.intersection(DepSet())
+        assert not d.intersection(self.cls())
         assert d == d.intersection(d)
-        assert d.intersection(DepSet("a/a b/b"), DepSet("b/b")) == DepSet("b/b")
+        assert d.intersection(self.cls("a/a b/b"), self.cls("b/b")) == self.cls("b/b")
 
         # DepSet string args
         assert not d.intersection("")
-        assert d.intersection("a/a b/b", "b/b") == DepSet("b/b")
+        assert d.intersection("a/a b/b", "b/b") == self.cls("b/b")
 
         # DepSpec args
-        assert d.intersection(DepSpec("a/a")) == DepSet("a/a")
-        assert d.intersection(DepSpec("a/a"), DepSpec("c/c")) == DepSet()
+        assert d.intersection(DepSpec("a/a")) == self.cls("a/a")
+        assert d.intersection(DepSpec("a/a"), DepSpec("c/c")) == self.cls()
 
     def test_difference(self):
-        d = DepSet("a/a b/b")
+        d = self.cls("a/a b/b")
+
+        # new depset matches the instance class
+        assert d.difference().__class__ == self.cls
 
         # no args
         assert d == d.difference() and d is not d.difference()
@@ -526,19 +541,22 @@ class TestDepSet:
         assert d == d.difference([])
 
         # DepSet args
-        assert d == d.difference(DepSet())
-        assert d.difference(DepSet("a/a"), DepSet("b/b c/c")) == DepSet()
+        assert d == d.difference(self.cls())
+        assert d.difference(self.cls("a/a"), self.cls("b/b c/c")) == self.cls()
 
         # DepSet string args
         assert d == d.difference("")
-        assert d.difference("a/a", "b/b c/c") == DepSet()
+        assert d.difference("a/a", "b/b c/c") == self.cls()
 
         # DepSpec args
-        assert d.difference(DepSpec("b/b")) == DepSet("a/a")
-        assert d.difference(DepSpec("a/a"), DepSpec("c/c")) == DepSet("b/b")
+        assert d.difference(DepSpec("b/b")) == self.cls("a/a")
+        assert d.difference(DepSpec("a/a"), DepSpec("c/c")) == self.cls("b/b")
 
     def test_symmetric_difference(self):
-        d = DepSet("a/a b/b")
+        d = self.cls("a/a b/b")
+
+        # new depset matches the instance class
+        assert d.symmetric_difference().__class__ == self.cls
 
         # no args
         assert d == d.symmetric_difference() and d is not d.symmetric_difference()
@@ -547,23 +565,23 @@ class TestDepSet:
         assert d == d.symmetric_difference([])
 
         # DepSet args
-        assert d == d.symmetric_difference(DepSet())
-        assert d.symmetric_difference(DepSet("a/a"), DepSet("b/b c/c")) == DepSet("c/c")
+        assert d == d.symmetric_difference(self.cls())
+        assert d.symmetric_difference(self.cls("a/a"), self.cls("b/b c/c")) == self.cls("c/c")
 
         # DepSet string args
         assert d == d.symmetric_difference("")
-        assert d.symmetric_difference("a/a", "b/b c/c") == DepSet("c/c")
+        assert d.symmetric_difference("a/a", "b/b c/c") == self.cls("c/c")
 
         # DepSpec args
-        assert d.symmetric_difference(DepSpec("b/b")) == DepSet("a/a")
-        assert d.symmetric_difference(DepSpec("a/a"), DepSpec("c/c")) == DepSet("b/b c/c")
+        assert d.symmetric_difference(DepSpec("b/b")) == self.cls("a/a")
+        assert d.symmetric_difference(DepSpec("a/a"), DepSpec("c/c")) == self.cls("b/b c/c")
 
     def test_getitem(self):
-        d = DepSet("a/b || ( c/d e/f )")
+        d = self.cls("a/b || ( c/d e/f )")
 
         # slices
         assert d[:] == d and d[:] is not d
-        assert d[:1] == DepSet("a/b")
+        assert d[:1] == self.cls("a/b")
 
         # integers
         assert d[0] == DepSpec("a/b")
@@ -580,65 +598,65 @@ class TestDepSet:
                 d[obj]
 
     def test_iand(self):
-        d = DepSet("a/a b/b c/c")
-        d &= DepSet("a/a b/b")
-        assert d == DepSet("a/a b/b")
-        d &= DepSet("a/a")
-        assert d == DepSet("a/a")
-        d &= DepSet()
-        assert d == DepSet()
+        d = self.cls("a/a b/b c/c")
+        d &= self.cls("a/a b/b")
+        assert d == self.cls("a/a b/b")
+        d &= self.cls("a/a")
+        assert d == self.cls("a/a")
+        d &= self.cls()
+        assert d == self.cls()
         # invalid
         for obj in [None, "s", self.req_use()]:
             with pytest.raises(TypeError):
                 d &= obj
 
     def test_ior(self):
-        d = DepSet()
-        d |= DepSet("a/a b/b")
-        assert d == DepSet("a/a b/b")
-        d |= DepSet("c/c")
-        assert d == DepSet("a/a b/b c/c")
+        d = self.cls()
+        d |= self.cls("a/a b/b")
+        assert d == self.cls("a/a b/b")
+        d |= self.cls("c/c")
+        assert d == self.cls("a/a b/b c/c")
         # all-of group doesn't combine with regular deps
-        d = DepSet("a/a")
-        d |= DepSet("( a/a )")
-        assert d == DepSet("a/a ( a/a )")
+        d = self.cls("a/a")
+        d |= self.cls("( a/a )")
+        assert d == self.cls("a/a ( a/a )")
         # invalid
         for obj in [None, "s", self.req_use()]:
             with pytest.raises(TypeError):
                 d |= obj
 
     def test_ixor(self):
-        d = DepSet("a/a b/b c/c")
-        d ^= DepSet("a/a b/b")
-        assert d == DepSet("c/c")
-        d ^= DepSet("c/c d/d")
-        assert d == DepSet("d/d")
-        d ^= DepSet("d/d")
-        assert d == DepSet()
+        d = self.cls("a/a b/b c/c")
+        d ^= self.cls("a/a b/b")
+        assert d == self.cls("c/c")
+        d ^= self.cls("c/c d/d")
+        assert d == self.cls("d/d")
+        d ^= self.cls("d/d")
+        assert d == self.cls()
         # invalid
         for obj in [None, "s", self.req_use()]:
             with pytest.raises(TypeError):
                 d ^= obj
 
     def test_isub(self):
-        d = DepSet("a/a b/b c/c")
-        d -= DepSet("a/a b/b")
-        assert d == DepSet("c/c")
-        d -= DepSet("d/d")
-        assert d == DepSet("c/c")
-        d -= DepSet("c/c")
-        assert d == DepSet()
+        d = self.cls("a/a b/b c/c")
+        d -= self.cls("a/a b/b")
+        assert d == self.cls("c/c")
+        d -= self.cls("d/d")
+        assert d == self.cls("c/c")
+        d -= self.cls("c/c")
+        assert d == self.cls()
         # invalid
         for obj in [None, "s", self.req_use()]:
             with pytest.raises(TypeError):
                 d -= obj
 
     def test_and(self):
-        d = DepSet("a/a b/b c/c")
-        assert (d & DepSet("a/a b/b")) == DepSet("a/a b/b")
-        assert (d & DepSet("c/c")) == DepSet("c/c")
-        assert (d & DepSet("d/d")) == DepSet()
-        assert (d & DepSet()) == DepSet()
+        d = self.cls("a/a b/b c/c")
+        assert (d & self.cls("a/a b/b")) == self.cls("a/a b/b")
+        assert (d & self.cls("c/c")) == self.cls("c/c")
+        assert (d & self.cls("d/d")) == self.cls()
+        assert (d & self.cls()) == self.cls()
         # invalid
         for obj in [None, "s", self.req_use()]:
             for x, y in [(d, obj), (obj, d)]:
@@ -646,10 +664,10 @@ class TestDepSet:
                     x & y
 
     def test_or(self):
-        d = DepSet("a/a")
-        assert (d | DepSet("a/a b/b")) == DepSet("a/a b/b")
-        assert (d | DepSet("c/c")) == DepSet("a/a c/c")
-        assert (d | DepSet()) == DepSet("a/a")
+        d = self.cls("a/a")
+        assert (d | self.cls("a/a b/b")) == self.cls("a/a b/b")
+        assert (d | self.cls("c/c")) == self.cls("a/a c/c")
+        assert (d | self.cls()) == self.cls("a/a")
         # invalid
         for obj in [None, "s", self.req_use()]:
             for x, y in [(d, obj), (obj, d)]:
@@ -657,11 +675,11 @@ class TestDepSet:
                     x | y
 
     def test_xor(self):
-        d = DepSet("a/a b/b c/c")
-        assert (d ^ DepSet("b/b c/c")) == DepSet("a/a")
-        assert (d ^ DepSet("c/c")) == DepSet("a/a b/b")
-        assert (d ^ DepSet("d/d")) == DepSet("a/a b/b c/c d/d")
-        assert (d ^ DepSet()) == DepSet("a/a b/b c/c")
+        d = self.cls("a/a b/b c/c")
+        assert (d ^ self.cls("b/b c/c")) == self.cls("a/a")
+        assert (d ^ self.cls("c/c")) == self.cls("a/a b/b")
+        assert (d ^ self.cls("d/d")) == self.cls("a/a b/b c/c d/d")
+        assert (d ^ self.cls()) == self.cls("a/a b/b c/c")
         # invalid
         for obj in [None, "s", self.req_use()]:
             for x, y in [(d, obj), (obj, d)]:
@@ -670,11 +688,11 @@ class TestDepSet:
 
     def test_sub(self):
         # - operator
-        d = DepSet("a/a b/b c/c")
-        assert (d - DepSet("b/b c/c")) == DepSet("a/a")
-        assert (d - DepSet("c/c")) == DepSet("a/a b/b")
-        assert (d - DepSet("d/d")) == DepSet("a/a b/b c/c")
-        assert (d - DepSet()) == DepSet("a/a b/b c/c")
+        d = self.cls("a/a b/b c/c")
+        assert (d - self.cls("b/b c/c")) == self.cls("a/a")
+        assert (d - self.cls("c/c")) == self.cls("a/a b/b")
+        assert (d - self.cls("d/d")) == self.cls("a/a b/b c/c")
+        assert (d - self.cls()) == self.cls("a/a b/b c/c")
         # invalid
         for obj in [None, "s", self.req_use()]:
             for x, y in [(d, obj), (obj, d)]:
@@ -682,19 +700,27 @@ class TestDepSet:
                     x - y
 
 
-class TestMutableDepSet:
-    def test_copy(self):
+class TestDepSet(DepSetBase):
+    cls = DepSet
+    req_use = partial(DepSet, set=DepSetKind.RequiredUse)
+
+
+class TestMutableDepSet(DepSetBase):
+    cls = MutableDepSet
+    req_use = partial(MutableDepSet, set=DepSetKind.RequiredUse)
+
+    def test_freeze(self):
         d1 = MutableDepSet("a/a")
 
         # freeze the mutable depset to an immutable clone
         d2 = DepSet(d1)
         assert d1 == d2 and d1 is not d2
-        assert not isinstance(d2, MutableDepSet)
+        assert d2.__class__ == DepSet
 
         # unfreeze the depset to a mutable clone
         d3 = MutableDepSet(d2)
         assert d1 == d3 and d1 is not d3
-        assert isinstance(d3, MutableDepSet)
+        assert d3.__class__ == MutableDepSet
 
         # mutable re-creation creates a clone
         assert MutableDepSet(d3) is not d3
