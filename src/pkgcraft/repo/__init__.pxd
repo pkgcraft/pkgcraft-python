@@ -1,4 +1,4 @@
-from .base cimport Repo
-from .ebuild cimport EbuildRepo
-from .fake cimport FakeRepo
-from .set cimport MutableRepoSet, RepoSet
+from .base cimport *
+from .ebuild cimport *
+from .fake cimport *
+from .set cimport *

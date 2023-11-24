@@ -1,4 +1,4 @@
-from .base import Repo
-from .ebuild import EbuildRepo
-from .fake import FakeRepo
-from .set import MutableRepoSet, RepoSet
+from .base import *
+from .ebuild import *
+from .fake import *
+from .set import *

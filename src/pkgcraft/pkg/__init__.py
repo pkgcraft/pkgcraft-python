@@ -1,3 +1,3 @@
-from .base import Pkg
-from .ebuild import EbuildPkg
-from .fake import FakePkg
+from .base import *
+from .ebuild import *
+from .fake import *
