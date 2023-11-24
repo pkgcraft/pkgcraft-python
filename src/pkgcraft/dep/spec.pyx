@@ -276,7 +276,7 @@ cdef class DepSet:
         return C.pkgcraft_dep_set_is_subset(depset.ptr, self.ptr)
 
     def intersection(self, *others):
-        depset = DepSet(self)
+        depset = self.create(C.pkgcraft_dep_set_clone(self.ptr))
 
         for obj in others:
             if isinstance(obj, DepSet):
@@ -287,7 +287,7 @@ cdef class DepSet:
         return depset
 
     def union(self, *others):
-        depset = DepSet(self)
+        depset = self.create(C.pkgcraft_dep_set_clone(self.ptr))
 
         for obj in others:
             if isinstance(obj, DepSet):
@@ -298,7 +298,7 @@ cdef class DepSet:
         return depset
 
     def difference(self, *others):
-        depset = DepSet(self)
+        depset = self.create(C.pkgcraft_dep_set_clone(self.ptr))
 
         for obj in others:
             if isinstance(obj, DepSet):
@@ -309,7 +309,7 @@ cdef class DepSet:
         return depset
 
     def symmetric_difference(self, *others):
-        depset = DepSet(self)
+        depset = self.create(C.pkgcraft_dep_set_clone(self.ptr))
 
         for obj in others:
             if isinstance(obj, DepSet):
