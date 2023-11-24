@@ -2,6 +2,7 @@ from .. cimport C
 from ..dep cimport Cpv, Version
 from ..eapi cimport Eapi
 from ..error cimport _IndirectInit
+from ..repo cimport Repo
 
 
 cdef class Pkg(_IndirectInit):
@@ -11,7 +12,7 @@ cdef class Pkg(_IndirectInit):
     cdef Cpv _cpv
     cdef Version _version
     cdef Eapi _eapi
-    cdef object _repo  # uses generic object type to avoid circular imports
+    cdef Repo _repo
     cdef int _hash
 
     @staticmethod

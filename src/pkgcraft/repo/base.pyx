@@ -175,6 +175,8 @@ cdef class Repo:
 cdef class _IterCpv:
     """Iterator over the Cpv objects from a repo."""
 
+    cdef C.RepoIterCpv *ptr
+
     def __cinit__(self, r: Repo):
         self.ptr = C.pkgcraft_repo_iter_cpv(r.ptr)
 
@@ -193,6 +195,8 @@ cdef class _IterCpv:
 cdef class _Iter:
     """Iterator over a repo."""
 
+    cdef C.RepoIter *ptr
+
     def __cinit__(self, r: Repo):
         self.ptr = C.pkgcraft_repo_iter(r.ptr)
 
@@ -210,6 +214,8 @@ cdef class _Iter:
 
 cdef class _IterRestrict:
     """Iterator that applies a restriction over a repo iterator."""
+
+    cdef C.RepoIterRestrict *ptr
 
     def __cinit__(self, repo: Repo, object obj not None):
         cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)

@@ -17,7 +17,3 @@ cdef class MutableRepoSet(RepoSet):
 
     @staticmethod
     cdef MutableRepoSet from_ptr(C.RepoSet *)
-
-
-cdef class _Iter:
-    cdef C.RepoSetIter *ptr

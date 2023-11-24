@@ -268,6 +268,8 @@ cdef class MutableRepoSet(RepoSet):
 cdef class _Iter:
     """Iterator over a repo set, optionally applying a restriction."""
 
+    cdef C.RepoSetIter *ptr
+
     def __cinit__(self, s: RepoSet, obj=None):
         cdef C.Restrict *restrict_ptr = NULL
         cdef Restrict r

@@ -1,5 +1,4 @@
 from .. cimport C
-from ..pkg cimport Pkg
 
 
 cdef class Repo:
@@ -14,15 +13,3 @@ cdef class Repo:
 
     @staticmethod
     cdef Repo from_ptr(C.Repo *, bint ref=*)
-
-
-cdef class _IterCpv:
-    cdef C.RepoIterCpv *ptr
-
-
-cdef class _Iter:
-    cdef C.RepoIter *ptr
-
-
-cdef class _IterRestrict:
-    cdef C.RepoIterRestrict *ptr

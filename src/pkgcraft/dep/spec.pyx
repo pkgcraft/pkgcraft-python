@@ -629,6 +629,8 @@ cdef class MutableDepSet(DepSet):
 cdef class _IntoIter:
     """Iterator over a DepSet or DepSpec object."""
 
+    cdef C.DepSpecIntoIter *ptr
+
     def __cinit__(self, object obj not None):
         if isinstance(obj, DepSet):
             self.ptr = C.pkgcraft_dep_set_into_iter((<DepSet>obj).ptr)
@@ -661,6 +663,8 @@ cdef class _IntoIterReversed(_IntoIter):
 cdef class _IntoIterConditionals:
     """Conditionals iterator over a DepSet or DepSpec object."""
 
+    cdef C.DepSpecIntoIterConditionals *ptr
+
     def __cinit__(self, object obj not None):
         if isinstance(obj, DepSet):
             self.ptr = C.pkgcraft_dep_set_into_iter_conditionals((<DepSet>obj).ptr)
@@ -683,6 +687,9 @@ cdef class _IntoIterConditionals:
 
 cdef class _IntoIterFlatten:
     """Flattened iterator over a DepSet or DepSpec object."""
+
+    cdef C.DepSpecIntoIterFlatten *ptr
+    cdef C.DepSetKind set
 
     def __cinit__(self, object obj not None):
         if isinstance(obj, DepSet):
@@ -715,6 +722,8 @@ cdef class _IntoIterFlatten:
 
 cdef class _IntoIterRecursive:
     """Recursive iterator over a DepSet or DepSpec object."""
+
+    cdef C.DepSpecIntoIterRecursive *ptr
 
     def __cinit__(self, object obj not None):
         if isinstance(obj, DepSet):

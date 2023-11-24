@@ -30,27 +30,6 @@ cdef class MutableDepSet(DepSet):
     cdef MutableDepSet from_ptr(C.DepSet *)
 
 
-cdef class _IntoIter:
-    cdef C.DepSpecIntoIter *ptr
-
-
-cdef class _IntoIterReversed(_IntoIter):
-    pass
-
-
-cdef class _IntoIterConditionals:
-    cdef C.DepSpecIntoIterConditionals *ptr
-
-
-cdef class _IntoIterFlatten:
-    cdef C.DepSpecIntoIterFlatten *ptr
-    cdef C.DepSetKind set
-
-
-cdef class _IntoIterRecursive:
-    cdef C.DepSpecIntoIterRecursive *ptr
-
-
 cdef class Uri(_IndirectInit):
     cdef C.Uri *ptr
     # cached fields
