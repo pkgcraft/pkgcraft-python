@@ -580,6 +580,12 @@ cdef extern from "pkgcraft.h":
     # The arguments must be valid DepSet pointers.
     DepSet *pkgcraft_dep_set_assign_op_set(SetOp op, DepSet *d1, DepSet *d2)
 
+    # Clone a DepSet.
+    #
+    # # Safety
+    # The argument must be a valid DepSet pointer.
+    DepSet *pkgcraft_dep_set_clone(DepSet *d)
+
     # Determine if a DepSet contains a given DepSpec.
     #
     # # Safety

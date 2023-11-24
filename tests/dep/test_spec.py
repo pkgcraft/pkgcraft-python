@@ -268,10 +268,11 @@ class TestDepSet:
         d2 = DepSet(d1)
         assert d2 == d1
         assert d2 == DepSet(list(d2))
-        # incompatible DepSets
-        d1 = DepSet("a", set=DepSetKind.RequiredUse)
-        with pytest.raises(PkgcraftError):
-            d2 = DepSet(d1)
+
+        # immmutable re-creation creates a clone
+        d1 = DepSet("a/b")
+        d2 = DepSet(d1)
+        assert d1 == d2 and d1 is not d2
 
         # EAPI kwargs
         d1 = DepSet("a/b", eapi=EAPI_LATEST_OFFICIAL)
@@ -682,6 +683,22 @@ class TestDepSet:
 
 
 class TestMutableDepSet:
+    def test_copy(self):
+        d1 = MutableDepSet("a/a")
+
+        # freeze the mutable depset to an immutable clone
+        d2 = DepSet(d1)
+        assert d1 == d2 and d1 is not d2
+        assert not isinstance(d2, MutableDepSet)
+
+        # unfreeze the depset to a mutable clone
+        d3 = MutableDepSet(d2)
+        assert d1 == d3 and d1 is not d3
+        assert isinstance(d3, MutableDepSet)
+
+        # mutable re-creation creates a clone
+        assert MutableDepSet(d3) is not d3
+
     def test_add(self):
         d = MutableDepSet("a/a")
         d.add("a/a")

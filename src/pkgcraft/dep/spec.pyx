@@ -175,6 +175,8 @@ cdef class DepSet:
             if eapi is not None:
                 eapi_ptr = Eapi._from_obj(eapi).ptr
             ptr = C.pkgcraft_dep_set_parse(str(obj).encode(), eapi_ptr, kind)
+        elif isinstance(obj, DepSet):
+            ptr = C.pkgcraft_dep_set_clone((<DepSet>obj).ptr)
         elif isinstance(obj, Iterable):
             ptr = DepSet.from_iter(obj, kind)
         else:
@@ -274,7 +276,7 @@ cdef class DepSet:
         return C.pkgcraft_dep_set_is_subset(depset.ptr, self.ptr)
 
     def intersection(self, *others):
-        depset = DepSet(self, set=self.set)
+        depset = DepSet(self)
 
         for obj in others:
             if isinstance(obj, DepSet):
@@ -285,7 +287,7 @@ cdef class DepSet:
         return depset
 
     def union(self, *others):
-        depset = DepSet(self, set=self.set)
+        depset = DepSet(self)
 
         for obj in others:
             if isinstance(obj, DepSet):
@@ -296,7 +298,7 @@ cdef class DepSet:
         return depset
 
     def difference(self, *others):
-        depset = DepSet(self, set=self.set)
+        depset = DepSet(self)
 
         for obj in others:
             if isinstance(obj, DepSet):
@@ -307,7 +309,7 @@ cdef class DepSet:
         return depset
 
     def symmetric_difference(self, *others):
-        depset = DepSet(self, set=self.set)
+        depset = DepSet(self)
 
         for obj in others:
             if isinstance(obj, DepSet):
