@@ -111,6 +111,7 @@ class TestDepSpec:
             ("( a b )", "( b a )"),
             ("u? ( a b )", "u? ( b a )"),
             ("!u? ( a b )", "!u? ( b a )"),
+            ("|| ( a u? ( c b ) )", "|| ( a u? ( b c ) )"),
         ):
             d1 = self.req_use(s1)
             d2 = self.req_use(s2)
@@ -122,6 +123,7 @@ class TestDepSpec:
             ("|| ( a b )", "|| ( b a )"),
             ("?? ( a b )", "?? ( b a )"),
             ("^^ ( a b )", "^^ ( b a )"),
+            ("u? ( a || ( c b ) )", "u? ( a || ( b c ) )"),
         ):
             d1 = self.req_use(s1)
             d2 = self.req_use(s2)
@@ -393,13 +395,14 @@ class TestDepSet:
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing
         for s1, s2 in (
-            # same deps
+            # same
             ("a/dep", "a/dep"),
             ("u? ( a/dep )", "u? ( a/dep )"),
             ("u? ( a/dep || ( a/b c/d ) )", "u? ( a/dep || ( a/b c/d ) )"),
             # different order, but equivalent
             ("a/b c/d", "c/d a/b"),
             ("u? ( a/b c/d )", "u? ( c/d a/b )"),
+            ("|| ( a/b u? ( c/d b/d ) )", "|| ( a/b u? ( b/d c/d ) )"),
         ):
             dep1 = DepSet(s1)
             dep2 = DepSet(s2)
@@ -407,7 +410,10 @@ class TestDepSet:
             assert len({dep1, dep2}) == 1
 
         # ordering that matters for equivalence and hashing
-        for s1, s2 in (("|| ( a/b c/d )", "|| ( c/d a/b )"),):
+        for s1, s2 in (
+            ("|| ( a/b c/d )", "|| ( c/d a/b )"),
+            ("u? ( a/b || ( c/d b/d ) )", "u? ( a/b || ( b/d c/d ) )"),
+        ):
             dep1 = DepSet(s1)
             dep2 = DepSet(s2)
             assert dep1 != dep2, f"{dep1} != {dep2}"
