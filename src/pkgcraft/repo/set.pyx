@@ -57,7 +57,7 @@ cdef class RepoSet:
 
     def iter(self, restrict=None):
         """Iterate over a repo set's packages, optionally applying a restriction."""
-        yield from _Iter(self, restrict)
+        return _Iter(self, restrict)
 
     @property
     def repos(self):

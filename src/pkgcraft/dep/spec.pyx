@@ -94,15 +94,15 @@ cdef class DepSpec:
 
     def iter_conditionals(self):
         """Iterate over the conditionals of a DepSpec."""
-        yield from _IntoIterConditionals(self)
+        return _IntoIterConditionals(self)
 
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSpec."""
-        yield from _IntoIterFlatten(self)
+        return _IntoIterFlatten(self)
 
     def iter_recursive(self):
         """Recursively iterate over the DepSpec objects of a DepSpec."""
-        yield from _IntoIterRecursive(self)
+        return _IntoIterRecursive(self)
 
     def __contains__(self, obj):
         if isinstance(obj, DepSpec):
@@ -239,15 +239,15 @@ cdef class DepSet:
 
     def iter_conditionals(self):
         """Iterate over the conditionals of a DepSet."""
-        yield from _IntoIterConditionals(self)
+        return _IntoIterConditionals(self)
 
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSet."""
-        yield from _IntoIterFlatten(self)
+        return _IntoIterFlatten(self)
 
     def iter_recursive(self):
         """Recursively iterate over the DepSpec objects of a DepSet."""
-        yield from _IntoIterRecursive(self)
+        return _IntoIterRecursive(self)
 
     def isdisjoint(self, other):
         cdef DepSet depset = None
