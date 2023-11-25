@@ -5,7 +5,7 @@ cimport cython
 from .. cimport C
 from .._misc cimport SENTINEL, CStringArray, CStringIter, cstring_to_str
 from ..dep cimport DepSet, MutableDepSet
-from ..error cimport _IndirectInit
+from ..error cimport Internal
 from . cimport Pkg
 
 from ..error import PkgcraftError
@@ -225,7 +225,7 @@ cdef class EbuildPkg(Pkg):
 
 
 @cython.final
-cdef class Maintainer(_IndirectInit):
+cdef class Maintainer(Internal):
     """Ebuild package maintainer."""
 
     @staticmethod
@@ -258,7 +258,7 @@ cdef class Maintainer(_IndirectInit):
 
 
 @cython.final
-cdef class RemoteId(_IndirectInit):
+cdef class RemoteId(Internal):
     """Ebuild package upstream site."""
 
     @staticmethod
@@ -278,7 +278,7 @@ cdef class RemoteId(_IndirectInit):
 
 
 @cython.final
-cdef class UpstreamMaintainer(_IndirectInit):
+cdef class UpstreamMaintainer(Internal):
     """Upstream package maintainer."""
 
     @staticmethod
@@ -304,7 +304,7 @@ cdef class UpstreamMaintainer(_IndirectInit):
 
 
 @cython.final
-cdef class Upstream(_IndirectInit):
+cdef class Upstream(Internal):
     """Ebuild package upstream info."""
 
     @staticmethod

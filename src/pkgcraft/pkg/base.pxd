@@ -1,11 +1,11 @@
 from .. cimport C
 from ..dep cimport Cpv, Version
 from ..eapi cimport Eapi
-from ..error cimport _IndirectInit
+from ..error cimport Internal
 from ..repo cimport Repo
 
 
-cdef class Pkg(_IndirectInit):
+cdef class Pkg(Internal):
     cdef C.Pkg *ptr
 
     # cached fields

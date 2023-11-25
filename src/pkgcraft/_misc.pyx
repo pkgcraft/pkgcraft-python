@@ -1,7 +1,7 @@
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from . cimport C
-from .error cimport _IndirectInit
+from .error cimport Internal
 
 SENTINEL = object()
 
@@ -18,7 +18,7 @@ cdef str cstring_to_str(char *c_str, bint free=True):
     return None
 
 
-cdef class CStringIter(_IndirectInit):
+cdef class CStringIter(Internal):
     """Iterator over a char** converting char* to str, optionally freeing the array."""
 
     @staticmethod

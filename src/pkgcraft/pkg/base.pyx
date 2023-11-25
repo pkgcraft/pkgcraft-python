@@ -2,13 +2,13 @@ from .. cimport C
 from .._misc cimport cstring_to_str
 from ..dep cimport Cpv
 from ..eapi cimport Eapi
-from ..error cimport _IndirectInit
+from ..error cimport Internal
 from ..repo cimport Repo
 from ..restrict cimport Restrict
 from . cimport EbuildPkg, FakePkg
 
 
-cdef class Pkg(_IndirectInit):
+cdef class Pkg(Internal):
     """Generic package."""
 
     @staticmethod

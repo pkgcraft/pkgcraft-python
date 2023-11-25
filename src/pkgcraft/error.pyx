@@ -93,7 +93,7 @@ class InvalidRestrict(PkgcraftError, ValueError):
     kinds = ()
 
 
-class IndirectType(TypeError):
+class InternalType(TypeError):
     """This object type cannot be directly created via __init__()."""
 
     def __init__(self, obj):
@@ -101,8 +101,8 @@ class IndirectType(TypeError):
         super().__init__(f"{obj_name} objects cannot be directly created via __init__()")
 
 
-cdef class _IndirectInit:
+cdef class Internal:
     """Object cannot be directly created via __init__()."""
 
     def __init__(self):
-        raise IndirectType(self)
+        raise InternalType(self)

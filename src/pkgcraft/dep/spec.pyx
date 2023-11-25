@@ -7,7 +7,7 @@ from cpython.mem cimport PyMem_Free, PyMem_Malloc
 from .. cimport C
 from .._misc cimport CStringArray, cstring_to_str
 from ..eapi cimport Eapi
-from ..error cimport _IndirectInit
+from ..error cimport Internal
 from .pkg cimport Dep
 
 from ..error import PkgcraftError
@@ -755,7 +755,7 @@ cdef class _IntoIterRecursive:
 
 
 @cython.final
-cdef class Uri(_IndirectInit):
+cdef class Uri(Internal):
 
     @staticmethod
     cdef Uri from_ptr(C.Uri *ptr):

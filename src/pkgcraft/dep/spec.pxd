@@ -1,5 +1,5 @@
 from .. cimport C
-from ..error cimport _IndirectInit
+from ..error cimport Internal
 
 
 cdef class DepSpec:
@@ -31,7 +31,7 @@ cdef class MutableDepSet(DepSet):
     cdef MutableDepSet from_ptr(C.DepSet *)
 
 
-cdef class Uri(_IndirectInit):
+cdef class Uri(Internal):
     cdef C.Uri *ptr
     # cached fields
     cdef str _uri_str

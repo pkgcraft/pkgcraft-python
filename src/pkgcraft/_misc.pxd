@@ -1,4 +1,4 @@
-from .error cimport _IndirectInit
+from .error cimport Internal
 
 
 cdef object SENTINEL
@@ -6,7 +6,7 @@ cdef object SENTINEL
 cdef str cstring_to_str(char *ptr, bint free=*)
 
 
-cdef class CStringIter(_IndirectInit):
+cdef class CStringIter(Internal):
     cdef char **c_strs
     cdef size_t length
     cdef bint free
