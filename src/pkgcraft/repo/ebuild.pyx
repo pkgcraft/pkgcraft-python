@@ -1,8 +1,9 @@
 import os
 
+cimport cython
+
 from .. cimport C
 from .._misc cimport CStringIter
-from ..error cimport _IndirectInit
 from . cimport Repo
 
 from ..error import PkgcraftError
@@ -44,8 +45,15 @@ cdef class EbuildRepo(Repo):
             raise PkgcraftError
 
 
-cdef class _Metadata(_IndirectInit):
+@cython.internal
+cdef class _Metadata:
     """Ebuild repo metadata."""
+
+    cdef C.Repo *ptr
+
+    # cached fields
+    cdef object _arches
+    cdef object _categories
 
     @staticmethod
     cdef _Metadata from_ptr(C.Repo *ptr):
