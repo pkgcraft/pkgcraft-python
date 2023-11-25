@@ -13,6 +13,12 @@ class TestPkgcraftError:
         with pytest.raises(RuntimeError, match="no pkgcraft error occurred"):
             raise PkgcraftError
 
+    def test_subclass_registry(self):
+        with pytest.raises(RuntimeError, match="error kind 0 already registered to PkgcraftError"):
+
+            class _NewError(PkgcraftError):
+                kinds = (0,)
+
 
 class TestInternalType:
     def test_class_init(self):

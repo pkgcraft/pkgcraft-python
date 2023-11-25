@@ -19,7 +19,7 @@ class _PkgcraftError(Exception):
     def __init_subclass__(cls, **kwargs):
         for kind in cls.kinds:
             setting = cls.types.setdefault(kind, cls)
-            if setting is not cls:  # pragma: no cover
+            if setting is not cls:
                 name, existing = cls.__name__, setting.__name__
                 raise RuntimeError(f'{name}: error kind {kind} already registered to {existing}')
         super().__init_subclass__(**kwargs)
