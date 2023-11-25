@@ -18,6 +18,7 @@ cdef class DepSet:
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *)
 
+    cdef clone(self)
     cdef create(self, C.DepSet *)
 
     @staticmethod

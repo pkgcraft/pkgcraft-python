@@ -196,6 +196,10 @@ cdef class DepSet:
         obj.ptr = ptr
         return obj
 
+    cdef clone(self):
+        """Clone a DepSet to a new object."""
+        return self.create(C.pkgcraft_dep_set_clone(self.ptr))
+
     # TODO: use @classmethod once cdef methods support them
     cdef create(self, C.DepSet *ptr):
         """Create a DepSet from a pointer using the instance class."""
@@ -276,7 +280,7 @@ cdef class DepSet:
         return C.pkgcraft_dep_set_is_subset(depset.ptr, self.ptr)
 
     def intersection(self, *others):
-        depset = self.create(C.pkgcraft_dep_set_clone(self.ptr))
+        depset = self.clone()
 
         for obj in others:
             if isinstance(obj, DepSet):
@@ -287,7 +291,7 @@ cdef class DepSet:
         return depset
 
     def union(self, *others):
-        depset = self.create(C.pkgcraft_dep_set_clone(self.ptr))
+        depset = self.clone()
 
         for obj in others:
             if isinstance(obj, DepSet):
@@ -298,7 +302,7 @@ cdef class DepSet:
         return depset
 
     def difference(self, *others):
-        depset = self.create(C.pkgcraft_dep_set_clone(self.ptr))
+        depset = self.clone()
 
         for obj in others:
             if isinstance(obj, DepSet):
@@ -309,7 +313,7 @@ cdef class DepSet:
         return depset
 
     def symmetric_difference(self, *others):
-        depset = self.create(C.pkgcraft_dep_set_clone(self.ptr))
+        depset = self.clone()
 
         for obj in others:
             if isinstance(obj, DepSet):
