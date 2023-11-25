@@ -91,8 +91,6 @@ cdef class _Repos:
     cdef RepoSet _ebuild
 
     @staticmethod
-    cdef _Repos from_config(C.Config *)
-    @staticmethod
     cdef _Repos from_config(C.Config *ptr):
         cdef size_t length
         c_repos = <C.Repo **>C.pkgcraft_config_repos(ptr, &length)
