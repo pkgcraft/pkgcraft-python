@@ -18,3 +18,7 @@ class TestInternalType:
     def test_class_init(self):
         with pytest.raises(InternalType):
             Eapi()
+        with pytest.raises(InternalType):
+            Eapi("8")
+        with pytest.raises(InternalType):
+            Eapi(eapi="8")

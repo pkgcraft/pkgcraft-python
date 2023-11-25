@@ -104,5 +104,5 @@ class InternalType(TypeError):
 cdef class Internal:
     """Object cannot be directly created via __init__()."""
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         raise InternalType(self)
