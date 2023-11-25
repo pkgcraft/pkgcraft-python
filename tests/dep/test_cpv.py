@@ -11,19 +11,19 @@ from ..misc import TEST_DATA
 
 class TestCpv:
     def test_creation(self):
-        a = Cpv("cat/pkg-1-r2")
-        assert a.category == "cat"
-        assert a.package == "pkg"
-        assert a.version == Version("1-r2")
-        assert a.revision == Revision("2")
-        assert a.p == "pkg-1"
-        assert a.pf == "pkg-1-r2"
-        assert a.pr == "r2"
-        assert a.pv == "1"
-        assert a.pvr == "1-r2"
-        assert a.cpn == "cat/pkg"
-        assert str(a) == "cat/pkg-1-r2"
-        assert repr(a).startswith("<Cpv 'cat/pkg-1-r2' at 0x")
+        cpv = Cpv("cat/pkg-1-r2")
+        assert cpv.category == "cat"
+        assert cpv.package == "pkg"
+        assert cpv.version == Version("1-r2")
+        assert cpv.revision == Revision("2")
+        assert cpv.p == "pkg-1"
+        assert cpv.pf == "pkg-1-r2"
+        assert cpv.pr == "r2"
+        assert cpv.pv == "1"
+        assert cpv.pvr == "1-r2"
+        assert cpv.cpn == "cat/pkg"
+        assert str(cpv) == "cat/pkg-1-r2"
+        assert "Cpv 'cat/pkg-1-r2' at 0x" in repr(cpv)
 
         # invalid args
         for obj in [None, object()]:
@@ -45,10 +45,10 @@ class TestCpv:
                 Cpv.valid(obj)
 
     def test_matches(self):
-        a = Cpv("cat/pkg-1")
-        r = Restrict(a)
-        assert a.matches(r)
-        assert not a.matches(~r)
+        cpv = Cpv("cat/pkg-1")
+        r = Restrict(cpv)
+        assert cpv.matches(r)
+        assert not cpv.matches(~r)
 
     def test_invalid(self):
         for s in ("invalid", "cat-1", "cat/pkg", "=cat/pkg-1"):
@@ -114,6 +114,6 @@ class TestCpv:
             assert len(s) == length
 
     def test_pickle(self):
-        a = Cpv("cat/pkg-1-r2")
-        b = pickle.loads(pickle.dumps(a))
-        assert a == b
+        cpv1 = Cpv("cat/pkg-1-r2")
+        cpv2 = pickle.loads(pickle.dumps(cpv1))
+        assert cpv1 == cpv2

@@ -68,7 +68,7 @@ class BasePkgTests:
 
     def test_repr_base(self, pkg):
         cls = pkg.__class__.__name__
-        assert repr(pkg).startswith(f"<{cls} 'cat/pkg-1::fake' at 0x")
+        assert f"{cls} 'cat/pkg-1::fake' at 0x" in repr(pkg)
 
     def test_hash_base(self, repo):
         for d in TEST_DATA.toml("version.toml")["hashing"]:

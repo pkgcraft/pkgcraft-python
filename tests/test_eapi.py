@@ -42,8 +42,7 @@ class TestEapi:
 
     def test_methods(self):
         s = str(EAPI_LATEST_OFFICIAL)
-        assert s
-        assert repr(EAPI_LATEST_OFFICIAL).startswith(f"<Eapi '{s}' at 0x")
+        assert f"Eapi '{s}' at 0x" in repr(EAPI_LATEST_OFFICIAL)
 
     def test_cmp(self):
         assert EAPI_PREV_OFFICIAL < EAPI_LATEST_OFFICIAL

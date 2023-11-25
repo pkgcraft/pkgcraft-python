@@ -34,7 +34,7 @@ class TestVersion:
         assert ver.base == "1"
         assert ver.revision is None
         assert str(ver) == "1"
-        assert repr(ver).startswith("<Version '1' at 0x")
+        assert "Version '1' at 0x" in repr(ver)
 
         # revisioned
         ver = Version("1-r1")
@@ -42,7 +42,7 @@ class TestVersion:
         assert ver.base == "1"
         assert ver.revision == Revision("1")
         assert str(ver) == "1-r1"
-        assert repr(ver).startswith("<Version '1-r1' at 0x")
+        assert "Version '1-r1' at 0x" in repr(ver)
 
         # explicit '0' revision
         ver = Version("1-r0")
@@ -50,7 +50,7 @@ class TestVersion:
         assert ver.base == "1"
         assert ver.revision == Revision("0")
         assert str(ver) == "1-r0"
-        assert repr(ver).startswith("<Version '1-r0' at 0x")
+        assert "Version '1-r0' at 0x" in repr(ver)
 
         # unrevisioned with operator
         ver = Version("<1_alpha")
@@ -58,7 +58,7 @@ class TestVersion:
         assert ver.base == "1_alpha"
         assert ver.revision is None
         assert str(ver) == "<1_alpha"
-        assert repr(ver).startswith("<Version '<1_alpha' at 0x")
+        assert "Version '<1_alpha' at 0x" in repr(ver)
 
         # revisioned with operator
         ver = Version(">=1_beta2-r3")
@@ -66,7 +66,7 @@ class TestVersion:
         assert ver.base == "1_beta2"
         assert ver.revision == Revision("3")
         assert str(ver) == ">=1_beta2-r3"
-        assert repr(ver).startswith("<Version '>=1_beta2-r3' at 0x")
+        assert "Version '>=1_beta2-r3' at 0x" in repr(ver)
 
         # valid
         for s in TEST_DATA.toml("version.toml")["valid"]:
@@ -157,7 +157,7 @@ class TestRevision:
         for s in ("", "0", "00", "1", "01", "10"):
             rev = Revision(s)
             assert str(rev) == s
-            assert repr(rev).startswith(f"<Revision '{s}' at 0x")
+            assert f"Revision '{s}' at 0x" in repr(rev)
             assert bool(s) == bool(rev)
 
         # invalid

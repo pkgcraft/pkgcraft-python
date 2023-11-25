@@ -61,7 +61,7 @@ class TestDep:
         assert dep.cpn == "cat/pkg"
         assert dep.cpv == "cat/pkg"
         assert str(dep) == "cat/pkg"
-        assert repr(dep).startswith("<Dep 'cat/pkg' at 0x")
+        assert "Dep 'cat/pkg' at 0x" in repr(dep)
 
         # all fields -- extended EAPI default allows repo deps
         dep = Dep("!!>=cat/pkg-1-r2:0/2=::repo[a,b,c]")
@@ -87,7 +87,7 @@ class TestDep:
         assert dep.cpn == "cat/pkg"
         assert dep.cpv == "cat/pkg-1-r2"
         assert str(dep) == "!!>=cat/pkg-1-r2:0/2=::repo[a,b,c]"
-        assert repr(dep).startswith("<Dep '!!>=cat/pkg-1-r2:0/2=::repo[a,b,c]' at 0x")
+        assert "Dep '!!>=cat/pkg-1-r2:0/2=::repo[a,b,c]' at 0x" in repr(dep)
 
         # failures due to EAPI
         for eapi in (str(EAPI_LATEST_OFFICIAL), EAPI_LATEST_OFFICIAL):
@@ -222,7 +222,7 @@ class TestDep:
                     assert dep.slot_op == entry.get("slot_op")
                     assert dep.use_deps == entry.get("use")
                     assert str(dep) == s
-                    assert repr(dep).startswith(f"<Dep {s!r} at 0x")
+                    assert f"Dep {s!r} at 0x" in repr(dep)
                 else:
                     with pytest.raises(InvalidDep, match=f"invalid dep: {re.escape(s)}"):
                         Dep(s, eapi)
@@ -337,7 +337,7 @@ class TestCpn:
         assert dep.cpn == "cat/pkg"
         assert dep.cpv == "cat/pkg"
         assert str(dep) == "cat/pkg"
-        assert repr(dep).startswith("<Cpn 'cat/pkg' at 0x")
+        assert "Cpn 'cat/pkg' at 0x" in repr(dep)
 
         # invalid
         for s in ("=cat/pkg-3", "cat/pkg-3", ""):

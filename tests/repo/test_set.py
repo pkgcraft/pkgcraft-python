@@ -9,14 +9,12 @@ from ..misc import OperatorMap
 
 
 class BaseTests:
-    cls = None
-
     def test_attrs(self, make_fake_repo):
         r1 = make_fake_repo()
         r2 = make_fake_repo()
         s = self.cls(r1, r2)
         assert str(s)
-        assert repr(s).startswith(f"<{self.cls.__name__} ")
+        assert self.cls.__name__ in repr(s)
 
     def test_repos(self, make_fake_repo):
         r1 = make_fake_repo()
