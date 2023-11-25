@@ -3,7 +3,7 @@ import os
 cimport cython
 
 from .. cimport C
-from .._misc cimport CStringIter
+from .._misc cimport cstring_iter
 from . cimport Repo
 
 from ..error import PkgcraftError
@@ -68,7 +68,7 @@ cdef class _Metadata:
         cdef size_t length
         if self._arches is None:
             c_strs = C.pkgcraft_repo_ebuild_metadata_arches(self.ptr, &length)
-            self._arches = OrderedFrozenSet(CStringIter.create(c_strs, length))
+            self._arches = OrderedFrozenSet(cstring_iter(c_strs, length))
         return self._arches
 
     @property
@@ -77,5 +77,5 @@ cdef class _Metadata:
         cdef size_t length
         if self._categories is None:
             c_strs = C.pkgcraft_repo_ebuild_metadata_categories(self.ptr, &length)
-            self._categories = OrderedFrozenSet(CStringIter.create(c_strs, length))
+            self._categories = OrderedFrozenSet(cstring_iter(c_strs, length))
         return self._categories

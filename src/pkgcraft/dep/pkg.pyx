@@ -4,7 +4,7 @@ from enum import IntEnum, IntFlag
 cimport cython
 
 from .. cimport C
-from .._misc cimport SENTINEL, CStringIter, cstring_to_str
+from .._misc cimport SENTINEL, cstring_iter, cstring_to_str
 from ..eapi cimport Eapi
 from ..restrict cimport Restrict
 from . cimport Cpv
@@ -361,7 +361,7 @@ cdef class Dep:
         cdef size_t length
         if self._use_deps is SENTINEL:
             if c_strs := C.pkgcraft_dep_use_deps(self.ptr, &length):
-                self._use_deps = OrderedFrozenSet(CStringIter.create(c_strs, length))
+                self._use_deps = OrderedFrozenSet(cstring_iter(c_strs, length))
             else:
                 self._use_deps = None
         return self._use_deps

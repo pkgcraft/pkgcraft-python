@@ -4,7 +4,7 @@ from pathlib import Path
 cimport cython
 
 from .. cimport C
-from .._misc cimport CStringIter, cstring_to_str
+from .._misc cimport cstring_iter, cstring_to_str
 from ..dep cimport Cpv, Version
 from ..error cimport Internal
 from ..pkg cimport Pkg
@@ -75,14 +75,14 @@ cdef class Repo:
         """Get a repo's categories."""
         cdef size_t length
         c_strs = C.pkgcraft_repo_categories(self.ptr, &length)
-        return OrderedFrozenSet(CStringIter.create(c_strs, length))
+        return OrderedFrozenSet(cstring_iter(c_strs, length))
 
     def packages(self, cat: str):
         """Get a repo's packages for a category."""
         cdef size_t length
         if parse.category(cat):
             c_strs = C.pkgcraft_repo_packages(self.ptr, cat.encode(), &length)
-            return OrderedFrozenSet(CStringIter.create(c_strs, length))
+            return OrderedFrozenSet(cstring_iter(c_strs, length))
 
     def versions(self, cat: str, pkg: str):
         """Get a repo's versions for a package."""

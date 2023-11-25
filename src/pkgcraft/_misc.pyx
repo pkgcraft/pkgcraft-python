@@ -1,3 +1,4 @@
+cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from . cimport C
@@ -18,8 +19,19 @@ cdef str cstring_to_str(char *c_str, bint free=True):
     return None
 
 
+cdef object cstring_iter(char **c_strs, size_t length, bint free=True):
+    """Convert a char** array to an iterator of strings."""
+    return CStringIter.create(c_strs, length, free)
+
+
+@cython.internal
 cdef class CStringIter(Internal):
     """Iterator over a char** converting char* to str, optionally freeing the array."""
+
+    cdef char **c_strs
+    cdef size_t length
+    cdef bint free
+    cdef size_t idx
 
     @staticmethod
     cdef CStringIter create(char **c_strs, size_t length, bint free=True):
