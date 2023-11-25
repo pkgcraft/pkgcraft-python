@@ -6,6 +6,7 @@ cimport cython
 from .. cimport C
 from .._misc cimport CStringIter, cstring_to_str
 from ..dep cimport Cpv, Version
+from ..error cimport _IndirectInit
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport EbuildRepo, FakeRepo
@@ -110,17 +111,17 @@ cdef class Repo:
             raise KeyError(obj)
 
     def __iter__(self):
-        return _Iter(self)
+        return _Iter.create(self.ptr)
 
     def iter_cpv(self):
-        return _IterCpv(self)
+        return _IterCpv.create(self.ptr)
 
     def iter(self, restrict=None):
         """Iterate over a repo's packages, optionally applying a restriction."""
         if restrict is None:
-            return _Iter(self)
+            return _Iter.create(self.ptr)
         else:
-            return _IterRestrict(self, restrict)
+            return _IterRestrict.create(self.ptr, restrict)
 
     def __lt__(self, other):
         if isinstance(other, Repo):
@@ -175,13 +176,16 @@ cdef class Repo:
 
 
 @cython.internal
-cdef class _IterCpv:
+cdef class _IterCpv(_IndirectInit):
     """Iterator over the Cpv objects from a repo."""
 
     cdef C.RepoIterCpv *ptr
 
-    def __cinit__(self, r: Repo):
-        self.ptr = C.pkgcraft_repo_iter_cpv(r.ptr)
+    @staticmethod
+    cdef _IterCpv create(C.Repo *ptr):
+        obj = <_IterCpv>_IterCpv.__new__(_IterCpv)
+        obj.ptr = C.pkgcraft_repo_iter_cpv(ptr)
+        return obj
 
     def __iter__(self):
         return self
@@ -196,13 +200,16 @@ cdef class _IterCpv:
 
 
 @cython.internal
-cdef class _Iter:
+cdef class _Iter(_IndirectInit):
     """Iterator over a repo."""
 
     cdef C.RepoIter *ptr
 
-    def __cinit__(self, r: Repo):
-        self.ptr = C.pkgcraft_repo_iter(r.ptr)
+    @staticmethod
+    cdef _Iter create(C.Repo *ptr):
+        obj = <_Iter>_Iter.__new__(_Iter)
+        obj.ptr = C.pkgcraft_repo_iter(ptr)
+        return obj
 
     def __iter__(self):
         return self
@@ -217,14 +224,17 @@ cdef class _Iter:
 
 
 @cython.internal
-cdef class _IterRestrict:
+cdef class _IterRestrict(_IndirectInit):
     """Iterator that applies a restriction over a repo iterator."""
 
     cdef C.RepoIterRestrict *ptr
 
-    def __cinit__(self, repo: Repo, object obj not None):
-        cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
-        self.ptr = C.pkgcraft_repo_iter_restrict(repo.ptr, r.ptr)
+    @staticmethod
+    cdef _IterRestrict create(C.Repo *ptr, object res):
+        cdef Restrict r = res if isinstance(res, Restrict) else Restrict(res)
+        obj = <_IterRestrict>_IterRestrict.__new__(_IterRestrict)
+        obj.ptr = C.pkgcraft_repo_iter_restrict(ptr, r.ptr)
+        return obj
 
     def __iter__(self):
         return self
