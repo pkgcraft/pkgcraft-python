@@ -4,7 +4,6 @@ cimport cython
 
 from . cimport C
 from ._misc cimport cstring_to_str
-from .error cimport _IndirectInit
 from .repo cimport Repo, RepoSet
 
 from .error import ConfigError, PkgcraftError
@@ -81,8 +80,18 @@ cdef class Config:
         C.pkgcraft_config_free(self.ptr)
 
 
-cdef class _Repos(_IndirectInit):
+@cython.internal
+cdef class _Repos:
 
+    cdef C.Config *ptr
+
+    # cached fields
+    cdef dict _repos
+    cdef RepoSet _all
+    cdef RepoSet _ebuild
+
+    @staticmethod
+    cdef _Repos from_config(C.Config *)
     @staticmethod
     cdef _Repos from_config(C.Config *ptr):
         cdef size_t length
