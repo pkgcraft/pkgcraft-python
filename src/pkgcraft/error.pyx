@@ -1,16 +1,13 @@
 from . cimport C
 
 
-def _get_last_error():
+cdef tuple get_last_error():
     """Get the last pkgcraft error that occurred."""
-    err = C.pkgcraft_error_last()
-    if err is NULL:
-        raise RuntimeError('no pkgcraft error occurred')
-
-    msg, kind = err.message.decode(), err.kind
-    C.pkgcraft_error_free(err)
-
-    return msg, kind
+    if err := C.pkgcraft_error_last():
+        msg, kind = err.message.decode(), err.kind
+        C.pkgcraft_error_free(err)
+        return msg, kind
+    raise RuntimeError('no pkgcraft error occurred')
 
 
 class _PkgcraftError(Exception):
@@ -39,7 +36,7 @@ class PkgcraftError(_PkgcraftError):
         else:
             # If no message is specified, pull the last error that occurred,
             # automatically determining the subclass for PkgcraftError.
-            msg, kind = _get_last_error()
+            msg, kind = get_last_error()
             err_cls = cls.types[kind]
             # only the generic PkgcraftError class is allowed to alter its type
             if (cls is not PkgcraftError and
