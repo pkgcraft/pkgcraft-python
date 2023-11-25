@@ -94,15 +94,15 @@ cdef class DepSpec:
 
     def iter_conditionals(self):
         """Iterate over the conditionals of a DepSpec."""
-        return _IntoIterConditionals(self)
+        return _IntoIterConditionals.from_dep_spec(self.ptr)
 
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSpec."""
-        return _IntoIterFlatten(self)
+        return _IntoIterFlatten.from_dep_spec(self.ptr)
 
     def iter_recursive(self):
         """Recursively iterate over the DepSpec objects of a DepSpec."""
-        return _IntoIterRecursive(self)
+        return _IntoIterRecursive.from_dep_spec(self.ptr)
 
     def __contains__(self, obj):
         if isinstance(obj, DepSpec):
@@ -110,10 +110,10 @@ cdef class DepSpec:
         return False
 
     def __iter__(self):
-        return _IntoIter(self)
+        return _IntoIter.from_dep_spec(self.ptr)
 
     def __reversed__(self):
-        return _IntoIterReversed(self)
+        return _IntoIterReversed.from_dep_spec(self.ptr)
 
     def __len__(self):
         return C.pkgcraft_dep_spec_len(self.ptr)
@@ -239,15 +239,15 @@ cdef class DepSet:
 
     def iter_conditionals(self):
         """Iterate over the conditionals of a DepSet."""
-        return _IntoIterConditionals(self)
+        return _IntoIterConditionals.from_dep_set(self.ptr)
 
     def iter_flatten(self):
         """Iterate over the objects of a flattened DepSet."""
-        return _IntoIterFlatten(self)
+        return _IntoIterFlatten.from_dep_set(self.ptr)
 
     def iter_recursive(self):
         """Recursively iterate over the DepSpec objects of a DepSet."""
-        return _IntoIterRecursive(self)
+        return _IntoIterRecursive.from_dep_set(self.ptr)
 
     def isdisjoint(self, other):
         cdef DepSet depset = None
@@ -336,10 +336,10 @@ cdef class DepSet:
         return False
 
     def __iter__(self):
-        return _IntoIter(self)
+        return _IntoIter.from_dep_set(self.ptr)
 
     def __reversed__(self):
-        return _IntoIterReversed(self)
+        return _IntoIterReversed.from_dep_set(self.ptr)
 
     def __getitem__(self, key):
         if isinstance(key, int):
@@ -631,18 +631,22 @@ cdef class MutableDepSet(DepSet):
 
 
 @cython.internal
-cdef class _IntoIter:
+cdef class _IntoIter(Internal):
     """Iterator over a DepSet or DepSpec object."""
 
     cdef C.DepSpecIntoIter *ptr
 
-    def __cinit__(self, object obj not None):
-        if isinstance(obj, DepSet):
-            self.ptr = C.pkgcraft_dep_set_into_iter((<DepSet>obj).ptr)
-        elif isinstance(obj, DepSpec):
-            self.ptr = C.pkgcraft_dep_spec_into_iter((<DepSpec>obj).ptr)
-        else:  # pragma: no cover
-            raise TypeError(f"{obj.__class__.__name__!r} unsupported dep type")
+    @staticmethod
+    cdef _IntoIter from_dep_set(C.DepSet *ptr):
+        obj = <_IntoIter>_IntoIter.__new__(_IntoIter)
+        obj.ptr = C.pkgcraft_dep_set_into_iter(ptr)
+        return obj
+
+    @staticmethod
+    cdef _IntoIter from_dep_spec(C.DepSpec *ptr):
+        obj = <_IntoIter>_IntoIter.__new__(_IntoIter)
+        obj.ptr = C.pkgcraft_dep_spec_into_iter(ptr)
+        return obj
 
     def __iter__(self):
         return self
@@ -656,29 +660,54 @@ cdef class _IntoIter:
         C.pkgcraft_dep_set_into_iter_free(self.ptr)
 
 
+# TODO: re-merge with _IntoIter once @classmethod works with cdef functions for creation
 @cython.internal
-cdef class _IntoIterReversed(_IntoIter):
+cdef class _IntoIterReversed(Internal):
     """Reversed iterator over a DepSet or DepSpec object."""
+
+    cdef C.DepSpecIntoIter *ptr
+
+    @staticmethod
+    cdef _IntoIterReversed from_dep_set(C.DepSet *ptr):
+        obj = <_IntoIterReversed>_IntoIterReversed.__new__(_IntoIterReversed)
+        obj.ptr = C.pkgcraft_dep_set_into_iter(ptr)
+        return obj
+
+    @staticmethod
+    cdef _IntoIterReversed from_dep_spec(C.DepSpec *ptr):
+        obj = <_IntoIterReversed>_IntoIterReversed.__new__(_IntoIterReversed)
+        obj.ptr = C.pkgcraft_dep_spec_into_iter(ptr)
+        return obj
+
+    def __iter__(self):
+        return self
 
     def __next__(self):
         if ptr := C.pkgcraft_dep_set_into_iter_next_back(self.ptr):
             return DepSpec.from_ptr(ptr)
         raise StopIteration
 
+    def __dealloc__(self):
+        C.pkgcraft_dep_set_into_iter_free(self.ptr)
+
 
 @cython.internal
-cdef class _IntoIterConditionals:
+cdef class _IntoIterConditionals(Internal):
     """Conditionals iterator over a DepSet or DepSpec object."""
 
     cdef C.DepSpecIntoIterConditionals *ptr
 
-    def __cinit__(self, object obj not None):
-        if isinstance(obj, DepSet):
-            self.ptr = C.pkgcraft_dep_set_into_iter_conditionals((<DepSet>obj).ptr)
-        elif isinstance(obj, DepSpec):
-            self.ptr = C.pkgcraft_dep_spec_into_iter_conditionals((<DepSpec>obj).ptr)
-        else:  # pragma: no cover
-            raise TypeError(f"{obj.__class__.__name__!r} unsupported dep type")
+    @staticmethod
+    cdef _IntoIterConditionals from_dep_set(C.DepSet *ptr):
+        obj = <_IntoIterConditionals>_IntoIterConditionals.__new__(_IntoIterConditionals)
+        obj.ptr = C.pkgcraft_dep_set_into_iter_conditionals(ptr)
+        return obj
+
+    @staticmethod
+    cdef _IntoIterConditionals from_dep_spec(C.DepSpec *ptr):
+        obj = <_IntoIterConditionals>_IntoIterConditionals.__new__(_IntoIterConditionals)
+        obj.ptr = C.pkgcraft_dep_spec_into_iter_conditionals(ptr)
+        return obj
 
     def __iter__(self):
         return self
@@ -693,23 +722,25 @@ cdef class _IntoIterConditionals:
 
 
 @cython.internal
-cdef class _IntoIterFlatten:
+cdef class _IntoIterFlatten(Internal):
     """Flattened iterator over a DepSet or DepSpec object."""
 
     cdef C.DepSpecIntoIterFlatten *ptr
     cdef C.DepSetKind set
 
-    def __cinit__(self, object obj not None):
-        if isinstance(obj, DepSet):
-            deps = <DepSet>obj
-            self.ptr = C.pkgcraft_dep_set_into_iter_flatten(deps.ptr)
-            self.set = deps.ptr.set
-        elif isinstance(obj, DepSpec):
-            dep = <DepSpec>obj
-            self.ptr = C.pkgcraft_dep_spec_into_iter_flatten(dep.ptr)
-            self.set = dep.ptr.set
-        else:  # pragma: no cover
-            raise TypeError(f"{obj.__class__.__name__!r} unsupported dep type")
+    @staticmethod
+    cdef _IntoIterFlatten from_dep_set(C.DepSet *ptr):
+        obj = <_IntoIterFlatten>_IntoIterFlatten.__new__(_IntoIterFlatten)
+        obj.ptr = C.pkgcraft_dep_set_into_iter_flatten(ptr)
+        obj.set = ptr.set
+        return obj
+
+    @staticmethod
+    cdef _IntoIterFlatten from_dep_spec(C.DepSpec *ptr):
+        obj = <_IntoIterFlatten>_IntoIterFlatten.__new__(_IntoIterFlatten)
+        obj.ptr = C.pkgcraft_dep_spec_into_iter_flatten(ptr)
+        obj.set = ptr.set
+        return obj
 
     def __iter__(self):
         return self
@@ -729,18 +760,22 @@ cdef class _IntoIterFlatten:
 
 
 @cython.internal
-cdef class _IntoIterRecursive:
+cdef class _IntoIterRecursive(Internal):
     """Recursive iterator over a DepSet or DepSpec object."""
 
     cdef C.DepSpecIntoIterRecursive *ptr
 
-    def __cinit__(self, object obj not None):
-        if isinstance(obj, DepSet):
-            self.ptr = C.pkgcraft_dep_set_into_iter_recursive((<DepSet>obj).ptr)
-        elif isinstance(obj, DepSpec):
-            self.ptr = C.pkgcraft_dep_spec_into_iter_recursive((<DepSpec>obj).ptr)
-        else:  # pragma: no cover
-            raise TypeError(f"{obj.__class__.__name__!r} unsupported dep type")
+    @staticmethod
+    cdef _IntoIterRecursive from_dep_set(C.DepSet *ptr):
+        obj = <_IntoIterRecursive>_IntoIterRecursive.__new__(_IntoIterRecursive)
+        obj.ptr = C.pkgcraft_dep_set_into_iter_recursive(ptr)
+        return obj
+
+    @staticmethod
+    cdef _IntoIterRecursive from_dep_spec(C.DepSpec *ptr):
+        obj = <_IntoIterRecursive>_IntoIterRecursive.__new__(_IntoIterRecursive)
+        obj.ptr = C.pkgcraft_dep_spec_into_iter_recursive(ptr)
+        return obj
 
     def __iter__(self):
         return self
