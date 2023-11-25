@@ -630,6 +630,7 @@ cdef class MutableDepSet(DepSet):
         return super().__eq__(other)
 
 
+@cython.internal
 cdef class _IntoIter:
     """Iterator over a DepSet or DepSpec object."""
 
@@ -655,6 +656,7 @@ cdef class _IntoIter:
         C.pkgcraft_dep_set_into_iter_free(self.ptr)
 
 
+@cython.internal
 cdef class _IntoIterReversed(_IntoIter):
     """Reversed iterator over a DepSet or DepSpec object."""
 
@@ -664,6 +666,7 @@ cdef class _IntoIterReversed(_IntoIter):
         raise StopIteration
 
 
+@cython.internal
 cdef class _IntoIterConditionals:
     """Conditionals iterator over a DepSet or DepSpec object."""
 
@@ -689,6 +692,7 @@ cdef class _IntoIterConditionals:
         C.pkgcraft_dep_set_into_iter_conditionals_free(self.ptr)
 
 
+@cython.internal
 cdef class _IntoIterFlatten:
     """Flattened iterator over a DepSet or DepSpec object."""
 
@@ -724,6 +728,7 @@ cdef class _IntoIterFlatten:
         C.pkgcraft_dep_set_into_iter_flatten_free(self.ptr)
 
 
+@cython.internal
 cdef class _IntoIterRecursive:
     """Recursive iterator over a DepSet or DepSpec object."""
 

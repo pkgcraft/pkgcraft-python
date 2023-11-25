@@ -265,6 +265,7 @@ cdef class MutableRepoSet(RepoSet):
         return super().__eq__(other)
 
 
+@cython.internal
 cdef class _Iter:
     """Iterator over a repo set, optionally applying a restriction."""
 

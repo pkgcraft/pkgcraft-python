@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+cimport cython
+
 from .. cimport C
 from .._misc cimport CStringIter, cstring_to_str
 from ..dep cimport Cpv, Version
@@ -172,6 +174,7 @@ cdef class Repo:
             C.pkgcraft_repo_free(self.ptr)
 
 
+@cython.internal
 cdef class _IterCpv:
     """Iterator over the Cpv objects from a repo."""
 
@@ -192,6 +195,7 @@ cdef class _IterCpv:
         C.pkgcraft_repo_iter_cpv_free(self.ptr)
 
 
+@cython.internal
 cdef class _Iter:
     """Iterator over a repo."""
 
@@ -212,6 +216,7 @@ cdef class _Iter:
         C.pkgcraft_repo_iter_free(self.ptr)
 
 
+@cython.internal
 cdef class _IterRestrict:
     """Iterator that applies a restriction over a repo iterator."""
 

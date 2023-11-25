@@ -1,9 +1,11 @@
 from collections.abc import Iterable, MutableSet, Set
 
+cimport cython
 from cpython cimport PyDict_Contains, PyIndex_Check
 from cpython.slice cimport PySlice_GetIndicesEx
 
 
+@cython.internal
 cdef class entry:
     cdef object key
     cdef entry prev
@@ -19,6 +21,7 @@ cdef inline object  _isorderedsubset(seq1, seq2):
     return True
 
 
+@cython.internal
 cdef class OrderedSetIterator:
     cdef _OrderedFrozenSet oset
     cdef entry curr
@@ -48,6 +51,7 @@ cdef class OrderedSetIterator:
         return item.key
 
 
+@cython.internal
 cdef class OrderedSetReverseIterator:
     cdef _OrderedFrozenSet oset
     cdef entry curr
@@ -77,6 +81,7 @@ cdef class OrderedSetReverseIterator:
         return item.key
 
 
+@cython.internal
 cdef class _OrderedFrozenSet:
     cdef dict map
     cdef entry end
@@ -396,6 +401,7 @@ cdef void _discard(_OrderedSet oset, object key):
         oset.os_used -= 1
 
 
+@cython.internal
 cdef class _OrderedSet(_OrderedFrozenSet):
 
     ##
