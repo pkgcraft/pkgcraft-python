@@ -8,10 +8,10 @@ from .. cimport C
 from .._misc cimport CStringArray, cstring_to_str
 from ..eapi cimport Eapi
 from ..error cimport _IndirectInit
-from ..types import OrderedFrozenSet
 from .pkg cimport Dep
 
 from ..error import PkgcraftError
+from ..types import OrderedFrozenSet
 
 
 class DepSetKind(IntEnum):
