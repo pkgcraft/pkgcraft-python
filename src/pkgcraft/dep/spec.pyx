@@ -70,11 +70,11 @@ cdef class DepSpec:
     @staticmethod
     cdef DepSpec from_ptr(C.DepSpec *ptr):
         """Create a DepSpec from a pointer and type."""
-        obj = <DepSpec>DepSpec.__new__(DepSpec)
-        obj.set = DepSetKind(ptr.set)
-        obj.kind = DepSpecKind(ptr.kind)
-        obj.ptr = ptr
-        return obj
+        inst = <DepSpec>DepSpec.__new__(DepSpec)
+        inst.set = DepSetKind(ptr.set)
+        inst.kind = DepSpecKind(ptr.kind)
+        inst.ptr = ptr
+        return inst
 
     def evaluate(self, enabled=()):
         """Evaluate a DepSpec using a given set of enabled options or by force."""
@@ -191,10 +191,10 @@ cdef class DepSet:
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *ptr):
         """Create a DepSet from a pointer."""
-        obj = <DepSet>DepSet.__new__(DepSet)
-        obj.set = DepSetKind(ptr.set)
-        obj.ptr = ptr
-        return obj
+        inst = <DepSet>DepSet.__new__(DepSet)
+        inst.set = DepSetKind(ptr.set)
+        inst.ptr = ptr
+        return inst
 
     cdef clone(self):
         """Clone a DepSet to a new object."""
@@ -212,16 +212,16 @@ cdef class DepSet:
         """Create a DepSet pointer from an iterable of DepSpec objects or strings."""
         # convert iterable to DepSpec objects
         if isinstance(obj, DepSpec):
-            objs = [obj]
+            deps = [obj]
         else:
-            objs = iterable_to_dep_specs(obj, kind)
+            deps = iterable_to_dep_specs(obj, kind)
 
-        array = <C.DepSpec **> PyMem_Malloc(len(objs) * sizeof(C.DepSpec *))
+        array = <C.DepSpec **> PyMem_Malloc(len(deps) * sizeof(C.DepSpec *))
         if not array:  # pragma: no cover
             raise MemoryError
-        for (i, d) in enumerate(objs):
+        for (i, d) in enumerate(deps):
             array[i] = (<DepSpec>d).ptr
-        ptr = C.pkgcraft_dep_set_from_iter(array, len(objs), kind)
+        ptr = C.pkgcraft_dep_set_from_iter(array, len(deps), kind)
         PyMem_Free(array)
         return ptr
 
@@ -457,10 +457,10 @@ cdef class MutableDepSet(DepSet):
     @staticmethod
     cdef MutableDepSet from_ptr(C.DepSet *ptr):
         """Create a MutableDepSet from a pointer."""
-        obj = <MutableDepSet>MutableDepSet.__new__(MutableDepSet)
-        obj.set = DepSetKind(ptr.set)
-        obj.ptr = ptr
-        return obj
+        inst = <MutableDepSet>MutableDepSet.__new__(MutableDepSet)
+        inst.set = DepSetKind(ptr.set)
+        inst.ptr = ptr
+        return inst
 
     def sort(self):
         """Recursively sort a DepSet.
@@ -638,15 +638,15 @@ cdef class _IntoIter(Internal):
 
     @staticmethod
     cdef _IntoIter from_dep_set(C.DepSet *ptr):
-        obj = <_IntoIter>_IntoIter.__new__(_IntoIter)
-        obj.ptr = C.pkgcraft_dep_set_into_iter(ptr)
-        return obj
+        inst = <_IntoIter>_IntoIter.__new__(_IntoIter)
+        inst.ptr = C.pkgcraft_dep_set_into_iter(ptr)
+        return inst
 
     @staticmethod
     cdef _IntoIter from_dep_spec(C.DepSpec *ptr):
-        obj = <_IntoIter>_IntoIter.__new__(_IntoIter)
-        obj.ptr = C.pkgcraft_dep_spec_into_iter(ptr)
-        return obj
+        inst = <_IntoIter>_IntoIter.__new__(_IntoIter)
+        inst.ptr = C.pkgcraft_dep_spec_into_iter(ptr)
+        return inst
 
     def __iter__(self):
         return self
@@ -669,15 +669,15 @@ cdef class _IntoIterReversed(Internal):
 
     @staticmethod
     cdef _IntoIterReversed from_dep_set(C.DepSet *ptr):
-        obj = <_IntoIterReversed>_IntoIterReversed.__new__(_IntoIterReversed)
-        obj.ptr = C.pkgcraft_dep_set_into_iter(ptr)
-        return obj
+        inst = <_IntoIterReversed>_IntoIterReversed.__new__(_IntoIterReversed)
+        inst.ptr = C.pkgcraft_dep_set_into_iter(ptr)
+        return inst
 
     @staticmethod
     cdef _IntoIterReversed from_dep_spec(C.DepSpec *ptr):
-        obj = <_IntoIterReversed>_IntoIterReversed.__new__(_IntoIterReversed)
-        obj.ptr = C.pkgcraft_dep_spec_into_iter(ptr)
-        return obj
+        inst = <_IntoIterReversed>_IntoIterReversed.__new__(_IntoIterReversed)
+        inst.ptr = C.pkgcraft_dep_spec_into_iter(ptr)
+        return inst
 
     def __iter__(self):
         return self
@@ -699,15 +699,15 @@ cdef class _IntoIterConditionals(Internal):
 
     @staticmethod
     cdef _IntoIterConditionals from_dep_set(C.DepSet *ptr):
-        obj = <_IntoIterConditionals>_IntoIterConditionals.__new__(_IntoIterConditionals)
-        obj.ptr = C.pkgcraft_dep_set_into_iter_conditionals(ptr)
-        return obj
+        inst = <_IntoIterConditionals>_IntoIterConditionals.__new__(_IntoIterConditionals)
+        inst.ptr = C.pkgcraft_dep_set_into_iter_conditionals(ptr)
+        return inst
 
     @staticmethod
     cdef _IntoIterConditionals from_dep_spec(C.DepSpec *ptr):
-        obj = <_IntoIterConditionals>_IntoIterConditionals.__new__(_IntoIterConditionals)
-        obj.ptr = C.pkgcraft_dep_spec_into_iter_conditionals(ptr)
-        return obj
+        inst = <_IntoIterConditionals>_IntoIterConditionals.__new__(_IntoIterConditionals)
+        inst.ptr = C.pkgcraft_dep_spec_into_iter_conditionals(ptr)
+        return inst
 
     def __iter__(self):
         return self
@@ -730,17 +730,17 @@ cdef class _IntoIterFlatten(Internal):
 
     @staticmethod
     cdef _IntoIterFlatten from_dep_set(C.DepSet *ptr):
-        obj = <_IntoIterFlatten>_IntoIterFlatten.__new__(_IntoIterFlatten)
-        obj.ptr = C.pkgcraft_dep_set_into_iter_flatten(ptr)
-        obj.set = ptr.set
-        return obj
+        inst = <_IntoIterFlatten>_IntoIterFlatten.__new__(_IntoIterFlatten)
+        inst.ptr = C.pkgcraft_dep_set_into_iter_flatten(ptr)
+        inst.set = ptr.set
+        return inst
 
     @staticmethod
     cdef _IntoIterFlatten from_dep_spec(C.DepSpec *ptr):
-        obj = <_IntoIterFlatten>_IntoIterFlatten.__new__(_IntoIterFlatten)
-        obj.ptr = C.pkgcraft_dep_spec_into_iter_flatten(ptr)
-        obj.set = ptr.set
-        return obj
+        inst = <_IntoIterFlatten>_IntoIterFlatten.__new__(_IntoIterFlatten)
+        inst.ptr = C.pkgcraft_dep_spec_into_iter_flatten(ptr)
+        inst.set = ptr.set
+        return inst
 
     def __iter__(self):
         return self
@@ -767,15 +767,15 @@ cdef class _IntoIterRecursive(Internal):
 
     @staticmethod
     cdef _IntoIterRecursive from_dep_set(C.DepSet *ptr):
-        obj = <_IntoIterRecursive>_IntoIterRecursive.__new__(_IntoIterRecursive)
-        obj.ptr = C.pkgcraft_dep_set_into_iter_recursive(ptr)
-        return obj
+        inst = <_IntoIterRecursive>_IntoIterRecursive.__new__(_IntoIterRecursive)
+        inst.ptr = C.pkgcraft_dep_set_into_iter_recursive(ptr)
+        return inst
 
     @staticmethod
     cdef _IntoIterRecursive from_dep_spec(C.DepSpec *ptr):
-        obj = <_IntoIterRecursive>_IntoIterRecursive.__new__(_IntoIterRecursive)
-        obj.ptr = C.pkgcraft_dep_spec_into_iter_recursive(ptr)
-        return obj
+        inst = <_IntoIterRecursive>_IntoIterRecursive.__new__(_IntoIterRecursive)
+        inst.ptr = C.pkgcraft_dep_spec_into_iter_recursive(ptr)
+        return inst
 
     def __iter__(self):
         return self
@@ -794,9 +794,9 @@ cdef class Uri(Internal):
 
     @staticmethod
     cdef Uri from_ptr(C.Uri *ptr):
-        obj = <Uri>Uri.__new__(Uri)
-        obj.ptr = ptr
-        return obj
+        inst = <Uri>Uri.__new__(Uri)
+        inst.ptr = ptr
+        return inst
 
     @property
     def uri(self):

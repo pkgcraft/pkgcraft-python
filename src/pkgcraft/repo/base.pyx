@@ -42,19 +42,19 @@ cdef class Repo:
     @staticmethod
     cdef Repo from_ptr(C.Repo *ptr, bint ref=False):
         """Create a Repo from a pointer."""
-        cdef Repo obj
+        cdef Repo inst
 
         format = C.pkgcraft_repo_format(ptr)
         if format == C.RepoFormat.REPO_FORMAT_EBUILD:
-            obj = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
+            inst = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
         elif format == C.RepoFormat.REPO_FORMAT_FAKE:
-            obj = <FakeRepo>FakeRepo.__new__(FakeRepo)
+            inst = <FakeRepo>FakeRepo.__new__(FakeRepo)
         else:  # pragma: no cover
             raise NotImplementedError(f'unsupported repo format: {format}')
 
-        obj.ref = ref
-        obj.ptr = ptr
-        return obj
+        inst.ref = ref
+        inst.ptr = ptr
+        return inst
 
     @property
     def id(self):
@@ -183,9 +183,9 @@ cdef class _IterCpv(Internal):
 
     @staticmethod
     cdef _IterCpv create(C.Repo *ptr):
-        obj = <_IterCpv>_IterCpv.__new__(_IterCpv)
-        obj.ptr = C.pkgcraft_repo_iter_cpv(ptr)
-        return obj
+        inst = <_IterCpv>_IterCpv.__new__(_IterCpv)
+        inst.ptr = C.pkgcraft_repo_iter_cpv(ptr)
+        return inst
 
     def __iter__(self):
         return self
@@ -207,9 +207,9 @@ cdef class _Iter(Internal):
 
     @staticmethod
     cdef _Iter create(C.Repo *ptr):
-        obj = <_Iter>_Iter.__new__(_Iter)
-        obj.ptr = C.pkgcraft_repo_iter(ptr)
-        return obj
+        inst = <_Iter>_Iter.__new__(_Iter)
+        inst.ptr = C.pkgcraft_repo_iter(ptr)
+        return inst
 
     def __iter__(self):
         return self
@@ -230,11 +230,11 @@ cdef class _IterRestrict(Internal):
     cdef C.RepoIterRestrict *ptr
 
     @staticmethod
-    cdef _IterRestrict create(C.Repo *ptr, object res):
-        cdef Restrict r = res if isinstance(res, Restrict) else Restrict(res)
-        obj = <_IterRestrict>_IterRestrict.__new__(_IterRestrict)
-        obj.ptr = C.pkgcraft_repo_iter_restrict(ptr, r.ptr)
-        return obj
+    cdef _IterRestrict create(C.Repo *ptr, object obj):
+        cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
+        inst = <_IterRestrict>_IterRestrict.__new__(_IterRestrict)
+        inst.ptr = C.pkgcraft_repo_iter_restrict(ptr, r.ptr)
+        return inst
 
     def __iter__(self):
         return self

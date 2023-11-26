@@ -28,9 +28,9 @@ cdef class RepoSet:
     @staticmethod
     cdef RepoSet from_ptr(C.RepoSet *ptr):
         """Create a RepoSet from a pointer."""
-        obj = <RepoSet>RepoSet.__new__(RepoSet)
-        obj.ptr = ptr
-        return obj
+        inst = <RepoSet>RepoSet.__new__(RepoSet)
+        inst.ptr = ptr
+        return inst
 
     cdef create(self, C.RepoSet *ptr):
         """Create a RepoSet from a pointer using the instance class."""
@@ -205,9 +205,9 @@ cdef class MutableRepoSet(RepoSet):
     @staticmethod
     cdef MutableRepoSet from_ptr(C.RepoSet *ptr):
         """Create a MutableRepoSet from a pointer."""
-        obj = <MutableRepoSet>MutableRepoSet.__new__(MutableRepoSet)
-        obj.ptr = ptr
-        return obj
+        inst = <MutableRepoSet>MutableRepoSet.__new__(MutableRepoSet)
+        inst.ptr = ptr
+        return inst
 
     def __iand__(self, other):
         op = C.SetOp.SET_OP_AND

@@ -49,9 +49,9 @@ cdef class Restrict:
     @staticmethod
     cdef Restrict from_ptr(C.Restrict *ptr):
         """Create a Restrict from a pointer."""
-        obj = <Restrict>Restrict.__new__(Restrict)
-        obj.ptr = ptr
-        return obj
+        inst = <Restrict>Restrict.__new__(Restrict)
+        inst.ptr = ptr
+        return inst
 
     @staticmethod
     def dep(s: str):

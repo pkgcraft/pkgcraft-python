@@ -35,12 +35,12 @@ cdef class CStringIter(Internal):
 
     @staticmethod
     cdef CStringIter create(char **c_strs, size_t length, bint free=True):
-        obj = <CStringIter>CStringIter.__new__(CStringIter)
-        obj.c_strs = c_strs
-        obj.length = length
-        obj.free = free
-        obj.idx = 0
-        return obj
+        inst = <CStringIter>CStringIter.__new__(CStringIter)
+        inst.c_strs = c_strs
+        inst.length = length
+        inst.free = free
+        inst.idx = 0
+        return inst
 
     def __iter__(self):
         return self

@@ -121,9 +121,9 @@ cdef class Dep:
     @staticmethod
     cdef Dep from_ptr(C.Dep *ptr):
         """Create a Dep from a pointer."""
-        obj = <Dep>Dep.__new__(Dep)
-        obj.ptr = <C.Dep *>ptr
-        return obj
+        inst = <Dep>Dep.__new__(Dep)
+        inst.ptr = <C.Dep *>ptr
+        return inst
 
     @classmethod
     def cached(cls, s: str, eapi=None):

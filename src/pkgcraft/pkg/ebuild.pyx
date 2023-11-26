@@ -231,13 +231,13 @@ cdef class Maintainer(Internal):
     @staticmethod
     cdef Maintainer from_ptr(C.Maintainer *m):
         """Create a Maintainer from a pointer."""
-        obj = <Maintainer>Maintainer.__new__(Maintainer)
-        obj.email = m.email.decode()
-        obj.name = cstring_to_str(m.name, free=False)
-        obj.description = cstring_to_str(m.description, free=False)
-        obj.maint_type = m.maint_type.decode()
-        obj.proxied = m.proxied.decode()
-        return obj
+        inst = <Maintainer>Maintainer.__new__(Maintainer)
+        inst.email = m.email.decode()
+        inst.name = cstring_to_str(m.name, free=False)
+        inst.description = cstring_to_str(m.description, free=False)
+        inst.maint_type = m.maint_type.decode()
+        inst.proxied = m.proxied.decode()
+        return inst
 
     def __str__(self):
         if self.name is not None:
@@ -264,10 +264,10 @@ cdef class RemoteId(Internal):
     @staticmethod
     cdef RemoteId from_ptr(C.RemoteId *r):
         """Create an RemoteId from a pointer."""
-        obj = <RemoteId>RemoteId.__new__(RemoteId)
-        obj.site = r.site.decode()
-        obj.name = r.name.decode()
-        return obj
+        inst = <RemoteId>RemoteId.__new__(RemoteId)
+        inst.site = r.site.decode()
+        inst.name = r.name.decode()
+        return inst
 
     def __str__(self):
         return f'{self.site}: {self.name}'
@@ -284,11 +284,11 @@ cdef class UpstreamMaintainer(Internal):
     @staticmethod
     cdef UpstreamMaintainer from_ptr(C.UpstreamMaintainer *m):
         """Create an UpstreamMaintainer from a pointer."""
-        obj = <UpstreamMaintainer>UpstreamMaintainer.__new__(UpstreamMaintainer)
-        obj.name = m.name.decode()
-        obj.email = cstring_to_str(m.email, free=False)
-        obj.status = m.status.decode()
-        return obj
+        inst = <UpstreamMaintainer>UpstreamMaintainer.__new__(UpstreamMaintainer)
+        inst.name = m.name.decode()
+        inst.email = cstring_to_str(m.email, free=False)
+        inst.status = m.status.decode()
+        return inst
 
     def __str__(self):
         if self.email is not None:
@@ -310,13 +310,13 @@ cdef class Upstream(Internal):
     @staticmethod
     cdef Upstream from_ptr(C.Upstream *u):
         """Create an Upstream from a pointer."""
-        obj = <Upstream>Upstream.__new__(Upstream)
-        obj.remote_ids = tuple(
+        inst = <Upstream>Upstream.__new__(Upstream)
+        inst.remote_ids = tuple(
             RemoteId.from_ptr(u.remote_ids[i]) for i in range(u.remote_ids_len))
-        obj.maintainers = tuple(
+        inst.maintainers = tuple(
             UpstreamMaintainer.from_ptr(u.maintainers[i]) for i in range(u.maintainers_len))
-        obj.bugs_to = cstring_to_str(u.bugs_to, free=False)
-        obj.changelog = cstring_to_str(u.changelog, free=False)
-        obj.doc = cstring_to_str(u.doc, free=False)
+        inst.bugs_to = cstring_to_str(u.bugs_to, free=False)
+        inst.changelog = cstring_to_str(u.changelog, free=False)
+        inst.doc = cstring_to_str(u.doc, free=False)
         C.pkgcraft_pkg_ebuild_upstream_free(u)
-        return obj
+        return inst

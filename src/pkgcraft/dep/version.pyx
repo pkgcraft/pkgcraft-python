@@ -41,9 +41,9 @@ cdef class Revision:
     @staticmethod
     cdef Revision from_ptr(C.Revision *ptr):
         """Convert a Revision pointer to a Revision object."""
-        obj = <Revision>Revision.__new__(Revision)
-        obj.ptr = ptr
-        return obj
+        inst = <Revision>Revision.__new__(Revision)
+        inst.ptr = ptr
+        return inst
 
     def __bool__(self):
         return bool(str(self))
@@ -146,9 +146,9 @@ cdef class Version:
     @staticmethod
     cdef Version from_ptr(C.Version *ptr):
         """Convert a Version pointer to a Version object."""
-        obj = <Version>Version.__new__(Version)
-        obj.ptr = ptr
-        return obj
+        inst = <Version>Version.__new__(Version)
+        inst.ptr = ptr
+        return inst
 
     @property
     def op(self):

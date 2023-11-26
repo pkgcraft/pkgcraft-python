@@ -52,9 +52,9 @@ cdef class Cpv:
     @staticmethod
     cdef Cpv from_ptr(C.Cpv *ptr):
         """Create a Cpv from a pointer."""
-        obj = <Cpv>Cpv.__new__(Cpv)
-        obj.ptr = <C.Cpv *>ptr
-        return obj
+        inst = <Cpv>Cpv.__new__(Cpv)
+        inst.ptr = <C.Cpv *>ptr
+        return inst
 
     @property
     def category(self):

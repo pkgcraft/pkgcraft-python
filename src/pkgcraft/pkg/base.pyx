@@ -14,18 +14,18 @@ cdef class Pkg(Internal):
     @staticmethod
     cdef Pkg from_ptr(C.Pkg *ptr):
         """Create a Pkg from a pointer."""
-        cdef Pkg obj
+        cdef Pkg inst
 
         format = C.pkgcraft_pkg_format(ptr)
         if format == C.PkgFormat.PKG_FORMAT_EBUILD:
-            obj = <EbuildPkg>EbuildPkg.__new__(EbuildPkg)
+            inst = <EbuildPkg>EbuildPkg.__new__(EbuildPkg)
         elif format == C.PkgFormat.PKG_FORMAT_FAKE:
-            obj = <FakePkg>FakePkg.__new__(FakePkg)
+            inst = <FakePkg>FakePkg.__new__(FakePkg)
         else:  # pragma: no cover
             raise NotImplementedError(f'unsupported pkg format: {format}')
 
-        obj.ptr = ptr
-        return obj
+        inst.ptr = ptr
+        return inst
 
     @property
     def p(self):

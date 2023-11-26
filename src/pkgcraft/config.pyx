@@ -94,11 +94,11 @@ cdef class _Repos:
     cdef _Repos from_config(C.Config *ptr):
         cdef size_t length
         c_repos = <C.Repo **>C.pkgcraft_config_repos(ptr, &length)
-        obj = <_Repos>_Repos.__new__(_Repos)
-        obj.ptr = ptr
-        obj._repos = repos_to_dict(c_repos, length, True)
+        inst = <_Repos>_Repos.__new__(_Repos)
+        inst.ptr = ptr
+        inst._repos = repos_to_dict(c_repos, length, True)
         C.pkgcraft_array_free(<void **>c_repos, length)
-        return obj
+        return inst
 
     @property
     def all(self):

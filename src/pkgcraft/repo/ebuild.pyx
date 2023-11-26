@@ -58,9 +58,9 @@ cdef class _Metadata:
     @staticmethod
     cdef _Metadata from_ptr(C.Repo *ptr):
         """Create a Metadata object from a pointer."""
-        obj = <_Metadata>_Metadata.__new__(_Metadata)
-        obj.ptr = ptr
-        return obj
+        inst = <_Metadata>_Metadata.__new__(_Metadata)
+        inst.ptr = ptr
+        return inst
 
     @property
     def arches(self):
