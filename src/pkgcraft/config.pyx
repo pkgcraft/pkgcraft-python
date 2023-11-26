@@ -89,6 +89,7 @@ cdef class _Repos:
     cdef dict _repos
     cdef RepoSet _all
     cdef RepoSet _ebuild
+    cdef RepoSet _configured
 
     @staticmethod
     cdef _Repos from_config(C.Config *ptr):
@@ -115,6 +116,14 @@ cdef class _Repos:
             ptr = C.pkgcraft_config_repos_set(self.ptr, C.REPOS_EBUILD)
             self._ebuild = RepoSet.from_ptr(ptr)
         return self._ebuild
+
+    @property
+    def configured(self):
+        """Return the set of all configured repos."""
+        if self._configured is None:
+            ptr = C.pkgcraft_config_repos_set(self.ptr, C.REPOS_CONFIGURED)
+            self._configured = RepoSet.from_ptr(ptr)
+        return self._configured
 
     def __eq__(self, other):
         return self._repos == other

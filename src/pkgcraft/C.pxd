@@ -83,6 +83,7 @@ cdef extern from "pkgcraft.h":
     cdef enum Repos:
         REPOS_ALL,
         REPOS_EBUILD,
+        REPOS_CONFIGURED,
 
     # Generic set operations.
     cdef enum SetOp:
