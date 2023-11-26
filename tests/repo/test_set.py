@@ -155,6 +155,7 @@ class BaseTests:
         assert s["r1"] == r1
         assert s["cat/pkg"] == pkg
         assert s["cat/pkg-1"] == pkg
+        assert s[Cpv("cat/pkg-1")] == pkg
         with pytest.raises(KeyError):
             s["cat/pkg-2"]
 
@@ -169,6 +170,7 @@ class BaseTests:
         assert s["cat/pkg"] == pkg
         assert s["cat/pkg-1"] == pkg
         assert s["=cat/pkg-1::r2"] == pkg1
+        assert s[Dep("=cat/pkg-1::r2")] == pkg1
         assert s["cat/pkg-2"] == pkg2
 
     def test_bool_and_len(self, make_fake_repo):
