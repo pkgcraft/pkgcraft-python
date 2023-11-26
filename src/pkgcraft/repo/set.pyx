@@ -48,6 +48,11 @@ cdef class RepoSet:
         elif isinstance(key, slice):
             # create a new RepoSet for slices
             return self.__class__(*list(self.repos)[key])
+        elif isinstance(key, str):
+            # matching repo name for strings
+            matching_repos = (r for r in self.repos if r.id == key)
+            if repo := next(matching_repos, None):
+                return repo
 
         # try to return the first pkg match from a restriction
         try:
