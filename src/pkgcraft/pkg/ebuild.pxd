@@ -66,3 +66,7 @@ cdef class Upstream(Internal):
 
     @staticmethod
     cdef Upstream from_ptr(C.Upstream *)
+
+
+cdef class ConfiguredPkg(EbuildPkg):
+    pass

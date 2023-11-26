@@ -87,6 +87,7 @@ cdef class _Metadata:
         return self._categories
 
 
+@cython.final
 cdef class ConfiguredRepo(EbuildRepo):
     """Configured ebuild package repo."""
 

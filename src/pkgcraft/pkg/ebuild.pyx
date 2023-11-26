@@ -12,7 +12,6 @@ from ..error import PkgcraftError
 from ..types import OrderedFrozenSet
 
 
-@cython.final
 cdef class EbuildPkg(Pkg):
     """Generic ebuild package."""
 
@@ -320,3 +319,8 @@ cdef class Upstream(Internal):
         inst.doc = cstring_to_str(u.doc, free=False)
         C.pkgcraft_pkg_ebuild_upstream_free(u)
         return inst
+
+
+@cython.final
+cdef class ConfiguredPkg(EbuildPkg):
+    """Configured ebuild package."""

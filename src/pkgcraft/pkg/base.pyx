@@ -5,7 +5,7 @@ from ..eapi cimport Eapi
 from ..error cimport Internal
 from ..repo cimport Repo
 from ..restrict cimport Restrict
-from . cimport EbuildPkg, FakePkg
+from . cimport ConfiguredPkg, EbuildPkg, FakePkg
 
 
 cdef class Pkg(Internal):
@@ -19,6 +19,8 @@ cdef class Pkg(Internal):
         format = C.pkgcraft_pkg_format(ptr)
         if format == C.PkgFormat.PKG_FORMAT_EBUILD:
             inst = <EbuildPkg>EbuildPkg.__new__(EbuildPkg)
+        elif format == C.PkgFormat.PKG_FORMAT_CONFIGURED:
+            inst = <ConfiguredPkg>ConfiguredPkg.__new__(ConfiguredPkg)
         elif format == C.PkgFormat.PKG_FORMAT_FAKE:
             inst = <FakePkg>FakePkg.__new__(FakePkg)
         else:  # pragma: no cover
