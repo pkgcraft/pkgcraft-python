@@ -31,6 +31,12 @@ class TestRestrict:
         # Dep object
         r = Restrict(Dep("cat/pkg"))
         assert list(fake_repo.iter(r)) == [pkg1, pkg2]
+        # dep restriction
+        r = Restrict("cat/*")
+        assert list(fake_repo.iter(r)) == [pkg1, pkg2]
+        # package restriction
+        r = Restrict("slot == '0'")
+        assert list(fake_repo.iter(r)) == []
 
     def test_dep(self, fake_repo):
         with pytest.raises(InvalidRestrict):
