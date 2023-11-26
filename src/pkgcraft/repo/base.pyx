@@ -9,7 +9,7 @@ from ..dep cimport Cpv, Version
 from ..error cimport Internal
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
-from . cimport EbuildRepo, FakeRepo
+from . cimport ConfiguredRepo, EbuildRepo, FakeRepo
 
 from .. import parse
 from ..error import InvalidRepo
@@ -47,6 +47,8 @@ cdef class Repo:
         format = C.pkgcraft_repo_format(ptr)
         if format == C.RepoFormat.REPO_FORMAT_EBUILD:
             inst = <EbuildRepo>EbuildRepo.__new__(EbuildRepo)
+        elif format == C.RepoFormat.REPO_FORMAT_CONFIGURED:
+            inst = <ConfiguredRepo>ConfiguredRepo.__new__(ConfiguredRepo)
         elif format == C.RepoFormat.REPO_FORMAT_FAKE:
             inst = <FakeRepo>FakeRepo.__new__(FakeRepo)
         else:  # pragma: no cover

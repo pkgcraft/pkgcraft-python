@@ -4,6 +4,7 @@ cimport cython
 
 from .. cimport C
 from .._misc cimport cstring_iter
+from ..config cimport Config
 from . cimport Repo
 
 from ..error import PkgcraftError
@@ -37,6 +38,11 @@ cdef class EbuildRepo(Repo):
         if self._metadata is None:
             self._metadata = _Metadata.from_ptr(self.ptr)
         return self._metadata
+
+    def configure(self, config: Config):
+        """Return a configured repo using the given config."""
+        ptr = C.pkgcraft_repo_ebuild_configure(self.ptr, config.ptr)
+        return Repo.from_ptr(ptr)
 
     def pkg_metadata_regen(self, int jobs=0, force=False):
         """Regenerate an ebuild repo's package metadata cache."""
@@ -79,3 +85,9 @@ cdef class _Metadata:
             c_strs = C.pkgcraft_repo_ebuild_metadata_categories(self.ptr, &length)
             self._categories = OrderedFrozenSet(cstring_iter(c_strs, length))
         return self._categories
+
+
+cdef class ConfiguredRepo(EbuildRepo):
+    """Configured ebuild package repo."""
+
+    _format = C.RepoFormat.REPO_FORMAT_CONFIGURED

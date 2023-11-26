@@ -7,3 +7,7 @@ cdef class EbuildRepo(Repo):
     cdef Eapi _eapi
     cdef tuple _masters
     cdef object _metadata
+
+
+cdef class ConfiguredRepo(EbuildRepo):
+    pass

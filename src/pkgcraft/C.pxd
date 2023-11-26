@@ -75,6 +75,7 @@ cdef extern from "pkgcraft.h":
     # Supported repo formats
     cdef enum RepoFormat:
         REPO_FORMAT_EBUILD,
+        REPO_FORMAT_CONFIGURED,
         REPO_FORMAT_FAKE,
         REPO_FORMAT_EMPTY,
 
@@ -1360,6 +1361,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Repo pointer.
     bool pkgcraft_repo_contains_path(Repo *r, const char *path)
+
+    # Return a configured repo using the given config.
+    #
+    # # Safety
+    # The arguments must be valid Repo and Config pointers.
+    Repo *pkgcraft_repo_ebuild_configure(Repo *r, Config *c)
 
     # Return an ebuild repo's EAPI.
     #
