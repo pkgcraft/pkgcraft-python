@@ -5,6 +5,7 @@ cimport cython
 from .. cimport C
 from .._misc cimport cstring_iter
 from ..config cimport Config
+from ..error cimport Internal
 from . cimport Repo
 
 from ..error import PkgcraftError
@@ -36,7 +37,7 @@ cdef class EbuildRepo(Repo):
     def metadata(self):
         """Get an ebuild repo's metadata."""
         if self._metadata is None:
-            self._metadata = _Metadata.from_ptr(self.ptr)
+            self._metadata = Metadata.from_ptr(self.ptr)
         return self._metadata
 
     def configure(self, config: Config):
@@ -51,8 +52,8 @@ cdef class EbuildRepo(Repo):
             raise PkgcraftError
 
 
-@cython.internal
-cdef class _Metadata:
+@cython.final
+cdef class Metadata(Internal):
     """Ebuild repo metadata."""
 
     cdef C.Repo *ptr
@@ -62,9 +63,9 @@ cdef class _Metadata:
     cdef object _categories
 
     @staticmethod
-    cdef _Metadata from_ptr(C.Repo *ptr):
+    cdef Metadata from_ptr(C.Repo *ptr):
         """Create a Metadata object from a pointer."""
-        inst = <_Metadata>_Metadata.__new__(_Metadata)
+        inst = <Metadata>Metadata.__new__(Metadata)
         inst.ptr = ptr
         return inst
 
