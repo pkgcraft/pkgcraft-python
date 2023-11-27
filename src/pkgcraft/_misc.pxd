@@ -1,4 +1,4 @@
-from .error cimport Internal
+from .error cimport Indirect
 
 
 cdef object SENTINEL

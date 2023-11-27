@@ -5,7 +5,7 @@ cimport cython
 from .. cimport C
 from .._misc cimport cstring_iter
 from ..config cimport Config
-from ..error cimport Internal
+from ..error cimport Indirect
 from . cimport Repo
 
 from ..error import PkgcraftError
@@ -53,7 +53,7 @@ cdef class EbuildRepo(Repo):
 
 
 @cython.final
-cdef class Metadata(Internal):
+cdef class Metadata(Indirect):
     """Ebuild repo metadata."""
 
     cdef C.Repo *ptr

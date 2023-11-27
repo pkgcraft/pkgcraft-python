@@ -1,2 +1,2 @@
-cdef class Internal:
+cdef class Indirect:
     pass

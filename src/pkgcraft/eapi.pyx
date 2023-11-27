@@ -4,7 +4,7 @@ cimport cython
 
 from . cimport C
 from ._misc cimport cstring_iter, cstring_to_str
-from .error cimport Internal
+from .error cimport Indirect
 
 from .error import PkgcraftError
 from .types import OrderedFrozenSet
@@ -78,7 +78,7 @@ def eapi_range(s: str):
 
 
 @cython.final
-cdef class Eapi(Internal):
+cdef class Eapi(Indirect):
 
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *ptr, bint init=False):

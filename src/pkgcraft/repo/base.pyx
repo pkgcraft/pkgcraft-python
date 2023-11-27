@@ -6,7 +6,7 @@ cimport cython
 from .. cimport C
 from .._misc cimport cstring_iter, cstring_to_str
 from ..dep cimport Cpv, Version
-from ..error cimport Internal
+from ..error cimport Indirect
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from . cimport ConfiguredRepo, EbuildRepo, FakeRepo
@@ -178,7 +178,7 @@ cdef class Repo:
 
 
 @cython.internal
-cdef class _IterCpv(Internal):
+cdef class _IterCpv(Indirect):
     """Iterator over the Cpv objects from a repo."""
 
     cdef C.RepoIterCpv *ptr
@@ -202,7 +202,7 @@ cdef class _IterCpv(Internal):
 
 
 @cython.internal
-cdef class _Iter(Internal):
+cdef class _Iter(Indirect):
     """Iterator over a repo."""
 
     cdef C.RepoIter *ptr
@@ -226,7 +226,7 @@ cdef class _Iter(Internal):
 
 
 @cython.internal
-cdef class _IterRestrict(Internal):
+cdef class _IterRestrict(Indirect):
     """Iterator that applies a restriction over a repo iterator."""
 
     cdef C.RepoIterRestrict *ptr

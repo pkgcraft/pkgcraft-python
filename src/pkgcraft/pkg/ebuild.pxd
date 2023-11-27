@@ -1,6 +1,6 @@
 from .. cimport C
 from ..dep cimport DepSet
-from ..error cimport Internal
+from ..error cimport Indirect
 from . cimport Pkg
 
 
@@ -29,7 +29,7 @@ cdef class EbuildPkg(Pkg):
     cdef object _iuse
 
 
-cdef class Maintainer(Internal):
+cdef class Maintainer(Indirect):
     cdef readonly str email
     cdef readonly str name
     cdef readonly str description
@@ -40,7 +40,7 @@ cdef class Maintainer(Internal):
     cdef Maintainer from_ptr(C.Maintainer *)
 
 
-cdef class RemoteId(Internal):
+cdef class RemoteId(Indirect):
     cdef readonly str site
     cdef readonly str name
 
@@ -48,7 +48,7 @@ cdef class RemoteId(Internal):
     cdef RemoteId from_ptr(C.RemoteId *)
 
 
-cdef class UpstreamMaintainer(Internal):
+cdef class UpstreamMaintainer(Indirect):
     cdef readonly str name
     cdef readonly str email
     cdef readonly str status
@@ -57,7 +57,7 @@ cdef class UpstreamMaintainer(Internal):
     cdef UpstreamMaintainer from_ptr(C.UpstreamMaintainer *)
 
 
-cdef class Upstream(Internal):
+cdef class Upstream(Indirect):
     cdef readonly tuple remote_ids
     cdef readonly tuple maintainers
     cdef readonly str bugs_to

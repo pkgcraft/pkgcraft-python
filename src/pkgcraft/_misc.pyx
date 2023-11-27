@@ -2,7 +2,7 @@ cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from . cimport C
-from .error cimport Internal
+from .error cimport Indirect
 
 SENTINEL = object()
 
@@ -25,7 +25,7 @@ cdef object cstring_iter(char **c_strs, size_t length, bint free=True):
 
 
 @cython.internal
-cdef class CStringIter(Internal):
+cdef class CStringIter(Indirect):
     """Iterator over a char** converting char* to str, optionally freeing the array."""
 
     cdef char **c_strs

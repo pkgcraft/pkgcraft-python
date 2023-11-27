@@ -1,7 +1,7 @@
 import pytest
 
 from pkgcraft.eapi import Eapi
-from pkgcraft.error import InternalType, PkgcraftError
+from pkgcraft.error import IndirectType, PkgcraftError
 
 
 class TestPkgcraftError:
@@ -20,11 +20,11 @@ class TestPkgcraftError:
                 kinds = (0,)
 
 
-class TestInternalType:
+class TestIndirectType:
     def test_class_init(self):
-        with pytest.raises(InternalType):
+        with pytest.raises(IndirectType):
             Eapi()
-        with pytest.raises(InternalType):
+        with pytest.raises(IndirectType):
             Eapi("8")
-        with pytest.raises(InternalType):
+        with pytest.raises(IndirectType):
             Eapi(eapi="8")

@@ -4,7 +4,7 @@ cimport cython
 
 from . cimport C
 from ._misc cimport cstring_to_str
-from .error cimport Internal
+from .error cimport Indirect
 from .repo cimport Repo, RepoSet
 
 from .error import ConfigError, PkgcraftError
@@ -82,7 +82,7 @@ cdef class Config:
 
 
 @cython.final
-cdef class Repos(Internal):
+cdef class Repos(Indirect):
     """Wrapper for all known repos."""
 
     cdef C.Config *ptr

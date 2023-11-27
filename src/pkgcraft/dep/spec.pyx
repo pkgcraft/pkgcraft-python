@@ -7,7 +7,7 @@ from cpython.mem cimport PyMem_Free, PyMem_Malloc
 from .. cimport C
 from .._misc cimport CStringArray, cstring_to_str
 from ..eapi cimport Eapi
-from ..error cimport Internal
+from ..error cimport Indirect
 from .pkg cimport Dep
 
 from ..error import PkgcraftError
@@ -631,7 +631,7 @@ cdef class MutableDepSet(DepSet):
 
 
 @cython.internal
-cdef class _IntoIter(Internal):
+cdef class _IntoIter(Indirect):
     """Iterator over a DepSet or DepSpec object."""
 
     cdef C.DepSpecIntoIter *ptr
@@ -662,7 +662,7 @@ cdef class _IntoIter(Internal):
 
 # TODO: re-merge with _IntoIter once @classmethod works with cdef functions for creation
 @cython.internal
-cdef class _IntoIterReversed(Internal):
+cdef class _IntoIterReversed(Indirect):
     """Reversed iterator over a DepSet or DepSpec object."""
 
     cdef C.DepSpecIntoIter *ptr
@@ -692,7 +692,7 @@ cdef class _IntoIterReversed(Internal):
 
 
 @cython.internal
-cdef class _IntoIterConditionals(Internal):
+cdef class _IntoIterConditionals(Indirect):
     """Conditionals iterator over a DepSet or DepSpec object."""
 
     cdef C.DepSpecIntoIterConditionals *ptr
@@ -722,7 +722,7 @@ cdef class _IntoIterConditionals(Internal):
 
 
 @cython.internal
-cdef class _IntoIterFlatten(Internal):
+cdef class _IntoIterFlatten(Indirect):
     """Flattened iterator over a DepSet or DepSpec object."""
 
     cdef C.DepSpecIntoIterFlatten *ptr
@@ -760,7 +760,7 @@ cdef class _IntoIterFlatten(Internal):
 
 
 @cython.internal
-cdef class _IntoIterRecursive(Internal):
+cdef class _IntoIterRecursive(Indirect):
     """Recursive iterator over a DepSet or DepSpec object."""
 
     cdef C.DepSpecIntoIterRecursive *ptr
@@ -790,7 +790,7 @@ cdef class _IntoIterRecursive(Internal):
 
 
 @cython.final
-cdef class Uri(Internal):
+cdef class Uri(Indirect):
 
     @staticmethod
     cdef Uri from_ptr(C.Uri *ptr):

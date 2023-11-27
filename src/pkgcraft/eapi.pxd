@@ -1,8 +1,8 @@
 from . cimport C
-from .error cimport Internal
+from .error cimport Indirect
 
 
-cdef class Eapi(Internal):
+cdef class Eapi(Indirect):
     cdef const C.Eapi *ptr
     # cached fields
     cdef object dep_keys
