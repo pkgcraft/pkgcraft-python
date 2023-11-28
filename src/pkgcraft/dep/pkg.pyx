@@ -160,7 +160,9 @@ cdef class Dep:
         >>> str(d.without("use_deps", "version", "slot"))
         'cat/pkg'
         """
-        val = 0
+        cdef int val = 0
+        cdef int field
+
         for obj in fields:
             if field := _DEP_FIELDS.get(obj, 0):
                 val |= field
