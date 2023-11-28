@@ -1,4 +1,5 @@
 from .. cimport C
+from .version cimport Version
 
 
 cdef class Cpv:
@@ -6,7 +7,7 @@ cdef class Cpv:
     # cached fields
     cdef str _category
     cdef str _package
-    cdef object _version
+    cdef Version _version
     cdef int _hash
 
     @staticmethod
