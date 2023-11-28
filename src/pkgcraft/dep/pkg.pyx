@@ -164,15 +164,19 @@ cdef class Dep:
         cdef int field
 
         for obj in fields:
-            if field := _DEP_FIELDS.get(obj, 0):
+            if getattr(self, str(obj), False) is None:
+                # skip fields with missing attributes
+                continue
+            elif field := _DEP_FIELDS.get(obj, 0):
                 val |= field
             else:
                 raise ValueError(f'invalid field: {obj}')
 
-        ptr = C.pkgcraft_dep_without(self.ptr, val)
-        if ptr == self.ptr:
-            return self
-        return Dep.from_ptr(ptr)
+        if val:
+            ptr = C.pkgcraft_dep_without(self.ptr, val)
+            if ptr != self.ptr:
+                return Dep.from_ptr(ptr)
+        return self
 
     def with_repo(self, str s not None):
         """Return a Dep with the given repo name.
