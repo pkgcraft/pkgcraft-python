@@ -189,9 +189,9 @@ cdef class Dep:
         ptr = C.pkgcraft_dep_with_repo(self.ptr, s.encode())
         if ptr is NULL:
             raise InvalidDep
-        elif ptr == self.ptr:
-            return self
-        return Dep.from_ptr(ptr)
+        elif ptr != self.ptr:
+            return Dep.from_ptr(ptr)
+        return self
 
     @property
     def blocker(self):
