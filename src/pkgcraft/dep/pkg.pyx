@@ -270,7 +270,7 @@ cdef class Dep:
         >>> dep.revision is None
         True
         """
-        version = self.version
+        cdef Version version = self.version
         if version is not None:
             return version.revision
         return None
@@ -289,7 +289,7 @@ cdef class Dep:
         >>> dep.op == '>='
         True
         """
-        version = self.version
+        cdef Version version = self.version
         if version is not None:
             return version.op
         return None
