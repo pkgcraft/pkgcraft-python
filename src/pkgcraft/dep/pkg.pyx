@@ -147,6 +147,10 @@ cdef class Dep:
     def without(self, *fields):
         """Return a Dep dropping the specified fields.
 
+        The supported field arguments are attribute names consisting of the
+        following: blocker, version, slot, subslot, slot_op, use_deps, and
+        repo.
+
         >>> from pkgcraft.dep import Dep
         >>> d = Dep('>=cat/pkg-1.2-r3:4/5[a,b]')
         >>> str(d.without("use_deps"))
