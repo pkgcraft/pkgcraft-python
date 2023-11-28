@@ -1,6 +1,7 @@
 from .. cimport C
 from ..eapi cimport Eapi
 
+cdef object _DEP_FIELDS
 
 cdef class Dep:
     cdef C.Dep *ptr

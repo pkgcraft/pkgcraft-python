@@ -1,7 +1,6 @@
 import inspect
 import pickle
 import re
-from functools import reduce
 from itertools import chain, combinations, permutations
 
 import pytest
@@ -140,30 +139,30 @@ class TestDep:
                 Dep.valid(obj)
 
     def test_without(self):
+        fields = ("blocker", "version", "slot", "subslot", "slot_op", "use_deps", "repo")
         dep = Dep("!!>=cat/pkg-1.2-r3:4/5=::repo[u]")
-        assert str(dep.without(DepFields.Blocker)) == ">=cat/pkg-1.2-r3:4/5=::repo[u]"
-        assert str(dep.without(DepFields.Version)) == "!!cat/pkg:4/5=::repo[u]"
-        assert str(dep.without(DepFields.Slot)) == "!!>=cat/pkg-1.2-r3::repo[u]"
-        assert str(dep.without(DepFields.Subslot)) == "!!>=cat/pkg-1.2-r3:4=::repo[u]"
-        assert str(dep.without(DepFields.SlotOp)) == "!!>=cat/pkg-1.2-r3:4/5::repo[u]"
-        assert str(dep.without(DepFields.UseDeps)) == "!!>=cat/pkg-1.2-r3:4/5=::repo"
-        assert str(dep.without(DepFields.Repo)) == "!!>=cat/pkg-1.2-r3:4/5=[u]"
-        assert str(dep.without(DepFields.all())) == "cat/pkg"
+        assert str(dep.without("blocker")) == ">=cat/pkg-1.2-r3:4/5=::repo[u]"
+        assert str(dep.without("version")) == "!!cat/pkg:4/5=::repo[u]"
+        assert str(dep.without("slot")) == "!!>=cat/pkg-1.2-r3::repo[u]"
+        assert str(dep.without("subslot")) == "!!>=cat/pkg-1.2-r3:4=::repo[u]"
+        assert str(dep.without("slot_op")) == "!!>=cat/pkg-1.2-r3:4/5::repo[u]"
+        assert str(dep.without("use_deps")) == "!!>=cat/pkg-1.2-r3:4/5=::repo"
+        assert str(dep.without("repo")) == "!!>=cat/pkg-1.2-r3:4/5=[u]"
+        assert str(dep.without(*fields)) == "cat/pkg"
 
         # returns the same object when no fields are removed
         dep = Dep(">=cat/pkg-1.2-r3::repo")
-        assert dep.without(DepFields.UseDeps) is dep
-        # unmatched dep field bits are ignored
-        assert dep.without(0) is dep
-        assert dep.without(2**15) is dep
-        assert str(dep.without(2**15 | DepFields.Repo)) == ">=cat/pkg-1.2-r3"
+        assert dep.without("use_deps") is dep
+
+        # invalid fields
+        for obj in [object(), None, "field"]:
+            with pytest.raises(ValueError):
+                dep.without(obj)
 
         # verify all combinations of dep fields create valid deps
         dep = Dep("!!>=cat/pkg-1.2-r3:4/5=::repo[a,b]")
-        fields = list(DepFields.all())
         for vals in chain.from_iterable(combinations(fields, r) for r in range(len(fields) + 1)):
-            val = reduce(lambda x, y: x | y, vals, 0)
-            d = dep.without(val)
+            d = dep.without(*vals)
             assert d == Dep(str(d))
 
     def test_with_repo(self):

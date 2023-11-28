@@ -1,5 +1,6 @@
-import functools
-from enum import IntEnum, IntFlag
+from enum import IntEnum
+from functools import lru_cache
+from types import MappingProxyType
 
 cimport cython
 
@@ -17,7 +18,7 @@ from ..types import OrderedFrozenSet
 
 # TODO: merge with Dep.cached function when cython bug is fixed
 # https://github.com/cython/cython/issues/1434
-@functools.lru_cache(maxsize=10000)
+@lru_cache(maxsize=10000)
 def _cached_dep(cls, dep, eapi=None):
     return cls(dep, eapi)
 
@@ -62,20 +63,16 @@ class SlotOperator(IntEnum):
         return int(self) == other
 
 
-class DepFields(IntFlag):
-    Blocker = C.DEP_FIELD_BLOCKER
-    Version = C.DEP_FIELD_VERSION
-    Slot = C.DEP_FIELD_SLOT
-    Subslot = C.DEP_FIELD_SUBSLOT
-    SlotOp = C.DEP_FIELD_SLOT_OP
-    UseDeps = C.DEP_FIELD_USE_DEPS
-    Repo = C.DEP_FIELD_REPO
-
-    @classmethod
-    def all(cls):
-        """Return IntFlag object enabling all values."""
-        return ~cls(0)
-
+# mapping of field names to values for Dep.without()
+_DEP_FIELDS = MappingProxyType({
+    'blocker': C.DEP_FIELD_BLOCKER,
+    'version': C.DEP_FIELD_VERSION,
+    'slot': C.DEP_FIELD_SLOT,
+    'subslot': C.DEP_FIELD_SUBSLOT,
+    'slot_op': C.DEP_FIELD_SLOT_OP,
+    'use_deps': C.DEP_FIELD_USE_DEPS,
+    'repo': C.DEP_FIELD_REPO,
+})
 
 cdef class Dep:
     """Package dependency.
@@ -147,28 +144,30 @@ cdef class Dep:
             raise InvalidDep
         return valid
 
-    def without(self, int fields):
+    def without(self, *fields):
         """Return a Dep dropping the specified fields.
 
-        Note that when using this in a tight loop, the fields argument should
-        be precalculated to avoid IntFlag enum overhead.
-
-        >>> from pkgcraft.dep import Dep, DepFields
+        >>> from pkgcraft.dep import Dep
         >>> d = Dep('>=cat/pkg-1.2-r3:4/5[a,b]')
-        >>> str(d.without(DepFields.UseDeps))
+        >>> str(d.without("use_deps"))
         '>=cat/pkg-1.2-r3:4/5'
-        >>> str(d.without(DepFields.Version))
+        >>> str(d.without("version"))
         'cat/pkg:4/5[a,b]'
-        >>> str(d.without(DepFields.UseDeps | DepFields.Version))
+        >>> str(d.without("use_deps", "version"))
         'cat/pkg:4/5'
-        >>> fields = DepFields.UseDeps | DepFields.Version | DepFields.Subslot
-        >>> str(d.without(fields))
+        >>> str(d.without("use_deps", "version", "subslot"))
         'cat/pkg:4'
-        >>> fields = DepFields.UseDeps | DepFields.Version | DepFields.Slot
-        >>> str(d.without(fields))
+        >>> str(d.without("use_deps", "version", "slot"))
         'cat/pkg'
         """
-        ptr = C.pkgcraft_dep_without(self.ptr, fields)
+        vals = 0
+        for obj in fields:
+            if field := _DEP_FIELDS.get(obj, 0):
+                vals |= field
+            else:
+                raise ValueError(f'invalid field: {obj}')
+
+        ptr = C.pkgcraft_dep_without(self.ptr, vals)
         if ptr == self.ptr:
             return self
         return Dep.from_ptr(ptr)
