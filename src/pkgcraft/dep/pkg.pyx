@@ -160,14 +160,14 @@ cdef class Dep:
         >>> str(d.without("use_deps", "version", "slot"))
         'cat/pkg'
         """
-        vals = 0
+        val = 0
         for obj in fields:
             if field := _DEP_FIELDS.get(obj, 0):
-                vals |= field
+                val |= field
             else:
                 raise ValueError(f'invalid field: {obj}')
 
-        ptr = C.pkgcraft_dep_without(self.ptr, vals)
+        ptr = C.pkgcraft_dep_without(self.ptr, val)
         if ptr == self.ptr:
             return self
         return Dep.from_ptr(ptr)
