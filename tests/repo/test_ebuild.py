@@ -107,6 +107,15 @@ class TestEbuildRepo(BaseRepoTests):
         secondary_repo = TEST_DATA.ebuild_repo("dependent-secondary")
         assert secondary_repo.masters == (primary_repo,)
 
+    def test_licenses(self):
+        # primary repo
+        primary_repo = TEST_DATA.ebuild_repo("dependent-primary")
+        assert primary_repo.licenses == ["a"]
+
+        # dependent repo
+        secondary_repo = TEST_DATA.ebuild_repo("dependent-secondary")
+        assert secondary_repo.licenses == ["a", "b"]
+
     @pytest.mark.parallel
     def test_pkg_metadata_regen(self, tmpdir):
         orig_repo = TEST_DATA.ebuild_repo("metadata-gen")
@@ -151,3 +160,12 @@ class TestEbuildRepoMetadata:
         # existing
         repo = make_ebuild_repo(categories=["cat1", "cat2"])
         assert repo.metadata.categories == ["cat1", "cat2"]
+
+    def test_licenses(self):
+        # primary repo
+        primary_repo = TEST_DATA.ebuild_repo("dependent-primary")
+        assert primary_repo.metadata.licenses == ["a"]
+
+        # dependent repo
+        secondary_repo = TEST_DATA.ebuild_repo("dependent-secondary")
+        assert secondary_repo.metadata.licenses == ["b"]

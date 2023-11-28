@@ -6,6 +6,7 @@ cdef class EbuildRepo(Repo):
     # cached fields
     cdef Eapi _eapi
     cdef tuple _masters
+    cdef object _licenses
     cdef object _metadata
 
 

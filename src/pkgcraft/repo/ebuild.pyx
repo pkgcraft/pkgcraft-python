@@ -34,6 +34,15 @@ cdef class EbuildRepo(Repo):
         return self._masters
 
     @property
+    def licenses(self):
+        """Get an ebuild repo's inherited licenses."""
+        cdef size_t length
+        if self._licenses is None:
+            c_strs = C.pkgcraft_repo_ebuild_licenses(self.ptr, &length)
+            self._licenses = OrderedFrozenSet(cstring_iter(c_strs, length))
+        return self._licenses
+
+    @property
     def metadata(self):
         """Get an ebuild repo's metadata."""
         if self._metadata is None:
@@ -61,6 +70,7 @@ cdef class Metadata(Indirect):
     # cached fields
     cdef object _arches
     cdef object _categories
+    cdef object _licenses
 
     @staticmethod
     cdef Metadata from_ptr(C.Repo *ptr):
@@ -86,6 +96,15 @@ cdef class Metadata(Indirect):
             c_strs = C.pkgcraft_repo_ebuild_metadata_categories(self.ptr, &length)
             self._categories = OrderedFrozenSet(cstring_iter(c_strs, length))
         return self._categories
+
+    @property
+    def licenses(self):
+        """Get an ebuild repo's defined licenses."""
+        cdef size_t length
+        if self._licenses is None:
+            c_strs = C.pkgcraft_repo_ebuild_metadata_licenses(self.ptr, &length)
+            self._licenses = OrderedFrozenSet(cstring_iter(c_strs, length))
+        return self._licenses
 
 
 @cython.final

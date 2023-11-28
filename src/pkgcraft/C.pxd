@@ -1375,6 +1375,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Repo pointer.
     const Eapi *pkgcraft_repo_ebuild_eapi(Repo *r)
 
+    # Return an ebuild repo's inherited licenses.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    char **pkgcraft_repo_ebuild_licenses(Repo *r, uintptr_t *len)
+
     # Return an ebuild repo's masters.
     #
     # # Safety
@@ -1392,6 +1398,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Repo pointer.
     char **pkgcraft_repo_ebuild_metadata_categories(Repo *r, uintptr_t *len)
+
+    # Return an ebuild repo's metadata licenses.
+    #
+    # # Safety
+    # The argument must be a non-null Repo pointer.
+    char **pkgcraft_repo_ebuild_metadata_licenses(Repo *r, uintptr_t *len)
 
     # Regenerate an ebuild repo's package metadata cache.
     #
