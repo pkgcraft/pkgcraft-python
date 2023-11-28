@@ -98,6 +98,7 @@ class TestConfig:
         r2 = make_fake_repo(config=config)
         assert config.repos.all == RepoSet(r1, r2)
         assert config.repos.ebuild == RepoSet(r1)
+        assert config.repos.configured == RepoSet(r1.configure(config))
 
         # modifying operations return new sets
         for op_func in (iand, ior, isub, ixor):
