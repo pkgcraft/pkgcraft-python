@@ -41,7 +41,7 @@ cdef get_eapis():
     return MappingProxyType(d)
 
 
-def eapi_range(s: str):
+cpdef OrderedFrozenSet eapi_range(s: str):
     """Convert EAPI range into an ordered set of Eapi objects.
 
     >>> from pkgcraft.eapi import *

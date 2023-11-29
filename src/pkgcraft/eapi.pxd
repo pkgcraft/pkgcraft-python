@@ -3,6 +3,8 @@ from .error cimport Indirect
 from .types cimport OrderedFrozenSet
 
 
+cpdef OrderedFrozenSet eapi_range(str)
+
 cdef class Eapi(Indirect):
     cdef const C.Eapi *ptr
     # cached fields
