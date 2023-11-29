@@ -165,23 +165,25 @@ cdef class Dep:
         """
         cdef int field
 
-        dep_fields = <C.DepField *>PyMem_Malloc(len(fields) * sizeof(C.DepField))
-        if not fields:  # pragma: no cover
-            raise MemoryError
+        if fields:
+            dep_fields = <C.DepField *>PyMem_Malloc(len(fields) * sizeof(C.DepField))
+            if not fields:  # pragma: no cover
+                raise MemoryError
 
-        for (i, name) in enumerate(fields):
-            if field := _DEP_FIELDS.get(name, 0):
-                dep_fields[i] = field
-            else:
-                raise ValueError(f'invalid field: {name}')
+            for (i, name) in enumerate(fields):
+                if field := _DEP_FIELDS.get(name, 0):
+                    dep_fields[i] = field
+                else:
+                    raise ValueError(f'invalid field: {name}')
 
-        ptr = C.pkgcraft_dep_without(self.ptr, dep_fields, len(fields))
-        PyMem_Free(dep_fields)
+            ptr = C.pkgcraft_dep_without(self.ptr, dep_fields, len(fields))
+            PyMem_Free(dep_fields)
 
-        if ptr is NULL:
-            raise InvalidDep
-        elif ptr != self.ptr:
-            return Dep.from_ptr(ptr)
+            if ptr is NULL:
+                raise InvalidDep
+            elif ptr != self.ptr:
+                return Dep.from_ptr(ptr)
+
         return self
 
     def modify(self, **kwargs):
@@ -217,33 +219,35 @@ cdef class Dep:
         """
         cdef int field
 
-        fields = <C.DepField *>PyMem_Malloc(len(kwargs) * sizeof(C.DepField))
-        if not fields:  # pragma: no cover
-            raise MemoryError
-        values_encoded = [s.encode() if isinstance(s, str) else None for s in kwargs.values()]
-        values = <char **>PyMem_Malloc(len(kwargs) * sizeof(char *))
-        if not values:  # pragma: no cover
-            raise MemoryError
+        if kwargs:
+            fields = <C.DepField *>PyMem_Malloc(len(kwargs) * sizeof(C.DepField))
+            if not fields:  # pragma: no cover
+                raise MemoryError
+            values_encoded = [s.encode() if isinstance(s, str) else None for s in kwargs.values()]
+            values = <char **>PyMem_Malloc(len(kwargs) * sizeof(char *))
+            if not values:  # pragma: no cover
+                raise MemoryError
 
-        for (i, (name, val)) in enumerate(kwargs.items()):
-            if field := _DEP_FIELDS.get(name, 0):
-                fields[i] = field
-                value = values_encoded[i]
-                if value is None:
-                    values[i] = NULL
+            for (i, (name, val)) in enumerate(kwargs.items()):
+                if field := _DEP_FIELDS.get(name, 0):
+                    fields[i] = field
+                    value = values_encoded[i]
+                    if value is None:
+                        values[i] = NULL
+                    else:
+                        values[i] = value
                 else:
-                    values[i] = value
-            else:
-                raise ValueError(f'invalid field: {name}')
+                    raise ValueError(f'invalid field: {name}')
 
-        ptr = C.pkgcraft_dep_modify(self.ptr, fields, values, len(kwargs))
-        PyMem_Free(fields)
-        PyMem_Free(values)
+            ptr = C.pkgcraft_dep_modify(self.ptr, fields, values, len(kwargs))
+            PyMem_Free(fields)
+            PyMem_Free(values)
 
-        if ptr is NULL:
-            raise InvalidDep
-        elif ptr != self.ptr:
-            return Dep.from_ptr(ptr)
+            if ptr is NULL:
+                raise InvalidDep
+            elif ptr != self.ptr:
+                return Dep.from_ptr(ptr)
+
         return self
 
     @property
