@@ -260,6 +260,8 @@ cdef class Dep:
         >>> dep = Dep('!!cat/pkg')
         >>> dep.blocker is Blocker.Strong
         True
+        >>> dep.blocker == '!!'
+        True
         """
         if blocker := C.pkgcraft_dep_blocker(self.ptr):
             return Blocker(blocker)
