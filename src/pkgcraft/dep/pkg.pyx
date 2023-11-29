@@ -179,9 +179,7 @@ cdef class Dep:
             ptr = C.pkgcraft_dep_without(self.ptr, dep_fields, len(fields))
             PyMem_Free(dep_fields)
 
-            if ptr is NULL:
-                raise InvalidDep
-            elif ptr != self.ptr:
+            if ptr != self.ptr:
                 return Dep.from_ptr(ptr)
 
         return self
