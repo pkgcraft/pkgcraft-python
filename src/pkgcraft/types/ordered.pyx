@@ -14,10 +14,6 @@ cdef inline object  _isorderedsubset(seq1, seq2):
     return True
 
 
-cdef class entry:
-    pass
-
-
 @cython.internal
 cdef class OrderedSetIterator:
     cdef OrderedFrozenSet oset
