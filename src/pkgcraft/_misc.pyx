@@ -84,9 +84,10 @@ cdef class CStringArray:
 class WeakInstanceCache(type):
     """Metaclass providing weakref-based instance caching."""
 
-    def __new__(cls, name, bases, d):
-        d["__weak_instance_cache__"] = WeakValueDictionary()
-        return super().__new__(cls, name, bases, d)
+    def __new__(cls, name, bases, attrs):
+        attrs["__slots__"] = ("__weak_instance_cache__",)
+        attrs["__weak_instance_cache__"] = WeakValueDictionary()
+        return super().__new__(cls, name, bases, attrs)
 
     def __call__(cls, *args, **kwargs):
         key = (args, tuple(sorted(kwargs.items())))
@@ -103,6 +104,10 @@ class LruInstanceCache(type):
     Note that this currently doesn't provide any cache key customization so
     attributes such as kwargs ordering will affect cache hits.
     """
+
+    def __new__(cls, name, bases, attrs):
+        attrs["__slots__"] = ()
+        return super().__new__(cls, name, bases, attrs)
 
     @lru_cache(maxsize=10000)
     def __call__(cls, *args, **kwargs):

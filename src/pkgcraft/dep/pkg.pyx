@@ -609,8 +609,6 @@ cdef class Dep:
 class CachedDep(Dep, metaclass=LruInstanceCache):
     """Package dependency with LRU-based instance caching."""
 
-    __slots__ = ()
-
 
 @cython.final
 cdef class Cpn(Dep):
