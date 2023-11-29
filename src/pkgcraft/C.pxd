@@ -488,6 +488,16 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null Cpv and Dep pointers.
     bool pkgcraft_dep_intersects_cpv(Dep *d, Cpv *c)
 
+    # Return a package dependency modifying the specified fields with corresponding string values.
+    # Use null pointers for string values to unset a given field.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The fields and values arguments must be equal length arrays of DepFields with
+    # corresponding string values.
+    Dep *pkgcraft_dep_modify(Dep *d, DepField *fields, char **values, uintptr_t len)
+
     # Parse a string into a package dependency using a specific EAPI. Pass NULL for the eapi argument
     # in order to parse using the latest EAPI with extensions (e.g. support for repo deps).
     #
@@ -974,29 +984,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Dep pointer.
     Version *pkgcraft_dep_version(Dep *d)
-
-    # Return a package dependency modifying the specified fields with corresponding values.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The fields and values arguments must be equal length arrays of DepFields with
-    # corresponding string values.
-    Dep *pkgcraft_dep_with(Dep *d, DepField *fields, char **values, uintptr_t len)
-
-    # Return a package dependency with the specified repo name.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The arguments must be a non-null Dep pointer and valid repo name.
-    Dep *pkgcraft_dep_with_repo(Dep *d, const char *repo)
-
-    # Return a package dependency without the specified fields.
-    #
-    # # Safety
-    # The arguments must be a non-null Dep pointer and a DepFields bitflag.
-    Dep *pkgcraft_dep_without(Dep *d, uint32_t fields)
 
     # Return an EAPI's identifier.
     #

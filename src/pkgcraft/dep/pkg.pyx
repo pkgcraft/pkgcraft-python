@@ -176,44 +176,36 @@ cdef class Dep:
         >>> str(d.modify(use_deps=None, version=None, slot=None))
         'cat/pkg'
         """
-        cdef int removals = 0
-        cdef dict additions = {}
-        cdef bint modified = False
         cdef int field
-        cdef C.Dep *ptr = NULL
+
+        fields = <C.DepField *>PyMem_Malloc(len(kwargs) * sizeof(C.DepField))
+        if not fields:  # pragma: no cover
+            raise MemoryError
+        values_encoded = [s.encode() if isinstance(s, str) else None for s in kwargs.values()]
+        values = <char **>PyMem_Malloc(len(kwargs) * sizeof(char *))
+        if not values:  # pragma: no cover
+            raise MemoryError
 
         for (i, (name, val)) in enumerate(kwargs.items()):
             if field := _DEP_FIELDS.get(name, 0):
-                if val is None:
-                    # skip fields with missing attributes
-                    if getattr(self, str(name), False) is not None:
-                        removals |= field
+                fields[i] = field
+                value = values_encoded[i]
+                if value is None:
+                    values[i] = NULL
                 else:
-                    additions[name] = val
+                    values[i] = value
             else:
                 raise ValueError(f'invalid field: {name}')
 
-        if removals:
-            modified = True
-            ptr = C.pkgcraft_dep_without(self.ptr, removals)
+        ptr = C.pkgcraft_dep_modify(self.ptr, fields, values, len(kwargs))
+        PyMem_Free(fields)
+        PyMem_Free(values)
 
-        if additions:
-            modified = True
-            fields = <C.DepField *>PyMem_Malloc(len(additions) * sizeof(C.DepField))
-            if not fields:  # pragma: no cover
-                raise MemoryError
-            for (i, name) in enumerate(additions.keys()):
-                fields[i] = _DEP_FIELDS[name]
-            values = CStringArray(additions.values())
-
-            ptr = C.pkgcraft_dep_with(self.ptr, fields, values.ptr, len(kwargs))
-            PyMem_Free(fields)
-
-        if ptr == self.ptr or not modified:
-            return self
-        elif ptr is NULL:
+        if ptr is NULL:
             raise InvalidDep
-        return Dep.from_ptr(ptr)
+        elif ptr != self.ptr:
+            return Dep.from_ptr(ptr)
+        return self
 
     @property
     def blocker(self):
