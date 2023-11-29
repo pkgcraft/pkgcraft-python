@@ -1,3 +1,6 @@
+from functools import lru_cache
+from weakref import WeakValueDictionary
+
 cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
@@ -76,3 +79,31 @@ cdef class CStringArray:
 
     def __dealloc__(self):
         PyMem_Free(self.ptr)
+
+
+class WeakInstanceCache(type):
+    """Metaclass providing weakref-based instance caching."""
+
+    def __new__(cls, name, bases, d):
+        d["__weak_instance_cache__"] = WeakValueDictionary()
+        return super().__new__(cls, name, bases, d)
+
+    def __call__(cls, *args, **kwargs):
+        key = (args, tuple(sorted(kwargs.items())))
+        instance = cls.__weak_instance_cache__.get(key)
+        if instance is None:
+            instance = super(WeakInstanceCache, cls).__call__(*args, **kwargs)
+            cls.__weak_instance_cache__[key] = instance
+        return instance
+
+
+class LruInstanceCache(type):
+    """Metaclass providing LRU-based instance caching.
+
+    Note that this currently doesn't provide any cache key customization so
+    attributes such as kwargs ordering will affect cache hits.
+    """
+
+    @lru_cache(maxsize=10000)
+    def __call__(cls, *args, **kwargs):
+        return super(LruInstanceCache, cls).__call__(*args, **kwargs)
