@@ -1,5 +1,4 @@
 from enum import IntEnum
-from functools import lru_cache
 from types import MappingProxyType
 
 cimport cython
@@ -12,16 +11,10 @@ from ..restrict cimport Restrict
 from . cimport Cpv
 from .version cimport Version
 
+from .._misc import LruInstanceCache
 from ..eapi import EAPI_LATEST
 from ..error import InvalidDep
 from ..types import OrderedFrozenSet
-
-
-# TODO: merge with Dep.cached function when cython bug is fixed
-# https://github.com/cython/cython/issues/1434
-@lru_cache(maxsize=10000)
-def _cached_dep(cls, dep, eapi=None):
-    return cls(dep, eapi)
 
 
 class Blocker(IntEnum):
@@ -124,11 +117,6 @@ cdef class Dep:
         inst = <Dep>Dep.__new__(Dep)
         inst.ptr = <C.Dep *>ptr
         return inst
-
-    @classmethod
-    def cached(cls, s: str, eapi=None):
-        """Return a cached Dep if one exists, otherwise return a new instance."""
-        return _cached_dep(cls, s, eapi)
 
     @staticmethod
     def valid(s: str, eapi=None, raised=False):
@@ -616,6 +604,10 @@ cdef class Dep:
 
     def __dealloc__(self):
         C.pkgcraft_dep_free(self.ptr)
+
+
+class CachedDep(Dep, metaclass=LruInstanceCache):
+    """Package dependency with LRU-based instance caching."""
 
 
 @cython.final

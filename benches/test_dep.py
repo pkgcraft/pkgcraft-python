@@ -2,6 +2,7 @@ import pytest
 from pkgcore.ebuild.atom import atom as pkgcore_dep
 from portage.dep import Atom as portage_dep
 
+from pkgcraft.dep import CachedDep as pkgcraft_cached_dep
 from pkgcraft.dep import Dep as pkgcraft_dep
 
 pytest_plugins = ("benchmark", "pkgcraft")
@@ -16,7 +17,7 @@ def random_dep(func, random_str):
 
 dep_funcs = [
     ("pkgcraft", pkgcraft_dep),
-    ("pkgcraft", pkgcraft_dep.cached),
+    ("pkgcraft", pkgcraft_cached_dep),
     ("pkgcore", pkgcore_dep),
     ("portage", portage_dep),
 ]

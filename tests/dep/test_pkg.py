@@ -355,14 +355,16 @@ class TestDep:
             length = 1 if d["equal"] else len(d["versions"])
             assert len(s) == length
 
-    def test_cached(self):
-        l = [Dep.cached("cat/pkg") for _ in range(1000)]
-        assert len(l) == 1000
-
     def test_pickle(self):
         dep = Dep("=cat/pkg-1-r2:0/2=[a,b,c]")
         new_dep = pickle.loads(pickle.dumps(dep))
         assert dep == new_dep
+
+
+class TestCachedDep:
+    def test_cached(self):
+        assert CachedDep("cat/pkg") is CachedDep("cat/pkg")
+        assert Dep("cat/pkg") is not Dep("cat/pkg")
 
 
 class TestCpn:
