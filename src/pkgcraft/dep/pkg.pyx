@@ -8,13 +8,13 @@ from .. cimport C
 from .._misc cimport SENTINEL, cstring_iter, cstring_to_str
 from ..eapi cimport Eapi
 from ..restrict cimport Restrict
+from ..types cimport OrderedFrozenSet
 from . cimport Cpv
 from .version cimport Version
 
 from .._misc import LruInstanceCache
 from ..eapi import EAPI_LATEST
 from ..error import InvalidDep
-from ..types import OrderedFrozenSet
 
 
 class Blocker(IntEnum):

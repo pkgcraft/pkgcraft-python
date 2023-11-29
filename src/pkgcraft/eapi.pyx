@@ -5,9 +5,9 @@ cimport cython
 from . cimport C
 from ._misc cimport cstring_iter, cstring_to_str
 from .error cimport Indirect
+from .types cimport OrderedFrozenSet
 
 from .error import PkgcraftError
-from .types import OrderedFrozenSet
 
 EAPIS_OFFICIAL = get_official_eapis()
 EAPIS = get_eapis()

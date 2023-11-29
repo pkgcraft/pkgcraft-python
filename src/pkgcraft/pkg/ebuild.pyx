@@ -6,10 +6,10 @@ from .. cimport C
 from .._misc cimport SENTINEL, CStringArray, cstring_iter, cstring_to_str
 from ..dep cimport DepSet, MutableDepSet
 from ..error cimport Indirect
+from ..types cimport OrderedFrozenSet
 from . cimport Pkg
 
 from ..error import PkgcraftError
-from ..types import OrderedFrozenSet
 
 
 cdef class EbuildPkg(Pkg):

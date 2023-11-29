@@ -1,12 +1,13 @@
 from . cimport C
 from .error cimport Indirect
+from .types cimport OrderedFrozenSet
 
 
 cdef class Eapi(Indirect):
     cdef const C.Eapi *ptr
     # cached fields
-    cdef object dep_keys
-    cdef object metadata_keys
+    cdef OrderedFrozenSet dep_keys
+    cdef OrderedFrozenSet metadata_keys
     cdef str id
     cdef int hash
 

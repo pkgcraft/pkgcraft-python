@@ -7,10 +7,10 @@ from ..config cimport repos_to_dict
 from ..dep cimport Version
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
+from ..types cimport OrderedFrozenSet
 from . cimport Repo
 
 from .. import parse
-from ..types import OrderedFrozenSet
 
 
 cdef class RepoSet:

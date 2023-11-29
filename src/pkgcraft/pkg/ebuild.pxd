@@ -1,6 +1,7 @@
 from .. cimport C
 from ..dep cimport DepSet
 from ..error cimport Indirect
+from ..types cimport OrderedFrozenSet
 from . cimport Pkg
 
 
@@ -19,14 +20,14 @@ cdef class EbuildPkg(Pkg):
     cdef DepSet _required_use
     cdef DepSet _restrict
     cdef DepSet _src_uri
-    cdef object _defined_phases
-    cdef object _homepage
-    cdef object _keywords
-    cdef object _inherit
-    cdef object _inherited
-    cdef object _maintainers
+    cdef OrderedFrozenSet _defined_phases
+    cdef OrderedFrozenSet _homepage
+    cdef OrderedFrozenSet _keywords
+    cdef OrderedFrozenSet _inherit
+    cdef OrderedFrozenSet _inherited
+    cdef OrderedFrozenSet _iuse
+    cdef OrderedFrozenSet _maintainers
     cdef object _upstream
-    cdef object _iuse
 
 
 cdef class Maintainer(Indirect):

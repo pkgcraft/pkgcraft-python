@@ -6,10 +6,10 @@ from .. cimport C
 from .._misc cimport cstring_iter
 from ..config cimport Config
 from ..error cimport Indirect
+from ..types cimport OrderedFrozenSet
 from . cimport Repo
 
 from ..error import PkgcraftError
-from ..types import OrderedFrozenSet
 
 
 cdef class EbuildRepo(Repo):
@@ -64,13 +64,6 @@ cdef class EbuildRepo(Repo):
 @cython.final
 cdef class Metadata(Indirect):
     """Ebuild repo metadata."""
-
-    cdef C.Repo *ptr
-
-    # cached fields
-    cdef object _arches
-    cdef object _categories
-    cdef object _licenses
 
     @staticmethod
     cdef Metadata from_ptr(C.Repo *ptr):

@@ -9,11 +9,11 @@ from ..dep cimport Cpv, Version
 from ..error cimport Indirect
 from ..pkg cimport Pkg
 from ..restrict cimport Restrict
+from ..types cimport OrderedFrozenSet
 from . cimport ConfiguredRepo, EbuildRepo, FakeRepo
 
 from .. import parse
 from ..error import InvalidRepo
-from ..types import OrderedFrozenSet
 
 
 cdef class Repo:
