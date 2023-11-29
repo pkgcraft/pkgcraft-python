@@ -204,18 +204,12 @@ cdef class Dep:
         >>> str(d.modify(version='~0.1', slot='2/3=', use_deps='a,b,c', repo='test'))
         '~cat/pkg-0.1:2/3=::test[a,b,c]'
 
-        Removing attributes
+        Adding and removing attributes
         >>> d = Dep('>=cat/pkg-1.2-r3:4/5[a,b]')
-        >>> str(d.modify(use_deps=None))
-        '>=cat/pkg-1.2-r3:4/5'
-        >>> str(d.modify(version=None))
-        'cat/pkg:4/5[a,b]'
-        >>> str(d.modify(use_deps=None, version=None))
-        'cat/pkg:4/5'
-        >>> str(d.modify(use_deps=None, version=None, subslot=None))
-        'cat/pkg:4'
-        >>> str(d.modify(use_deps=None, version=None, slot=None))
-        'cat/pkg'
+        >>> str(d.modify(use_deps=None, repo='test'))
+        '>=cat/pkg-1.2-r3:4/5::test'
+        >>> str(d.modify(slot='3/4=', version=None))
+        'cat/pkg:3/4=[a,b]'
         """
         cdef int field
 
