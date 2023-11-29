@@ -14,6 +14,9 @@ cdef class Dep:
     cdef object _use_deps
     cdef int _hash
 
+    # allow weak references
+    cdef object __weakref__
+
     @staticmethod
     cdef Dep from_ptr(C.Dep *)
 
