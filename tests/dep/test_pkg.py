@@ -141,6 +141,11 @@ class TestDep:
     def test_without(self):
         fields = ("blocker", "version", "slot", "subslot", "slot_op", "use_deps", "repo")
         dep = Dep("!!>=cat/pkg-1.2-r3:4/5=::repo[u]")
+
+        # no args returns the same object
+        assert dep.without() is dep
+
+        # drop specified attributes
         assert str(dep.without("blocker")) == ">=cat/pkg-1.2-r3:4/5=::repo[u]"
         assert str(dep.without("version")) == "!!cat/pkg:4/5=::repo[u]"
         assert str(dep.without("slot")) == "!!>=cat/pkg-1.2-r3::repo[u]"
@@ -166,10 +171,16 @@ class TestDep:
             assert d == Dep(str(d))
 
     def test_modify(self):
+        dep = Dep("cat/pkg")
+        # no args returns the same object
+        assert dep.modify() is dep
+
         # version
         dep = Dep("cat/pkg")
         dep = dep.modify(version=">1")
         assert str(dep) == ">cat/pkg-1"
+        dep = dep.modify(version=None)
+        assert str(dep) == "cat/pkg"
 
         # invalid version values
         for s in ("", "1.2.3-r4"):
@@ -183,6 +194,8 @@ class TestDep:
         dep = dep.modify(repo="repo")
         assert dep.repo == "repo"
         assert dep.modify(repo="repo") is dep
+        dep = dep.modify(repo=None)
+        assert dep.repo is None
 
         # invalid repo values
         for s in ("", "+repo"):
