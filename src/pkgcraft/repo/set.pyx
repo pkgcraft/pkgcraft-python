@@ -266,6 +266,9 @@ cdef class MutableRepoSet(RepoSet):
         self._repos = None
         return self
 
+    # Override parent class to implicitly set __hash__ to None so hashing
+    # raises TypeError and instances are correctly identified as unhashable
+    # using `isinstance(obj, collections.abc.Hashable)`.
     def __eq__(self, other):
         return super().__eq__(other)
 

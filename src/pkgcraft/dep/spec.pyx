@@ -626,6 +626,9 @@ cdef class MutableDepSet(DepSet):
         else:
             raise TypeError(f"{self.__class__.__name__} indices must be integers or slices")
 
+    # Override parent class to implicitly set __hash__ to None so hashing
+    # raises TypeError and instances are correctly identified as unhashable
+    # using `isinstance(obj, collections.abc.Hashable)`.
     def __eq__(self, other):
         return super().__eq__(other)
 
