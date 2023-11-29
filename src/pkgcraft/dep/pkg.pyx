@@ -201,7 +201,7 @@ cdef class Dep:
         """
         cdef int field
         fields = <C.DepField *>PyMem_Malloc(len(kwargs) * sizeof(C.DepField))
-        if not fields: # pragma: no cover
+        if not fields:  # pragma: no cover
             raise MemoryError
         for (i, name) in enumerate(kwargs.keys()):
             if field := _DEP_FIELDS.get(name, 0):
