@@ -99,13 +99,15 @@ def test_bench_dep_without(benchmark, lib):
 
 
 @pytest.mark.parametrize("lib", ("pkgcraft", "portage"))
-def test_bench_dep_with(benchmark, lib):
+def test_bench_dep_modify(benchmark, lib):
     dep = ">=cat/pkg-1-r2:3/4=[a,b,c]"
 
     match lib:
         case "pkgcraft":
             dep = pkgcraft_dep(dep)
+            func = lambda d: d.modify(repo="repo")
         case "portage":
             dep = portage_dep(dep)
+            func = lambda d: d.with_repo("repo")
 
-    benchmark(lambda d: d.with_repo("repo"), dep)
+    benchmark(func, dep)
