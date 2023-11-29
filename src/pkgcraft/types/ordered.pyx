@@ -5,13 +5,6 @@ from cpython cimport PyDict_Contains, PyIndex_Check
 from cpython.slice cimport PySlice_GetIndicesEx
 
 
-@cython.internal
-cdef class entry:
-    cdef object key
-    cdef entry prev
-    cdef entry next
-
-
 cdef inline object  _isorderedsubset(seq1, seq2):
     if len(seq1) > len(seq2):
         return False
@@ -19,6 +12,10 @@ cdef inline object  _isorderedsubset(seq1, seq2):
         if not self_elem == other_elem:
             return False
     return True
+
+
+cdef class entry:
+    pass
 
 
 @cython.internal
@@ -90,10 +87,6 @@ cdef class OrderedFrozenSet:
     It also supports :meth:`__getitem__` and :meth:`index`, like the
     :class:`list` type.
     """
-    cdef dict map
-    cdef entry end
-    cdef ssize_t os_used
-
     def __cinit__(self):
         self.map = {}
         self.os_used = 0
@@ -101,16 +94,14 @@ cdef class OrderedFrozenSet:
         end.prev = end.next = end
 
     def __init__(self, object iterable=None):
-        cdef dict map = self.map
-        cdef entry end = self.end
         cdef entry next
 
         if iterable is not None:
             for elem in iterable:
-                if not PyDict_Contains(map, elem):
+                if not PyDict_Contains(self.map, elem):
                     next = entry()
-                    next.key, next.prev, next.next = elem, end.prev, end
-                    end.prev.next = end.prev = map[elem] = next
+                    next.key, next.prev, next.next = elem, self.end.prev, self.end
+                    self.end.prev.next = self.end.prev = self.map[elem] = next
                     self.os_used += 1
 
     @classmethod
@@ -429,7 +420,7 @@ cdef class OrderedSet(OrderedFrozenSet):
         """Remove element `elem` from the ``OrderedSet`` if it is present."""
         _discard(self, elem)
 
-    cpdef pop(self, last=True):
+    cpdef pop(self, bint last=True):
         """Remove last element. Raises ``KeyError`` if the ``OrderedSet`` is empty."""
         if not self:
             set_type = self.__class__.__name__
