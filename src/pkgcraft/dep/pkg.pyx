@@ -145,51 +145,15 @@ cdef class Dep:
             raise InvalidDep
         return valid
 
-    def without(self, *fields):
-        """Return a Dep dropping the specified attributes.
-
-        The supported field arguments are attribute names consisting of the
-        following: blocker, version, slot, subslot, slot_op, use_deps, and
-        repo.
-
-        >>> from pkgcraft.dep import Dep
-        >>> d = Dep('>=cat/pkg-1.2-r3:4/5[a,b]')
-        >>> str(d.without("use_deps"))
-        '>=cat/pkg-1.2-r3:4/5'
-        >>> str(d.without("version"))
-        'cat/pkg:4/5[a,b]'
-        >>> str(d.without("use_deps", "version"))
-        'cat/pkg:4/5'
-        >>> str(d.without("use_deps", "version", "subslot"))
-        'cat/pkg:4'
-        >>> str(d.without("use_deps", "version", "slot"))
-        'cat/pkg'
-        """
-        cdef int val = 0
-        cdef int field
-
-        for obj in fields:
-            if getattr(self, str(obj), False) is None:
-                # skip fields with missing attributes
-                continue
-            elif field := _DEP_FIELDS.get(obj, 0):
-                val |= field
-            else:
-                raise ValueError(f'invalid field: {obj}')
-
-        if val:
-            ptr = C.pkgcraft_dep_without(self.ptr, val)
-            if ptr != self.ptr:
-                return Dep.from_ptr(ptr)
-        return self
-
     def modify(self, **kwargs):
-        """Return a Dep modifying the given attributes with values.
+        """Return a Dep modifying the given attributes.
 
         The keyword arguments must be attribute names with their corresponding
-        string values. Supported attribute names include the following:
-        blocker, version, slot, subslot, slot_op, use_deps, and repo.
+        string values or None for removal. Supported attribute names include
+        the following: blocker, version, slot, subslot, slot_op, use_deps, and
+        repo.
 
+        Adding attributes
         >>> from pkgcraft.dep import Dep
         >>> d = Dep('cat/pkg')
         >>> str(d.modify(version='>=1.2.3-r4'))
@@ -198,26 +162,58 @@ cdef class Dep:
         'cat/pkg::repo'
         >>> str(d.modify(version='~0.1', slot='2/3=', use_deps='a,b,c', repo='test'))
         '~cat/pkg-0.1:2/3=::test[a,b,c]'
+
+        Removing attributes
+        >>> d = Dep('>=cat/pkg-1.2-r3:4/5[a,b]')
+        >>> str(d.modify(use_deps=None))
+        '>=cat/pkg-1.2-r3:4/5'
+        >>> str(d.modify(version=None))
+        'cat/pkg:4/5[a,b]'
+        >>> str(d.modify(use_deps=None, version=None))
+        'cat/pkg:4/5'
+        >>> str(d.modify(use_deps=None, version=None, subslot=None))
+        'cat/pkg:4'
+        >>> str(d.modify(use_deps=None, version=None, slot=None))
+        'cat/pkg'
         """
+        cdef int removals = 0
+        cdef dict additions = {}
+        cdef bint modified = False
         cdef int field
-        fields = <C.DepField *>PyMem_Malloc(len(kwargs) * sizeof(C.DepField))
-        if not fields:  # pragma: no cover
-            raise MemoryError
-        for (i, name) in enumerate(kwargs.keys()):
+        cdef C.Dep *ptr = NULL
+
+        for (i, (name, val)) in enumerate(kwargs.items()):
             if field := _DEP_FIELDS.get(name, 0):
-                fields[i] = field
+                if val is None:
+                    # skip fields with missing attributes
+                    if getattr(self, str(name), False) is not None:
+                        removals |= field
+                else:
+                    additions[name] = val
             else:
                 raise ValueError(f'invalid field: {name}')
 
-        values = CStringArray(kwargs.values())
-        ptr = C.pkgcraft_dep_with(self.ptr, fields, values.ptr, len(kwargs))
-        PyMem_Free(fields)
+        if removals:
+            modified = True
+            ptr = C.pkgcraft_dep_without(self.ptr, removals)
 
-        if ptr is NULL:
+        if additions:
+            modified = True
+            fields = <C.DepField *>PyMem_Malloc(len(additions) * sizeof(C.DepField))
+            if not fields:  # pragma: no cover
+                raise MemoryError
+            for (i, name) in enumerate(additions.keys()):
+                fields[i] = _DEP_FIELDS[name]
+            values = CStringArray(additions.values())
+
+            ptr = C.pkgcraft_dep_with(self.ptr, fields, values.ptr, len(kwargs))
+            PyMem_Free(fields)
+
+        if ptr == self.ptr or not modified:
+            return self
+        elif ptr is NULL:
             raise InvalidDep
-        elif ptr != self.ptr:
-            return Dep.from_ptr(ptr)
-        return self
+        return Dep.from_ptr(ptr)
 
     @property
     def blocker(self):

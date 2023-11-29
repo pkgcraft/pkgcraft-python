@@ -138,34 +138,41 @@ class TestDep:
             with pytest.raises(TypeError):
                 Dep.valid(obj)
 
-    def test_without(self):
-        fields = ("blocker", "version", "slot", "subslot", "slot_op", "use_deps", "repo")
+    def test_modify_remove(self):
+        fields = {
+            "blocker": None,
+            "version": None,
+            "slot": None,
+            "subslot": None,
+            "slot_op": None,
+            "use_deps": None,
+            "repo": None,
+        }
+
         dep = Dep("!!>=cat/pkg-1.2-r3:4/5=::repo[u]")
-        assert str(dep.without("blocker")) == ">=cat/pkg-1.2-r3:4/5=::repo[u]"
-        assert str(dep.without("version")) == "!!cat/pkg:4/5=::repo[u]"
-        assert str(dep.without("slot")) == "!!>=cat/pkg-1.2-r3::repo[u]"
-        assert str(dep.without("subslot")) == "!!>=cat/pkg-1.2-r3:4=::repo[u]"
-        assert str(dep.without("slot_op")) == "!!>=cat/pkg-1.2-r3:4/5::repo[u]"
-        assert str(dep.without("use_deps")) == "!!>=cat/pkg-1.2-r3:4/5=::repo"
-        assert str(dep.without("repo")) == "!!>=cat/pkg-1.2-r3:4/5=[u]"
-        assert str(dep.without(*fields)) == "cat/pkg"
+        assert str(dep.modify(blocker=None)) == ">=cat/pkg-1.2-r3:4/5=::repo[u]"
+        assert str(dep.modify(version=None)) == "!!cat/pkg:4/5=::repo[u]"
+        assert str(dep.modify(slot=None)) == "!!>=cat/pkg-1.2-r3::repo[u]"
+        assert str(dep.modify(subslot=None)) == "!!>=cat/pkg-1.2-r3:4=::repo[u]"
+        assert str(dep.modify(slot_op=None)) == "!!>=cat/pkg-1.2-r3:4/5::repo[u]"
+        assert str(dep.modify(use_deps=None)) == "!!>=cat/pkg-1.2-r3:4/5=::repo"
+        assert str(dep.modify(repo=None)) == "!!>=cat/pkg-1.2-r3:4/5=[u]"
+        assert str(dep.modify(**fields)) == "cat/pkg"
 
         # returns the same object when no fields are removed
         dep = Dep(">=cat/pkg-1.2-r3::repo")
-        assert dep.without("use_deps") is dep
-
-        # invalid fields
-        for obj in [object(), None, "field"]:
-            with pytest.raises(ValueError):
-                dep.without(obj)
+        assert dep.modify(use_deps=None) is dep
 
         # verify all combinations of dep fields create valid deps
         dep = Dep("!!>=cat/pkg-1.2-r3:4/5=::repo[a,b]")
-        for vals in chain.from_iterable(combinations(fields, r) for r in range(len(fields) + 1)):
-            d = dep.without(*vals)
+        for vals in chain.from_iterable(
+            combinations(fields.keys(), r) for r in range(len(fields) + 1)
+        ):
+            kwargs = {k: None for k in vals}
+            d = dep.modify(**kwargs)
             assert d == Dep(str(d))
 
-    def test_modify(self):
+    def test_modify_add(self):
         # version
         dep = Dep("cat/pkg")
         dep = dep.modify(version=">1")
