@@ -23,11 +23,11 @@ cdef inline object  _isorderedsubset(seq1, seq2):
 
 @cython.internal
 cdef class OrderedSetIterator:
-    cdef _OrderedFrozenSet oset
+    cdef OrderedFrozenSet oset
     cdef entry curr
     cdef ssize_t si_used
 
-    def __cinit__(self, _OrderedFrozenSet oset):
+    def __cinit__(self, OrderedFrozenSet oset):
         self.oset = oset
         self.curr = oset.end
         self.si_used = oset.os_used
@@ -53,11 +53,11 @@ cdef class OrderedSetIterator:
 
 @cython.internal
 cdef class OrderedSetReverseIterator:
-    cdef _OrderedFrozenSet oset
+    cdef OrderedFrozenSet oset
     cdef entry curr
     cdef ssize_t si_used
 
-    def __cinit__(self, _OrderedFrozenSet oset):
+    def __cinit__(self, OrderedFrozenSet oset):
         self.oset = oset
         self.curr = oset.end
         self.si_used = oset.os_used
@@ -81,8 +81,15 @@ cdef class OrderedSetReverseIterator:
         return item.key
 
 
-@cython.internal
-cdef class _OrderedFrozenSet:
+cdef class OrderedFrozenSet:
+    """
+    An ``OrderedFrozenSet`` object is an immutable, ordered collection of distinct hashable objects.
+
+    It works like the :class:`set` type, but remembers insertion order.
+
+    It also supports :meth:`__getitem__` and :meth:`index`, like the
+    :class:`list` type.
+    """
     cdef dict map
     cdef entry end
     cdef ssize_t os_used
@@ -253,7 +260,7 @@ cdef class _OrderedFrozenSet:
     cdef _getslice(self, slice item):
         cdef ssize_t start, stop, step, slicelength, place, i
         cdef entry curr
-        cdef _OrderedSet result
+        cdef OrderedSet result
         PySlice_GetIndicesEx(item, len(self), &start, &stop, &step, &slicelength)
 
         result = self.__class__()
@@ -329,18 +336,13 @@ cdef class _OrderedFrozenSet:
     def __reversed__(self):
         return OrderedSetReverseIterator(self)
 
-    def __reduce__(self):
-        items = list(self)
-        inst_dict = vars(self).copy()
-        return self.__class__, (items,), inst_dict
-
     def __repr__(self):
         if not self:
             return '%s()' % (self.__class__.__name__,)
         return '%s(%r)' % (self.__class__.__name__, list(self))
 
     def __eq__(self, other):
-        if isinstance(other, (_OrderedFrozenSet, list)):
+        if isinstance(other, (OrderedFrozenSet, list)):
             return len(self) == len(other) and list(self) == list(other)
         elif isinstance(other, Set):
             return set(self) == set(other)
@@ -377,8 +379,14 @@ cdef class _OrderedFrozenSet:
     def __hash__(self):
         return hash(tuple(self.map))
 
+    def __copy__(self):
+        return self._from_iterable(self)
 
-cdef inline void _add(_OrderedSet oset, object key):
+    def __reduce__(self):
+        return self.__class__, (list(self),)
+
+
+cdef inline void _add(OrderedSet oset, object key):
     cdef entry end = oset.end
     cdef dict map = oset.map
     cdef entry next
@@ -390,7 +398,7 @@ cdef inline void _add(_OrderedSet oset, object key):
         oset.os_used += 1
 
 
-cdef void _discard(_OrderedSet oset, object key):
+cdef void _discard(OrderedSet oset, object key):
     cdef dict map = oset.map
     cdef entry _entry
 
@@ -401,9 +409,15 @@ cdef void _discard(_OrderedSet oset, object key):
         oset.os_used -= 1
 
 
-@cython.internal
-cdef class _OrderedSet(_OrderedFrozenSet):
+cdef class OrderedSet(OrderedFrozenSet):
+    """
+    An ``OrderedSet`` object is a mutable, ordered collection of distinct hashable objects.
 
+    It works like the :class:`set` type, but remembers insertion order.
+
+    It also supports :meth:`__getitem__` and :meth:`index`, like the
+    :class:`list` type.
+    """
     ##
     # mutable set methods
     ##
@@ -503,28 +517,13 @@ cdef class _OrderedSet(_OrderedFrozenSet):
             _add(self, elem)
         return self
 
-    def __hash__(self):
-        set_type = self.__class__.__name__
-        raise TypeError(f'unhashable type: {set_type!r}')
+    # Override parent class to implicitly set __hash__ to None so hashing
+    # raises TypeError and instances are correctly identified as unhashable
+    # using `isinstance(obj, collections.abc.Hashable)`.
+    def __eq__(self, other):
+        return super().__eq__(other)
 
 
-class OrderedFrozenSet(_OrderedFrozenSet, Set):
-    """
-    An ``OrderedFrozenSet`` object is an immutable, ordered collection of distinct hashable objects.
-
-    It works like the :class:`set` type, but remembers insertion order.
-
-    It also supports :meth:`__getitem__` and :meth:`index`, like the
-    :class:`list` type.
-    """
-
-
-class OrderedSet(_OrderedSet, OrderedFrozenSet, MutableSet):
-    """
-    An ``OrderedSet`` object is a mutable, ordered collection of distinct hashable objects.
-
-    It works like the :class:`set` type, but remembers insertion order.
-
-    It also supports :meth:`__getitem__` and :meth:`index`, like the
-    :class:`list` type.
-    """
+# register classes for isinstance() and issubclass() usage
+Set.register(OrderedFrozenSet)
+MutableSet.register(OrderedSet)
