@@ -6,7 +6,7 @@ cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport C
-from .._misc cimport SENTINEL, CStringArray, cstring_iter, cstring_to_str
+from .._misc cimport SENTINEL, cstring_iter, cstring_to_str
 from ..eapi cimport Eapi
 from ..restrict cimport Restrict
 from . cimport Cpv
@@ -144,6 +144,45 @@ cdef class Dep:
         if not valid and raised:
             raise InvalidDep
         return valid
+
+    def without(self, *fields):
+        """Return a Dep without the given attributes.
+
+        The field arguments must be attribute names including the following:
+        blocker, version, slot, subslot, slot_op, use_deps, and repo.
+
+        >>> d = Dep('>=cat/pkg-1.2-r3:4/5[a,b]')
+        >>> str(d.without("use_deps"))
+        '>=cat/pkg-1.2-r3:4/5'
+        >>> str(d.without("version"))
+        'cat/pkg:4/5[a,b]'
+        >>> str(d.without("use_deps", "version"))
+        'cat/pkg:4/5'
+        >>> str(d.without("use_deps", "version", "subslot"))
+        'cat/pkg:4'
+        >>> str(d.without("use_deps", "version", "slot"))
+        'cat/pkg'
+        """
+        cdef int field
+
+        dep_fields = <C.DepField *>PyMem_Malloc(len(fields) * sizeof(C.DepField))
+        if not fields:  # pragma: no cover
+            raise MemoryError
+
+        for (i, name) in enumerate(fields):
+            if field := _DEP_FIELDS.get(name, 0):
+                dep_fields[i] = field
+            else:
+                raise ValueError(f'invalid field: {name}')
+
+        ptr = C.pkgcraft_dep_without(self.ptr, dep_fields, len(fields))
+        PyMem_Free(dep_fields)
+
+        if ptr is NULL:
+            raise InvalidDep
+        elif ptr != self.ptr:
+            return Dep.from_ptr(ptr)
+        return self
 
     def modify(self, **kwargs):
         """Return a Dep modifying the given attributes.

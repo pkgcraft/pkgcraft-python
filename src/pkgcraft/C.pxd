@@ -985,6 +985,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Dep pointer.
     Version *pkgcraft_dep_version(Dep *d)
 
+    # Return a package dependency without the specified fields
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The arguments must a valid Dep pointer and DepField values.
+    Dep *pkgcraft_dep_without(Dep *d, DepField *fields, uintptr_t len)
+
     # Return an EAPI's identifier.
     #
     # # Safety
