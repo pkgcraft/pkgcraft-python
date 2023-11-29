@@ -14,13 +14,15 @@ cdef extern from "pkgcraft.h":
         BLOCKER_WEAK,
 
     cdef enum:
-        DEP_FIELD_BLOCKER # = 1,
-        DEP_FIELD_VERSION # = (1 << 1),
-        DEP_FIELD_SLOT # = (1 << 2),
-        DEP_FIELD_SUBSLOT # = (1 << 3),
-        DEP_FIELD_SLOT_OP # = (1 << 4),
-        DEP_FIELD_USE_DEPS # = (1 << 5),
-        DEP_FIELD_REPO # = (1 << 6),
+        DEP_FIELD_CATEGORY # = 1,
+        DEP_FIELD_PACKAGE,
+        DEP_FIELD_BLOCKER,
+        DEP_FIELD_VERSION,
+        DEP_FIELD_SLOT,
+        DEP_FIELD_SUBSLOT,
+        DEP_FIELD_SLOT_OP,
+        DEP_FIELD_USE_DEPS,
+        DEP_FIELD_REPO,
     ctypedef uint32_t DepField
 
     # DepSet variants.
@@ -985,7 +987,9 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Dep pointer.
     Version *pkgcraft_dep_version(Dep *d)
 
-    # Return a package dependency without the specified fields
+    # Return a package dependency without the specified fields.
+    #
+    # Returns NULL on error.
     #
     # # Safety
     # The arguments must a valid Dep pointer and DepField values.

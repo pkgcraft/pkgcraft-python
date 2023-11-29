@@ -66,6 +66,8 @@ class SlotOperator(IntEnum):
 
 # mapping of field names to values for Dep.without()
 _DEP_FIELDS = MappingProxyType({
+    'category': C.DEP_FIELD_CATEGORY,
+    'package': C.DEP_FIELD_PACKAGE,
     'blocker': C.DEP_FIELD_BLOCKER,
     'version': C.DEP_FIELD_VERSION,
     'slot': C.DEP_FIELD_SLOT,
@@ -179,7 +181,9 @@ cdef class Dep:
             ptr = C.pkgcraft_dep_without(self.ptr, dep_fields, len(fields))
             PyMem_Free(dep_fields)
 
-            if ptr != self.ptr:
+            if ptr is NULL:
+                raise InvalidDep
+            elif ptr != self.ptr:
                 return Dep.from_ptr(ptr)
 
         return self

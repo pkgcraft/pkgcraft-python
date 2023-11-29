@@ -139,7 +139,7 @@ class TestDep:
                 Dep.valid(obj)
 
     def test_without(self):
-        fields = ("blocker", "version", "slot", "subslot", "slot_op", "use_deps", "repo")
+        optional_fields = ("blocker", "version", "slot", "subslot", "slot_op", "use_deps", "repo")
         dep = Dep("!!>=cat/pkg-1.2-r3:4/5=::repo[u]")
 
         # no args returns the same object
@@ -153,11 +153,16 @@ class TestDep:
         assert str(dep.without("slot_op")) == "!!>=cat/pkg-1.2-r3:4/5::repo[u]"
         assert str(dep.without("use_deps")) == "!!>=cat/pkg-1.2-r3:4/5=::repo"
         assert str(dep.without("repo")) == "!!>=cat/pkg-1.2-r3:4/5=[u]"
-        assert str(dep.without(*fields)) == "cat/pkg"
+        assert str(dep.without(*optional_fields)) == "cat/pkg"
 
         # returns the same object when no fields are removed
         dep = Dep(">=cat/pkg-1.2-r3::repo")
         assert dep.without("use_deps") is dep
+
+        # category and package can't be unset
+        for field in ["category", "package"]:
+            with pytest.raises(InvalidDep):
+                dep.without(field)
 
         # invalid fields
         for obj in [object(), None, "field"]:
@@ -166,7 +171,8 @@ class TestDep:
 
         # verify all combinations of dep fields create valid deps
         dep = Dep("!!>=cat/pkg-1.2-r3:4/5=::repo[a,b]")
-        for vals in chain.from_iterable(combinations(fields, r) for r in range(len(fields) + 1)):
+        lengths = range(len(optional_fields) + 1)
+        for vals in chain.from_iterable(combinations(optional_fields, r) for r in lengths):
             d = dep.without(*vals)
             assert d == Dep(str(d))
 
@@ -175,12 +181,27 @@ class TestDep:
         # no args returns the same object
         assert dep.modify() is dep
 
+        # category
+        dep = Dep("cat/pkg")
+        dep = dep.modify(category="a")
+        assert str(dep) == "a/pkg"
+        with pytest.raises(InvalidDep):
+            dep.modify(category=None)
+
+        # package
+        dep = Dep("cat/pkg")
+        dep = dep.modify(package="b")
+        assert str(dep) == "cat/b"
+        with pytest.raises(InvalidDep):
+            dep.modify(package=None)
+
         # version
         dep = Dep("cat/pkg")
         dep = dep.modify(version=">1")
         assert str(dep) == ">cat/pkg-1"
         dep = dep.modify(version=None)
         assert str(dep) == "cat/pkg"
+        assert dep.modify(version=None) is dep
 
         # invalid version values
         for s in ("", "1.2.3-r4"):
