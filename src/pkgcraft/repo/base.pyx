@@ -3,7 +3,7 @@ from pathlib import Path
 
 cimport cython
 
-from .. cimport C
+from .. cimport C, parse
 from .._misc cimport cstring_iter, cstring_to_str
 from ..dep cimport Cpv, Version
 from ..error cimport Indirect
@@ -12,7 +12,6 @@ from ..restrict cimport Restrict
 from ..types cimport OrderedFrozenSet
 from . cimport ConfiguredRepo, EbuildRepo, FakeRepo
 
-from .. import parse
 from ..error import InvalidRepo
 
 

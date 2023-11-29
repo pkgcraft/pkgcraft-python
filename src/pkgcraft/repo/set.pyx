@@ -1,7 +1,7 @@
 cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
-from .. cimport C
+from .. cimport C, parse
 from .._misc cimport cstring_iter
 from ..config cimport repos_to_dict
 from ..dep cimport Version
@@ -9,8 +9,6 @@ from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from ..types cimport OrderedFrozenSet
 from . cimport Repo
-
-from .. import parse
 
 
 cdef class RepoSet:
