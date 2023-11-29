@@ -3,9 +3,10 @@ from functools import lru_cache
 from types import MappingProxyType
 
 cimport cython
+from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport C
-from .._misc cimport SENTINEL, cstring_iter, cstring_to_str
+from .._misc cimport SENTINEL, CStringArray, cstring_iter, cstring_to_str
 from ..eapi cimport Eapi
 from ..restrict cimport Restrict
 from . cimport Cpv
@@ -145,7 +146,7 @@ cdef class Dep:
         return valid
 
     def without(self, *fields):
-        """Return a Dep dropping the specified fields.
+        """Return a Dep dropping the specified attributes.
 
         The supported field arguments are attribute names consisting of the
         following: blocker, version, slot, subslot, slot_op, use_deps, and
@@ -182,15 +183,36 @@ cdef class Dep:
                 return Dep.from_ptr(ptr)
         return self
 
-    def with_repo(self, str s not None):
-        """Return a Dep with the given repo name.
+    def modify(self, **kwargs):
+        """Return a Dep modifying the given attributes with values.
+
+        The keyword arguments must be attribute names with their corresponding
+        string values. Supported attribute names include the following:
+        blocker, version, slot, subslot, slot_op, use_deps, and repo.
 
         >>> from pkgcraft.dep import Dep
         >>> d = Dep('cat/pkg')
-        >>> str(d.with_repo('repo'))
+        >>> str(d.modify(version='>=1.2.3-r4'))
+        '>=cat/pkg-1.2.3-r4'
+        >>> str(d.modify(repo='repo'))
         'cat/pkg::repo'
+        >>> str(d.modify(version='~0.1', slot='2/3=', use_deps='a,b,c', repo='test'))
+        '~cat/pkg-0.1:2/3=::test[a,b,c]'
         """
-        ptr = C.pkgcraft_dep_with_repo(self.ptr, s.encode())
+        cdef int field
+        fields = <C.DepField *>PyMem_Malloc(len(kwargs) * sizeof(C.DepField))
+        if not fields: # pragma: no cover
+            raise MemoryError
+        for (i, name) in enumerate(kwargs.keys()):
+            if field := _DEP_FIELDS.get(name, 0):
+                fields[i] = field
+            else:
+                raise ValueError(f'invalid field: {name}')
+
+        values = CStringArray(kwargs.values())
+        ptr = C.pkgcraft_dep_with(self.ptr, fields, values.ptr, len(kwargs))
+        PyMem_Free(fields)
+
         if ptr is NULL:
             raise InvalidDep
         elif ptr != self.ptr:

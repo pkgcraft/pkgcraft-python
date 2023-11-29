@@ -975,7 +975,16 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Dep pointer.
     Version *pkgcraft_dep_version(Dep *d)
 
-    # Return a given package dependency with the specified repo name.
+    # Return a package dependency modifying the specified fields with corresponding values.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The fields and values arguments must be equal length arrays of DepFields with
+    # corresponding string values.
+    Dep *pkgcraft_dep_with(Dep *d, DepField *fields, char **values, uintptr_t len)
+
+    # Return a package dependency with the specified repo name.
     #
     # Returns NULL on error.
     #
@@ -983,7 +992,7 @@ cdef extern from "pkgcraft.h":
     # The arguments must be a non-null Dep pointer and valid repo name.
     Dep *pkgcraft_dep_with_repo(Dep *d, const char *repo)
 
-    # Return a given package dependency without the specified fields.
+    # Return a package dependency without the specified fields.
     #
     # # Safety
     # The arguments must be a non-null Dep pointer and a DepFields bitflag.

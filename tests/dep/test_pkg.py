@@ -165,18 +165,34 @@ class TestDep:
             d = dep.without(*vals)
             assert d == Dep(str(d))
 
-    def test_with_repo(self):
+    def test_modify(self):
+        # version
         dep = Dep("cat/pkg")
-        dep = dep.with_repo("test")
-        assert dep.repo == "test"
-        dep = dep.with_repo("repo")
-        assert dep.repo == "repo"
-        assert dep.with_repo("repo") is dep
+        dep = dep.modify(version=">1")
+        assert str(dep) == ">cat/pkg-1"
 
-        # invalid
+        # invalid version values
+        for s in ("", "1.2.3-r4"):
+            with pytest.raises(InvalidDep, match="invalid version"):
+                dep.modify(version=s)
+
+        # repo
+        dep = Dep("cat/pkg")
+        dep = dep.modify(repo="test")
+        assert dep.repo == "test"
+        dep = dep.modify(repo="repo")
+        assert dep.repo == "repo"
+        assert dep.modify(repo="repo") is dep
+
+        # invalid repo values
         for s in ("", "+repo"):
             with pytest.raises(InvalidDep, match="invalid repo name"):
-                dep.with_repo(s)
+                dep.modify(repo=s)
+
+        # invalid fields
+        for kwargs in ({"obj": "v"}, {"": ""}):
+            with pytest.raises(ValueError, match="invalid field"):
+                dep.modify(**kwargs)
 
     def test_matches(self):
         dep = Dep("=cat/pkg-1")
