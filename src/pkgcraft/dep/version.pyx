@@ -103,26 +103,29 @@ cdef class Revision:
 cdef class Version:
     """Package version.
 
-    >>> from pkgcraft.dep import Operator, Version
+    Simple version:
 
-    Simple version
+    >>> from pkgcraft.dep import Operator, Version
     >>> v = Version('1')
     >>> v.revision is None
     True
 
-    Revisioned version
+    Revisioned version:
+
     >>> v = Version('1-r2')
     >>> str(v.revision)
     '2'
 
-    Version with operator
+    Version with operator:
+
     >>> v = Version('>=1.2')
     >>> v.op is Operator.GreaterOrEqual
     True
     >>> v.op == '>='
     True
 
-    Invalid version
+    Invalid version:
+
     >>> Version('1a-1')
     Traceback (most recent call last):
         ...

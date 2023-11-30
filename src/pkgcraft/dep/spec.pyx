@@ -476,6 +476,7 @@ cdef class MutableDepSet(DepSet):
         'a/b a/c'
 
         DepSpec objects are ordered by type and recursively sorted if possible.
+
         >>> d = MutableDepSet('( a/c a/b ( b/d b/c ) ) || ( a/c a/b ) a/z')
         >>> d.sort()
         >>> str(d)

@@ -13,9 +13,9 @@ from ..error import InvalidCpv
 cdef class Cpv:
     """CPV string parsing.
 
-    >>> from pkgcraft.dep import Cpv
+    Valid CPV:
 
-    Valid CPV
+    >>> from pkgcraft.dep import Cpv
     >>> cpv = Cpv('cat/pkg-1-r2')
     >>> cpv.category
     'cat'
@@ -24,7 +24,8 @@ cdef class Cpv:
     >>> str(cpv.version)
     '1-r2'
 
-    Invalid CPV
+    Invalid CPV:
+
     >>> Cpv('>cat/pkg-1')
     Traceback (most recent call last):
         ...

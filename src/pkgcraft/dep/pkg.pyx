@@ -93,6 +93,7 @@ cdef class Dep:
     'repo'
 
     Invalid package dependency
+
     >>> Dep('cat/pkg-1')
     Traceback (most recent call last):
         ...
@@ -186,7 +187,8 @@ cdef class Dep:
         the following: blocker, version, slot, subslot, slot_op, use_deps, and
         repo.
 
-        Adding attributes
+        Adding attributes:
+
         >>> from pkgcraft.dep import Dep
         >>> d = Dep('cat/pkg')
         >>> str(d.modify(version='>=1.2.3-r4'))
@@ -196,7 +198,8 @@ cdef class Dep:
         >>> str(d.modify(version='~0.1', slot='2/3=', use_deps='a,b,c', repo='test'))
         '~cat/pkg-0.1:2/3=::test[a,b,c]'
 
-        Adding and removing attributes
+        Adding and removing attributes:
+
         >>> d = Dep('>=cat/pkg-1.2-r3:4/5[a,b]')
         >>> str(d.modify(use_deps=None, repo='test'))
         '>=cat/pkg-1.2-r3:4/5::test'
