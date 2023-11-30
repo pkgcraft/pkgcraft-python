@@ -85,7 +85,7 @@ class WeakInstanceCache(type):
     """Metaclass providing weakref-based instance caching."""
 
     def __new__(cls, name, bases, attrs):
-        attrs["__slots__"] = ("__weak_instance_cache__",)
+        attrs["__slots__"] = ()
         attrs["__weak_instance_cache__"] = WeakValueDictionary()
         return super().__new__(cls, name, bases, attrs)
 
