@@ -234,6 +234,18 @@ class TestDep:
             with pytest.raises(ValueError, match="invalid field"):
                 dep.modify(**kwargs)
 
+    def test_unversioned(self):
+        dep = Dep("cat/pkg")
+        assert dep.unversioned is dep
+        dep = Dep(">=cat/pkg-1")
+        assert str(dep.unversioned) == "cat/pkg"
+
+    def test_versioned(self):
+        dep = Dep("=cat/pkg-1")
+        assert dep.versioned is dep
+        dep = Dep(">=cat/pkg-1")
+        assert str(dep.versioned) == "=cat/pkg-1"
+
     def test_matches(self):
         dep = Dep("=cat/pkg-1")
         r = Restrict(dep)

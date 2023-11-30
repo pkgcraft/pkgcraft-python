@@ -967,6 +967,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Dep pointer.
     char *pkgcraft_dep_subslot(Dep *d)
 
+    # Return a package dependency without optional fields.
+    #
+    # # Safety
+    # The argument must a valid Dep pointer.
+    Dep *pkgcraft_dep_unversioned(Dep *d)
+
     # Get the USE dependencies of a package dependency.
     # For example, the package dependency "=cat/pkg-1-r2[a,b,c]" has USE dependencies of "a, b, c".
     #
@@ -992,6 +998,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Dep pointer.
     Version *pkgcraft_dep_version(Dep *d)
+
+    # Return a package dependency without optional fields except version.
+    #
+    # # Safety
+    # The argument must a valid Dep pointer.
+    Dep *pkgcraft_dep_versioned(Dep *d)
 
     # Return a package dependency without the specified fields.
     #

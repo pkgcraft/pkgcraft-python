@@ -542,7 +542,7 @@ cdef class Dep:
         """Get the category, package, and version of a package dependency.
 
         >>> from pkgcraft.dep import Dep
-        >>> dep = Dep('=cat/pkg-1-r2:3/4[u1,!u2?]')
+        >>> dep = Dep('=cat/pkg-1-r2:3/4[a,!b?]')
         >>> dep.cpv
         'cat/pkg-1-r2'
         >>> dep = Dep('cat/pkg')
@@ -550,6 +550,42 @@ cdef class Dep:
         'cat/pkg'
         """
         return cstring_to_str(C.pkgcraft_dep_cpv(self.ptr))
+
+    @property
+    def unversioned(self):
+        """Return a new Dep including only the category and package attributes.
+
+        If the Dep is unmodified, the original object is returned.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2:3/4[a,!b?]')
+        >>> str(dep.unversioned)
+        'cat/pkg'
+        """
+        ptr = C.pkgcraft_dep_unversioned(self.ptr)
+        if ptr != self.ptr:
+            return Dep.from_ptr(ptr)
+        return self
+
+    @property
+    def versioned(self):
+        """Return a new Dep including only the category, package, and version attributes.
+
+        If the Dep is unmodified, the original object is returned. Note that
+        the version operator is also set to be '=' if it exists.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('>=cat/pkg-1-r2:3/4[a,!b?]')
+        >>> str(dep.versioned)
+        '=cat/pkg-1-r2'
+        >>> dep = Dep('cat/pkg')
+        >>> str(dep.versioned)
+        'cat/pkg'
+        """
+        ptr = C.pkgcraft_dep_versioned(self.ptr)
+        if ptr != self.ptr:
+            return Dep.from_ptr(ptr)
+        return self
 
     def matches(self, r: Restrict):
         """Determine if a restriction matches a package dependency."""
