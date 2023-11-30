@@ -678,7 +678,14 @@ cdef class Dep:
         return self
 
     def matches(self, r: Restrict):
-        """Determine if a restriction matches a package dependency."""
+        """Determine if a restriction matches a package dependency.
+
+        Args:
+            r: restriction object to match against
+
+        Returns:
+            bool: True if matching, otherwise False.
+        """
         return C.pkgcraft_dep_restrict_matches(self.ptr, r.ptr)
 
     def intersects(self, other: Cpv | Dep):
@@ -691,7 +698,7 @@ cdef class Dep:
             bool: True if intersecting, otherwise False.
 
         Raises:
-            TypeError: for types not supporting package dependency intersection
+            TypeError: for unsupported types
 
         >>> from pkgcraft.dep import Cpv, Dep
         >>> cpv = Cpv('cat/pkg-2-r1')

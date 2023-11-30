@@ -75,6 +75,9 @@ cdef class Cpv:
     def category(self):
         """Get the category of a Cpv.
 
+        Returns:
+            str: the category name
+
         >>> from pkgcraft.dep import Cpv
         >>> cpv = Cpv('cat/pkg-1-r2')
         >>> cpv.category
@@ -87,6 +90,9 @@ cdef class Cpv:
     @property
     def package(self):
         """Get the package name of a Cpv.
+
+        Returns:
+            str: the package name
 
         >>> from pkgcraft.dep import Cpv
         >>> cpv = Cpv('cat/pkg-1-r2')
@@ -101,6 +107,9 @@ cdef class Cpv:
     def version(self):
         """Get the version of a Cpv.
 
+        Returns:
+            Version: the version object
+
         >>> from pkgcraft.dep import Cpv
         >>> cpv = Cpv('cat/pkg-1-r2')
         >>> str(cpv.version)
@@ -114,6 +123,9 @@ cdef class Cpv:
     @property
     def revision(self):
         """Get the revision of a Cpv.
+
+        Returns:
+            Revision | None: The revision if it exists or None.
 
         >>> from pkgcraft.dep import Cpv
         >>> cpv = Cpv('cat/pkg-1-r2')
@@ -219,11 +231,27 @@ cdef class Cpv:
         return cstring_to_str(C.pkgcraft_cpv_cpn(self.ptr))
 
     def matches(self, r: Restrict):
-        """Determine if a restriction matches a Cpv."""
+        """Determine if a restriction matches a Cpv.
+
+        Args:
+            r: restriction object to match against
+
+        Returns:
+            bool: True if matching, otherwise False.
+        """
         return C.pkgcraft_cpv_restrict_matches(self.ptr, r.ptr)
 
-    def intersects(self, other):
+    def intersects(self, other: Cpv | Dep):
         """Determine intersection between two Cpv or Dep objects.
+
+        Args:
+            other: object to check for intersection against
+
+        Returns:
+            bool: True if intersecting, otherwise False.
+
+        Raises:
+            TypeError: for unsupported types
 
         >>> from pkgcraft.dep import Cpv, Dep
         >>> cpv = Cpv('cat/pkg-2-r1')
