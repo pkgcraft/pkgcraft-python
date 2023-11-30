@@ -12,7 +12,7 @@ from ..types cimport OrderedFrozenSet
 from . cimport Cpv
 from .version cimport Version
 
-from .._misc import LruInstanceCache
+from .._misc import LruInstanceCache, WeakInstanceCache
 from ..eapi import EAPI_LATEST
 from ..error import InvalidDep
 
@@ -660,10 +660,22 @@ class CachedDep(Dep, metaclass=LruInstanceCache):
     """Package dependency with LRU-based instance caching.
 
     >>> from pkgcraft.dep import CachedDep
-    >>> s = '=cat/pkg-1-r2:0/2::repo[a,b]'
-    >>> dep1 = CachedDep(s)
-    >>> dep2 = CachedDep(s)
-    >>> dep1 is dep2
+    >>> s = '=cat/pkg-1-r2:3/4::repo[a,b]'
+    >>> d1 = CachedDep(s)
+    >>> d2 = CachedDep(s)
+    >>> d1 is d2
+    True
+    """
+
+
+class WeakDep(Dep, metaclass=WeakInstanceCache):
+    """Package dependency with weakref-based instance caching.
+
+    >>> from pkgcraft.dep import WeakDep
+    >>> s = '=cat/pkg-1-r2:3/4::repo[a,b]'
+    >>> d1 = WeakDep(s)
+    >>> d2 = WeakDep(s)
+    >>> d1 is d2
     True
     """
 

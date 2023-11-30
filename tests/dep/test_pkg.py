@@ -1,3 +1,4 @@
+import gc
 import inspect
 import pickle
 import re
@@ -381,8 +382,34 @@ class TestDep:
 
 class TestCachedDep:
     def test_cached(self):
-        assert CachedDep("cat/pkg") is CachedDep("cat/pkg")
-        assert Dep("cat/pkg") is not Dep("cat/pkg")
+        s = ">=cat/pkg-1.2-r3"
+        d1 = CachedDep(s)
+        d2 = CachedDep(s)
+        assert d1 is d2
+
+        # LRU deps stay cached when all refs are dropped
+        object_id = id(d1)
+        del d1, d2
+        gc.collect()
+        d1 = CachedDep("cat/pkg")
+        d2 = CachedDep(s)
+        assert id(d2) == object_id
+
+
+class TestWeakDep:
+    def test_cached(self):
+        s = ">=cat/pkg-1.2-r3"
+        d1 = WeakDep(s)
+        d2 = WeakDep(s)
+        assert d1 is d2
+
+        # weakref deps are dropped from the cache when all refs are dropped
+        object_id = id(d1)
+        del d1, d2
+        gc.collect()
+        d1 = WeakDep("cat/pkg")
+        d2 = WeakDep(s)
+        assert id(d2) != object_id
 
 
 class TestCpn:
