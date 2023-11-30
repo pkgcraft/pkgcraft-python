@@ -755,25 +755,25 @@ cdef class Dep:
         C.pkgcraft_dep_free(self.ptr)
 
 
-class CachedDep(Dep, metaclass=LruInstanceCache):
+class DepCachedLru(Dep, metaclass=LruInstanceCache):
     """Package dependency with LRU-based instance caching.
 
-    >>> from pkgcraft.dep import CachedDep
+    >>> from pkgcraft.dep import DepCachedLru
     >>> s = '=cat/pkg-1-r2:3/4::repo[a,b]'
-    >>> d1 = CachedDep(s)
-    >>> d2 = CachedDep(s)
+    >>> d1 = DepCachedLru(s)
+    >>> d2 = DepCachedLru(s)
     >>> d1 is d2
     True
     """
 
 
-class WeakDep(Dep, metaclass=WeakInstanceCache):
+class DepCachedWeak(Dep, metaclass=WeakInstanceCache):
     """Package dependency with weakref-based instance caching.
 
-    >>> from pkgcraft.dep import WeakDep
+    >>> from pkgcraft.dep import DepCachedWeak
     >>> s = '=cat/pkg-1-r2:3/4::repo[a,b]'
-    >>> d1 = WeakDep(s)
-    >>> d2 = WeakDep(s)
+    >>> d1 = DepCachedWeak(s)
+    >>> d2 = DepCachedWeak(s)
     >>> d1 is d2
     True
     """

@@ -380,35 +380,33 @@ class TestDep:
         assert dep == new_dep
 
 
-class TestCachedDep:
-    def test_cached(self):
+class TestDepCached:
+    def test_lru(self):
         s = ">=cat/pkg-1.2-r3"
-        d1 = CachedDep(s)
-        d2 = CachedDep(s)
+        d1 = DepCachedLru(s)
+        d2 = DepCachedLru(s)
         assert d1 is d2
 
         # LRU deps stay cached when all refs are dropped
         object_id = id(d1)
         del d1, d2
         gc.collect()
-        d1 = CachedDep("cat/pkg")
-        d2 = CachedDep(s)
+        d1 = DepCachedLru("cat/pkg")
+        d2 = DepCachedLru(s)
         assert id(d2) == object_id
 
-
-class TestWeakDep:
-    def test_cached(self):
+    def test_weak(self):
         s = ">=cat/pkg-1.2-r3"
-        d1 = WeakDep(s)
-        d2 = WeakDep(s)
+        d1 = DepCachedWeak(s)
+        d2 = DepCachedWeak(s)
         assert d1 is d2
 
         # weakref deps are dropped from the cache when all refs are dropped
         object_id = id(d1)
         del d1, d2
         gc.collect()
-        d1 = WeakDep("cat/pkg")
-        d2 = WeakDep(s)
+        d1 = DepCachedWeak("cat/pkg")
+        d2 = DepCachedWeak(s)
         assert id(d2) != object_id
 
 

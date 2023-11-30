@@ -2,8 +2,8 @@ import pytest
 from pkgcore.ebuild.atom import atom as pkgcore_dep
 from portage.dep import Atom as portage_dep
 
-from pkgcraft.dep import CachedDep as pkgcraft_cached_dep
 from pkgcraft.dep import Dep as pkgcraft_dep
+from pkgcraft.dep import DepCachedLru as pkgcraft_cached_dep
 
 pytest_plugins = ("benchmark", "pkgcraft")
 
