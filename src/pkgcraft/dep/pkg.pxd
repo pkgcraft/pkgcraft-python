@@ -12,11 +12,11 @@ cdef class Dep:
     cdef str _category
     cdef str _package
     cdef object _version
-    cdef str _slot
-    cdef str _subslot
+    cdef object _slot
+    cdef object _subslot
     cdef object _slot_op
     cdef object _use_deps
-    cdef str _repo
+    cdef object _repo
     cdef int _hash
 
     # allow weak references

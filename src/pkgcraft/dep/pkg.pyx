@@ -76,8 +76,11 @@ cdef class Dep:
     def __cinit__(self):
         self._blocker = SENTINEL
         self._version = SENTINEL
+        self._slot = SENTINEL
+        self._subslot = SENTINEL
         self._slot_op = SENTINEL
         self._use_deps = SENTINEL
+        self._repo = SENTINEL
         self.eapi = EAPI_LATEST
 
     def __init__(self, s: str, /, eapi=None):
@@ -414,7 +417,7 @@ cdef class Dep:
         >>> dep.slot is None
         True
         """
-        if self._slot is None:
+        if self._slot is SENTINEL:
             self._slot = cstring_to_str(C.pkgcraft_dep_slot(self.ptr))
         return self._slot
 
@@ -433,7 +436,7 @@ cdef class Dep:
         >>> dep.subslot is None
         True
         """
-        if self._subslot is None:
+        if self._subslot is SENTINEL:
             self._subslot = cstring_to_str(C.pkgcraft_dep_subslot(self.ptr))
         return self._subslot
 
@@ -497,7 +500,7 @@ cdef class Dep:
         >>> dep.repo is None
         True
         """
-        if self._repo is None:
+        if self._repo is SENTINEL:
             self._repo = cstring_to_str(C.pkgcraft_dep_repo(self.ptr))
         return self._repo
 
