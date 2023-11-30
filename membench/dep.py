@@ -11,13 +11,14 @@ import psutil
 from pkgcore.ebuild.atom import atom as pkgcore_dep
 from portage.dep import Atom as portage_dep
 
-from pkgcraft.dep import CachedDep, Dep
+from pkgcraft.dep import CachedDep, Dep, WeakDep
 
 eprint = lambda x: print(x, file=sys.stderr)
 
 dep_funcs = [
     ("pkgcraft", Dep),
-    ("pkgcraft-cached", CachedDep),
+    ("pkgcraft-lru", CachedDep),
+    ("pkgcraft-weak", WeakDep),
     ("pkgcore", pkgcore_dep),
     ("portage", portage_dep),
 ]
