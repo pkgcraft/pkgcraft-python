@@ -291,6 +291,9 @@ cdef class Dep:
     def blocker(self):
         """Get the blocker of a package dependency.
 
+        Returns:
+            Blocker | None: The blocker if it exists or None.
+
         >>> from pkgcraft.dep import Blocker, Dep
         >>> dep = Dep('cat/pkg')
         >>> dep.blocker is None
@@ -348,7 +351,7 @@ cdef class Dep:
         """Get the version of a package dependency.
 
         Returns:
-            Version | None: The package dependency version or None.
+            Version | None: The version if it exists or None.
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2')
@@ -368,7 +371,7 @@ cdef class Dep:
         """Get the revision of a package dependency.
 
         Returns:
-            Revision | None: The package dependency revision or None.
+            Revision | None: The revision if it exists or None.
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2')
@@ -390,6 +393,9 @@ cdef class Dep:
     def op(self):
         """Get the version operator of a package dependency.
 
+        Returns:
+            Operator | None: The version operator if it exists or None.
+
         >>> from pkgcraft.dep import Operator, Dep
         >>> dep = Dep('cat/pkg')
         >>> dep.op is None
@@ -409,6 +415,9 @@ cdef class Dep:
     def slot(self):
         """Get the slot of a package dependency.
 
+        Returns:
+            str | None: The slot if it exists or None.
+
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2:3/4')
         >>> dep.slot
@@ -424,6 +433,9 @@ cdef class Dep:
     @property
     def subslot(self):
         """Get the subslot of a package dependency.
+
+        Returns:
+            str | None: The subslot if it exists or None.
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2:3/4')
@@ -443,6 +455,9 @@ cdef class Dep:
     @property
     def slot_op(self):
         """Get the slot operator of a package dependency.
+
+        Returns:
+            SlotOperator | None: The slot operator if it exists or None.
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2')
@@ -469,6 +484,9 @@ cdef class Dep:
     def use_deps(self):
         """Get the USE dependencies of a package dependency.
 
+        Returns:
+            Set[str] | None: The USE dependencies if any exist or None.
+
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2[a,b,c]')
         >>> list(dep.use_deps)
@@ -492,6 +510,9 @@ cdef class Dep:
     def repo(self):
         """Get the repo of a package dependency.
 
+        Returns:
+            str | None: The repository if it exists or None.
+
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2::repo')
         >>> dep.repo
@@ -506,7 +527,10 @@ cdef class Dep:
 
     @property
     def p(self):
-        """Get the package and revision of a package dependency.
+        """Get the package and version of a package dependency.
+
+        Returns:
+            str: package name and version without the revision if it exists
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2')
@@ -521,6 +545,9 @@ cdef class Dep:
     @property
     def pf(self):
         """Get the package, version, and revision of a package dependency.
+
+        Returns:
+            str: package name and version without the revision if it exists
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2')
