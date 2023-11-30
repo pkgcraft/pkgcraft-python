@@ -621,7 +621,15 @@ cdef class Dep:
 
 
 class CachedDep(Dep, metaclass=LruInstanceCache):
-    """Package dependency with LRU-based instance caching."""
+    """Package dependency with LRU-based instance caching.
+
+    >>> from pkgcraft.dep import CachedDep
+    >>> s = '=cat/pkg-1-r2:0/2::repo[a,b]'
+    >>> dep1 = CachedDep(s)
+    >>> dep2 = CachedDep(s)
+    >>> dep1 is dep2
+    True
+    """
 
 
 @cython.final
