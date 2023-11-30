@@ -1,7 +1,7 @@
 from collections.abc import Iterable, MutableSet, Set
 
 cimport cython
-from cpython cimport PyDict_Contains, PyIndex_Check
+from cpython cimport PyIndex_Check
 from cpython.slice cimport PySlice_GetIndicesEx
 
 
@@ -85,7 +85,7 @@ cdef class OrderedFrozenSet:
 
         if iterable is not None:
             for elem in iterable:
-                if not PyDict_Contains(self.map, elem):
+                if elem not in self.map:
                     next = entry()
                     next.key, next.prev, next.next = elem, self.end.prev, self.end
                     self.end.prev.next = self.end.prev = self.map[elem] = next
@@ -385,7 +385,7 @@ cdef class OrderedSet(OrderedFrozenSet):
         """Add element `elem` to the set."""
         cdef entry next
 
-        if not PyDict_Contains(self.map, elem):
+        if elem not in self.map:
             next = entry()
             next.key, next.prev, next.next = elem, self.end.prev, self.end
             self.end.prev.next = self.end.prev = self.map[elem] = next
@@ -395,7 +395,7 @@ cdef class OrderedSet(OrderedFrozenSet):
         """Remove element `elem` from the ``OrderedSet`` if it is present."""
         cdef entry _entry
 
-        if PyDict_Contains(self.map, elem):
+        if elem in self.map:
             _entry = self.map.pop(elem)
             _entry.prev.next = _entry.next
             _entry.next.prev = _entry.prev
