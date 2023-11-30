@@ -99,7 +99,9 @@ cdef class Dep:
     pkgcraft.error.InvalidDep: parsing failure: invalid dep: cat/pkg-1
     """
     def __cinit__(self):
+        self._blocker = SENTINEL
         self._version = SENTINEL
+        self._slot_op = SENTINEL
         self._use_deps = SENTINEL
         self.eapi = EAPI_LATEST
 
@@ -251,9 +253,12 @@ cdef class Dep:
         >>> dep.blocker == '!!'
         True
         """
-        if blocker := C.pkgcraft_dep_blocker(self.ptr):
-            return Blocker(blocker)
-        return None
+        if self._blocker is SENTINEL:
+            if blocker := C.pkgcraft_dep_blocker(self.ptr):
+                self._blocker = Blocker(blocker)
+            else:
+                self._blocker = None
+        return self._blocker
 
     @property
     def category(self):
@@ -349,7 +354,9 @@ cdef class Dep:
         >>> dep.slot is None
         True
         """
-        return cstring_to_str(C.pkgcraft_dep_slot(self.ptr))
+        if self._slot is None:
+            self._slot = cstring_to_str(C.pkgcraft_dep_slot(self.ptr))
+        return self._slot
 
     @property
     def subslot(self):
@@ -366,7 +373,9 @@ cdef class Dep:
         >>> dep.subslot is None
         True
         """
-        return cstring_to_str(C.pkgcraft_dep_subslot(self.ptr))
+        if self._subslot is None:
+            self._subslot = cstring_to_str(C.pkgcraft_dep_subslot(self.ptr))
+        return self._subslot
 
     @property
     def slot_op(self):
@@ -386,9 +395,12 @@ cdef class Dep:
         >>> dep.slot_op is SlotOperator.Star
         True
         """
-        if slot_op := C.pkgcraft_dep_slot_op(self.ptr):
-            return SlotOperator(slot_op)
-        return None
+        if self._slot_op is SENTINEL:
+            if slot_op := C.pkgcraft_dep_slot_op(self.ptr):
+                self._slot_op = SlotOperator(slot_op)
+            else:
+                self._slot_op = None
+        return self._slot_op
 
     @property
     def use_deps(self):
@@ -425,7 +437,9 @@ cdef class Dep:
         >>> dep.repo is None
         True
         """
-        return cstring_to_str(C.pkgcraft_dep_repo(self.ptr))
+        if self._repo is None:
+            self._repo = cstring_to_str(C.pkgcraft_dep_repo(self.ptr))
+        return self._repo
 
     @property
     def p(self):
