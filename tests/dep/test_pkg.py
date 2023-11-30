@@ -144,6 +144,8 @@ class TestDep:
 
         # no args returns the same object
         assert dep.without() is dep
+        # modifying returns a new object
+        assert dep.without("version") is not dep
 
         # drop specified attributes
         assert str(dep.without("blocker")) == ">=cat/pkg-1.2-r3:4/5=::repo[u]"
@@ -180,6 +182,10 @@ class TestDep:
         dep = Dep("cat/pkg")
         # no args returns the same object
         assert dep.modify() is dep
+        # modifying returns a new object
+        assert dep.modify(version=">1") is not dep
+        # modifying with an equal value returns the same object
+        assert dep.modify(version=None) is dep
 
         # category
         dep = Dep("cat/pkg")
