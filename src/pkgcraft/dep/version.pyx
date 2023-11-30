@@ -101,41 +101,43 @@ cdef class Revision:
 
 
 cdef class Version:
-    """Package version.
+    """Package version."""
 
-    Simple version:
-
-    >>> from pkgcraft.dep import Operator, Version
-    >>> v = Version('1')
-    >>> v.revision is None
-    True
-
-    Revisioned version:
-
-    >>> v = Version('1-r2')
-    >>> str(v.revision)
-    '2'
-
-    Version with operator:
-
-    >>> v = Version('>=1.2')
-    >>> v.op is Operator.GreaterOrEqual
-    True
-    >>> v.op == '>='
-    True
-
-    Invalid version:
-
-    >>> Version('1a-1')
-    Traceback (most recent call last):
-        ...
-    pkgcraft.error.InvalidVersion: parsing failure: invalid version: 1a-1
-    ...
-    """
     def __cinit__(self):
         self._revision = SENTINEL
 
     def __init__(self, s: str):
+        """Create a new package version.
+
+        Simple version:
+
+        >>> from pkgcraft.dep import Operator, Version
+        >>> v = Version('1')
+        >>> v.revision is None
+        True
+
+        Revisioned version:
+
+        >>> v = Version('1-r2')
+        >>> str(v.revision)
+        '2'
+
+        Version with operator:
+
+        >>> v = Version('>=1.2')
+        >>> v.op is Operator.GreaterOrEqual
+        True
+        >>> v.op == '>='
+        True
+
+        Invalid version:
+
+        >>> Version('1a-1')
+        Traceback (most recent call last):
+            ...
+        pkgcraft.error.InvalidVersion: parsing failure: invalid version: 1a-1
+        ...
+        """
         self.ptr = C.pkgcraft_version_new(s.encode())
         if self.ptr is NULL:
             raise InvalidVersion
@@ -143,6 +145,18 @@ cdef class Version:
     @staticmethod
     def valid(s: str, raised=False):
         """Determine if a string is a valid package version.
+
+        This avoids any allocations, only returning the validity status.
+
+        Args:
+            s: the string to parse
+            raised: if True, raise an exception when invalid
+
+        Returns:
+            bool: True if the given string represents a valid version, otherwise False.
+
+        Raises:
+            InvalidVersion: on failure if the raised parameter is set to True
 
         >>> from pkgcraft.dep import Version
         >>> Version.valid('1-r2')

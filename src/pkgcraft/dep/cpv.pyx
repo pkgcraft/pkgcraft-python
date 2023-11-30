@@ -11,28 +11,30 @@ from ..error import InvalidCpv
 
 @cython.final
 cdef class Cpv:
-    """CPV string parsing.
+    """Category and package version object support."""
 
-    Valid CPV:
-
-    >>> from pkgcraft.dep import Cpv
-    >>> cpv = Cpv('cat/pkg-1-r2')
-    >>> cpv.category
-    'cat'
-    >>> cpv.package
-    'pkg'
-    >>> str(cpv.version)
-    '1-r2'
-
-    Invalid CPV:
-
-    >>> Cpv('>cat/pkg-1')
-    Traceback (most recent call last):
-        ...
-    pkgcraft.error.InvalidCpv: parsing failure: invalid cpv: >cat/pkg-1
-    ...
-    """
     def __init__(self, s: str):
+        """Create a new Cpv object.
+
+        Valid:
+
+        >>> from pkgcraft.dep import Cpv
+        >>> cpv = Cpv('cat/pkg-1-r2')
+        >>> cpv.category
+        'cat'
+        >>> cpv.package
+        'pkg'
+        >>> str(cpv.version)
+        '1-r2'
+
+        Invalid:
+
+        >>> Cpv('>cat/pkg-1')
+        Traceback (most recent call last):
+            ...
+        pkgcraft.error.InvalidCpv: parsing failure: invalid cpv: >cat/pkg-1
+        ...
+        """
         self.ptr = C.pkgcraft_cpv_new(s.encode())
         if self.ptr is NULL:
             raise InvalidCpv
@@ -40,6 +42,18 @@ cdef class Cpv:
     @staticmethod
     def valid(s: str, raised=False):
         """Determine if a string is a valid package Cpv.
+
+        This avoids any allocations, only returning the validity status.
+
+        Args:
+            s: the string to parse
+            raised: if True, raise an exception when invalid
+
+        Returns:
+            bool: True if the given string represents a valid Cpv, otherwise False.
+
+        Raises:
+            InvalidCpv: on failure if the raised parameter is set to True
 
         >>> from pkgcraft.dep import Cpv
         >>> Cpv.valid('cat/pkg-1')

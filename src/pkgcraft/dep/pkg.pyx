@@ -71,34 +71,8 @@ _DEP_FIELDS = MappingProxyType({
 })
 
 cdef class Dep:
-    """Package dependency.
+    """Package dependency."""
 
-    >>> from pkgcraft.dep import Dep
-    >>> dep = Dep('=cat/pkg-1-r2:0/2::repo[a,b]')
-    >>> dep.category
-    'cat'
-    >>> dep.package
-    'pkg'
-    >>> str(dep.version)
-    '=1-r2'
-    >>> str(dep.revision)
-    '2'
-    >>> dep.slot
-    '0'
-    >>> dep.subslot
-    '2'
-    >>> list(dep.use_deps)
-    ['a', 'b']
-    >>> dep.repo
-    'repo'
-
-    Invalid package dependency
-
-    >>> Dep('cat/pkg-1')
-    Traceback (most recent call last):
-        ...
-    pkgcraft.error.InvalidDep: parsing failure: invalid dep: cat/pkg-1
-    """
     def __cinit__(self):
         self._blocker = SENTINEL
         self._version = SENTINEL
@@ -107,6 +81,44 @@ cdef class Dep:
         self.eapi = EAPI_LATEST
 
     def __init__(self, s: str, /, eapi=None):
+        """Create a new package dependency.
+
+        Args:
+            s: the package dependency string to parse
+            eapi: an :py:class:`~pkgcraft.eapi.Eapi` constant or string identifier
+
+        Returns:
+            Dep: the created package dependency instance
+
+        Raises:
+            InvalidDep: on package dependency parsing failures
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('=cat/pkg-1-r2:0/2::repo[a,b]')
+        >>> dep.category
+        'cat'
+        >>> dep.package
+        'pkg'
+        >>> str(dep.version)
+        '=1-r2'
+        >>> str(dep.revision)
+        '2'
+        >>> dep.slot
+        '0'
+        >>> dep.subslot
+        '2'
+        >>> list(dep.use_deps)
+        ['a', 'b']
+        >>> dep.repo
+        'repo'
+
+        Invalid package dependency
+
+        >>> Dep('cat/pkg-1')
+        Traceback (most recent call last):
+            ...
+        pkgcraft.error.InvalidDep: parsing failure: invalid dep: cat/pkg-1
+        """
         if eapi is not None:
             self.eapi = Eapi._from_obj(eapi)
 
@@ -122,8 +134,21 @@ cdef class Dep:
         return inst
 
     @staticmethod
-    def valid(s: str, eapi=None, raised=False):
+    def valid(s: str, eapi: Eapi | str = None, raised: bool = False):
         """Determine if a string is a valid package dependency.
+
+        This avoids any allocations, only returning the validity status.
+
+        Args:
+            s: the string to parse
+            eapi: an :py:class:`~pkgcraft.eapi.Eapi` constant or string identifier
+            raised: if True, raise an exception when invalid
+
+        Returns:
+            bool: True if the given string represents a valid Dep, otherwise False.
+
+        Raises:
+            InvalidDep: on failure if the raised parameter is set to True
 
         >>> from pkgcraft.dep import Dep
         >>> Dep.valid('=cat/pkg-1')
@@ -138,11 +163,21 @@ cdef class Dep:
             raise InvalidDep
         return valid
 
-    def without(self, *fields):
+    def without(self, *fields: str):
         """Return a Dep without the given attributes.
 
-        The field arguments must be attribute names including the following:
-        blocker, version, slot, subslot, slot_op, use_deps, and repo.
+        Args:
+            fields: The attribute names to drop including the following:
+                blocker, version, slot, subslot, slot_op, use_deps, and repo.
+
+        Returns:
+            Dep: The package dependency without the specified atttributes, if
+            no modifications occurred the instance is returned.
+
+        Raises:
+            MemoryError: on failed allocation
+            ValueError: on invalid fields
+            InvalidDep: if package dependency creation fails
 
         >>> d = Dep('>=cat/pkg-1.2-r3:4/5[a,b]')
         >>> str(d.without("use_deps"))
@@ -179,13 +214,23 @@ cdef class Dep:
 
         return self
 
-    def modify(self, **kwargs):
+    def modify(self, **kwargs: str | None):
         """Return a Dep modifying the given attributes.
 
-        The keyword arguments must be attribute names with their corresponding
-        string values or None for removal. Supported attribute names include
-        the following: blocker, version, slot, subslot, slot_op, use_deps, and
-        repo.
+        Args:
+            kwargs: The keyword arguments must be attribute names with their corresponding
+                string values or None for removal. Supported attribute names include
+                the following: blocker, version, slot, subslot, slot_op, use_deps, and
+                repo.
+
+        Returns:
+            Dep: The package dependency with the specified modifications, if
+            none occurred the instance is returned.
+
+        Raises:
+            MemoryError: on failed allocation
+            ValueError: on invalid fields
+            InvalidDep: if package dependency creation fails
 
         Adding attributes:
 
@@ -267,6 +312,9 @@ cdef class Dep:
     def category(self):
         """Get the category of a package dependency.
 
+        Returns:
+            str: the category name
+
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2')
         >>> dep.category
@@ -280,6 +328,9 @@ cdef class Dep:
     def package(self):
         """Get the package name of a package dependency.
 
+        Returns:
+            str: the package name
+
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2')
         >>> dep.package
@@ -292,6 +343,9 @@ cdef class Dep:
     @property
     def version(self):
         """Get the version of a package dependency.
+
+        Returns:
+            Version | None: The package dependency version or None.
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2')
@@ -309,6 +363,9 @@ cdef class Dep:
     @property
     def revision(self):
         """Get the revision of a package dependency.
+
+        Returns:
+            Revision | None: The package dependency revision or None.
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2')
@@ -594,8 +651,17 @@ cdef class Dep:
         """Determine if a restriction matches a package dependency."""
         return C.pkgcraft_dep_restrict_matches(self.ptr, r.ptr)
 
-    def intersects(self, other):
+    def intersects(self, other: Cpv | Dep):
         """Determine intersection between two Cpv or Dep objects.
+
+        Args:
+            other: object to check for intersection against
+
+        Returns:
+            bool: True if intersecting, otherwise False.
+
+        Raises:
+            TypeError: for types not supporting package dependency intersection
 
         >>> from pkgcraft.dep import Cpv, Dep
         >>> cpv = Cpv('cat/pkg-2-r1')

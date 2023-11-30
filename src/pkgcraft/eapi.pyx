@@ -45,7 +45,6 @@ cpdef OrderedFrozenSet eapi_range(s: str):
     """Convert EAPI range into an ordered set of Eapi objects.
 
     >>> from pkgcraft.eapi import *
-
     >>> eapi_range('..') == set(EAPIS.values())
     True
     >>> eapi_range('..6') == {EAPI5}
@@ -120,17 +119,19 @@ cdef class Eapi(Indirect):
         See https://docs.rs/pkgcraft/latest/pkgcraft/eapi/enum.Feature.html for
         the full list of supported EAPI features.
 
-        >>> from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
+        existing feature:
 
-        existing feature
+        >>> from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
         >>> EAPI_LATEST_OFFICIAL.has('UsevTwoArgs')
         True
 
-        feature not existing in official EAPIs
+        feature not existing in official EAPIs:
+
         >>> EAPI_LATEST_OFFICIAL.has('RepoIds')
         False
 
-        nonexistent feature
+        nonexistent feature:
+
         >>> EAPI_LATEST_OFFICIAL.has('nonexistent')
         False
         """
