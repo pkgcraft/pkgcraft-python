@@ -5,15 +5,6 @@ from cpython cimport PyDict_Contains, PyIndex_Check
 from cpython.slice cimport PySlice_GetIndicesEx
 
 
-cdef inline object  _isorderedsubset(seq1, seq2):
-    if len(seq1) > len(seq2):
-        return False
-    for self_elem, other_elem in zip(seq1, seq2):
-        if not self_elem == other_elem:
-            return False
-    return True
-
-
 @cython.internal
 cdef class OrderedSetIterator:
     cdef OrderedFrozenSet oset
@@ -184,11 +175,16 @@ cdef class OrderedFrozenSet:
         """
         return other <= self
 
-    def isorderedsubset(self, other):
-        return _isorderedsubset(self, other)
+    cpdef bint isorderedsubset(self, OrderedFrozenSet other):
+        if len(self) > len(other):
+            return False
+        for self_elem, other_elem in zip(self, other):
+            if not self_elem == other_elem:
+                return False
+        return True
 
-    def isorderedsuperset(self, other):
-        return _isorderedsubset(other, self)
+    cpdef bint isorderedsuperset(self, OrderedFrozenSet other):
+        return other.isorderedsubset(self)
 
     def symmetric_difference(self, other):
         """``OrderedSet ^ other``
@@ -263,7 +259,7 @@ cdef class OrderedFrozenSet:
                 while i <= place:
                     curr = curr.next
                     i += 1
-                _add(result, curr.key)
+                result.add(curr.key)
                 place += step
                 slicelength -= 1
         else:
@@ -273,7 +269,7 @@ cdef class OrderedFrozenSet:
                 while i > place:
                     curr = curr.prev
                     i -= 1
-                _add(result, curr.key)
+                result.add(curr.key)
                 place += step
                 slicelength -= 1
         return result
@@ -373,29 +369,6 @@ cdef class OrderedFrozenSet:
         return self.__class__, (list(self),)
 
 
-cdef inline void _add(OrderedSet oset, object key):
-    cdef entry end = oset.end
-    cdef dict map = oset.map
-    cdef entry next
-
-    if not PyDict_Contains(map, key):
-        next = entry()
-        next.key, next.prev, next.next = key, end.prev, end
-        end.prev.next = end.prev = map[key] = next
-        oset.os_used += 1
-
-
-cdef void _discard(OrderedSet oset, object key):
-    cdef dict map = oset.map
-    cdef entry _entry
-
-    if PyDict_Contains(map, key):
-        _entry = map.pop(key)
-        _entry.prev.next = _entry.next
-        _entry.next.prev = _entry.prev
-        oset.os_used -= 1
-
-
 cdef class OrderedSet(OrderedFrozenSet):
     """
     An ``OrderedSet`` object is a mutable, ordered collection of distinct hashable objects.
@@ -408,21 +381,33 @@ cdef class OrderedSet(OrderedFrozenSet):
     ##
     # mutable set methods
     ##
-    cpdef add(self, elem):
+    cpdef void add(self, object elem):
         """Add element `elem` to the set."""
-        _add(self, elem)
+        cdef entry next
 
-    cpdef discard(self, elem):
+        if not PyDict_Contains(self.map, elem):
+            next = entry()
+            next.key, next.prev, next.next = elem, self.end.prev, self.end
+            self.end.prev.next = self.end.prev = self.map[elem] = next
+            self.os_used += 1
+
+    cpdef void discard(self, object elem):
         """Remove element `elem` from the ``OrderedSet`` if it is present."""
-        _discard(self, elem)
+        cdef entry _entry
 
-    cpdef pop(self, bint last=True):
+        if PyDict_Contains(self.map, elem):
+            _entry = self.map.pop(elem)
+            _entry.prev.next = _entry.next
+            _entry.next.prev = _entry.prev
+            self.os_used -= 1
+
+    cpdef object pop(self, bint last=True):
         """Remove last element. Raises ``KeyError`` if the ``OrderedSet`` is empty."""
         if not self:
             set_type = self.__class__.__name__
             raise KeyError(f'{set_type} is empty')
         key = self.end.prev.key if last else self.end.next.key
-        _discard(self, key)
+        self.discard(key)
         return key
 
     def remove(self, elem):
@@ -432,7 +417,7 @@ cdef class OrderedSet(OrderedFrozenSet):
         """
         if elem not in self:
             raise KeyError(elem)
-        _discard(self, elem)
+        self.discard(elem)
 
     def clear(self):
         """Remove all elements from the `set`."""
@@ -501,7 +486,7 @@ cdef class OrderedSet(OrderedFrozenSet):
 
     def __ior__(self, other):
         for elem in other:
-            _add(self, elem)
+            self.add(elem)
         return self
 
     # Override parent class to implicitly set __hash__ to None so hashing

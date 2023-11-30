@@ -15,8 +15,11 @@ cdef class OrderedFrozenSet:
     cdef _getslice(self, slice item)
     cdef _getindex(self, ssize_t index)
 
+    cpdef bint isorderedsubset(self, OrderedFrozenSet)
+    cpdef bint isorderedsuperset(self, OrderedFrozenSet)
+
 
 cdef class OrderedSet(OrderedFrozenSet):
-    cpdef add(self, elem)
-    cpdef discard(self, elem)
-    cpdef pop(self, bint last=*)
+    cpdef void add(self, object)
+    cpdef void discard(self, object)
+    cpdef object pop(self, bint last=*)
