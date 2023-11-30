@@ -1,4 +1,3 @@
-import gc
 import inspect
 import pickle
 import re
@@ -378,36 +377,6 @@ class TestDep:
         dep = Dep("=cat/pkg-1-r2:0/2=[a,b,c]")
         new_dep = pickle.loads(pickle.dumps(dep))
         assert dep == new_dep
-
-
-class TestDepCached:
-    def test_lru(self):
-        s = ">=cat/pkg-1.2-r3"
-        d1 = DepCachedLru(s)
-        d2 = DepCachedLru(s)
-        assert d1 is d2
-
-        # LRU deps stay cached when all refs are dropped
-        object_id = id(d1)
-        del d1, d2
-        gc.collect()
-        d1 = DepCachedLru("cat/pkg")
-        d2 = DepCachedLru(s)
-        assert id(d2) == object_id
-
-    def test_weak(self):
-        s = ">=cat/pkg-1.2-r3"
-        d1 = DepCachedWeak(s)
-        d2 = DepCachedWeak(s)
-        assert d1 is d2
-
-        # weakref deps are dropped from the cache when all refs are dropped
-        object_id = id(d1)
-        del d1, d2
-        gc.collect()
-        d1 = DepCachedWeak("cat/pkg")
-        d2 = DepCachedWeak(s)
-        assert id(d2) != object_id
 
 
 class TestCpn:

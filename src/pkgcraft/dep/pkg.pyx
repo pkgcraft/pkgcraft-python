@@ -764,6 +764,17 @@ class DepCachedLru(Dep, metaclass=LruInstanceCache):
     >>> d2 = DepCachedLru(s)
     >>> d1 is d2
     True
+
+    LRU cache objects stay cached when all references are dropped.
+
+    >>> import gc
+    >>> dep_id = repr(d2)
+    >>> del d1, d2
+    >>> _ = gc.collect()
+    >>> l = [DepCachedLru(f"=cat/pkg-{x}") for x in range(100)]
+    >>> d = DepCachedLru(s)
+    >>> repr(d) == dep_id
+    True
     """
 
 
@@ -775,6 +786,17 @@ class DepCachedWeak(Dep, metaclass=WeakInstanceCache):
     >>> d1 = DepCachedWeak(s)
     >>> d2 = DepCachedWeak(s)
     >>> d1 is d2
+    True
+
+    Weak cache objects are dropped when all references are dropped.
+
+    >>> import gc
+    >>> dep_id = repr(d2)
+    >>> del d1, d2
+    >>> _ = gc.collect()
+    >>> l = [DepCachedWeak(f"=cat/pkg-{x}") for x in range(100)]
+    >>> d = DepCachedWeak(s)
+    >>> repr(d) != dep_id
     True
     """
 
