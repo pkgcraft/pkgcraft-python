@@ -304,7 +304,7 @@ class DepSetBase:
             self.cls("a/b::repo", EAPI_LATEST_OFFICIAL)
 
         # invalid args
-        for obj in [None, object()]:
+        for obj in [0, object()]:
             with pytest.raises(TypeError):
                 self.cls(obj)
 

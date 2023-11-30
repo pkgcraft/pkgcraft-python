@@ -773,6 +773,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a valid DepSet pointer.
     uintptr_t pkgcraft_dep_set_len(DepSet *d)
 
+    # Create a new, empty DepSet.
+    #
+    # # Safety
+    # The argument must be a valid DepSetKind.
+    DepSet *pkgcraft_dep_set_new(DepSetKind kind)
+
     # Perform a set operation on two DepSets, creating a new set.
     #
     # Returns NULL on error.

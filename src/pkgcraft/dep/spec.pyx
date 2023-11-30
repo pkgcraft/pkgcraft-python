@@ -167,7 +167,7 @@ cdef class DepSpec:
 cdef class DepSet:
     """Immutable set of dependency objects."""
 
-    def __init__(self, obj="", /, eapi=None, set=DepSetKind.Dependencies):
+    def __init__(self, obj=None, /, eapi=None, set=DepSetKind.Dependencies):
         cdef const C.Eapi *eapi_ptr = NULL
         cdef C.DepSetKind kind = DepSetKind(set)
 
@@ -179,6 +179,8 @@ cdef class DepSet:
             ptr = C.pkgcraft_dep_set_clone((<DepSet>obj).ptr)
         elif isinstance(obj, Iterable):
             ptr = DepSet.from_iter(obj, kind)
+        elif obj is None:
+            ptr = C.pkgcraft_dep_set_new(kind)
         else:
             raise TypeError(f"invalid DepSet type: {obj.__class__.__name__!r}")
 
