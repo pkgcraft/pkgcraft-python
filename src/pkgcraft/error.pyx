@@ -17,7 +17,7 @@ class _PkgcraftError(Exception):
 
     @classmethod
     def __init_subclass__(cls, **kwargs):
-        for kind in cls.kinds:
+        for kind in cls._kinds:
             setting = cls.types.setdefault(kind, cls)
             if setting is not cls:
                 name, existing = cls.__name__, setting.__name__
@@ -28,7 +28,7 @@ class _PkgcraftError(Exception):
 class PkgcraftError(_PkgcraftError):
     """Generic pkgcraft exception."""
 
-    kinds = (C.ERROR_KIND_GENERIC, C.ERROR_KIND_PKGCRAFT)
+    _kinds = (C.ERROR_KIND_GENERIC, C.ERROR_KIND_PKGCRAFT)
 
     def __new__(cls, msg=None, **kwargs):
         if msg is not None:
@@ -41,7 +41,7 @@ class PkgcraftError(_PkgcraftError):
             # only the generic PkgcraftError class is allowed to alter its type
             if (cls is not PkgcraftError and
                     kind != C.ERROR_KIND_PKGCRAFT and
-                    kind not in cls.kinds):  # pragma: no cover
+                    kind not in cls._kinds):  # pragma: no cover
                 raise RuntimeError(f"{cls.__name__} doesn't handle error kind: {kind}")
             if err_cls is not PkgcraftError:
                 inst = super().__new__(err_cls)
@@ -57,37 +57,37 @@ class PkgcraftError(_PkgcraftError):
 
 class ConfigError(PkgcraftError):
     """Generic configuration exception."""
-    kinds = (C.ERROR_KIND_CONFIG,)
+    _kinds = (C.ERROR_KIND_CONFIG,)
 
 
 class InvalidRepo(PkgcraftError):
     """Repo doesn't meet required specifications."""
-    kinds = (C.ERROR_KIND_REPO,)
+    _kinds = (C.ERROR_KIND_REPO,)
 
 
 class InvalidPkg(PkgcraftError):
     """Package doesn't meet required specifications."""
-    kinds = (C.ERROR_KIND_PKG,)
+    _kinds = (C.ERROR_KIND_PKG,)
 
 
 class InvalidCpv(PkgcraftError, ValueError):
     """Package CPV doesn't meet required specifications."""
-    kinds = ()
+    _kinds = ()
 
 
 class InvalidDep(PkgcraftError, ValueError):
     """Package dependency doesn't meet required specifications."""
-    kinds = ()
+    _kinds = ()
 
 
 class InvalidVersion(PkgcraftError, ValueError):
     """Package version doesn't meet required specifications."""
-    kinds = ()
+    _kinds = ()
 
 
 class InvalidRestrict(PkgcraftError, ValueError):
     """Object cannot be converted to a restriction."""
-    kinds = ()
+    _kinds = ()
 
 
 class IndirectType(TypeError):
