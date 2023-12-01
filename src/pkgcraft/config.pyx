@@ -22,14 +22,20 @@ cdef dict repos_to_dict(C.Repo **c_repos, size_t length, bint ref):
 
 @cython.final
 cdef class Config:
-    """Config for the system."""
+    """Config for the system.
 
+    On instance creation, no system config is automatically loaded.
+    """
     def __cinit__(self):
         self.ptr = C.pkgcraft_config_new()
 
     @property
     def repos(self):
-        """Return the config's repo mapping."""
+        """Return the config's repo mapping.
+
+        Returns:
+            Repos:
+        """
         if self._repos is None:
             self._repos = Repos.from_config(self.ptr)
         return self._repos
@@ -50,7 +56,21 @@ cdef class Config:
         return Repo.from_ptr(ptr)
 
     def add_repo(self, repo not None, id=None, priority=0, external=True):
-        """Add a repo via its file path or from a Repo object and return the Repo object."""
+        """Add a repo via its file path or from a Repo object and return the Repo object.
+
+        Args:
+            repo (str | Repo): path to a repo or a repo object
+            id (str | None): repo identifier, if None the path is used
+            priority (int): repo priority
+            external (bool): repo is external from the system config
+
+        Returns:
+            Repo: the repo object (subclassed to its format) added to the config
+
+        Raises:
+            PkgcraftError: on invalid repos
+            ConfigError: on overlap between repos in the config object
+        """
         if isinstance(repo, (str, os.PathLike)):
             path = str(repo)
             return self.add_repo_path(path, id, priority, external)
@@ -61,7 +81,11 @@ cdef class Config:
             return repo
 
     def load(self):
-        """Load pkgcraft config files, if none are found revert to loading portage files."""
+        """Load pkgcraft config files, if none are found revert to loading portage files.
+
+        Raises:
+            PkgcraftError: on config loading failures
+        """
         if C.pkgcraft_config_load(self.ptr) is NULL:
             raise PkgcraftError
 
@@ -69,7 +93,15 @@ cdef class Config:
         self._repos = None
 
     def load_portage_conf(self, path=None):
-        """Load portage config files from a given directory, falling back to default locations."""
+        """Load portage config files from a given directory, falling back to default locations.
+
+        Args:
+            path (str): path to the portage config directory to load, by
+                default the standard locations are used
+
+        Raises:
+            PkgcraftError: on config loading failures
+        """
         path = str(path).encode() if path is not None else None
         if C.pkgcraft_config_load_portage_conf(self.ptr, path) is NULL:
             raise PkgcraftError
@@ -105,7 +137,11 @@ cdef class Repos(Indirect):
 
     @property
     def all(self):
-        """Return the set of all repos."""
+        """Return the set of all repos.
+
+        Returns:
+            RepoSet:
+        """
         if self._all is None:
             ptr = C.pkgcraft_config_repos_set(self.ptr, C.REPOS_ALL)
             self._all = RepoSet.from_ptr(ptr)
@@ -113,7 +149,11 @@ cdef class Repos(Indirect):
 
     @property
     def ebuild(self):
-        """Return the set of all ebuild repos."""
+        """Return the set of all ebuild repos.
+
+        Returns:
+            RepoSet:
+        """
         if self._ebuild is None:
             ptr = C.pkgcraft_config_repos_set(self.ptr, C.REPOS_EBUILD)
             self._ebuild = RepoSet.from_ptr(ptr)
@@ -121,11 +161,26 @@ cdef class Repos(Indirect):
 
     @property
     def configured(self):
-        """Return the set of all configured repos."""
+        """Return the set of all configured repos.
+
+        Returns:
+            RepoSet:
+        """
         if self._configured is None:
             ptr = C.pkgcraft_config_repos_set(self.ptr, C.REPOS_CONFIGURED)
             self._configured = RepoSet.from_ptr(ptr)
         return self._configured
+
+    def get(self, key, default=None):
+        """Get the repo associated with a given key.
+
+        Args:
+            default: fallback value when no matching key exists
+
+        Returns:
+            Repo | None: the repo object if it exists, otherwise the fallback value
+        """
+        return self._repos.get(key, default)
 
     def __eq__(self, other):
         return self._repos == other
@@ -137,9 +192,6 @@ cdef class Repos(Indirect):
         if isinstance(key, int):
             return list(self._repos.values())[key]
         return self._repos[key]
-
-    def get(self, key, default=None):
-        return self._repos.get(key, default)
 
     def __str__(self):
         return str(self._repos)
