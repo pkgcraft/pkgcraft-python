@@ -93,13 +93,10 @@ class InvalidRestrict(PkgcraftError, ValueError):
 class IndirectType(TypeError):
     """Object type instances cannot be directly created."""
 
-    def __init__(self, obj):
-        obj_name = obj.__class__.__name__
-        super().__init__(f"{obj_name} instances cannot be directly created")
-
 
 cdef class Indirect:
     """Instances cannot be directly created."""
 
     def __init__(self, *args, **kwargs):
-        raise IndirectType(self)
+        obj_name = self.__class__.__name__
+        raise IndirectType(f"{obj_name} instances cannot be directly created")
