@@ -10,7 +10,7 @@ cdef tuple get_last_error():
     raise RuntimeError('no pkgcraft error occurred')
 
 
-class _PkgcraftError(Exception):
+class _PkgcraftError:
 
     # map of error kinds to classes
     types = {}
@@ -25,7 +25,7 @@ class _PkgcraftError(Exception):
         super().__init_subclass__(**kwargs)
 
 
-class PkgcraftError(_PkgcraftError):
+class PkgcraftError(_PkgcraftError, Exception):
     """Generic pkgcraft exception."""
 
     _kinds = (C.ERROR_KIND_GENERIC, C.ERROR_KIND_PKGCRAFT)
