@@ -167,7 +167,7 @@ cdef class Dep:
         """Return a Dep without the given attributes.
 
         Args:
-            fields: The attribute names to drop including the following:
+            fields: The supported attribute names include the following:
                 blocker, version, slot, use_deps, and repo.
 
         Returns:
@@ -217,8 +217,10 @@ cdef class Dep:
 
         Args:
             kwargs: The keyword arguments must be attribute names with their corresponding
-                string values or None for removal. Supported attribute names include
-                the following: blocker, version, slot, use_deps, and repo.
+                string values or None for removal. Supported attribute names
+                include the following: category, package, blocker, version,
+                slot, use_deps, and repo. Note that removing the category or
+                package attributes will fail.
 
         Returns:
             Dep: The package dependency with the specified modifications, if
@@ -235,8 +237,8 @@ cdef class Dep:
         >>> d = Dep('cat/pkg')
         >>> str(d.modify(version='>=1.2.3-r4'))
         '>=cat/pkg-1.2.3-r4'
-        >>> str(d.modify(repo='repo'))
-        'cat/pkg::repo'
+        >>> str(d.modify(package='b', repo='repo'))
+        'cat/b::repo'
         >>> str(d.modify(version='~0.1', slot='2/3=', use_deps='a,b,c', repo='test'))
         '~cat/pkg-0.1:2/3=::test[a,b,c]'
 

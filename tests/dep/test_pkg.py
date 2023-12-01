@@ -165,7 +165,7 @@ class TestDep:
                 dep.without(field)
 
         # invalid fields
-        for obj in [object(), None, "field"]:
+        for obj in [object(), None, "category", "package", "field"]:
             with pytest.raises(ValueError):
                 dep.without(obj)
 
