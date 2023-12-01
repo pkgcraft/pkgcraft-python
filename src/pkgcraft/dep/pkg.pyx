@@ -1,5 +1,4 @@
 from enum import IntEnum
-from types import MappingProxyType
 
 cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
@@ -58,7 +57,7 @@ class SlotOperator(IntEnum):
 
 
 # mapping of field names to values for Dep.without()
-_DEP_FIELDS = MappingProxyType({
+cdef dict DEP_FIELDS = {
     'category': C.DEP_FIELD_CATEGORY,
     'package': C.DEP_FIELD_PACKAGE,
     'blocker': C.DEP_FIELD_BLOCKER,
@@ -68,7 +67,7 @@ _DEP_FIELDS = MappingProxyType({
     'slot_op': C.DEP_FIELD_SLOT_OP,
     'use_deps': C.DEP_FIELD_USE_DEPS,
     'repo': C.DEP_FIELD_REPO,
-})
+}
 
 cdef class Dep:
     """Package dependency."""
@@ -202,7 +201,7 @@ cdef class Dep:
                 raise MemoryError
 
             for (i, name) in enumerate(fields):
-                if field := _DEP_FIELDS.get(name, 0):
+                if field := DEP_FIELDS.get(name, 0):
                     dep_fields[i] = field
                 else:
                     raise ValueError(f'invalid field: {name}')
@@ -266,7 +265,7 @@ cdef class Dep:
                 raise MemoryError
 
             for (i, (name, val)) in enumerate(kwargs.items()):
-                if field := _DEP_FIELDS.get(name, 0):
+                if field := DEP_FIELDS.get(name, 0):
                     fields[i] = field
                     value = values_encoded[i]
                     if value is None:
