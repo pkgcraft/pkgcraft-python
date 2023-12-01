@@ -63,8 +63,6 @@ cdef dict DEP_FIELDS = {
     'blocker': C.DEP_FIELD_BLOCKER,
     'version': C.DEP_FIELD_VERSION,
     'slot': C.DEP_FIELD_SLOT,
-    'subslot': C.DEP_FIELD_SUBSLOT,
-    'slot_op': C.DEP_FIELD_SLOT_OP,
     'use_deps': C.DEP_FIELD_USE_DEPS,
     'repo': C.DEP_FIELD_REPO,
 }
@@ -170,7 +168,7 @@ cdef class Dep:
 
         Args:
             fields: The attribute names to drop including the following:
-                blocker, version, slot, subslot, slot_op, use_deps, and repo.
+                blocker, version, slot, use_deps, and repo.
 
         Returns:
             Dep: The package dependency without the specified atttributes, if
@@ -188,8 +186,6 @@ cdef class Dep:
         'cat/pkg:4/5[a,b]'
         >>> str(d.without("use_deps", "version"))
         'cat/pkg:4/5'
-        >>> str(d.without("use_deps", "version", "subslot"))
-        'cat/pkg:4'
         >>> str(d.without("use_deps", "version", "slot"))
         'cat/pkg'
         """
@@ -222,8 +218,7 @@ cdef class Dep:
         Args:
             kwargs: The keyword arguments must be attribute names with their corresponding
                 string values or None for removal. Supported attribute names include
-                the following: blocker, version, slot, subslot, slot_op, use_deps, and
-                repo.
+                the following: blocker, version, slot, use_deps, and repo.
 
         Returns:
             Dep: The package dependency with the specified modifications, if
