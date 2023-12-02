@@ -96,6 +96,18 @@ cdef extern from "pkgcraft.h":
         SLOT_OPERATOR_EQUAL # = 1,
         SLOT_OPERATOR_STAR,
 
+    cdef enum UseDepDefault:
+        USE_DEP_DEFAULT_ENABLED,
+        USE_DEP_DEFAULT_DISABLED,
+
+    cdef enum UseDepKind:
+        USE_DEP_KIND_ENABLED,
+        USE_DEP_KIND_DISABLED,
+        USE_DEP_KIND_EQUAL,
+        USE_DEP_KIND_NOT_EQUAL,
+        USE_DEP_KIND_ENABLED_CONDITIONAL,
+        USE_DEP_KIND_DISABLED_CONDITIONAL,
+
     # System config
     cdef struct Config:
         pass
@@ -180,7 +192,7 @@ cdef extern from "pkgcraft.h":
         pass
 
     # Opaque wrapper for pkgcraft::dep::UseDep.
-    cdef struct UseDep:
+    cdef struct UseDepWrapper:
         pass
 
     cdef struct Version:
@@ -196,6 +208,12 @@ cdef extern from "pkgcraft.h":
         DepSetKind set
         DepSpecKind kind
         DepSpecWrapper *dep
+
+    # C-compatible wrapper for pkgcraft::dep::DepSpec.
+    cdef struct UseDep:
+        UseDepKind kind
+        UseDepDefault *missing
+        UseDepWrapper *dep
 
     cdef struct PkgcraftError:
         char *message

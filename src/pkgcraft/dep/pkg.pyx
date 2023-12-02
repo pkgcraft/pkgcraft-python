@@ -56,6 +56,20 @@ class SlotOperator(IntEnum):
         return int(self) == other
 
 
+class UseDepKind(IntEnum):
+    Enabled = C.USE_DEP_KIND_ENABLED
+    Disabled = C.USE_DEP_KIND_DISABLED
+    Equal = C.USE_DEP_KIND_EQUAL
+    NotEqual = C.USE_DEP_KIND_NOT_EQUAL
+    EnabledConditional = C.USE_DEP_KIND_ENABLED_CONDITIONAL
+    DisabledConditional = C.USE_DEP_KIND_DISABLED_CONDITIONAL
+
+
+class UseDepDefault(IntEnum):
+    Enabled = C.USE_DEP_DEFAULT_ENABLED
+    Disabled = C.USE_DEP_DEFAULT_DISABLED
+
+
 cdef class UseDep:
     """Package USE dependency."""
 
@@ -77,6 +91,17 @@ cdef class UseDep:
         >>> u = UseDep('!use?')
         >>> u.flag
         'use'
+        >>> u.kind == UseDepKind.DisabledConditional
+        True
+        >>> u.missing is None
+        True
+        >>> u = UseDep('use(+)=')
+        >>> u.flag
+        'use'
+        >>> u.kind == UseDepKind.Equal
+        True
+        >>> u.missing == UseDepDefault.Enabled
+        True
 
         Invalid
 
@@ -86,15 +111,27 @@ cdef class UseDep:
         pkgcraft.error.PkgcraftError: parsing failure: invalid use dep: +
         ...
         """
-        self.ptr = C.pkgcraft_use_dep_new(s.encode())
-        if self.ptr is NULL:
+        ptr = C.pkgcraft_use_dep_new(s.encode())
+        if ptr is NULL:
             raise PkgcraftError
+
+        self.kind = UseDepKind(ptr.kind)
+        if ptr.missing is NULL:
+            self.missing = None
+        else:
+            self.missing = UseDepDefault(ptr.missing[0])
+        self.ptr = ptr
 
     @staticmethod
     cdef UseDep from_ptr(C.UseDep *ptr):
         """Create a UseDep from a pointer."""
         inst = <UseDep>UseDep.__new__(UseDep)
         inst.ptr = <C.UseDep *>ptr
+        inst.kind = UseDepKind(ptr.kind)
+        if ptr.missing is NULL:
+            inst.missing = None
+        else:
+            inst.missing = UseDepDefault(ptr.missing[0])
         return inst
 
     @property
@@ -134,7 +171,8 @@ cdef class UseDep:
     def __repr__(self):
         addr = <size_t>&self.ptr
         name = self.__class__.__name__
-        return f"<{name} '{self}' at 0x{addr:0x}>"
+        kind = self.kind.name
+        return f"<{name} {kind} '{self}' at 0x{addr:0x}>"
 
     def __dealloc__(self):
         C.pkgcraft_use_dep_free(self.ptr)

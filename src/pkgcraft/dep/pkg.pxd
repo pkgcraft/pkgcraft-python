@@ -4,6 +4,8 @@ from ..eapi cimport Eapi
 
 cdef class UseDep:
     cdef C.UseDep *ptr
+    cdef readonly object kind
+    cdef readonly object missing
     # cached fields
     cdef str _flag
     cdef int _hash
