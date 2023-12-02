@@ -179,6 +179,10 @@ cdef extern from "pkgcraft.h":
     cdef struct Uri:
         pass
 
+    # Opaque wrapper for pkgcraft::dep::UseDep.
+    cdef struct UseDep:
+        pass
+
     cdef struct Version:
         pass
 
@@ -978,7 +982,16 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Dep pointer.
-    char **pkgcraft_dep_use_deps(Dep *d, uintptr_t *len)
+    UseDep **pkgcraft_dep_use_deps(Dep *d, uintptr_t *len)
+
+    # Get the USE dependencies of a package dependency as raw strings.
+    # For example, the package dependency "=cat/pkg-1-r2[a,b,c]" has USE dependencies of "a, b, c".
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a non-null Dep pointer.
+    char **pkgcraft_dep_use_deps_str(Dep *d, uintptr_t *len)
 
     # Determine if a string is a valid package dependency.
     #
@@ -1872,6 +1885,46 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a Uri pointer.
     char *pkgcraft_uri_uri(Uri *u)
+
+    # Compare two package USE dependencies returning -1, 0, or 1 if the first is less than, equal to,
+    # or greater than the second, respectively.
+    #
+    # # Safety
+    # The arguments must be non-null UseDep pointers.
+    int pkgcraft_use_dep_cmp(UseDep *u1,
+                             UseDep *u2)
+
+    # Get the flag of a package USE dependency.
+    #
+    # # Safety
+    # The argument must be a non-null UseDep pointer.
+    char *pkgcraft_use_dep_flag(UseDep *u)
+
+    # Free a package USE dependency.
+    #
+    # # Safety
+    # The argument must be a UseDep pointer or NULL.
+    void pkgcraft_use_dep_free(UseDep *u)
+
+    # Return the hash value for a package USE dependency.
+    #
+    # # Safety
+    # The argument must be a non-null UseDep pointer.
+    uint64_t pkgcraft_use_dep_hash(UseDep *u)
+
+    # Parse a string into a package USE dependency.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null string.
+    UseDep *pkgcraft_use_dep_new(const char *s)
+
+    # Return the string for a package USE dependency.
+    #
+    # # Safety
+    # The argument must be a non-null UseDep pointer.
+    char *pkgcraft_use_dep_str(UseDep *u)
 
     # Return a version's base, e.g. the version "1-r2" has a base of "1".
     #

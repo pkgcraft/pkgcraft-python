@@ -2,6 +2,16 @@ from .. cimport C
 from ..eapi cimport Eapi
 
 
+cdef class UseDep:
+    cdef C.UseDep *ptr
+    # cached fields
+    cdef str _flag
+    cdef int _hash
+
+    @staticmethod
+    cdef UseDep from_ptr(C.UseDep *)
+
+
 cdef class Dep:
     cdef C.Dep *ptr
     cdef Eapi eapi

@@ -72,7 +72,7 @@ class TestDep:
         assert dep.subslot == "2"
         assert dep.slot_op == SlotOperator.Equal
         assert dep.slot_op == "="
-        assert dep.use_deps == ["a", "b", "c"]
+        assert dep.use_deps == [UseDep("a"), UseDep("b"), UseDep("c")]
         assert dep.repo == "repo"
         assert dep.version == Version(">=1-r2")
         assert dep.op == Operator.GreaterOrEqual
@@ -262,7 +262,7 @@ class TestDep:
             "revision": Revision,
             "version": Version,
             "slot_op": SlotOperator.from_str,
-            "use": OrderedFrozenSet,
+            "use": lambda l: OrderedFrozenSet(UseDep(x) for x in l),
         }
 
         for entry in TEST_DATA.toml("dep.toml")["valid"]:

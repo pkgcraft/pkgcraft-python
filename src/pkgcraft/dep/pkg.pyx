@@ -4,7 +4,7 @@ cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport C
-from .._misc cimport SENTINEL, cstring_iter, cstring_to_str
+from .._misc cimport SENTINEL, cstring_to_str
 from ..eapi cimport Eapi
 from ..restrict cimport Restrict
 from ..types cimport OrderedFrozenSet
@@ -13,7 +13,7 @@ from .version cimport Version
 
 from .._misc import LruInstanceCache, WeakInstanceCache
 from ..eapi import EAPI_LATEST
-from ..error import InvalidDep
+from ..error import InvalidDep, PkgcraftError
 
 
 class Blocker(IntEnum):
@@ -56,6 +56,90 @@ class SlotOperator(IntEnum):
         return int(self) == other
 
 
+cdef class UseDep:
+    """Package USE dependency."""
+
+    def __init__(self, s: str):
+        """Create a new package USE dependency.
+
+        Args:
+            s: the USE string to parse
+
+        Returns:
+            UseDep: the created package USE dependency instance
+
+        Raises:
+            PkgcraftError: on parsing failure
+
+        Valid
+
+        >>> from pkgcraft.dep import UseDep
+        >>> u = UseDep('!use?')
+        >>> u.flag
+        'use'
+
+        Invalid
+
+        >>> UseDep('+')
+        Traceback (most recent call last):
+            ...
+        pkgcraft.error.PkgcraftError: parsing failure: invalid use dep: +
+        ...
+        """
+        self.ptr = C.pkgcraft_use_dep_new(s.encode())
+        if self.ptr is NULL:
+            raise PkgcraftError
+
+    @staticmethod
+    cdef UseDep from_ptr(C.UseDep *ptr):
+        """Create a UseDep from a pointer."""
+        inst = <UseDep>UseDep.__new__(UseDep)
+        inst.ptr = <C.UseDep *>ptr
+        return inst
+
+    @property
+    def flag(self):
+        """Get the flag name of a package USE dependency.
+
+        Returns:
+            str: the flag name
+
+        >>> from pkgcraft.dep import UseDep
+        >>> u = UseDep('!use(-)?')
+        >>> u.flag
+        'use'
+        """
+        if self._flag is None:
+            self._flag = cstring_to_str(C.pkgcraft_use_dep_flag(self.ptr))
+        return self._flag
+
+    def __eq__(self, other):
+        if isinstance(other, UseDep):
+            return C.pkgcraft_use_dep_cmp(self.ptr, (<UseDep>other).ptr) == 0
+        return NotImplemented
+
+    def __ne__(self, other):
+        if isinstance(other, UseDep):
+            return C.pkgcraft_use_dep_cmp(self.ptr, (<UseDep>other).ptr) != 0
+        return NotImplemented
+
+    def __hash__(self):
+        if not self._hash:
+            self._hash = C.pkgcraft_use_dep_hash(self.ptr)
+        return self._hash
+
+    def __str__(self):
+        return cstring_to_str(C.pkgcraft_use_dep_str(self.ptr))
+
+    def __repr__(self):
+        addr = <size_t>&self.ptr
+        name = self.__class__.__name__
+        return f"<{name} '{self}' at 0x{addr:0x}>"
+
+    def __dealloc__(self):
+        C.pkgcraft_use_dep_free(self.ptr)
+
+
 # mapping of field names to values for Dep.without()
 cdef dict DEP_FIELDS = {
     'category': C.DEP_FIELD_CATEGORY,
@@ -91,7 +175,9 @@ cdef class Dep:
             Dep: the created package dependency instance
 
         Raises:
-            InvalidDep: on package dependency parsing failures
+            InvalidDep: on parsing failure
+
+        Valid
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2:0/2::repo[a,b]')
@@ -107,12 +193,12 @@ cdef class Dep:
         '0'
         >>> dep.subslot
         '2'
-        >>> list(dep.use_deps)
+        >>> list(map(str, dep.use_deps))
         ['a', 'b']
         >>> dep.repo
         'repo'
 
-        Invalid package dependency
+        Invalid
 
         >>> Dep('cat/pkg-1')
         Traceback (most recent call last):
@@ -485,10 +571,10 @@ cdef class Dep:
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2[a,b,c]')
-        >>> list(dep.use_deps)
+        >>> list(map(str, dep.use_deps))
         ['a', 'b', 'c']
         >>> dep = Dep('=cat/pkg-1-r2[-a(-),b(+)=,!c(-)?]')
-        >>> list(dep.use_deps)
+        >>> list(map(str, dep.use_deps))
         ['-a(-)', 'b(+)=', '!c(-)?']
         >>> dep = Dep('=cat/pkg-1-r2')
         >>> dep.use_deps is None
@@ -496,8 +582,9 @@ cdef class Dep:
         """
         cdef size_t length
         if self._use_deps is SENTINEL:
-            if c_strs := C.pkgcraft_dep_use_deps(self.ptr, &length):
-                self._use_deps = OrderedFrozenSet(cstring_iter(c_strs, length))
+            if ptrs := C.pkgcraft_dep_use_deps(self.ptr, &length):
+                self._use_deps = OrderedFrozenSet(UseDep.from_ptr(ptrs[i]) for i in range(length))
+                C.pkgcraft_array_free(<void **>ptrs, length)
             else:
                 self._use_deps = None
         return self._use_deps
