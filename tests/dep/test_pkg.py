@@ -38,6 +38,33 @@ class TestSlotOperator:
                 SlotOperator.from_str(obj)
 
 
+class TestUseDep:
+    def test_creation(self):
+        # valid
+        for d, default in (
+            ("", None),
+            ("(+)", UseDepDefault.Enabled),
+            ("(-)", UseDepDefault.Disabled),
+        ):
+            for s, kind in (
+                (f"u{d}", UseDepKind.Enabled),
+                (f"-u{d}", UseDepKind.Disabled),
+                (f"u{d}=", UseDepKind.Equal),
+                (f"!u{d}=", UseDepKind.NotEqual),
+                (f"u{d}?", UseDepKind.EnabledConditional),
+                (f"!u{d}?", UseDepKind.DisabledConditional),
+            ):
+                use = UseDep(s)
+                assert use.kind == kind
+                assert use.flag == "u"
+                assert use.missing == default
+
+        # invalid
+        for s in ("u?(+)", "!-u"):
+            with pytest.raises(PkgcraftError, match=f"invalid use dep: {re.escape(s)}"):
+                UseDep(s)
+
+
 class TestDep:
     def test_creation(self):
         # no version
@@ -63,7 +90,7 @@ class TestDep:
         assert "Dep 'cat/pkg' at 0x" in repr(dep)
 
         # all fields -- extended EAPI default allows repo deps
-        dep = Dep("!!>=cat/pkg-1-r2:0/2=::repo[a,b,c]")
+        dep = Dep("!!>=cat/pkg-1-r2:0/2=::repo[a,-b,c(+)?]")
         assert dep.category == "cat"
         assert dep.package == "pkg"
         assert dep.blocker == Blocker.Strong
@@ -72,7 +99,7 @@ class TestDep:
         assert dep.subslot == "2"
         assert dep.slot_op == SlotOperator.Equal
         assert dep.slot_op == "="
-        assert dep.use_deps == [UseDep("a"), UseDep("b"), UseDep("c")]
+        assert dep.use_deps == [UseDep("a"), UseDep("-b"), UseDep("c(+)?")]
         assert dep.repo == "repo"
         assert dep.version == Version(">=1-r2")
         assert dep.op == Operator.GreaterOrEqual
@@ -85,8 +112,8 @@ class TestDep:
         assert dep.pvr == "1-r2"
         assert dep.cpn == "cat/pkg"
         assert dep.cpv == "cat/pkg-1-r2"
-        assert str(dep) == "!!>=cat/pkg-1-r2:0/2=::repo[a,b,c]"
-        assert "Dep '!!>=cat/pkg-1-r2:0/2=::repo[a,b,c]' at 0x" in repr(dep)
+        assert str(dep) == "!!>=cat/pkg-1-r2:0/2=::repo[a,-b,c(+)?]"
+        assert "Dep '!!>=cat/pkg-1-r2:0/2=::repo[a,-b,c(+)?]' at 0x" in repr(dep)
 
         # failures due to EAPI
         for eapi in (str(EAPI_LATEST_OFFICIAL), EAPI_LATEST_OFFICIAL):
