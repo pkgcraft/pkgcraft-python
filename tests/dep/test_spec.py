@@ -25,6 +25,8 @@ class TestDepSpec:
         d = self.req_use("a")
         assert len(d) == 1
         assert str(d) == "a"
+        assert d.kind == DepSpecKind.Enabled
+        assert d.set == DepSetKind.RequiredUse
         assert "Enabled 'a' at 0x" in repr(d)
         # EAPI specific
         assert d == self.req_use("a", eapi=str(EAPI_LATEST_OFFICIAL))
@@ -33,36 +35,43 @@ class TestDepSpec:
         d = self.req_use("!a")
         assert len(d) == 1
         assert str(d) == "!a"
+        assert d.kind == DepSpecKind.Disabled
         assert "Disabled '!a' at 0x" in repr(d)
 
         d = self.req_use("( a b )")
         assert len(d) == 2
         assert str(d) == "( a b )"
+        assert d.kind == DepSpecKind.AllOf
         assert "AllOf '( a b )' at 0x" in repr(d)
 
         d = self.req_use("|| ( a b )")
         assert len(d) == 2
         assert str(d) == "|| ( a b )"
+        assert d.kind == DepSpecKind.AnyOf
         assert "AnyOf '|| ( a b )' at 0x" in repr(d)
 
         d = self.req_use("^^ ( a b )")
         assert len(d) == 2
         assert str(d) == "^^ ( a b )"
+        assert d.kind == DepSpecKind.ExactlyOneOf
         assert "ExactlyOneOf '^^ ( a b )' at 0x" in repr(d)
 
         d = self.req_use("?? ( a b )")
         assert len(d) == 2
         assert str(d) == "?? ( a b )"
+        assert d.kind == DepSpecKind.AtMostOneOf
         assert "AtMostOneOf '?? ( a b )' at 0x" in repr(d)
 
         d = self.req_use("u? ( a )")
         assert len(d) == 1
         assert str(d) == "u? ( a )"
+        assert d.kind == DepSpecKind.UseEnabled
         assert "UseEnabled 'u? ( a )' at 0x" in repr(d)
 
         d = self.req_use("!u1? ( a u2? ( b ) )")
         assert len(d) == 2
         assert str(d) == "!u1? ( a u2? ( b ) )"
+        assert d.kind == DepSpecKind.UseDisabled
         assert "UseDisabled '!u1? ( a u2? ( b ) )' at 0x" in repr(d)
 
         # raw Deps
@@ -236,6 +245,7 @@ class DepSetBase:
         assert len(d) == 0
         assert str(d) == ""
         assert "Dependencies '' at 0x" in repr(d)
+        assert d.set == DepSetKind.Dependencies
 
         dep1 = DepSpec("a/b")
         dep2 = DepSpec("u? ( c/d )")

@@ -4,8 +4,8 @@ from ..error cimport Indirect
 
 cdef class DepSpec:
     cdef C.DepSpec *ptr
-    cdef object kind
-    cdef object set
+    cdef readonly object kind
+    cdef readonly object set
 
     @staticmethod
     cdef DepSpec from_ptr(C.DepSpec *)
@@ -13,7 +13,7 @@ cdef class DepSpec:
 
 cdef class DepSet:
     cdef C.DepSet *ptr
-    cdef object set
+    cdef readonly object set
 
     @staticmethod
     cdef DepSet from_ptr(C.DepSet *)
