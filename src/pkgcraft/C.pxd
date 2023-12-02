@@ -212,6 +212,7 @@ cdef extern from "pkgcraft.h":
     # C-compatible wrapper for pkgcraft::dep::DepSpec.
     cdef struct UseDep:
         UseDepKind kind
+        char *flag
         UseDepDefault *missing
         UseDepWrapper *dep
 
@@ -1911,12 +1912,6 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null UseDep pointers.
     int pkgcraft_use_dep_cmp(UseDep *u1,
                              UseDep *u2)
-
-    # Get the flag of a package USE dependency.
-    #
-    # # Safety
-    # The argument must be a non-null UseDep pointer.
-    char *pkgcraft_use_dep_flag(UseDep *u)
 
     # Free a package USE dependency.
     #

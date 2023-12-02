@@ -95,6 +95,8 @@ cdef class UseDep:
         True
         >>> u.missing is None
         True
+        >>> str(u)
+        '!use?'
         >>> u = UseDep('use(+)=')
         >>> u.flag
         'use'
@@ -102,6 +104,8 @@ cdef class UseDep:
         True
         >>> u.missing == UseDepDefault.Enabled
         True
+        >>> str(u)
+        'use(+)='
 
         Invalid
 
@@ -116,6 +120,7 @@ cdef class UseDep:
             raise PkgcraftError
 
         self.kind = UseDepKind(ptr.kind)
+        self.flag = ptr.flag.decode()
         if ptr.missing is NULL:
             self.missing = None
         else:
@@ -128,27 +133,12 @@ cdef class UseDep:
         inst = <UseDep>UseDep.__new__(UseDep)
         inst.ptr = <C.UseDep *>ptr
         inst.kind = UseDepKind(ptr.kind)
+        inst.flag = ptr.flag.decode()
         if ptr.missing is NULL:
             inst.missing = None
         else:
             inst.missing = UseDepDefault(ptr.missing[0])
         return inst
-
-    @property
-    def flag(self):
-        """Get the flag name of a package USE dependency.
-
-        Returns:
-            str: the flag name
-
-        >>> from pkgcraft.dep import UseDep
-        >>> u = UseDep('!use(-)?')
-        >>> u.flag
-        'use'
-        """
-        if self._flag is None:
-            self._flag = cstring_to_str(C.pkgcraft_use_dep_flag(self.ptr))
-        return self._flag
 
     def __eq__(self, other):
         if isinstance(other, UseDep):
