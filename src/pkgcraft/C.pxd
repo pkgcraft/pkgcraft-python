@@ -96,10 +96,12 @@ cdef extern from "pkgcraft.h":
         SLOT_OPERATOR_EQUAL # = 1,
         SLOT_OPERATOR_STAR,
 
+    # Package USE dependency default when missing.
     cdef enum UseDepDefault:
         USE_DEP_DEFAULT_ENABLED,
         USE_DEP_DEFAULT_DISABLED,
 
+    # Package USE dependency type.
     cdef enum UseDepKind:
         USE_DEP_KIND_ENABLED,
         USE_DEP_KIND_DISABLED,

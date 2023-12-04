@@ -232,6 +232,7 @@ cdef class Dep:
         Traceback (most recent call last):
             ...
         pkgcraft.error.InvalidDep: parsing failure: invalid dep: cat/pkg-1
+        ...
         """
         if eapi is not None:
             self.eapi = Eapi._from_obj(eapi)
