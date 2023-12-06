@@ -1138,29 +1138,37 @@ cdef extern from "pkgcraft.h":
     # Enable pkgcraft logging support.
     void pkgcraft_logging_enable(LogCallback cb, LogLevel level)
 
-    # Parse a package category.
+    # Verify a package category name is valid.
     #
     # Returns NULL on error.
     #
     # # Safety
-    # The argument should point to a UTF-8 string.
+    # The argument be a valid UTF-8 string.
     const char *pkgcraft_parse_category(const char *s)
 
-    # Parse a package name.
+    # Verify a package name is valid.
     #
     # Returns NULL on error.
     #
     # # Safety
-    # The argument should point to a UTF-8 string.
+    # The argument be a valid UTF-8 string.
     const char *pkgcraft_parse_package(const char *s)
 
-    # Parse a package repo.
+    # Verify a repository name is valid.
     #
     # Returns NULL on error.
     #
     # # Safety
-    # The argument should point to a UTF-8 string.
+    # The argument be a valid UTF-8 string.
     const char *pkgcraft_parse_repo(const char *s)
+
+    # Verify a package USE flag name is valid.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument be a valid UTF-8 string.
+    const char *pkgcraft_parse_use_flag(const char *s)
 
     # Compare two packages returning -1, 0, or 1 if the first package is less than, equal to, or
     # greater than the second package, respectively.

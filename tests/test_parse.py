@@ -32,3 +32,13 @@ def test_repo():
         assert not parse.repo(s)
         with pytest.raises(PkgcraftError, match=f"invalid repo name: {s}"):
             parse.repo(s, raised=True)
+
+
+def test_use_flag():
+    assert parse.use_flag("use")
+
+    # invalid
+    for s in ("use flag", "-use", "@use"):
+        assert not parse.use_flag(s)
+        with pytest.raises(PkgcraftError, match=f"invalid USE flag: {s}"):
+            parse.use_flag(s, raised=True)
