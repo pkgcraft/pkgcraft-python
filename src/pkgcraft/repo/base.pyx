@@ -12,7 +12,7 @@ from ..restrict cimport Restrict
 from ..types cimport OrderedFrozenSet
 from . cimport ConfiguredRepo, EbuildRepo, FakeRepo
 
-from ..error import InvalidRepo
+from ..error import InvalidRepo, PkgcraftError
 
 
 cdef class Repo:
@@ -112,17 +112,17 @@ cdef class Repo:
             raise KeyError(obj)
 
     def __iter__(self):
-        return _Iter.create(self.ptr)
+        return _Iter.create(self)
 
     def iter_cpv(self):
-        return _IterCpv.create(self.ptr)
+        return _IterCpv.create(self)
 
     def iter(self, restrict=None):
         """Iterate over a repo's packages, optionally applying a restriction."""
         if restrict is None:
-            return _Iter.create(self.ptr)
+            return _Iter.create(self)
         else:
-            return _IterRestrict.create(self.ptr, restrict)
+            return _IterRestrict.create(self, restrict)
 
     def __lt__(self, other):
         if isinstance(other, Repo):
@@ -183,10 +183,12 @@ cdef class _IterCpv(Indirect):
     cdef C.RepoIterCpv *ptr
 
     @staticmethod
-    cdef _IterCpv create(C.Repo *ptr):
+    cdef _IterCpv create(Repo r):
         inst = <_IterCpv>_IterCpv.__new__(_IterCpv)
-        inst.ptr = C.pkgcraft_repo_iter_cpv(ptr)
-        return inst
+        if ptr := C.pkgcraft_repo_iter_cpv(r.ptr):
+            inst.ptr = ptr
+            return inst
+        raise PkgcraftError
 
     def __iter__(self):
         return self
@@ -207,10 +209,12 @@ cdef class _Iter(Indirect):
     cdef C.RepoIter *ptr
 
     @staticmethod
-    cdef _Iter create(C.Repo *ptr):
+    cdef _Iter create(Repo r):
         inst = <_Iter>_Iter.__new__(_Iter)
-        inst.ptr = C.pkgcraft_repo_iter(ptr)
-        return inst
+        if ptr := C.pkgcraft_repo_iter(r.ptr):
+            inst.ptr = ptr
+            return inst
+        raise PkgcraftError
 
     def __iter__(self):
         return self
@@ -231,11 +235,13 @@ cdef class _IterRestrict(Indirect):
     cdef C.RepoIterRestrict *ptr
 
     @staticmethod
-    cdef _IterRestrict create(C.Repo *ptr, object obj):
+    cdef _IterRestrict create(Repo repo, object obj):
         cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
         inst = <_IterRestrict>_IterRestrict.__new__(_IterRestrict)
-        inst.ptr = C.pkgcraft_repo_iter_restrict(ptr, r.ptr)
-        return inst
+        if ptr := C.pkgcraft_repo_iter_restrict(repo.ptr, r.ptr):
+            inst.ptr = ptr
+            return inst
+        raise PkgcraftError
 
     def __iter__(self):
         return self
