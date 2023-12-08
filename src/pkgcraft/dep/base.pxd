@@ -28,4 +28,3 @@ cdef class MutableDependencySet(DependencySet):
 
     @staticmethod
     cdef MutableDependencySet from_ptr(C.DependencySet *)
-

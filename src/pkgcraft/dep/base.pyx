@@ -798,4 +798,3 @@ cdef class _IntoIterRecursive(Indirect):
 
     def __dealloc__(self):
         C.pkgcraft_dependency_set_into_iter_recursive_free(self.ptr)
-
