@@ -23,25 +23,25 @@ cdef extern from "pkgcraft.h":
         DEP_FIELD_REPO,
     ctypedef uint32_t DepField
 
-    # DepSet variants.
-    cdef enum DepSetKind:
-        DEP_SET_KIND_DEPENDENCIES,
-        DEP_SET_KIND_SRC_URI,
-        DEP_SET_KIND_LICENSE,
-        DEP_SET_KIND_PROPERTIES,
-        DEP_SET_KIND_REQUIRED_USE,
-        DEP_SET_KIND_RESTRICT,
+    # Dependency variants.
+    cdef enum DependencyKind:
+        DEPENDENCY_KIND_ENABLED,
+        DEPENDENCY_KIND_DISABLED,
+        DEPENDENCY_KIND_ALL_OF,
+        DEPENDENCY_KIND_ANY_OF,
+        DEPENDENCY_KIND_EXACTLY_ONE_OF,
+        DEPENDENCY_KIND_AT_MOST_ONE_OF,
+        DEPENDENCY_KIND_USE_ENABLED,
+        DEPENDENCY_KIND_USE_DISABLED,
 
-    # DepSpec variants.
-    cdef enum DepSpecKind:
-        DEP_SPEC_KIND_ENABLED,
-        DEP_SPEC_KIND_DISABLED,
-        DEP_SPEC_KIND_ALL_OF,
-        DEP_SPEC_KIND_ANY_OF,
-        DEP_SPEC_KIND_EXACTLY_ONE_OF,
-        DEP_SPEC_KIND_AT_MOST_ONE_OF,
-        DEP_SPEC_KIND_USE_ENABLED,
-        DEP_SPEC_KIND_USE_DISABLED,
+    # DependencySet variants.
+    cdef enum DependencySetKind:
+        DEPENDENCY_SET_KIND_PACKAGE,
+        DEPENDENCY_SET_KIND_SRC_URI,
+        DEPENDENCY_SET_KIND_LICENSE,
+        DEPENDENCY_SET_KIND_PROPERTIES,
+        DEPENDENCY_SET_KIND_REQUIRED_USE,
+        DEPENDENCY_SET_KIND_RESTRICT,
 
     cdef enum ErrorKind:
         ERROR_KIND_GENERIC,
@@ -122,28 +122,28 @@ cdef extern from "pkgcraft.h":
     cdef struct Dep:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::DepSet.
-    cdef struct DepSetWrapper:
-        pass
-
     # Opaque wrapper for pkgcraft::dep::spec::IntoIter<String, T>.
-    cdef struct DepSpecIntoIter:
+    cdef struct DependencyIntoIter:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::spec::IntoIterConditionals<String, T>.
-    cdef struct DepSpecIntoIterConditionals:
+    # Opaque wrapper for pkgcraft::dep::IntoIterConditionals<String, T>.
+    cdef struct DependencyIntoIterConditionals:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::spec::IntoIterFlatten<String, T>.
-    cdef struct DepSpecIntoIterFlatten:
+    # Opaque wrapper for pkgcraft::dep::IntoIterFlatten<String, T>.
+    cdef struct DependencyIntoIterFlatten:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::spec::IntoIterRecursive<String, T>.
-    cdef struct DepSpecIntoIterRecursive:
+    # Opaque wrapper for pkgcraft::dep::IntoIterRecursive<String, T>.
+    cdef struct DependencyIntoIterRecursive:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::DepSpec.
-    cdef struct DepSpecWrapper:
+    # Opaque wrapper for pkgcraft::dep::DependencySet.
+    cdef struct DependencySetWrapper:
+        pass
+
+    # Opaque wrapper for pkgcraft::dep::Dependency.
+    cdef struct DependencyWrapper:
         pass
 
     # EAPI object.
@@ -200,23 +200,23 @@ cdef extern from "pkgcraft.h":
     cdef struct Version:
         pass
 
-    # C-compatible wrapper for pkgcraft::dep::DepSet.
-    cdef struct DepSet:
-        DepSetKind set
-        DepSetWrapper *dep
-
-    # C-compatible wrapper for pkgcraft::dep::DepSpec.
-    cdef struct DepSpec:
-        DepSetKind set
-        DepSpecKind kind
-        DepSpecWrapper *dep
-
-    # C-compatible wrapper for pkgcraft::dep::DepSpec.
+    # C-compatible wrapper for pkgcraft::dep::UseDep.
     cdef struct UseDep:
         UseDepKind kind
         char *flag
         UseDepDefault *missing
         UseDepWrapper *dep
+
+    # C-compatible wrapper for pkgcraft::dep::Dependency.
+    cdef struct Dependency:
+        DependencySetKind set
+        DependencyKind kind
+        DependencyWrapper *dep
+
+    # C-compatible wrapper for pkgcraft::dep::DependencySet.
+    cdef struct DependencySet:
+        DependencySetKind set
+        DependencySetWrapper *dep
 
     cdef struct PkgcraftError:
         char *message
@@ -610,250 +610,6 @@ cdef extern from "pkgcraft.h":
     # The arguments must be valid Restrict and Dep pointers.
     bool pkgcraft_dep_restrict_matches(Dep *d, Restrict *r)
 
-    # Perform a set operation on two DepSets, assigning to the first.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The arguments must be valid DepSet pointers.
-    DepSet *pkgcraft_dep_set_assign_op_set(SetOp op, DepSet *d1, DepSet *d2)
-
-    # Clone a DepSet.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    DepSet *pkgcraft_dep_set_clone(DepSet *d)
-
-    # Determine if a DepSet contains a given DepSpec.
-    #
-    # # Safety
-    # The arguments must be valid DepSet and DepSpec pointers.
-    bool pkgcraft_dep_set_contains_dep_spec(DepSet *s, DepSpec *d)
-
-    # Determine if two DepSets are equal.
-    #
-    # # Safety
-    # The arguments must be valid DepSet pointers.
-    bool pkgcraft_dep_set_eq(DepSet *d1, DepSet *d2)
-
-    # Evaluate a DepSet.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    DepSet *pkgcraft_dep_set_evaluate(DepSet *d, char **options, uintptr_t len)
-
-    # Forcibly evaluate a DepSet.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    DepSet *pkgcraft_dep_set_evaluate_force(DepSet *d, bool force)
-
-    # Free a DepSet.
-    #
-    # # Safety
-    # The argument must be a DepSet pointer or NULL.
-    void pkgcraft_dep_set_free(DepSet *d)
-
-    # Create a DepSet from an array of DepSpec objects.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The argument should be an array of similarly-typed DepSpec objects.
-    DepSet *pkgcraft_dep_set_from_iter(DepSpec **deps, uintptr_t len, DepSetKind kind)
-
-    # Returns the DepSpec element for a given index.
-    #
-    # Returns NULL on index nonexistence.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    DepSpec *pkgcraft_dep_set_get_index(DepSet *d, uintptr_t index)
-
-    # Return the hash value for a DepSet.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    uint64_t pkgcraft_dep_set_hash(DepSet *d)
-
-    # Insert a DepSpec into a DepSet.
-    #
-    # Returns false if an equivalent value already exists, otherwise true.
-    #
-    # # Safety
-    # The arguments must be valid DepSet and DepSpec pointers.
-    bool pkgcraft_dep_set_insert(DepSet *d, DepSpec *value)
-
-    # Return an iterator for a DepSet.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    DepSpecIntoIter *pkgcraft_dep_set_into_iter(DepSet *d)
-
-    # Return a conditionals iterator for a DepSet.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    DepSpecIntoIterConditionals *pkgcraft_dep_set_into_iter_conditionals(DepSet *d)
-
-    # Free a conditionals iterator.
-    #
-    # # Safety
-    # The argument must be a valid DepSpecIntoIterConditionals pointer or NULL.
-    void pkgcraft_dep_set_into_iter_conditionals_free(DepSpecIntoIterConditionals *i)
-
-    # Return the next object from a conditionals iterator.
-    #
-    # Returns NULL when the iterator is empty.
-    #
-    # # Safety
-    # The argument must be a valid DepSpecIntoIterConditionals pointer.
-    char *pkgcraft_dep_set_into_iter_conditionals_next(DepSpecIntoIterConditionals *i)
-
-    # Return a flatten iterator for a DepSet.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    DepSpecIntoIterFlatten *pkgcraft_dep_set_into_iter_flatten(DepSet *d)
-
-    # Free a flatten iterator.
-    #
-    # # Safety
-    # The argument must be a valid DepSpecIntoIterFlatten pointer or NULL.
-    void pkgcraft_dep_set_into_iter_flatten_free(DepSpecIntoIterFlatten *i)
-
-    # Return the next object from a flatten iterator.
-    #
-    # Returns NULL when the iterator is empty.
-    #
-    # # Safety
-    # The argument must be a valid DepSpecIntoIterFlatten pointer.
-    void *pkgcraft_dep_set_into_iter_flatten_next(DepSpecIntoIterFlatten *i)
-
-    # Free a DepSet iterator.
-    #
-    # # Safety
-    # The argument must be a valid DepSpecIntoIter pointer or NULL.
-    void pkgcraft_dep_set_into_iter_free(DepSpecIntoIter *i)
-
-    # Return the next object from a DepSet iterator.
-    #
-    # Returns NULL when the iterator is empty.
-    #
-    # # Safety
-    # The argument must be a valid DepSpecIntoIter pointer.
-    DepSpec *pkgcraft_dep_set_into_iter_next(DepSpecIntoIter *i)
-
-    # Return the next object from the end of a DepSet iterator.
-    #
-    # Returns NULL when the iterator is empty.
-    #
-    # # Safety
-    # The argument must be a valid DepSpecIntoIter pointer.
-    DepSpec *pkgcraft_dep_set_into_iter_next_back(DepSpecIntoIter *i)
-
-    # Return a recursive iterator for a DepSet.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    DepSpecIntoIterRecursive *pkgcraft_dep_set_into_iter_recursive(DepSet *d)
-
-    # Free a recursive iterator.
-    #
-    # # Safety
-    # The argument must be a valid DepSpecIntoIterRecursive pointer or NULL.
-    void pkgcraft_dep_set_into_iter_recursive_free(DepSpecIntoIterRecursive *i)
-
-    # Return the next object from a recursive iterator.
-    #
-    # Returns NULL when the iterator is empty.
-    #
-    # # Safety
-    # The argument must be a valid DepSpecIntoIterRecursive pointer.
-    DepSpec *pkgcraft_dep_set_into_iter_recursive_next(DepSpecIntoIterRecursive *i)
-
-    # Returns true if two DepSets have no elements in common.
-    #
-    # # Safety
-    # The arguments must be a valid DepSet pointers.
-    bool pkgcraft_dep_set_is_disjoint(DepSet *d1, DepSet *d2)
-
-    # Returns true if a DepSet is empty.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    bool pkgcraft_dep_set_is_empty(DepSet *d)
-
-    # Returns true if all the elements of the first DepSet are contained in the second.
-    #
-    # # Safety
-    # The arguments must be a valid DepSet pointers.
-    bool pkgcraft_dep_set_is_subset(DepSet *d1, DepSet *d2)
-
-    # Return a DepSet's length.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    uintptr_t pkgcraft_dep_set_len(DepSet *d)
-
-    # Create a new, empty DepSet.
-    #
-    # # Safety
-    # The argument must be a valid DepSetKind.
-    DepSet *pkgcraft_dep_set_new(DepSetKind kind)
-
-    # Perform a set operation on two DepSets, creating a new set.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The arguments must be valid DepSet pointers.
-    DepSet *pkgcraft_dep_set_op_set(SetOp op, DepSet *d1, DepSet *d2)
-
-    # Parse a string into a specified DepSet type.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The argument should be a UTF-8 string.
-    DepSet *pkgcraft_dep_set_parse(const char *s, const Eapi *eapi, DepSetKind kind)
-
-    # Remove the last value from a DepSet.
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    DepSpec *pkgcraft_dep_set_pop(DepSet *d)
-
-    # Replace a DepSpec with another DepSpec in a DepSet, returning the replaced value.
-    #
-    # Returns NULL on nonexistence or if the DepSet already contains the given DepSpec.
-    #
-    # # Safety
-    # The arguments must be valid DepSet and DepSpec pointers.
-    DepSpec *pkgcraft_dep_set_replace(DepSet *d, const DepSpec *key, DepSpec *value)
-
-    # Replace a DepSpec for a given index in a DepSet, returning the replaced value.
-    #
-    # Returns NULL on index nonexistence or if the DepSet already contains the given DepSpec.
-    #
-    # # Safety
-    # The arguments must be valid DepSet and DepSpec pointers.
-    DepSpec *pkgcraft_dep_set_replace_index(DepSet *d, uintptr_t index, DepSpec *value)
-
-    # Recursively sort a DepSet.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    void pkgcraft_dep_set_sort(DepSet *d)
-
-    # Return the formatted string for a DepSet object.
-    #
-    # # Safety
-    # The argument must be a valid DepSet pointer.
-    char *pkgcraft_dep_set_str(DepSet *d)
-
     # Get the slot of a package dependency.
     # For example, the package dependency "=cat/pkg-1-r2:3" returns "3".
     #
@@ -882,98 +638,6 @@ cdef extern from "pkgcraft.h":
 
     # Return the string for a SlotOperator.
     char *pkgcraft_dep_slot_op_str(SlotOperator op)
-
-    # Compare two DepSpecs returning -1, 0, or 1 if the first is less than, equal to, or greater
-    # than the second, respectively.
-    #
-    # # Safety
-    # The arguments must be valid DepSpec pointers.
-    int pkgcraft_dep_spec_cmp(DepSpec *d1, DepSpec *d2)
-
-    # Determine if a DepSpec contains a given DepSpec.
-    #
-    # # Safety
-    # The arguments must be valid DepSpec pointers.
-    bool pkgcraft_dep_spec_contains_dep_spec(DepSpec *d1, DepSpec *d2)
-
-    # Evaluate a DepSpec.
-    #
-    # # Safety
-    # The argument must be a valid DepSpec pointer.
-    DepSpec **pkgcraft_dep_spec_evaluate(DepSpec *d,
-                                         char **options,
-                                         uintptr_t len,
-                                         uintptr_t *deps_len)
-
-    # Forcibly evaluate a DepSpec.
-    #
-    # # Safety
-    # The argument must be a valid DepSpec pointer.
-    DepSpec **pkgcraft_dep_spec_evaluate_force(DepSpec *d, bool force, uintptr_t *deps_len)
-
-    # Free a DepSpec object.
-    #
-    # # Safety
-    # The argument must be a DepSpec pointer or NULL.
-    void pkgcraft_dep_spec_free(DepSpec *r)
-
-    # Create a DepSpec from a Dep.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The argument must be valid Dep pointer.
-    DepSpec *pkgcraft_dep_spec_from_dep(Dep *d)
-
-    # Return the hash value for a DepSpec.
-    #
-    # # Safety
-    # The argument must be a valid DepSpec pointer.
-    uint64_t pkgcraft_dep_spec_hash(DepSpec *d)
-
-    # Return an iterator for a DepSpec.
-    #
-    # # Safety
-    # The argument must be a valid DepSpec pointer.
-    DepSpecIntoIter *pkgcraft_dep_spec_into_iter(DepSpec *d)
-
-    # Return a conditionals iterator for a DepSpec.
-    #
-    # # Safety
-    # The argument must be a valid DepSpec pointer.
-    DepSpecIntoIterConditionals *pkgcraft_dep_spec_into_iter_conditionals(DepSpec *d)
-
-    # Return a flatten iterator for a DepSpec.
-    #
-    # # Safety
-    # The argument must be a valid DepSpec pointer.
-    DepSpecIntoIterFlatten *pkgcraft_dep_spec_into_iter_flatten(DepSpec *d)
-
-    # Return a recursive iterator for a DepSpec.
-    #
-    # # Safety
-    # The argument must be a valid DepSpec pointer.
-    DepSpecIntoIterRecursive *pkgcraft_dep_spec_into_iter_recursive(DepSpec *d)
-
-    # Return a DepSpec's length.
-    #
-    # # Safety
-    # The argument must be a valid DepSpec pointer.
-    uintptr_t pkgcraft_dep_spec_len(DepSpec *d)
-
-    # Parse a string into a specified DepSpec type.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The argument should be a UTF-8 string.
-    DepSpec *pkgcraft_dep_spec_parse(const char *s, const Eapi *eapi, DepSetKind kind)
-
-    # Return the formatted string for a DepSpec object.
-    #
-    # # Safety
-    # The argument must be a valid DepSpec pointer.
-    char *pkgcraft_dep_spec_str(DepSpec *d)
 
     # Return the string for a package dependency.
     #
@@ -1044,6 +708,354 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The arguments must a valid Dep pointer and DepField values.
     Dep *pkgcraft_dep_without(Dep *d, DepField *fields, uintptr_t len)
+
+    # Compare two Dependencys returning -1, 0, or 1 if the first is less than, equal to, or greater
+    # than the second, respectively.
+    #
+    # # Safety
+    # The arguments must be valid Dependency pointers.
+    int pkgcraft_dependency_cmp(Dependency *d1, Dependency *d2)
+
+    # Determine if a Dependency contains a given Dependency.
+    #
+    # # Safety
+    # The arguments must be valid Dependency pointers.
+    bool pkgcraft_dependency_contains_dependency(Dependency *d1, Dependency *d2)
+
+    # Evaluate a Dependency.
+    #
+    # # Safety
+    # The argument must be a valid Dependency pointer.
+    Dependency **pkgcraft_dependency_evaluate(Dependency *d,
+                                              char **options,
+                                              uintptr_t len,
+                                              uintptr_t *deps_len)
+
+    # Forcibly evaluate a Dependency.
+    #
+    # # Safety
+    # The argument must be a valid Dependency pointer.
+    Dependency **pkgcraft_dependency_evaluate_force(Dependency *d, bool force, uintptr_t *deps_len)
+
+    # Free a Dependency object.
+    #
+    # # Safety
+    # The argument must be a Dependency pointer or NULL.
+    void pkgcraft_dependency_free(Dependency *r)
+
+    # Create a Dependency from a Dep.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be valid Dep pointer.
+    Dependency *pkgcraft_dependency_from_dep(Dep *d)
+
+    # Return the hash value for a Dependency.
+    #
+    # # Safety
+    # The argument must be a valid Dependency pointer.
+    uint64_t pkgcraft_dependency_hash(Dependency *d)
+
+    # Return an iterator for a Dependency.
+    #
+    # # Safety
+    # The argument must be a valid Dependency pointer.
+    DependencyIntoIter *pkgcraft_dependency_into_iter(Dependency *d)
+
+    # Return a conditionals iterator for a Dependency.
+    #
+    # # Safety
+    # The argument must be a valid Dependency pointer.
+    DependencyIntoIterConditionals *pkgcraft_dependency_into_iter_conditionals(Dependency *d)
+
+    # Return a flatten iterator for a Dependency.
+    #
+    # # Safety
+    # The argument must be a valid Dependency pointer.
+    DependencyIntoIterFlatten *pkgcraft_dependency_into_iter_flatten(Dependency *d)
+
+    # Return a recursive iterator for a Dependency.
+    #
+    # # Safety
+    # The argument must be a valid Dependency pointer.
+    DependencyIntoIterRecursive *pkgcraft_dependency_into_iter_recursive(Dependency *d)
+
+    # Return a Dependency's length.
+    #
+    # # Safety
+    # The argument must be a valid Dependency pointer.
+    uintptr_t pkgcraft_dependency_len(Dependency *d)
+
+    # Parse a string into a specified Dependency type.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    Dependency *pkgcraft_dependency_parse(const char *s, const Eapi *eapi, DependencySetKind kind)
+
+    # Perform a set operation on two DependencySets, assigning to the first.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The arguments must be valid DependencySet pointers.
+    DependencySet *pkgcraft_dependency_set_assign_op_set(SetOp op,
+                                                         DependencySet *d1,
+                                                         DependencySet *d2)
+
+    # Clone a DependencySet.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    DependencySet *pkgcraft_dependency_set_clone(DependencySet *d)
+
+    # Determine if a DependencySet contains a given Dependency.
+    #
+    # # Safety
+    # The arguments must be valid DependencySet and Dependency pointers.
+    bool pkgcraft_dependency_set_contains_dependency(DependencySet *s, Dependency *d)
+
+    # Determine if two DependencySets are equal.
+    #
+    # # Safety
+    # The arguments must be valid DependencySet pointers.
+    bool pkgcraft_dependency_set_eq(DependencySet *d1, DependencySet *d2)
+
+    # Evaluate a DependencySet.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    DependencySet *pkgcraft_dependency_set_evaluate(DependencySet *d,
+                                                    char **options,
+                                                    uintptr_t len)
+
+    # Forcibly evaluate a DependencySet.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    DependencySet *pkgcraft_dependency_set_evaluate_force(DependencySet *d, bool force)
+
+    # Free a DependencySet.
+    #
+    # # Safety
+    # The argument must be a DependencySet pointer or NULL.
+    void pkgcraft_dependency_set_free(DependencySet *d)
+
+    # Create a DependencySet from an array of Dependency objects.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be an array of similarly-typed Dependency objects.
+    DependencySet *pkgcraft_dependency_set_from_iter(Dependency **deps,
+                                                     uintptr_t len,
+                                                     DependencySetKind kind)
+
+    # Returns the Dependency element for a given index.
+    #
+    # Returns NULL on index nonexistence.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    Dependency *pkgcraft_dependency_set_get_index(DependencySet *d, uintptr_t index)
+
+    # Return the hash value for a DependencySet.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    uint64_t pkgcraft_dependency_set_hash(DependencySet *d)
+
+    # Insert a Dependency into a DependencySet.
+    #
+    # Returns false if an equivalent value already exists, otherwise true.
+    #
+    # # Safety
+    # The arguments must be valid DependencySet and Dependency pointers.
+    bool pkgcraft_dependency_set_insert(DependencySet *d, Dependency *value)
+
+    # Return an iterator for a DependencySet.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    DependencyIntoIter *pkgcraft_dependency_set_into_iter(DependencySet *d)
+
+    # Return a conditionals iterator for a DependencySet.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    DependencyIntoIterConditionals *pkgcraft_dependency_set_into_iter_conditionals(DependencySet *d)
+
+    # Free a conditionals iterator.
+    #
+    # # Safety
+    # The argument must be a valid DependencyIntoIterConditionals pointer or NULL.
+    void pkgcraft_dependency_set_into_iter_conditionals_free(DependencyIntoIterConditionals *i)
+
+    # Return the next object from a conditionals iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a valid DependencyIntoIterConditionals pointer.
+    char *pkgcraft_dependency_set_into_iter_conditionals_next(DependencyIntoIterConditionals *i)
+
+    # Return a flatten iterator for a DependencySet.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    DependencyIntoIterFlatten *pkgcraft_dependency_set_into_iter_flatten(DependencySet *d)
+
+    # Free a flatten iterator.
+    #
+    # # Safety
+    # The argument must be a valid DependencyIntoIterFlatten pointer or NULL.
+    void pkgcraft_dependency_set_into_iter_flatten_free(DependencyIntoIterFlatten *i)
+
+    # Return the next object from a flatten iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a valid DependencyIntoIterFlatten pointer.
+    void *pkgcraft_dependency_set_into_iter_flatten_next(DependencyIntoIterFlatten *i)
+
+    # Free a DependencySet iterator.
+    #
+    # # Safety
+    # The argument must be a valid DependencyIntoIter pointer or NULL.
+    void pkgcraft_dependency_set_into_iter_free(DependencyIntoIter *i)
+
+    # Return the next object from a DependencySet iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a valid DependencyIntoIter pointer.
+    Dependency *pkgcraft_dependency_set_into_iter_next(DependencyIntoIter *i)
+
+    # Return the next object from the end of a DependencySet iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a valid DependencyIntoIter pointer.
+    Dependency *pkgcraft_dependency_set_into_iter_next_back(DependencyIntoIter *i)
+
+    # Return a recursive iterator for a DependencySet.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    DependencyIntoIterRecursive *pkgcraft_dependency_set_into_iter_recursive(DependencySet *d)
+
+    # Free a recursive iterator.
+    #
+    # # Safety
+    # The argument must be a valid DependencyIntoIterRecursive pointer or NULL.
+    void pkgcraft_dependency_set_into_iter_recursive_free(DependencyIntoIterRecursive *i)
+
+    # Return the next object from a recursive iterator.
+    #
+    # Returns NULL when the iterator is empty.
+    #
+    # # Safety
+    # The argument must be a valid DependencyIntoIterRecursive pointer.
+    Dependency *pkgcraft_dependency_set_into_iter_recursive_next(DependencyIntoIterRecursive *i)
+
+    # Returns true if two DependencySets have no elements in common.
+    #
+    # # Safety
+    # The arguments must be a valid DependencySet pointers.
+    bool pkgcraft_dependency_set_is_disjoint(DependencySet *d1, DependencySet *d2)
+
+    # Returns true if a DependencySet is empty.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    bool pkgcraft_dependency_set_is_empty(DependencySet *d)
+
+    # Returns true if all the elements of the first DependencySet are contained in the second.
+    #
+    # # Safety
+    # The arguments must be a valid DependencySet pointers.
+    bool pkgcraft_dependency_set_is_subset(DependencySet *d1, DependencySet *d2)
+
+    # Return a DependencySet's length.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    uintptr_t pkgcraft_dependency_set_len(DependencySet *d)
+
+    # Create a new, empty DependencySet.
+    #
+    # # Safety
+    # The argument must be a valid DependencySetKind.
+    DependencySet *pkgcraft_dependency_set_new(DependencySetKind kind)
+
+    # Perform a set operation on two DependencySets, creating a new set.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The arguments must be valid DependencySet pointers.
+    DependencySet *pkgcraft_dependency_set_op_set(SetOp op, DependencySet *d1, DependencySet *d2)
+
+    # Parse a string into a specified DependencySet type.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    DependencySet *pkgcraft_dependency_set_parse(const char *s,
+                                                 const Eapi *eapi,
+                                                 DependencySetKind kind)
+
+    # Remove the last value from a DependencySet.
+    #
+    # Returns NULL on nonexistence.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    Dependency *pkgcraft_dependency_set_pop(DependencySet *d)
+
+    # Replace a Dependency with another Dependency in a DependencySet, returning the replaced value.
+    #
+    # Returns NULL on nonexistence or if the DependencySet already contains the given Dependency.
+    #
+    # # Safety
+    # The arguments must be valid DependencySet and Dependency pointers.
+    Dependency *pkgcraft_dependency_set_replace(DependencySet *d,
+                                                const Dependency *key,
+                                                Dependency *value)
+
+    # Replace a Dependency for a given index in a DependencySet, returning the replaced value.
+    #
+    # Returns NULL on index nonexistence or if the DependencySet already contains the given Dependency.
+    #
+    # # Safety
+    # The arguments must be valid DependencySet and Dependency pointers.
+    Dependency *pkgcraft_dependency_set_replace_index(DependencySet *d,
+                                                      uintptr_t index,
+                                                      Dependency *value)
+
+    # Recursively sort a DependencySet.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    void pkgcraft_dependency_set_sort(DependencySet *d)
+
+    # Return the formatted string for a DependencySet object.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    char *pkgcraft_dependency_set_str(DependencySet *d)
+
+    # Return the formatted string for a Dependency object.
+    #
+    # # Safety
+    # The argument must be a valid Dependency pointer.
+    char *pkgcraft_dependency_str(Dependency *d)
 
     # Return an EAPI's identifier.
     #
@@ -1193,7 +1205,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_pkg_ebuild_bdepend(Pkg *p)
+    DependencySet *pkgcraft_pkg_ebuild_bdepend(Pkg *p)
 
     # Return a package's defined phases.
     #
@@ -1205,7 +1217,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_pkg_ebuild_depend(Pkg *p)
+    DependencySet *pkgcraft_pkg_ebuild_depend(Pkg *p)
 
     # Return a package's dependencies for a given set of descriptors.
     #
@@ -1213,7 +1225,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_pkg_ebuild_dependencies(Pkg *p, char **keys, uintptr_t len)
+    DependencySet *pkgcraft_pkg_ebuild_dependencies(Pkg *p, char **keys, uintptr_t len)
 
     # Return a package's description.
     #
@@ -1239,7 +1251,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_pkg_ebuild_idepend(Pkg *p)
+    DependencySet *pkgcraft_pkg_ebuild_idepend(Pkg *p)
 
     # Return a package's directly inherited eclasses.
     #
@@ -1269,7 +1281,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_pkg_ebuild_license(Pkg *p)
+    DependencySet *pkgcraft_pkg_ebuild_license(Pkg *p)
 
     # Return a package's long description.
     #
@@ -1302,31 +1314,31 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_pkg_ebuild_pdepend(Pkg *p)
+    DependencySet *pkgcraft_pkg_ebuild_pdepend(Pkg *p)
 
     # Return a package's PROPERTIES.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_pkg_ebuild_properties(Pkg *p)
+    DependencySet *pkgcraft_pkg_ebuild_properties(Pkg *p)
 
     # Return a package's RDEPEND.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_pkg_ebuild_rdepend(Pkg *p)
+    DependencySet *pkgcraft_pkg_ebuild_rdepend(Pkg *p)
 
     # Return a package's REQUIRED_USE.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_pkg_ebuild_required_use(Pkg *p)
+    DependencySet *pkgcraft_pkg_ebuild_required_use(Pkg *p)
 
     # Return a package's RESTRICT.
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_pkg_ebuild_restrict(Pkg *p)
+    DependencySet *pkgcraft_pkg_ebuild_restrict(Pkg *p)
 
     # Return a package's slot.
     #
@@ -1338,7 +1350,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    DepSet *pkgcraft_pkg_ebuild_src_uri(Pkg *p)
+    DependencySet *pkgcraft_pkg_ebuild_src_uri(Pkg *p)
 
     # Return a package's subslot.
     #

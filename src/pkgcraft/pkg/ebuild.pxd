@@ -1,5 +1,5 @@
 from .. cimport C
-from ..dep cimport DepSet
+from ..dep cimport DependencySet
 from ..error cimport Indirect
 from ..types cimport OrderedFrozenSet
 from . cimport Pkg
@@ -10,16 +10,16 @@ cdef class EbuildPkg(Pkg):
     cdef str _description
     cdef str _slot
     cdef str _subslot
-    cdef DepSet _depend
-    cdef DepSet _bdepend
-    cdef DepSet _idepend
-    cdef DepSet _pdepend
-    cdef DepSet _rdepend
-    cdef DepSet _license
-    cdef DepSet _properties
-    cdef DepSet _required_use
-    cdef DepSet _restrict
-    cdef DepSet _src_uri
+    cdef DependencySet _depend
+    cdef DependencySet _bdepend
+    cdef DependencySet _idepend
+    cdef DependencySet _pdepend
+    cdef DependencySet _rdepend
+    cdef DependencySet _license
+    cdef DependencySet _properties
+    cdef DependencySet _required_use
+    cdef DependencySet _restrict
+    cdef DependencySet _src_uri
     cdef OrderedFrozenSet _defined_phases
     cdef OrderedFrozenSet _homepage
     cdef OrderedFrozenSet _keywords
