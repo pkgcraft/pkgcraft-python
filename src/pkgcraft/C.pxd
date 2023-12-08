@@ -31,8 +31,7 @@ cdef extern from "pkgcraft.h":
         DEPENDENCY_KIND_ANY_OF,
         DEPENDENCY_KIND_EXACTLY_ONE_OF,
         DEPENDENCY_KIND_AT_MOST_ONE_OF,
-        DEPENDENCY_KIND_USE_ENABLED,
-        DEPENDENCY_KIND_USE_DISABLED,
+        DEPENDENCY_KIND_USE_CONDITIONAL,
 
     # DependencySet variants.
     cdef enum DependencySetKind:
@@ -899,7 +898,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a valid DependencyIntoIterConditionals pointer.
-    char *pkgcraft_dependency_set_into_iter_conditionals_next(DependencyIntoIterConditionals *i)
+    UseDep *pkgcraft_dependency_set_into_iter_conditionals_next(DependencyIntoIterConditionals *i)
 
     # Return a flatten iterator for a DependencySet.
     #

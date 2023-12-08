@@ -9,7 +9,7 @@ from .._misc cimport CStringArray, cstring_to_str
 from ..eapi cimport Eapi
 from ..error cimport Indirect
 from ..types cimport OrderedFrozenSet
-from .pkg cimport Dep
+from .pkg cimport Dep, UseDep
 from .uri cimport Uri
 
 from ..error import PkgcraftError
@@ -31,8 +31,7 @@ class DependencyKind(IntEnum):
     AnyOf = C.DEPENDENCY_KIND_ANY_OF
     ExactlyOneOf = C.DEPENDENCY_KIND_EXACTLY_ONE_OF
     AtMostOneOf = C.DEPENDENCY_KIND_AT_MOST_ONE_OF
-    UseEnabled = C.DEPENDENCY_KIND_USE_ENABLED
-    UseDisabled = C.DEPENDENCY_KIND_USE_DISABLED
+    UseConditional = C.DEPENDENCY_KIND_USE_CONDITIONAL
 
 
 cdef list iterable_to_dependencies(object obj, C.DependencySetKind kind):
@@ -725,7 +724,7 @@ cdef class _IntoIterConditionals(Indirect):
 
     def __next__(self):
         if ptr := C.pkgcraft_dependency_set_into_iter_conditionals_next(self.ptr):
-            return cstring_to_str(<char *>ptr)
+            return UseDep.from_ptr(ptr)
         raise StopIteration
 
     def __dealloc__(self):

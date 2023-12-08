@@ -65,14 +65,14 @@ class TestDependency:
         d = self.req_use("u? ( a )")
         assert len(d) == 1
         assert str(d) == "u? ( a )"
-        assert d.kind == DependencyKind.UseEnabled
-        assert "UseEnabled 'u? ( a )' at 0x" in repr(d)
+        assert d.kind == DependencyKind.UseConditional
+        assert "UseConditional 'u? ( a )' at 0x" in repr(d)
 
         d = self.req_use("!u1? ( a u2? ( b ) )")
         assert len(d) == 2
         assert str(d) == "!u1? ( a u2? ( b ) )"
-        assert d.kind == DependencyKind.UseDisabled
-        assert "UseDisabled '!u1? ( a u2? ( b ) )' at 0x" in repr(d)
+        assert d.kind == DependencyKind.UseConditional
+        assert "UseConditional '!u1? ( a u2? ( b ) )' at 0x" in repr(d)
 
         # raw Deps
         d = Dependency(Dep("a/b"))
@@ -175,9 +175,12 @@ class TestDependency:
     def test_iter_conditionals(self):
         assert list(self.req_use("a").iter_conditionals()) == []
         assert list(self.req_use("( a )").iter_conditionals()) == []
-        assert list(self.req_use("u? ( a )").iter_conditionals()) == ["u"]
-        assert list(self.req_use("!u? ( a )").iter_conditionals()) == ["u"]
-        assert list(self.req_use("|| ( u1? ( b !u2? ( d ) ) )").iter_conditionals()) == ["u1", "u2"]
+        assert list(self.req_use("u? ( a )").iter_conditionals()) == [UseDep("u?")]
+        assert list(self.req_use("!u? ( a )").iter_conditionals()) == [UseDep("!u?")]
+        assert list(self.req_use("|| ( u1? ( b !u2? ( d ) ) )").iter_conditionals()) == [
+            UseDep("u1?"),
+            UseDep("!u2?"),
+        ]
 
     def test_iter_flatten(self):
         assert list(self.req_use("a").iter_flatten()) == ["a"]
@@ -341,9 +344,12 @@ class DependencySetBase:
     def test_iter_conditionals(self):
         assert list(self.cls("a/b").iter_conditionals()) == []
         assert list(self.cls("( a/b )").iter_conditionals()) == []
-        assert list(self.cls("u? ( a/b )").iter_conditionals()) == ["u"]
-        assert list(self.cls("!u? ( a/b )").iter_conditionals()) == ["u"]
-        assert list(self.cls("|| ( u1? ( a/b !u2? ( c/d ) ) )").iter_conditionals()) == ["u1", "u2"]
+        assert list(self.cls("u? ( a/b )").iter_conditionals()) == [UseDep("u?")]
+        assert list(self.cls("!u? ( a/b )").iter_conditionals()) == [UseDep("!u?")]
+        assert list(self.cls("|| ( u1? ( a/b !u2? ( c/d ) ) )").iter_conditionals()) == [
+            UseDep("u1?"),
+            UseDep("!u2?"),
+        ]
 
     def test_iter_flatten(self):
         assert list(self.cls("a/b").iter_flatten()) == [Dep("a/b")]
