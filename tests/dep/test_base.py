@@ -27,6 +27,7 @@ class TestDependency:
         assert str(d) == "a"
         assert d.kind == DependencyKind.Enabled
         assert d.set == DependencySetKind.RequiredUse
+        assert d.conditional is None
         assert "Enabled 'a' at 0x" in repr(d)
         # EAPI specific
         assert d == self.req_use("a", eapi=str(EAPI_LATEST_OFFICIAL))
@@ -36,42 +37,49 @@ class TestDependency:
         assert len(d) == 1
         assert str(d) == "!a"
         assert d.kind == DependencyKind.Disabled
+        assert d.conditional is None
         assert "Disabled '!a' at 0x" in repr(d)
 
         d = self.req_use("( a b )")
         assert len(d) == 2
         assert str(d) == "( a b )"
         assert d.kind == DependencyKind.AllOf
+        assert d.conditional is None
         assert "AllOf '( a b )' at 0x" in repr(d)
 
         d = self.req_use("|| ( a b )")
         assert len(d) == 2
         assert str(d) == "|| ( a b )"
         assert d.kind == DependencyKind.AnyOf
+        assert d.conditional is None
         assert "AnyOf '|| ( a b )' at 0x" in repr(d)
 
         d = self.req_use("^^ ( a b )")
         assert len(d) == 2
         assert str(d) == "^^ ( a b )"
         assert d.kind == DependencyKind.ExactlyOneOf
+        assert d.conditional is None
         assert "ExactlyOneOf '^^ ( a b )' at 0x" in repr(d)
 
         d = self.req_use("?? ( a b )")
         assert len(d) == 2
         assert str(d) == "?? ( a b )"
         assert d.kind == DependencyKind.AtMostOneOf
+        assert d.conditional is None
         assert "AtMostOneOf '?? ( a b )' at 0x" in repr(d)
 
         d = self.req_use("u? ( a )")
         assert len(d) == 1
         assert str(d) == "u? ( a )"
         assert d.kind == DependencyKind.UseConditional
+        assert d.conditional == UseDep("u?")
         assert "UseConditional 'u? ( a )' at 0x" in repr(d)
 
         d = self.req_use("!u1? ( a u2? ( b ) )")
         assert len(d) == 2
         assert str(d) == "!u1? ( a u2? ( b ) )"
         assert d.kind == DependencyKind.UseConditional
+        assert d.conditional == UseDep("!u1?")
         assert "UseConditional '!u1? ( a u2? ( b ) )' at 0x" in repr(d)
 
         # raw Deps

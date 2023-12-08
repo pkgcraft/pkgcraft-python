@@ -75,6 +75,13 @@ cdef class Dependency:
         inst.ptr = ptr
         return inst
 
+    @property
+    def conditional(self):
+        """Return the conditional UseDep for a Dependency if it exists."""
+        if ptr := C.pkgcraft_dependency_conditional(self.ptr):
+            return UseDep.from_ptr(ptr)
+        return None
+
     def evaluate(self, enabled=()):
         """Evaluate a Dependency using a given set of enabled options or by force."""
         cdef size_t length

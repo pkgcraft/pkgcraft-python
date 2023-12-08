@@ -715,6 +715,14 @@ cdef extern from "pkgcraft.h":
     # The arguments must be valid Dependency pointers.
     int pkgcraft_dependency_cmp(Dependency *d1, Dependency *d2)
 
+    # Return the conditional UseDep for a Dependency.
+    #
+    # Returns NULL if the Dependency variant isn't conditional.
+    #
+    # # Safety
+    # The argument must be a valid Dependency pointer.
+    UseDep *pkgcraft_dependency_conditional(Dependency *d)
+
     # Determine if a Dependency contains a given Dependency.
     #
     # # Safety
@@ -743,8 +751,6 @@ cdef extern from "pkgcraft.h":
     void pkgcraft_dependency_free(Dependency *r)
 
     # Create a Dependency from a Dep.
-    #
-    # Returns NULL on error.
     #
     # # Safety
     # The argument must be valid Dep pointer.
