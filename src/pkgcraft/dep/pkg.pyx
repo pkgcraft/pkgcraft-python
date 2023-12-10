@@ -596,7 +596,7 @@ cdef class Dep:
         """Get the USE dependencies of a package dependency.
 
         Returns:
-            Set[str] | None: The USE dependencies if any exist or None.
+            Set[UseDep] | None: The USE dependencies if any exist or None.
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2[a,b,c]')
@@ -605,6 +605,8 @@ cdef class Dep:
         >>> dep = Dep('=cat/pkg-1-r2[-a(-),b(+)=,!c(-)?]')
         >>> list(map(str, dep.use_deps))
         ['-a(-)', 'b(+)=', '!c(-)?']
+        >>> UseDep('!c(-)?') in dep.use_deps
+        True
         >>> dep = Dep('=cat/pkg-1-r2')
         >>> dep.use_deps is None
         True
