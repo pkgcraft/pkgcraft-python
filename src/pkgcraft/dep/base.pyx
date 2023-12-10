@@ -78,8 +78,8 @@ cdef class Dependency:
     @property
     def conditional(self):
         """Return the conditional UseDep for a Dependency if it exists."""
-        if ptr := C.pkgcraft_dependency_conditional(self.ptr):
-            return UseDep.from_ptr(ptr)
+        if self.kind == DependencyKind.UseConditional:
+            return UseDep.from_ptr(C.pkgcraft_dependency_conditional(self.ptr))
         return None
 
     def evaluate(self, enabled=()):
