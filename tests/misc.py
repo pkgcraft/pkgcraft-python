@@ -38,11 +38,7 @@ class TestData:
 
         # load repos
         for path in sorted(glob.glob(f"{DATADIR}/repos/*")):
-            try:
-                self._config.add_repo(path, id=os.path.basename(path), external=False)
-            except InvalidRepo:
-                # ignore purposely broken repos
-                pass
+            self._config.add_repo(path, id=os.path.basename(path), external=False)
 
         # load toml files
         self._toml = {}
