@@ -6,7 +6,6 @@ from pathlib import Path
 
 from pkgcraft.config import Config
 from pkgcraft.dep import Dep
-from pkgcraft.error import InvalidRepo
 
 # global test data path
 DATADIR = Path(__file__).parent.parent / "testdata"
