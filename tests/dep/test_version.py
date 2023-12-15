@@ -27,7 +27,7 @@ class TestOperator:
 
 
 class TestVersion:
-    def test_new_and_valid(self):
+    def test_new_and_parse(self):
         # no revision
         ver = Version("1")
         assert ver.op is None
@@ -70,14 +70,14 @@ class TestVersion:
 
         # valid
         for s in TEST_DATA.toml("version.toml")["valid"]:
-            assert Version.valid(s), f"{s} isn't valid"
+            assert Version.parse(s), f"{s} isn't valid"
             Version(s)
 
         # invalid
         for s in TEST_DATA.toml("version.toml")["invalid"]:
-            assert not Version.valid(s), f"{s} is valid"
+            assert not Version.parse(s), f"{s} is valid"
             with pytest.raises(InvalidVersion, match=f"invalid version: {s}"):
-                Version.valid(s, raised=True)
+                Version.parse(s, raised=True)
             with pytest.raises(InvalidVersion, match=f"invalid version: {s}"):
                 Version(s)
 
@@ -86,7 +86,7 @@ class TestVersion:
             with pytest.raises(TypeError):
                 Version(obj)
             with pytest.raises(TypeError):
-                Version.valid(obj)
+                Version.parse(obj)
 
     def test_cmp(self):
         for s in TEST_DATA.toml("version.toml")["compares"]:

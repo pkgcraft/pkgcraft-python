@@ -143,7 +143,7 @@ cdef class Version:
             raise InvalidVersion
 
     @staticmethod
-    def valid(s: str, raised=False):
+    def parse(s: str, raised=False):
         """Determine if a string is a valid package version.
 
         This avoids any allocations, only returning the validity status.
@@ -159,10 +159,10 @@ cdef class Version:
             InvalidVersion: on failure if the raised parameter is set to True
 
         >>> from pkgcraft.dep import Version
-        >>> Version.valid('1-r2')
+        >>> Version.parse('1-r2')
         True
         """
-        valid = C.pkgcraft_version_valid(s.encode()) is not NULL
+        valid = C.pkgcraft_version_parse(s.encode()) is not NULL
         if not valid and raised:
             raise InvalidVersion
         return valid

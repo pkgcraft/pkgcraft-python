@@ -185,6 +185,7 @@ cdef extern from "pkgcraft.h":
     cdef struct Restrict:
         pass
 
+    # Opaque wrapper for pkgcraft::dep::version::Revision<String> objects.
     cdef struct Revision:
         pass
 
@@ -196,6 +197,7 @@ cdef extern from "pkgcraft.h":
     cdef struct UseDepWrapper:
         pass
 
+    # Opaque wrapper for pkgcraft::dep::version::Version<String> objects.
     cdef struct Version:
         pass
 
@@ -2025,6 +2027,14 @@ cdef extern from "pkgcraft.h":
     # Return the string for an Operator.
     char *pkgcraft_version_op_str(Operator op)
 
+    # Determine if a string is a valid package version.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should point to a UTF-8 string.
+    const char *pkgcraft_version_parse(const char *s)
+
     # Return a version's revision, e.g. the version "1-r2" has a revision of "2".
     #
     # Returns NULL on nonexistence.
@@ -2038,11 +2048,3 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The version argument should be a non-null Version pointer.
     char *pkgcraft_version_str(Version *v)
-
-    # Determine if a string is a valid package version.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The argument should point to a UTF-8 string.
-    const char *pkgcraft_version_valid(const char *s)
