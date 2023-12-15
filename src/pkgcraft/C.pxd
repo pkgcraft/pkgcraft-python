@@ -1110,6 +1110,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Eapi pointer.
     char **pkgcraft_eapi_metadata_keys(const Eapi *eapi, uintptr_t *len)
 
+    # Determine if a string is a valid EAPI.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should point to a UTF-8 string.
+    const char *pkgcraft_eapi_parse(const char *s)
+
     # Get all known EAPIS.
     #
     # # Safety

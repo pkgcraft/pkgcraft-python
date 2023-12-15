@@ -113,6 +113,33 @@ cdef class Eapi(Indirect):
         """Try to convert an object to an Eapi object."""
         return Eapi._from_obj(obj)
 
+    @staticmethod
+    def parse(s: str, raised=False):
+        """Determine if a string is a valid EAPI.
+
+        This avoids any string allocations, only returning the validity status.
+
+        Args:
+            s: the string to parse
+            raised: if True, raise an exception when invalid
+
+        Returns:
+            bool: True if the given string represents a valid EAPI, otherwise False.
+
+        Raises:
+            PkgcraftError: on failure if the raised parameter is set to True
+
+        >>> from pkgcraft.eapi import Eapi
+        >>> Eapi.parse('01')
+        True
+        >>> Eapi.parse('@1')
+        False
+        """
+        valid = C.pkgcraft_eapi_parse(s.encode()) is not NULL
+        if not valid and raised:
+            raise PkgcraftError
+        return valid
+
     def has(self, s: str):
         """Check if an EAPI has a given feature.
 

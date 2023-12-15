@@ -3,6 +3,7 @@ import pickle
 import pytest
 
 from pkgcraft.eapi import *
+from pkgcraft.error import PkgcraftError
 
 from .misc import OperatorMap
 
@@ -22,6 +23,13 @@ def test_globals():
 
 
 class TestEapi:
+    def test_parse(self):
+        assert Eapi.parse("01")
+        for s in ("@1", "-1", ".1"):
+            assert not Eapi.parse(s)
+            with pytest.raises(PkgcraftError, match=f"invalid EAPI: {s}"):
+                Eapi.parse(s, raised=True)
+
     def test_has(self):
         assert not EAPI_LATEST_OFFICIAL.has("RepoIds")
         assert EAPI_LATEST.has("RepoIds")

@@ -146,7 +146,7 @@ cdef class Version:
     def parse(s: str, raised=False):
         """Determine if a string is a valid package version.
 
-        This avoids any allocations, only returning the validity status.
+        This avoids any string allocations, only returning the validity status.
 
         Args:
             s: the string to parse
