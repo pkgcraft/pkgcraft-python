@@ -158,37 +158,37 @@ class TestDep:
             with pytest.raises(TypeError):
                 Dep(obj)
 
-    def test_valid(self):
-        assert Dep.valid("cat/pkg")
+    def test_parse(self):
+        assert Dep.parse("cat/pkg")
 
         # extended EAPI default allows repo deps
-        assert Dep.valid("=cat/pkg-1-r2:3/4::repo[a,b,c]")
+        assert Dep.parse("=cat/pkg-1-r2:3/4::repo[a,b,c]")
 
         # explicitly specifying an EAPI
-        assert Dep.valid("=cat/pkg-1-r2:3/4::repo[a,b,c]", EAPI_LATEST)
+        assert Dep.parse("=cat/pkg-1-r2:3/4::repo[a,b,c]", EAPI_LATEST)
         for eapi in (str(EAPI_LATEST_OFFICIAL), EAPI_LATEST_OFFICIAL):
-            assert not Dep.valid("=cat/pkg-1-r2:3/4::repo[a,b,c]", eapi)
+            assert not Dep.parse("=cat/pkg-1-r2:3/4::repo[a,b,c]", eapi)
             with pytest.raises(InvalidDep):
-                Dep.valid("=cat/pkg-1-r2:3/4::repo[a,b,c]", eapi, raised=True)
+                Dep.parse("=cat/pkg-1-r2:3/4::repo[a,b,c]", eapi, raised=True)
 
         # invalid
         for s in ("cat", "=cat/pkg"):
-            assert not Dep.valid(s)
+            assert not Dep.parse(s)
             with pytest.raises(InvalidDep, match=f"invalid dep: {s}"):
-                Dep.valid(s, raised=True)
+                Dep.parse(s, raised=True)
 
         # unknown EAPI
         with pytest.raises(ValueError, match="unknown EAPI"):
-            Dep.valid("cat/pkg", "nonexistent")
+            Dep.parse("cat/pkg", "nonexistent")
 
         # invalid EAPI type
         with pytest.raises(TypeError):
-            Dep.valid("cat/pkg", object())
+            Dep.parse("cat/pkg", object())
 
         # invalid args
         for obj in [object(), None]:
             with pytest.raises(TypeError):
-                Dep.valid(obj)
+                Dep.parse(obj)
 
     def test_without(self):
         optional_fields = ("blocker", "version", "slot", "use_deps", "repo")

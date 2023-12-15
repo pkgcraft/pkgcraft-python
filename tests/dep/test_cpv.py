@@ -30,19 +30,19 @@ class TestCpv:
             with pytest.raises(TypeError):
                 Cpv(obj)
 
-    def test_valid(self):
-        assert Cpv.valid("cat/pkg-1")
+    def test_parse(self):
+        assert Cpv.parse("cat/pkg-1")
 
         # invalid
         for s in ("cat", "cat/pkg", "=cat/pkg-1"):
-            assert not Cpv.valid(s)
+            assert not Cpv.parse(s)
             with pytest.raises(InvalidCpv, match=f"invalid cpv: {s}"):
-                Cpv.valid(s, raised=True)
+                Cpv.parse(s, raised=True)
 
         # invalid args
         for obj in [object(), None]:
             with pytest.raises(TypeError):
-                Cpv.valid(obj)
+                Cpv.parse(obj)
 
     def test_matches(self):
         cpv = Cpv("cat/pkg-1")

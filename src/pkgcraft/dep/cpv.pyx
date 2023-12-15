@@ -40,7 +40,7 @@ cdef class Cpv:
             raise InvalidCpv
 
     @staticmethod
-    def valid(s: str, raised=False):
+    def parse(s: str, raised=False):
         """Determine if a string is a valid package Cpv.
 
         This avoids any allocations, only returning the validity status.
@@ -56,10 +56,10 @@ cdef class Cpv:
             InvalidCpv: on failure if the raised parameter is set to True
 
         >>> from pkgcraft.dep import Cpv
-        >>> Cpv.valid('cat/pkg-1')
+        >>> Cpv.parse('cat/pkg-1')
         True
         """
-        valid = C.pkgcraft_cpv_valid(s.encode()) is not NULL
+        valid = C.pkgcraft_cpv_parse(s.encode()) is not NULL
         if not valid and raised:
             raise InvalidCpv
         return valid

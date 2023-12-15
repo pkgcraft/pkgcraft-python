@@ -249,7 +249,7 @@ cdef class Dep:
         return inst
 
     @staticmethod
-    def valid(s: str, eapi: Eapi | str = None, raised: bool = False):
+    def parse(s: str, eapi: Eapi | str = None, raised: bool = False):
         """Determine if a string is a valid package dependency.
 
         This avoids any allocations, only returning the validity status.
@@ -266,14 +266,14 @@ cdef class Dep:
             InvalidDep: on failure if the raised parameter is set to True
 
         >>> from pkgcraft.dep import Dep
-        >>> Dep.valid('=cat/pkg-1')
+        >>> Dep.parse('=cat/pkg-1')
         True
         """
         cdef const C.Eapi *eapi_ptr = NULL
         if eapi is not None:
             eapi_ptr = Eapi._from_obj(eapi).ptr
 
-        valid = C.pkgcraft_dep_valid(s.encode(), eapi_ptr) is not NULL
+        valid = C.pkgcraft_dep_parse(s.encode(), eapi_ptr) is not NULL
         if not valid and raised:
             raise InvalidDep
         return valid

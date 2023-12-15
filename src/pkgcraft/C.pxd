@@ -113,11 +113,11 @@ cdef extern from "pkgcraft.h":
     cdef struct Config:
         pass
 
-    # Package identifier.
+    # Opaque wrapper for pkgcraft::dep::cpv::Cpv<String> objects.
     cdef struct Cpv:
         pass
 
-    # Package dependency.
+    # Opaque wrapper for pkgcraft::dep::pkg::Dep<String> objects.
     cdef struct Dep:
         pass
 
@@ -384,6 +384,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Cpv pointer.
     char *pkgcraft_cpv_package(Cpv *c)
 
+    # Determine if a string is a valid package Cpv.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should point to a UTF-8 string.
+    const char *pkgcraft_cpv_parse(const char *s)
+
     # Get the package, version, and revision of a Cpv object.
     #
     # # Safety
@@ -427,14 +435,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Cpv pointer.
     char *pkgcraft_cpv_str(Cpv *c)
-
-    # Determine if a string is a valid package Cpv.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The argument should point to a UTF-8 string.
-    const char *pkgcraft_cpv_valid(const char *s)
 
     # Get the version of a Cpv object.
     #
@@ -555,6 +555,14 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Dep pointer.
     char *pkgcraft_dep_package(Dep *d)
+
+    # Determine if a string is a valid package dependency.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The eapi argument may be NULL to use the default EAPI.
+    const char *pkgcraft_dep_parse(const char *s, const Eapi *eapi)
 
     # Get the package, version, and revision of a package dependency.
     # For example, the package dependency "=cat/pkg-1-r2" returns "pkg-1-r2".
@@ -678,14 +686,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a non-null Dep pointer.
     char **pkgcraft_dep_use_deps_str(Dep *d, uintptr_t *len)
-
-    # Determine if a string is a valid package dependency.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The eapi argument may be NULL to use the default EAPI.
-    const char *pkgcraft_dep_valid(const char *s, const Eapi *eapi)
 
     # Get the version of a package dependency.
     # For example, the package dependency "=cat/pkg-1-r2" returns "1-r2".
