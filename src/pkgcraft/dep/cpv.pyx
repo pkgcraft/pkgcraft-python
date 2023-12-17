@@ -109,10 +109,9 @@ cdef class Cpv:
         else:
             op = Operator(op)
 
-        ptr = C.pkgcraft_cpv_with_op(self.ptr, op)
-        if ptr is NULL:
-            raise PkgcraftError
-        return Dep.from_ptr(ptr)
+        if ptr := C.pkgcraft_cpv_with_op(self.ptr, op):
+            return Dep.from_ptr(ptr)
+        raise PkgcraftError
 
     @property
     def category(self):
