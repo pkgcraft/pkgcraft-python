@@ -3,7 +3,7 @@ from enum import IntEnum
 from .. cimport C
 from .._misc cimport SENTINEL, cstring_to_str
 
-from ..error import InvalidVersion
+from ..error import InvalidVersion, PkgcraftError
 
 
 class Operator(IntEnum):
@@ -173,6 +173,57 @@ cdef class Version:
         inst = <Version>Version.__new__(Version)
         inst.ptr = ptr
         return inst
+
+    def with_op(self, op not None):
+        """Potentially create a new Version by applying an operator.
+
+        Args:
+            op (str | Operator): the operator to apply
+
+        Returns:
+            Version: the newly created Version (or the original object if no changes were made)
+
+        Raises:
+            PkgcraftError: for invalid operator arguments
+
+        >>> from pkgcraft.dep import Version, Operator
+        >>> ver = Version('1-r2')
+
+        String-based operator
+
+        >>> str(ver.with_op('>='))
+        '>=1-r2'
+
+        Enum-based operator
+
+        >>> str(ver.with_op(Operator.Less))
+        '<1-r2'
+
+        Invalid operator
+
+        >>> ver.with_op(Operator.Approximate)
+        Traceback (most recent call last):
+            ...
+        pkgcraft.error.PkgcraftError: ~ version operator can't be used with a revision
+
+        Applying the existing operator returns the original Version
+
+        >>> v1 = Version('>1-r2')
+        >>> v2 = v1.with_op(">")
+        >>> v1 is v2
+        True
+        """
+        if isinstance(op, str):
+            op = Operator.from_str(op)
+        else:
+            op = Operator(op)
+
+        ptr = C.pkgcraft_version_with_op(self.ptr, op)
+        if ptr is NULL:
+            raise PkgcraftError
+        elif ptr != self.ptr:
+            return Version.from_ptr(ptr)
+        return self
 
     @property
     def op(self):

@@ -2064,3 +2064,11 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The version argument should be a non-null Version pointer.
     char *pkgcraft_version_str(Version *v)
+
+    # Potentially create a new Version by applying an operator.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null Version pointer.
+    Version *pkgcraft_version_with_op(Version *v, Operator op)
