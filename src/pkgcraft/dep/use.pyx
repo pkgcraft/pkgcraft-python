@@ -90,6 +90,16 @@ cdef class UseDep:
             inst.missing = UseDepDefault(ptr.missing[0])
         return inst
 
+    def __lt__(self, other):
+        if isinstance(other, UseDep):
+            return C.pkgcraft_use_dep_cmp(self.ptr, (<UseDep>other).ptr) == -1
+        return NotImplemented
+
+    def __le__(self, other):
+        if isinstance(other, UseDep):
+            return C.pkgcraft_use_dep_cmp(self.ptr, (<UseDep>other).ptr) <= 0
+        return NotImplemented
+
     def __eq__(self, other):
         if isinstance(other, UseDep):
             return C.pkgcraft_use_dep_cmp(self.ptr, (<UseDep>other).ptr) == 0
@@ -98,6 +108,16 @@ cdef class UseDep:
     def __ne__(self, other):
         if isinstance(other, UseDep):
             return C.pkgcraft_use_dep_cmp(self.ptr, (<UseDep>other).ptr) != 0
+        return NotImplemented
+
+    def __ge__(self, other):
+        if isinstance(other, UseDep):
+            return C.pkgcraft_use_dep_cmp(self.ptr, (<UseDep>other).ptr) >= 0
+        return NotImplemented
+
+    def __gt__(self, other):
+        if isinstance(other, UseDep):
+            return C.pkgcraft_use_dep_cmp(self.ptr, (<UseDep>other).ptr) == 1
         return NotImplemented
 
     def __hash__(self):
