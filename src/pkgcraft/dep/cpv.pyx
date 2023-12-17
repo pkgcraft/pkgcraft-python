@@ -6,7 +6,8 @@ from ..restrict cimport Restrict
 from . cimport Dep
 from .version cimport Version
 
-from ..error import InvalidCpv
+from ..error import InvalidCpv, PkgcraftError
+from .version import Operator
 
 
 @cython.final
@@ -70,6 +71,48 @@ cdef class Cpv:
         inst = <Cpv>Cpv.__new__(Cpv)
         inst.ptr = <C.Cpv *>ptr
         return inst
+
+    def with_op(self, op not None):
+        """Create a Dep from a Cpv by applying a version operator.
+
+        Args:
+            op (str | Operator): the version operator to apply
+
+        Returns:
+            Dep: the newly created Dep
+
+        Raises:
+            PkgcraftError: for invalid operator arguments
+
+        >>> from pkgcraft.dep import Cpv, Operator
+        >>> cpv = Cpv('cat/pkg-1-r2')
+
+        String-based operator
+
+        >>> str(cpv.with_op('>='))
+        '>=cat/pkg-1-r2'
+
+        Enum-based operator
+
+        >>> str(cpv.with_op(Operator.Less))
+        '<cat/pkg-1-r2'
+
+        Invalid operator
+
+        >>> cpv.with_op(Operator.Approximate)
+        Traceback (most recent call last):
+            ...
+        pkgcraft.error.PkgcraftError: ~ version operator can't be used with a revision
+        """
+        if isinstance(op, str):
+            op = Operator.from_str(op)
+        else:
+            op = Operator(op)
+
+        ptr = C.pkgcraft_cpv_with_op(self.ptr, op)
+        if ptr is NULL:
+            raise PkgcraftError
+        return Dep.from_ptr(ptr)
 
     @property
     def category(self):

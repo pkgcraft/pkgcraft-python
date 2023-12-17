@@ -442,6 +442,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Cpv pointer.
     Version *pkgcraft_cpv_version(Cpv *c)
 
+    # Create a Dep from a Cpv by applying a version operator.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null Cpv pointer.
+    Dep *pkgcraft_cpv_with_op(Cpv *c, Operator op)
+
     # Get a package dependency's raw blocker value.
     # For example, the package dependency "!cat/pkg" has a weak blocker.
     #
