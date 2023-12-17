@@ -71,16 +71,16 @@ class TestDependency:
         d = self.req_use("u? ( a )")
         assert len(d) == 1
         assert str(d) == "u? ( a )"
-        assert d.kind == DependencyKind.UseConditional
+        assert d.kind == DependencyKind.Conditional
         assert d.conditional == UseDep("u?")
-        assert "UseConditional 'u? ( a )' at 0x" in repr(d)
+        assert "Conditional 'u? ( a )' at 0x" in repr(d)
 
         d = self.req_use("!u1? ( a u2? ( b ) )")
         assert len(d) == 2
         assert str(d) == "!u1? ( a u2? ( b ) )"
-        assert d.kind == DependencyKind.UseConditional
+        assert d.kind == DependencyKind.Conditional
         assert d.conditional == UseDep("!u1?")
-        assert "UseConditional '!u1? ( a u2? ( b ) )' at 0x" in repr(d)
+        assert "Conditional '!u1? ( a u2? ( b ) )' at 0x" in repr(d)
 
         # raw Deps
         d = Dependency(Dep("a/b"))

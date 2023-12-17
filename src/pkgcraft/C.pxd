@@ -31,7 +31,7 @@ cdef extern from "pkgcraft.h":
         DEPENDENCY_KIND_ANY_OF,
         DEPENDENCY_KIND_EXACTLY_ONE_OF,
         DEPENDENCY_KIND_AT_MOST_ONE_OF,
-        DEPENDENCY_KIND_USE_CONDITIONAL,
+        DEPENDENCY_KIND_CONDITIONAL,
 
     # DependencySet variants.
     cdef enum DependencySetKind:
@@ -725,7 +725,7 @@ cdef extern from "pkgcraft.h":
     # The arguments must be valid Dependency pointers.
     int pkgcraft_dependency_cmp(Dependency *d1, Dependency *d2)
 
-    # Return the conditional UseDep for a Dependency.
+    # Return the conditional for a Dependency.
     #
     # Returns NULL if the Dependency variant isn't conditional.
     #

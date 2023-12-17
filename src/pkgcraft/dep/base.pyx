@@ -32,7 +32,7 @@ class DependencyKind(IntEnum):
     AnyOf = C.DEPENDENCY_KIND_ANY_OF
     ExactlyOneOf = C.DEPENDENCY_KIND_EXACTLY_ONE_OF
     AtMostOneOf = C.DEPENDENCY_KIND_AT_MOST_ONE_OF
-    UseConditional = C.DEPENDENCY_KIND_USE_CONDITIONAL
+    Conditional = C.DEPENDENCY_KIND_CONDITIONAL
 
 
 cdef list iterable_to_dependencies(object obj, C.DependencySetKind kind):
@@ -79,7 +79,7 @@ cdef class Dependency:
     @property
     def conditional(self):
         """Return the conditional UseDep for a Dependency if it exists."""
-        if self.kind == DependencyKind.UseConditional:
+        if self.kind == DependencyKind.Conditional:
             return UseDep.from_ptr(C.pkgcraft_dependency_conditional(self.ptr))
         return None
 
@@ -169,11 +169,6 @@ cdef class Dependency:
 
     def __dealloc__(self):
         C.pkgcraft_dependency_free(self.ptr)
-
-
-@cython.final
-cdef class UseConditional(Dependency):
-    """Dependency object."""
 
 
 cdef class DependencySet:
