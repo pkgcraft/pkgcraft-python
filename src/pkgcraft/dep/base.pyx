@@ -43,6 +43,7 @@ cdef list iterable_to_dependencies(object obj, C.DependencySetKind kind):
         raise TypeError(f"invalid Dependency iterable type: {obj.__class__.__name__}")
 
 
+@cython.final
 cdef class Dependency:
     """Dependency object."""
 
