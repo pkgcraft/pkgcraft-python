@@ -9,7 +9,6 @@ from pkgcraft.dep import *
 from pkgcraft.eapi import EAPI_LATEST, EAPI_LATEST_OFFICIAL, EAPIS, eapi_range
 from pkgcraft.error import InvalidDep
 from pkgcraft.restrict import Restrict
-from pkgcraft.types import OrderedFrozenSet
 
 from ..misc import TEST_DATA, OperatorIterMap, OperatorMap
 
@@ -262,7 +261,7 @@ class TestDep:
             "revision": Revision,
             "version": Version,
             "slot_op": SlotOperator.from_str,
-            "use": lambda l: OrderedFrozenSet(UseDep(x) for x in l),
+            "use": lambda l: [UseDep(x) for x in l],
         }
 
         for entry in TEST_DATA.toml("dep.toml")["valid"]:
