@@ -382,17 +382,10 @@ class TestDep:
                     op_func(obj, None)
 
     def test_intersects(self):
-        def parse(s):
-            """Convert string to Dep falling back to Cpv."""
-            try:
-                return Dep(s)
-            except InvalidDep:
-                return Cpv(s)
-
         for d in TEST_DATA.toml("dep.toml")["intersects"]:
             # test intersections between all pairs of distinct values
             for s1, s2 in permutations(d["vals"], 2):
-                (obj1, obj2) = (parse(s1), parse(s2))
+                (obj1, obj2) = (Dep(s1), Dep(s2))
 
                 # objects intersect themselves
                 assert obj1.intersects(obj1)

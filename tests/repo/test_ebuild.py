@@ -118,7 +118,7 @@ class TestEbuildRepo(BaseRepoTests):
 
     @pytest.mark.parallel
     def test_pkg_metadata_regen(self, tmpdir):
-        orig_repo = TEST_DATA.ebuild_repo("metadata-gen")
+        orig_repo = TEST_DATA.ebuild_repo("metadata")
         # copy original repo to a temp dir
         repo_path = shutil.copytree(orig_repo.path, tmpdir.join("repo"))
         repo = EbuildRepo(repo_path)
