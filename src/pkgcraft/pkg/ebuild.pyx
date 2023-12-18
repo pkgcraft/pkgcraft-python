@@ -26,9 +26,8 @@ cdef class EbuildPkg(Pkg):
     @property
     def ebuild(self):
         """Get a package's ebuild file content."""
-        s = cstring_to_str(C.pkgcraft_pkg_ebuild_ebuild(self.ptr))
-        if s is not None:
-            return s
+        if ptr := C.pkgcraft_pkg_ebuild_ebuild(self.ptr):
+            return cstring_to_str(ptr)
         raise PkgcraftError
 
     @property
