@@ -190,19 +190,30 @@ class TestEbuildPkg(BasePkgTests):
         assert list(pkg.license.iter_flatten()) == ["BSD"]
         assert list(map(str, pkg.license.iter_recursive())) == ["u? ( BSD )", "BSD"]
 
-    def test_properties(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+    def test_properties(self):
+        # none
+        pkg = TEST_DATA.repos["metadata"]["properties/none-8"]
         assert not pkg.properties
 
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", properties="live")
-        assert str(pkg.properties) == "live"
-        assert list(pkg.properties.iter_flatten()) == ["live"]
-        assert list(map(str, pkg.properties.iter_recursive())) == ["live"]
+        # empty
+        pkg = TEST_DATA.repos["metadata"]["properties/empty-8"]
+        assert not pkg.properties
 
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", properties="u? ( live )")
-        assert str(pkg.properties) == "u? ( live )"
-        assert list(pkg.properties.iter_flatten()) == ["live"]
-        assert list(map(str, pkg.properties.iter_recursive())) == ["u? ( live )", "live"]
+        # single-line
+        pkg = TEST_DATA.repos["metadata"]["properties/single-8"]
+        assert str(pkg.properties) == "1 2"
+
+        # multi-line
+        pkg = TEST_DATA.repos["metadata"]["properties/multi-8"]
+        assert str(pkg.properties) == "u? ( 1 2 )"
+
+        # non-incremental inherit (EAPI 7)
+        pkg = TEST_DATA.repos["metadata"]["properties/inherit-7"]
+        assert str(pkg.properties) == "global ebuild"
+
+        # incremental inherit (EAPI 8)
+        pkg = TEST_DATA.repos["metadata"]["properties/inherit-8"]
+        assert str(pkg.properties) == "global ebuild eclass a b"
 
     def test_required_use(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
@@ -218,19 +229,30 @@ class TestEbuildPkg(BasePkgTests):
         assert list(pkg.required_use.iter_flatten()) == ["u2"]
         assert list(map(str, pkg.required_use.iter_recursive())) == ["u1? ( u2 )", "u2"]
 
-    def test_restrict(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+    def test_restrict(self):
+        # none
+        pkg = TEST_DATA.repos["metadata"]["restrict/none-8"]
         assert not pkg.restrict
 
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", restrict="fetch")
-        assert str(pkg.restrict) == "fetch"
-        assert list(pkg.restrict.iter_flatten()) == ["fetch"]
-        assert list(map(str, pkg.restrict.iter_recursive())) == ["fetch"]
+        # empty
+        pkg = TEST_DATA.repos["metadata"]["restrict/empty-8"]
+        assert not pkg.restrict
 
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", restrict="u? ( fetch )")
-        assert str(pkg.restrict) == "u? ( fetch )"
-        assert list(pkg.restrict.iter_flatten()) == ["fetch"]
-        assert list(map(str, pkg.restrict.iter_recursive())) == ["u? ( fetch )", "fetch"]
+        # single-line
+        pkg = TEST_DATA.repos["metadata"]["restrict/single-8"]
+        assert str(pkg.restrict) == "1 2"
+
+        # multi-line
+        pkg = TEST_DATA.repos["metadata"]["restrict/multi-8"]
+        assert str(pkg.restrict) == "u? ( 1 2 )"
+
+        # non-incremental inherit (EAPI 7)
+        pkg = TEST_DATA.repos["metadata"]["restrict/inherit-7"]
+        assert str(pkg.restrict) == "global ebuild"
+
+        # incremental inherit (EAPI 8)
+        pkg = TEST_DATA.repos["metadata"]["restrict/inherit-8"]
+        assert str(pkg.restrict) == "global ebuild eclass a b"
 
     def test_src_uri(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
@@ -320,7 +342,7 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", iuse="a b c")
         assert pkg.iuse == {"a", "b", "c"}
 
-    def test_inherits(self, ebuild_repo):
+    def test_inherits(self):
         # none
         pkg = TEST_DATA.repos["metadata"]["inherit/none-0"]
         assert pkg.inherit == []
