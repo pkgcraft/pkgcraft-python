@@ -304,19 +304,19 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_keywords(self):
         # none
-        pkg = TEST_DATA.ebuild_pkg("=keywords/none-0::metadata")
+        pkg = TEST_DATA.repos["metadata"]["keywords/none-0"]
         assert pkg.keywords == []
 
         # empty
-        pkg = TEST_DATA.ebuild_pkg("=keywords/empty-0::metadata")
+        pkg = TEST_DATA.repos["metadata"]["keywords/empty-0"]
         assert pkg.keywords == []
 
         # single line
-        pkg = TEST_DATA.ebuild_pkg("=keywords/single-0::metadata")
+        pkg = TEST_DATA.repos["metadata"]["keywords/single-0"]
         assert pkg.keywords == {"amd64", "~arm64"}
 
         # multiple lines
-        pkg = TEST_DATA.ebuild_pkg("=keywords/multi-0::metadata")
+        pkg = TEST_DATA.repos["metadata"]["keywords/multi-0"]
         assert pkg.keywords == {"~amd64", "arm64"}
 
     def test_iuse(self, ebuild_repo):
@@ -335,22 +335,22 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.inherited == []
 
         # nested inherits
-        pkg = TEST_DATA.ebuild_pkg("=pkg-tests/inherits-1::eclasses")
+        pkg = TEST_DATA.repos["eclasses"]["pkg-tests/inherits-1"]
         assert pkg.inherit == {"leaf"}
         assert pkg.inherited == {"leaf", "base"}
 
         # non-nested inherits
-        pkg = TEST_DATA.ebuild_pkg("=pkg-tests/inherits-2::eclasses")
+        pkg = TEST_DATA.repos["eclasses"]["pkg-tests/inherits-2"]
         assert pkg.inherit == {"base"}
         assert pkg.inherited == {"base"}
 
     def test_long_description(self, ebuild_repo):
         # none
-        pkg = TEST_DATA.ebuild_pkg("=pkg/none-1::xml")
+        pkg = TEST_DATA.repos["xml"]["pkg/none-1"]
         assert pkg.long_description is None
 
         # invalid
-        pkg = TEST_DATA.ebuild_pkg("=pkg/bad-1::xml")
+        pkg = TEST_DATA.repos["xml"]["pkg/bad-1"]
         assert pkg.long_description is None
 
         # empty
@@ -370,20 +370,20 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.long_description == ""
 
         # exists
-        pkg = TEST_DATA.ebuild_pkg("=pkg/single-1::xml")
+        pkg = TEST_DATA.repos["xml"]["pkg/single-1"]
         assert pkg.long_description == "desc"
 
     def test_maintainers(self, ebuild_repo):
         # none
-        pkg = TEST_DATA.ebuild_pkg("=pkg/none-1::xml")
+        pkg = TEST_DATA.repos["xml"]["pkg/none-1"]
         assert pkg.maintainers == []
 
         # invalid
-        pkg = TEST_DATA.ebuild_pkg("=pkg/bad-1::xml")
+        pkg = TEST_DATA.repos["xml"]["pkg/bad-1"]
         assert pkg.maintainers == []
 
         # single
-        pkg = TEST_DATA.ebuild_pkg("=pkg/single-1::xml")
+        pkg = TEST_DATA.repos["xml"]["pkg/single-1"]
         assert len(pkg.maintainers) == 1
         assert str(pkg.maintainers[0]) == "A Person <a.person@email.com>"
         assert repr(pkg.maintainers[0]) == "<Maintainer 'a.person@email.com'>"
@@ -431,15 +431,15 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_upstream(self, ebuild_repo):
         # none
-        pkg = TEST_DATA.ebuild_pkg("=pkg/none-1::xml")
+        pkg = TEST_DATA.repos["xml"]["pkg/none-1"]
         assert pkg.upstream is None
 
         # invalid
-        pkg = TEST_DATA.ebuild_pkg("=pkg/bad-1::xml")
+        pkg = TEST_DATA.repos["xml"]["pkg/bad-1"]
         assert pkg.upstream is None
 
         # single
-        pkg = TEST_DATA.ebuild_pkg("=pkg/single-1::xml")
+        pkg = TEST_DATA.repos["xml"]["pkg/single-1"]
         u = pkg.upstream
         assert len(u.remote_ids) == 1
         assert list(map(str, u.remote_ids)) == ["github: pkgcraft/pkgcraft"]

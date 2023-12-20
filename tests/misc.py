@@ -5,7 +5,6 @@ import tomllib
 from pathlib import Path
 
 from pkgcraft.config import Config
-from pkgcraft.dep import Dep
 
 # global test data path
 DATADIR = Path(__file__).parent.parent / "testdata"
@@ -51,14 +50,10 @@ class TestData:
         """Return the parsed toml data with the given relative path identifier."""
         return self._toml[id]
 
-    def ebuild_repo(self, id):
-        """Return the ebuild repo with the given identifier."""
-        return self._config.repos[id]
-
-    def ebuild_pkg(self, dep_str):
-        """Return the ebuild package with the given dep identifier."""
-        dep = Dep(dep_str)
-        return self._config.repos[dep.repo][dep]
+    @property
+    def repos(self):
+        """Return all registered repos from the shared test data."""
+        return self._config.repos
 
 
 TEST_DATA = TestData()

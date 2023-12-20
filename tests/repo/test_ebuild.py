@@ -100,25 +100,25 @@ class TestEbuildRepo(BaseRepoTests):
 
     def test_masters(self):
         # primary repo
-        primary_repo = TEST_DATA.ebuild_repo("dependent-primary")
+        primary_repo = TEST_DATA.repos["dependent-primary"]
         assert not primary_repo.masters
 
         # dependent repo
-        secondary_repo = TEST_DATA.ebuild_repo("dependent-secondary")
+        secondary_repo = TEST_DATA.repos["dependent-secondary"]
         assert secondary_repo.masters == (primary_repo,)
 
     def test_licenses(self):
         # primary repo
-        primary_repo = TEST_DATA.ebuild_repo("dependent-primary")
+        primary_repo = TEST_DATA.repos["dependent-primary"]
         assert primary_repo.licenses == ["a"]
 
         # dependent repo
-        secondary_repo = TEST_DATA.ebuild_repo("dependent-secondary")
+        secondary_repo = TEST_DATA.repos["dependent-secondary"]
         assert secondary_repo.licenses == ["a", "b"]
 
     @pytest.mark.parallel
     def test_pkg_metadata_regen(self, tmpdir):
-        orig_repo = TEST_DATA.ebuild_repo("metadata")
+        orig_repo = TEST_DATA.repos["metadata"]
         # copy original repo to a temp dir
         repo_path = shutil.copytree(orig_repo.path, tmpdir.join("repo"))
         repo = EbuildRepo(repo_path)
@@ -163,9 +163,9 @@ class TestEbuildRepoMetadata:
 
     def test_licenses(self):
         # primary repo
-        primary_repo = TEST_DATA.ebuild_repo("dependent-primary")
+        primary_repo = TEST_DATA.repos["dependent-primary"]
         assert primary_repo.metadata.licenses == ["a"]
 
         # dependent repo
-        secondary_repo = TEST_DATA.ebuild_repo("dependent-secondary")
+        secondary_repo = TEST_DATA.repos["dependent-secondary"]
         assert secondary_repo.metadata.licenses == ["b"]
