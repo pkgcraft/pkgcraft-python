@@ -322,19 +322,19 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_inherits(self, ebuild_repo):
         # none
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+        pkg = TEST_DATA.repos["metadata"]["inherit/none-0"]
         assert pkg.inherit == []
         assert pkg.inherited == []
 
-        # nested inherits
-        pkg = TEST_DATA.repos["eclasses"]["pkg-tests/inherits-1"]
-        assert pkg.inherit == {"leaf"}
-        assert pkg.inherited == {"leaf", "base"}
+        # direct inherit
+        pkg = TEST_DATA.repos["metadata"]["inherit/direct-0"]
+        assert pkg.inherit == ["a"]
+        assert pkg.inherited == ["a"]
 
-        # non-nested inherits
-        pkg = TEST_DATA.repos["eclasses"]["pkg-tests/inherits-2"]
-        assert pkg.inherit == {"base"}
-        assert pkg.inherited == {"base"}
+        # indirect inherit
+        pkg = TEST_DATA.repos["metadata"]["inherit/indirect-0"]
+        assert pkg.inherit == ["b"]
+        assert pkg.inherited == ["b", "a"]
 
     def test_long_description(self, ebuild_repo):
         # none
