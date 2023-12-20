@@ -302,13 +302,14 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", homepage="https://a.com https://b.com")
         assert pkg.homepage == {"https://a.com", "https://b.com"}
 
-    def test_keywords(self, ebuild_repo):
+    def test_keywords(self, make_ebuild_repo):
+        repo = make_ebuild_repo(arches=["amd64", "arm64"])
         # empty
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+        pkg = repo.create_pkg("cat/pkg-1")
         assert pkg.keywords == []
 
         # multiple
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", keywords="amd64 ~arm64")
+        pkg = repo.create_pkg("cat/pkg-1", keywords="amd64 ~arm64")
         assert pkg.keywords == {"amd64", "~arm64"}
 
     def test_iuse(self, ebuild_repo):
