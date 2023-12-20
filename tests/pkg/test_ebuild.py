@@ -268,26 +268,18 @@ class TestEbuildPkg(BasePkgTests):
             "https://a.com/z -> z.tar.xz",
         ]
 
-    def test_defined_phases(self, ebuild_repo):
+    def test_defined_phases(self):
         # none
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+        pkg = TEST_DATA.repos["metadata"]["phases/none-0"]
         assert pkg.defined_phases == []
 
-        # single
-        data = "src_configure() { :; }"
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", data=data)
-        assert pkg.defined_phases == {"src_configure"}
+        # ebuild-defined
+        pkg = TEST_DATA.repos["metadata"]["phases/direct-0"]
+        assert pkg.defined_phases == ["src_compile", "src_install", "src_prepare"]
 
-        # multiple
-        data = textwrap.dedent(
-            """
-            src_prepare() { :; }
-            src_configure() { :; }
-            src_compile() { :; }
-        """
-        )
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", data=data)
-        assert pkg.defined_phases == {"src_prepare", "src_configure", "src_compile"}
+        # eclass-defined
+        pkg = TEST_DATA.repos["metadata"]["phases/indirect-0"]
+        assert pkg.defined_phases == ["src_install", "src_prepare", "src_test"]
 
     def test_homepage(self, ebuild_repo):
         # none
