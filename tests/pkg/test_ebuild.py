@@ -333,14 +333,26 @@ class TestEbuildPkg(BasePkgTests):
         pkg = TEST_DATA.repos["metadata"]["keywords/multi-0"]
         assert pkg.keywords == {"~amd64", "arm64"}
 
-    def test_iuse(self, ebuild_repo):
-        # empty
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+    def test_iuse(self):
+        # none
+        pkg = TEST_DATA.repos["metadata"]["iuse/none-8"]
         assert pkg.iuse == []
 
-        # multiple
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", iuse="a b c")
-        assert pkg.iuse == {"a", "b", "c"}
+        # empty
+        pkg = TEST_DATA.repos["metadata"]["iuse/empty-8"]
+        assert pkg.iuse == []
+
+        # single-line
+        pkg = TEST_DATA.repos["metadata"]["iuse/single-8"]
+        assert pkg.iuse == ["a", "+b", "-c"]
+
+        # multi-line
+        pkg = TEST_DATA.repos["metadata"]["iuse/multi-8"]
+        assert pkg.iuse == ["a", "+b", "-c"]
+
+        # incremental inherit
+        pkg = TEST_DATA.repos["metadata"]["iuse/inherit-8"]
+        assert pkg.iuse == ["global", "ebuild", "eclass", "a", "b"]
 
     def test_inherits(self):
         # none
