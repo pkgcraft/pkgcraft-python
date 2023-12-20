@@ -276,7 +276,7 @@ class TestEbuildPkg(BasePkgTests):
         # single
         data = "src_configure() { :; }"
         pkg = ebuild_repo.create_pkg("cat/pkg-1", data=data)
-        assert pkg.defined_phases == {"configure"}
+        assert pkg.defined_phases == {"src_configure"}
 
         # multiple
         data = textwrap.dedent(
@@ -287,7 +287,7 @@ class TestEbuildPkg(BasePkgTests):
         """
         )
         pkg = ebuild_repo.create_pkg("cat/pkg-1", data=data)
-        assert pkg.defined_phases == {"prepare", "configure", "compile"}
+        assert pkg.defined_phases == {"src_prepare", "src_configure", "src_compile"}
 
     def test_homepage(self, ebuild_repo):
         # none
