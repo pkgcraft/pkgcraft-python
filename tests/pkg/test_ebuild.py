@@ -176,19 +176,30 @@ class TestEbuildPkg(BasePkgTests):
         assert str(depend) == "a/b"
         assert str(dep) == "a/b"
 
-    def test_license(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+    def test_license(self):
+        # none
+        pkg = TEST_DATA.repos["metadata"]["license/none-8"]
         assert not pkg.license
 
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", license="BSD")
-        assert str(pkg.license) == "BSD"
-        assert list(pkg.license.iter_flatten()) == ["BSD"]
-        assert list(map(str, pkg.license.iter_recursive())) == ["BSD"]
+        # empty
+        pkg = TEST_DATA.repos["metadata"]["license/empty-8"]
+        assert not pkg.license
 
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", license="u? ( BSD )")
-        assert str(pkg.license) == "u? ( BSD )"
-        assert list(pkg.license.iter_flatten()) == ["BSD"]
-        assert list(map(str, pkg.license.iter_recursive())) == ["u? ( BSD )", "BSD"]
+        # single-line
+        pkg = TEST_DATA.repos["metadata"]["license/single-8"]
+        assert str(pkg.license) == "l1 l2"
+
+        # multi-line
+        pkg = TEST_DATA.repos["metadata"]["license/multi-8"]
+        assert str(pkg.license) == "l1 u? ( l2 )"
+
+        # inherited and overridden
+        pkg = TEST_DATA.repos["metadata"]["license/inherit-8"]
+        assert str(pkg.license) == "l1"
+
+        # inherited and appended
+        pkg = TEST_DATA.repos["metadata"]["license/append-8"]
+        assert str(pkg.license) == "l2 l1"
 
     def test_properties(self):
         # none
