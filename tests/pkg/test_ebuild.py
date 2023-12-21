@@ -178,11 +178,11 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_license(self):
         # none
-        pkg = TEST_DATA.repos["metadata"]["license/none-8"]
+        pkg = TEST_DATA.repos["metadata"]["optional/none-8"]
         assert not pkg.license
 
         # empty
-        pkg = TEST_DATA.repos["metadata"]["license/empty-8"]
+        pkg = TEST_DATA.repos["metadata"]["optional/empty-8"]
         assert not pkg.license
 
         # single-line
@@ -203,11 +203,11 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_properties(self):
         # none
-        pkg = TEST_DATA.repos["metadata"]["properties/none-8"]
+        pkg = TEST_DATA.repos["metadata"]["optional/none-8"]
         assert not pkg.properties
 
         # empty
-        pkg = TEST_DATA.repos["metadata"]["properties/empty-8"]
+        pkg = TEST_DATA.repos["metadata"]["optional/empty-8"]
         assert not pkg.properties
 
         # single-line
@@ -226,27 +226,34 @@ class TestEbuildPkg(BasePkgTests):
         pkg = TEST_DATA.repos["metadata"]["properties/inherit-8"]
         assert str(pkg.properties) == "global ebuild eclass a b"
 
-    def test_required_use(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+    def test_required_use(self):
+        # none
+        pkg = TEST_DATA.repos["metadata"]["optional/none-8"]
         assert not pkg.required_use
 
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", required_use="use")
-        assert str(pkg.required_use) == "use"
-        assert list(pkg.required_use.iter_flatten()) == ["use"]
-        assert list(map(str, pkg.required_use.iter_recursive())) == ["use"]
+        # empty
+        pkg = TEST_DATA.repos["metadata"]["optional/empty-8"]
+        assert not pkg.required_use
 
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", required_use="u1? ( u2 )")
-        assert str(pkg.required_use) == "u1? ( u2 )"
-        assert list(pkg.required_use.iter_flatten()) == ["u2"]
-        assert list(map(str, pkg.required_use.iter_recursive())) == ["u1? ( u2 )", "u2"]
+        # single-line
+        pkg = TEST_DATA.repos["metadata"]["required_use/single-8"]
+        assert str(pkg.required_use) == "u1 u2"
+
+        # multi-line
+        pkg = TEST_DATA.repos["metadata"]["required_use/multi-8"]
+        assert str(pkg.required_use) == "^^ ( u1 u2 )"
+
+        # incremental inherit
+        pkg = TEST_DATA.repos["metadata"]["required_use/inherit-8"]
+        assert str(pkg.required_use) == "global ebuild eclass a b"
 
     def test_restrict(self):
         # none
-        pkg = TEST_DATA.repos["metadata"]["restrict/none-8"]
+        pkg = TEST_DATA.repos["metadata"]["optional/none-8"]
         assert not pkg.restrict
 
         # empty
-        pkg = TEST_DATA.repos["metadata"]["restrict/empty-8"]
+        pkg = TEST_DATA.repos["metadata"]["optional/empty-8"]
         assert not pkg.restrict
 
         # single-line
@@ -303,7 +310,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_defined_phases(self):
         # none
-        pkg = TEST_DATA.repos["metadata"]["phases/none-0"]
+        pkg = TEST_DATA.repos["metadata"]["optional/none-8"]
         assert pkg.defined_phases == []
 
         # ebuild-defined
@@ -325,32 +332,32 @@ class TestEbuildPkg(BasePkgTests):
 
         # multiple
         pkg = ebuild_repo.create_pkg("cat/pkg-1", homepage="https://a.com https://b.com")
-        assert pkg.homepage == {"https://a.com", "https://b.com"}
+        assert pkg.homepage == ["https://a.com", "https://b.com"]
 
     def test_keywords(self):
         # none
-        pkg = TEST_DATA.repos["metadata"]["keywords/none-0"]
+        pkg = TEST_DATA.repos["metadata"]["optional/none-8"]
         assert pkg.keywords == []
 
         # empty
-        pkg = TEST_DATA.repos["metadata"]["keywords/empty-0"]
+        pkg = TEST_DATA.repos["metadata"]["optional/empty-8"]
         assert pkg.keywords == []
 
         # single line
         pkg = TEST_DATA.repos["metadata"]["keywords/single-0"]
-        assert pkg.keywords == {"amd64", "~arm64"}
+        assert pkg.keywords == ["amd64", "~arm64"]
 
         # multiple lines
         pkg = TEST_DATA.repos["metadata"]["keywords/multi-0"]
-        assert pkg.keywords == {"~amd64", "arm64"}
+        assert pkg.keywords == ["~amd64", "arm64"]
 
     def test_iuse(self):
         # none
-        pkg = TEST_DATA.repos["metadata"]["iuse/none-8"]
+        pkg = TEST_DATA.repos["metadata"]["optional/none-8"]
         assert pkg.iuse == []
 
         # empty
-        pkg = TEST_DATA.repos["metadata"]["iuse/empty-8"]
+        pkg = TEST_DATA.repos["metadata"]["optional/empty-8"]
         assert pkg.iuse == []
 
         # single-line
@@ -367,7 +374,7 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_inherits(self):
         # none
-        pkg = TEST_DATA.repos["metadata"]["inherit/none-0"]
+        pkg = TEST_DATA.repos["metadata"]["optional/none-8"]
         assert pkg.inherit == []
         assert pkg.inherited == []
 
