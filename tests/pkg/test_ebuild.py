@@ -401,46 +401,38 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.inherit == ["b"]
         assert pkg.inherited == ["b", "a"]
 
-    def test_long_description(self, ebuild_repo):
+    def test_long_description(self):
         # none
-        pkg = TEST_DATA.repos["xml"]["pkg/none-1"]
+        pkg = TEST_DATA.repos["xml"]["pkg/none-8"]
         assert pkg.long_description is None
 
         # invalid
-        pkg = TEST_DATA.repos["xml"]["pkg/bad-1"]
+        pkg = TEST_DATA.repos["xml"]["pkg/bad-8"]
         assert pkg.long_description is None
 
         # empty
-        path = ebuild_repo.create_ebuild("cat/b-1")
-        with open(path.parent / "metadata.xml", "w") as f:
-            f.write(
-                textwrap.dedent(
-                    """
-                <pkgmetadata>
-                    <longdescription>
-                    </longdescription>
-                </pkgmetadata>
-            """
-                )
-            )
-        pkg = next(ebuild_repo.iter("cat/b-1"))
-        assert pkg.long_description == ""
+        pkg = TEST_DATA.repos["xml"]["pkg/empty-8"]
+        assert pkg.long_description is None
 
-        # exists
-        pkg = TEST_DATA.repos["xml"]["pkg/single-1"]
-        assert pkg.long_description == "desc"
+        # single
+        pkg = TEST_DATA.repos["xml"]["pkg/single-8"]
+        assert pkg.long_description == "A wrapped sentence. Another sentence. New paragraph."
+
+        # multiple
+        pkg = TEST_DATA.repos["xml"]["pkg/multiple-8"]
+        assert pkg.long_description == "A wrapped sentence. Another sentence. New paragraph."
 
     def test_maintainers(self, ebuild_repo):
         # none
-        pkg = TEST_DATA.repos["xml"]["pkg/none-1"]
+        pkg = TEST_DATA.repos["xml"]["pkg/none-8"]
         assert pkg.maintainers == []
 
         # invalid
-        pkg = TEST_DATA.repos["xml"]["pkg/bad-1"]
+        pkg = TEST_DATA.repos["xml"]["pkg/bad-8"]
         assert pkg.maintainers == []
 
         # single
-        pkg = TEST_DATA.repos["xml"]["pkg/single-1"]
+        pkg = TEST_DATA.repos["xml"]["pkg/single-8"]
         assert len(pkg.maintainers) == 1
         assert str(pkg.maintainers[0]) == "A Person <a.person@email.com>"
         assert repr(pkg.maintainers[0]) == "<Maintainer 'a.person@email.com'>"
@@ -488,15 +480,15 @@ class TestEbuildPkg(BasePkgTests):
 
     def test_upstream(self, ebuild_repo):
         # none
-        pkg = TEST_DATA.repos["xml"]["pkg/none-1"]
+        pkg = TEST_DATA.repos["xml"]["pkg/none-8"]
         assert pkg.upstream is None
 
         # invalid
-        pkg = TEST_DATA.repos["xml"]["pkg/bad-1"]
+        pkg = TEST_DATA.repos["xml"]["pkg/bad-8"]
         assert pkg.upstream is None
 
         # single
-        pkg = TEST_DATA.repos["xml"]["pkg/single-1"]
+        pkg = TEST_DATA.repos["xml"]["pkg/single-8"]
         u = pkg.upstream
         assert len(u.remote_ids) == 1
         assert list(map(str, u.remote_ids)) == ["github: pkgcraft/pkgcraft"]
