@@ -53,14 +53,13 @@ class TestEbuildPkg(BasePkgTests):
         pkg = TEST_DATA.repos["metadata"]["optional/none-8"]
         assert pkg.description == "ebuild with no optional metadata fields"
 
-    def test_slot(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", slot="1/2")
+    def test_slot_and_subslot(self):
+        pkg = TEST_DATA.repos["metadata"]["slot/slot-8"]
         assert pkg.slot == "1"
+        assert pkg.subslot == "1"
 
-    def test_subslot(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
-        assert pkg.subslot == "0"
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", slot="1/2")
+        pkg = TEST_DATA.repos["metadata"]["slot/subslot-8"]
+        assert pkg.slot == "1"
         assert pkg.subslot == "2"
 
     def test_dependencies(self, ebuild_repo):
