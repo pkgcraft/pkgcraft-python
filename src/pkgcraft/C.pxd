@@ -1565,7 +1565,7 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Repo pointer.
-    bool pkgcraft_repo_ebuild_pkg_metadata_regen(Repo *r, uintptr_t jobs, bool force)
+    bool pkgcraft_repo_ebuild_metadata_regen(Repo *r, uintptr_t jobs, bool force, char *path)
 
     # Create an ebuild file in the repo.
     #

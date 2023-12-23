@@ -1,5 +1,4 @@
 import os
-import shutil
 from pathlib import Path
 
 import pytest
@@ -111,29 +110,20 @@ class TestEbuildRepo(BaseRepoTests):
         assert secondary.licenses == ["a", "b"]
 
     @pytest.mark.parallel
-    def test_pkg_metadata_regen(self, tmpdir):
-        orig_repo = TEST_DATA.repos["metadata"]
-        # copy original repo to a temp dir
-        repo_path = shutil.copytree(orig_repo.path, tmpdir.join("repo"))
-        repo = EbuildRepo(repo_path)
-        metadata_path = repo.path.joinpath("metadata/md5-cache")
-
-        def metadata_content():
+    def test_metadata_regen(self, tmpdir):
+        def metadata_content(path):
             """Yield metadata file names and content."""
-            for root, _dirs, files in os.walk(metadata_path):
+            for root, _dirs, files in os.walk(path):
                 for name in files:
                     with open(os.path.join(root, name)) as f:
                         yield (name, f.read())
 
-        # record expected metadata file content
-        expected = sorted(metadata_content())
-        # wipe metadata
-        shutil.rmtree(metadata_path)
-        # regenerate metadata
-        repo.pkg_metadata_regen()
+        repo = TEST_DATA.repos["metadata"]
+        # regenerate metadata to an external path
+        repo.metadata_regen(force=True, path=str(tmpdir))
         # verify new data matches original
-        data = sorted(metadata_content())
-        assert data == expected
+        data = sorted(metadata_content(tmpdir))
+        assert data == sorted(metadata_content(repo.path.joinpath("metadata/md5-cache")))
 
 
 class TestEbuildRepoMetadata:

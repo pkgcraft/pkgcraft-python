@@ -1,5 +1,3 @@
-import os
-
 cimport cython
 
 from .. cimport C
@@ -54,10 +52,10 @@ cdef class EbuildRepo(Repo):
         ptr = C.pkgcraft_repo_ebuild_configure(self.ptr, config.ptr)
         return Repo.from_ptr(ptr)
 
-    def pkg_metadata_regen(self, int jobs=0, force=False):
+    def metadata_regen(self, int jobs=0, force=False, path=None):
         """Regenerate an ebuild repo's package metadata cache."""
-        jobs = jobs if jobs > 0 else os.cpu_count()
-        if not C.pkgcraft_repo_ebuild_pkg_metadata_regen(self.ptr, jobs, force):
+        cache_path = str(path) if path is not None else ""
+        if not C.pkgcraft_repo_ebuild_metadata_regen(self.ptr, jobs, force, cache_path.encode()):
             raise PkgcraftError
 
 
