@@ -49,6 +49,12 @@ cdef extern from "pkgcraft.h":
         ERROR_KIND_REPO,
         ERROR_KIND_PKG,
 
+    # Package keyword type.
+    cdef enum KeywordStatus:
+        KEYWORD_STATUS_DISABLED,
+        KEYWORD_STATUS_UNSTABLE,
+        KEYWORD_STATUS_STABLE,
+
     cdef enum LogLevel:
         LOG_LEVEL_OFF,
         LOG_LEVEL_TRACE,
@@ -153,6 +159,10 @@ cdef extern from "pkgcraft.h":
     cdef struct EbuildTempRepo:
         pass
 
+    # Opaque wrapper for pkgcraft::pkg::ebuild::keyword::Keyword.
+    cdef struct KeywordWrapper:
+        pass
+
     # Opaque wrapper for pkgcraft::pkg::Pkg objects.
     cdef struct Pkg:
         pass
@@ -222,6 +232,12 @@ cdef extern from "pkgcraft.h":
     cdef struct PkgcraftError:
         char *message
         ErrorKind kind
+
+    # C-compatible wrapper for pkgcraft::pkg::ebuild::keyword::Keyword.
+    cdef struct Keyword:
+        KeywordStatus status
+        char *arch
+        KeywordWrapper *keyword
 
     cdef struct PkgcraftLog:
         char *message
@@ -1155,6 +1171,39 @@ cdef extern from "pkgcraft.h":
     # Get the most recent error, returns NULL if none exists.
     PkgcraftError *pkgcraft_error_last()
 
+    # Compare two package keywords returning -1, 0, or 1 if the first is less than, equal to,
+    # or greater than the second, respectively.
+    #
+    # # Safety
+    # The arguments must be non-null Keyword pointers.
+    int pkgcraft_keyword_cmp(Keyword *k1, Keyword *k2)
+
+    # Free a package keyword.
+    #
+    # # Safety
+    # The argument must be a Keyword pointer or NULL.
+    void pkgcraft_keyword_free(Keyword *k)
+
+    # Return the hash value for a package keyword.
+    #
+    # # Safety
+    # The argument must be a non-null Keyword pointer.
+    uint64_t pkgcraft_keyword_hash(Keyword *k)
+
+    # Parse a string into a package keyword.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument must be a non-null string.
+    Keyword *pkgcraft_keyword_new(const char *s)
+
+    # Return the string for a package keyword.
+    #
+    # # Safety
+    # The argument must be a non-null Keyword pointer.
+    char *pkgcraft_keyword_str(Keyword *k)
+
     # Return the library version.
     char *pkgcraft_lib_version()
 
@@ -1298,7 +1347,13 @@ cdef extern from "pkgcraft.h":
     #
     # # Safety
     # The argument must be a non-null Pkg pointer.
-    char **pkgcraft_pkg_ebuild_keywords(Pkg *p, uintptr_t *len)
+    Keyword **pkgcraft_pkg_ebuild_keywords(Pkg *p, uintptr_t *len)
+
+    # Return a package's keywords as raw strings.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    char **pkgcraft_pkg_ebuild_keywords_str(Pkg *p, uintptr_t *len)
 
     # Return a package's LICENSE.
     #

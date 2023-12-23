@@ -6,6 +6,7 @@ import pytest
 from pkgcraft.dep import Dep
 from pkgcraft.eapi import EAPI_LATEST_OFFICIAL, EAPIS_OFFICIAL
 from pkgcraft.error import PkgcraftError
+from pkgcraft.pkg.ebuild import Keyword
 
 from ..misc import TEST_DATA
 from .base import BasePkgTests
@@ -357,11 +358,11 @@ class TestEbuildPkg(BasePkgTests):
 
         # single line
         pkg = TEST_DATA.repos["metadata"]["keywords/single-8"]
-        assert pkg.keywords == ["amd64", "~arm64"]
+        assert pkg.keywords == [Keyword("amd64"), Keyword("~arm64")]
 
         # multiple lines
         pkg = TEST_DATA.repos["metadata"]["keywords/multi-8"]
-        assert pkg.keywords == ["~amd64", "arm64"]
+        assert pkg.keywords == [Keyword("~amd64"), Keyword("arm64")]
 
     def test_iuse(self):
         # none

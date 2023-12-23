@@ -30,6 +30,17 @@ cdef class EbuildPkg(Pkg):
     cdef object _upstream
 
 
+cdef class Keyword:
+    cdef C.Keyword *ptr
+    cdef readonly str arch
+    cdef readonly int status
+    # cached fields
+    cdef int _hash
+
+    @staticmethod
+    cdef Keyword from_ptr(C.Keyword *)
+
+
 cdef class Maintainer(Indirect):
     cdef readonly str email
     cdef readonly str name
