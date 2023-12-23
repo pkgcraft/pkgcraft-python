@@ -120,7 +120,7 @@ class TestEbuildRepo(BaseRepoTests):
 
         repo = TEST_DATA.repos["metadata"]
         # regenerate metadata to an external path
-        repo.metadata_regen(force=True, path=str(tmpdir))
+        repo.metadata_regen(force=True, path=tmpdir)
         # verify new data matches original
         data = sorted(metadata_content(tmpdir))
         assert data == sorted(metadata_content(repo.path.joinpath("metadata/md5-cache")))
