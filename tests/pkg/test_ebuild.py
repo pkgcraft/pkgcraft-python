@@ -49,9 +49,9 @@ class TestEbuildPkg(BasePkgTests):
         with pytest.raises(PkgcraftError):
             pkg.ebuild
 
-    def test_description(self, ebuild_repo):
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", description="desc")
-        assert pkg.description == "desc"
+    def test_description(self):
+        pkg = TEST_DATA.repos["metadata"]["optional/none-8"]
+        assert pkg.description == "ebuild with no optional metadata fields"
 
     def test_slot(self, ebuild_repo):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", slot="1/2")
