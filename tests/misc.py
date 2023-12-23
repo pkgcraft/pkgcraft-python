@@ -36,7 +36,8 @@ class TestData:
 
         # load repos
         for path in sorted(glob.glob(f"{DATADIR}/repos/*")):
-            self._config.add_repo(path, id=os.path.basename(path), external=False)
+            if not path.endswith("-invalid"):
+                self._config.add_repo(path, id=os.path.basename(path), external=False)
 
         # load toml files
         self._toml = {}

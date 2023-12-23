@@ -99,22 +99,16 @@ class TestEbuildRepo(BaseRepoTests):
         assert r.eapi is EAPI_LATEST_OFFICIAL
 
     def test_masters(self):
-        # primary repo
-        primary_repo = TEST_DATA.repos["dependent-primary"]
-        assert not primary_repo.masters
-
-        # dependent repo
-        secondary_repo = TEST_DATA.repos["dependent-secondary"]
-        assert secondary_repo.masters == (primary_repo,)
+        primary = TEST_DATA.repos["primary"]
+        assert not primary.masters
+        secondary = TEST_DATA.repos["secondary"]
+        assert secondary.masters == (primary,)
 
     def test_licenses(self):
-        # primary repo
-        primary_repo = TEST_DATA.repos["dependent-primary"]
-        assert primary_repo.licenses == ["a"]
-
-        # dependent repo
-        secondary_repo = TEST_DATA.repos["dependent-secondary"]
-        assert secondary_repo.licenses == ["a", "b"]
+        primary = TEST_DATA.repos["primary"]
+        assert primary.licenses == ["a"]
+        secondary = TEST_DATA.repos["secondary"]
+        assert secondary.licenses == ["a", "b"]
 
     @pytest.mark.parallel
     def test_pkg_metadata_regen(self, tmpdir):
@@ -162,10 +156,7 @@ class TestEbuildRepoMetadata:
         assert repo.metadata.categories == ["cat1", "cat2"]
 
     def test_licenses(self):
-        # primary repo
-        primary_repo = TEST_DATA.repos["dependent-primary"]
-        assert primary_repo.metadata.licenses == ["a"]
-
-        # dependent repo
-        secondary_repo = TEST_DATA.repos["dependent-secondary"]
-        assert secondary_repo.metadata.licenses == ["b"]
+        primary = TEST_DATA.repos["primary"]
+        assert primary.metadata.licenses == ["a"]
+        secondary = TEST_DATA.repos["secondary"]
+        assert secondary.metadata.licenses == ["b"]
