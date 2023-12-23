@@ -314,25 +314,37 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.defined_phases == []
 
         # ebuild-defined
-        pkg = TEST_DATA.repos["metadata"]["phases/direct-0"]
+        pkg = TEST_DATA.repos["metadata"]["phases/direct-8"]
         assert pkg.defined_phases == ["src_compile", "src_install", "src_prepare"]
 
         # eclass-defined
-        pkg = TEST_DATA.repos["metadata"]["phases/indirect-0"]
+        pkg = TEST_DATA.repos["metadata"]["phases/indirect-8"]
         assert pkg.defined_phases == ["src_install", "src_prepare", "src_test"]
 
-    def test_homepage(self, ebuild_repo):
+    def test_homepage(self):
         # none
-        pkg = ebuild_repo.create_pkg("cat/pkg-1")
+        pkg = TEST_DATA.repos["metadata"]["optional/none-8"]
         assert pkg.homepage == []
 
-        # single
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", homepage="https://a.com")
-        assert len(pkg.homepage) == 1
+        # empty
+        pkg = TEST_DATA.repos["metadata"]["optional/empty-8"]
+        assert pkg.homepage == []
 
-        # multiple
-        pkg = ebuild_repo.create_pkg("cat/pkg-1", homepage="https://a.com https://b.com")
-        assert pkg.homepage == ["https://a.com", "https://b.com"]
+        # single-line
+        pkg = TEST_DATA.repos["metadata"]["homepage/single-8"]
+        assert pkg.homepage == ["https://github.com/pkgcraft/1", "https://github.com/pkgcraft/2"]
+
+        # multi-line
+        pkg = TEST_DATA.repos["metadata"]["homepage/multi-8"]
+        assert pkg.homepage == ["https://github.com/pkgcraft/1", "https://github.com/pkgcraft/2"]
+
+        # inherited and overridden
+        pkg = TEST_DATA.repos["metadata"]["homepage/inherit-8"]
+        assert pkg.homepage == ["https://github.com/pkgcraft/1"]
+
+        # inherited and appended
+        pkg = TEST_DATA.repos["metadata"]["homepage/append-8"]
+        assert pkg.homepage == ["https://github.com/pkgcraft/a", "https://github.com/pkgcraft/1"]
 
     def test_keywords(self):
         # none
@@ -344,11 +356,11 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.keywords == []
 
         # single line
-        pkg = TEST_DATA.repos["metadata"]["keywords/single-0"]
+        pkg = TEST_DATA.repos["metadata"]["keywords/single-8"]
         assert pkg.keywords == ["amd64", "~arm64"]
 
         # multiple lines
-        pkg = TEST_DATA.repos["metadata"]["keywords/multi-0"]
+        pkg = TEST_DATA.repos["metadata"]["keywords/multi-8"]
         assert pkg.keywords == ["~amd64", "arm64"]
 
     def test_iuse(self):
@@ -379,12 +391,12 @@ class TestEbuildPkg(BasePkgTests):
         assert pkg.inherited == []
 
         # direct inherit
-        pkg = TEST_DATA.repos["metadata"]["inherit/direct-0"]
+        pkg = TEST_DATA.repos["metadata"]["inherit/direct-8"]
         assert pkg.inherit == ["a"]
         assert pkg.inherited == ["a"]
 
         # indirect inherit
-        pkg = TEST_DATA.repos["metadata"]["inherit/indirect-0"]
+        pkg = TEST_DATA.repos["metadata"]["inherit/indirect-8"]
         assert pkg.inherit == ["b"]
         assert pkg.inherited == ["b", "a"]
 
