@@ -305,8 +305,7 @@ cdef class Keyword:
     def __repr__(self):
         addr = <size_t>&self.ptr
         name = self.__class__.__name__
-        kind = self.kind.name
-        return f"<{name} {kind} '{self}' at 0x{addr:0x}>"
+        return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __dealloc__(self):
         C.pkgcraft_keyword_free(self.ptr)
