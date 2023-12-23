@@ -33,7 +33,7 @@ cdef class EbuildPkg(Pkg):
 cdef class Keyword:
     cdef C.Keyword *ptr
     cdef readonly str arch
-    cdef readonly int status
+    cdef readonly object status
     # cached fields
     cdef int _hash
 
