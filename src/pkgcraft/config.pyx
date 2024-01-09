@@ -143,7 +143,7 @@ cdef class Repos(Indirect):
             RepoSet:
         """
         if self._all is None:
-            ptr = C.pkgcraft_config_repos_set(self.ptr, C.REPOS_ALL)
+            ptr = C.pkgcraft_config_repos_set(self.ptr, NULL)
             self._all = RepoSet.from_ptr(ptr)
         return self._all
 
@@ -154,8 +154,9 @@ cdef class Repos(Indirect):
         Returns:
             RepoSet:
         """
+        cdef C.RepoFormat fmt = C.REPO_FORMAT_EBUILD
         if self._ebuild is None:
-            ptr = C.pkgcraft_config_repos_set(self.ptr, C.REPOS_EBUILD)
+            ptr = C.pkgcraft_config_repos_set(self.ptr, &fmt)
             self._ebuild = RepoSet.from_ptr(ptr)
         return self._ebuild
 
@@ -166,8 +167,9 @@ cdef class Repos(Indirect):
         Returns:
             RepoSet:
         """
+        cdef C.RepoFormat fmt = C.REPO_FORMAT_CONFIGURED
         if self._configured is None:
-            ptr = C.pkgcraft_config_repos_set(self.ptr, C.REPOS_CONFIGURED)
+            ptr = C.pkgcraft_config_repos_set(self.ptr, &fmt)
             self._configured = RepoSet.from_ptr(ptr)
         return self._configured
 

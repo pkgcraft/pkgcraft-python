@@ -84,12 +84,6 @@ cdef extern from "pkgcraft.h":
         REPO_FORMAT_FAKE,
         REPO_FORMAT_EMPTY,
 
-    # Repo set types registered in the config object.
-    cdef enum Repos:
-        REPOS_ALL,
-        REPOS_EBUILD,
-        REPOS_CONFIGURED,
-
     # Generic set operations.
     cdef enum SetOp:
         SET_OP_AND,
@@ -331,11 +325,13 @@ cdef extern from "pkgcraft.h":
     # The config argument must be a non-null Config pointer.
     const Repo **pkgcraft_config_repos(Config *c, uintptr_t *len)
 
-    # Return the RepoSet for a given set type.
+    # Return the RepoSet for a given repo format.
+    #
+    # Use a null pointer format argument to return the set of all repos.
     #
     # # Safety
     # The config argument must be a non-null Config pointer.
-    RepoSet *pkgcraft_config_repos_set(Config *c, Repos kind)
+    RepoSet *pkgcraft_config_repos_set(Config *c, const RepoFormat *format)
 
     # Get the category of a Cpv object.
     #
