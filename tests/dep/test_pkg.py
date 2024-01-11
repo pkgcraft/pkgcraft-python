@@ -138,7 +138,7 @@ class TestDep:
                 Dep.parse(obj)
 
     def test_without(self):
-        optional_fields = ("blocker", "version", "slot", "use_deps", "repo")
+        optional_fields = ("blocker", "version", "slot_dep", "use_deps", "repo")
         dep = Dep("!!>=cat/pkg-1.2-r3:4/5=::repo[u]")
 
         # no args returns the same object
@@ -149,7 +149,7 @@ class TestDep:
         # drop specified attributes
         assert str(dep.without("blocker")) == ">=cat/pkg-1.2-r3:4/5=::repo[u]"
         assert str(dep.without("version")) == "!!cat/pkg:4/5=::repo[u]"
-        assert str(dep.without("slot")) == "!!>=cat/pkg-1.2-r3::repo[u]"
+        assert str(dep.without("slot_dep")) == "!!>=cat/pkg-1.2-r3::repo[u]"
         assert str(dep.without("use_deps")) == "!!>=cat/pkg-1.2-r3:4/5=::repo"
         assert str(dep.without("repo")) == "!!>=cat/pkg-1.2-r3:4/5=[u]"
         assert str(dep.without(*optional_fields)) == "cat/pkg"

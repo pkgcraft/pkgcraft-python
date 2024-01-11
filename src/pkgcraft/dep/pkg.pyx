@@ -63,7 +63,7 @@ cdef dict DEP_FIELDS = {
     'package': C.DEP_FIELD_PACKAGE,
     'blocker': C.DEP_FIELD_BLOCKER,
     'version': C.DEP_FIELD_VERSION,
-    'slot': C.DEP_FIELD_SLOT,
+    'slot_dep': C.DEP_FIELD_SLOT_DEP,
     'use_deps': C.DEP_FIELD_USE_DEPS,
     'repo': C.DEP_FIELD_REPO,
 }
@@ -172,7 +172,7 @@ cdef class Dep:
 
         Args:
             fields: The supported attribute names include the following:
-                blocker, version, slot, use_deps, and repo.
+                blocker, version, slot_dep, use_deps, and repo.
 
         Returns:
             Dep: The package dependency without the specified atttributes, if
@@ -190,7 +190,7 @@ cdef class Dep:
         'cat/pkg:4/5[a,b]'
         >>> str(d.without("use_deps", "version"))
         'cat/pkg:4/5'
-        >>> str(d.without("use_deps", "version", "slot"))
+        >>> str(d.without("use_deps", "version", "slot_dep"))
         'cat/pkg'
         """
         cdef int field
@@ -223,7 +223,7 @@ cdef class Dep:
             kwargs: The keyword arguments must be attribute names with their corresponding
                 string values or None for removal. Supported attribute names
                 include the following: category, package, blocker, version,
-                slot, use_deps, and repo. Note that removing the category or
+                slot_dep, use_deps, and repo. Note that removing the category or
                 package attributes will fail.
 
         Returns:
@@ -243,7 +243,7 @@ cdef class Dep:
         '>=cat/pkg-1.2.3-r4'
         >>> str(d.modify(package='b', repo='repo'))
         'cat/b::repo'
-        >>> str(d.modify(version='~0.1', slot='2/3=', use_deps='a,b,c', repo='test'))
+        >>> str(d.modify(version='~0.1', slot_dep='2/3=', use_deps='a,b,c', repo='test'))
         '~cat/pkg-0.1:2/3=::test[a,b,c]'
 
         Adding and removing attributes:
@@ -251,7 +251,7 @@ cdef class Dep:
         >>> d = Dep('>=cat/pkg-1.2-r3:4/5[a,b]')
         >>> str(d.modify(use_deps=None, repo='test'))
         '>=cat/pkg-1.2-r3:4/5::test'
-        >>> str(d.modify(slot='3/4=', version=None))
+        >>> str(d.modify(slot_dep='3/4=', version=None))
         'cat/pkg:3/4=[a,b]'
         """
         cdef int field

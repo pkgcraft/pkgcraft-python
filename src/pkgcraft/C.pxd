@@ -18,7 +18,7 @@ cdef extern from "pkgcraft.h":
         DEP_FIELD_PACKAGE,
         DEP_FIELD_BLOCKER,
         DEP_FIELD_VERSION,
-        DEP_FIELD_SLOT,
+        DEP_FIELD_SLOT_DEP,
         DEP_FIELD_USE_DEPS,
         DEP_FIELD_REPO,
     ctypedef uint32_t DepField
