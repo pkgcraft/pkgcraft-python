@@ -56,7 +56,7 @@ class TestDep:
         assert dep.pr is None
         assert dep.pv is None
         assert dep.pvr is None
-        assert dep.cpn == "cat/pkg"
+        assert dep.cpn == Cpn("cat/pkg")
         assert dep.cpv == "cat/pkg"
         assert str(dep) == "cat/pkg"
         assert "Dep 'cat/pkg' at 0x" in repr(dep)
@@ -82,7 +82,7 @@ class TestDep:
         assert dep.pr == "r2"
         assert dep.pv == "1"
         assert dep.pvr == "1-r2"
-        assert dep.cpn == "cat/pkg"
+        assert dep.cpn == Cpn("cat/pkg")
         assert dep.cpv == "cat/pkg-1-r2"
         assert str(dep) == "!!>=cat/pkg-1-r2:0/2=::repo[a,-b,c(+)?]"
         assert "Dep '!!>=cat/pkg-1-r2:0/2=::repo[a,-b,c(+)?]' at 0x" in repr(dep)
@@ -365,44 +365,5 @@ class TestDep:
 
     def test_pickle(self):
         dep = Dep("=cat/pkg-1-r2:0/2=[a,b,c]")
-        new_dep = pickle.loads(pickle.dumps(dep))
-        assert dep == new_dep
-
-
-class TestCpn:
-    def test_creation(self):
-        dep = Cpn("cat/pkg")
-        assert dep.category == "cat"
-        assert dep.package == "pkg"
-        assert dep.blocker is None
-        assert dep.slot is None
-        assert dep.subslot is None
-        assert dep.slot_op is None
-        assert dep.use_deps is None
-        assert dep.repo is None
-        assert dep.version is None
-        assert dep.revision is None
-        assert dep.p == "pkg"
-        assert dep.pf == "pkg"
-        assert dep.pr is None
-        assert dep.pv is None
-        assert dep.pvr is None
-        assert dep.cpn == "cat/pkg"
-        assert dep.cpv == "cat/pkg"
-        assert str(dep) == "cat/pkg"
-        assert "Cpn 'cat/pkg' at 0x" in repr(dep)
-
-        # invalid
-        for s in ("=cat/pkg-3", "cat/pkg-3", ""):
-            with pytest.raises(ValueError, match="invalid unversioned dep"):
-                Cpn(s)
-
-        # invalid args
-        for obj in [None, object()]:
-            with pytest.raises(TypeError):
-                Cpn(obj)
-
-    def test_pickle(self):
-        dep = Cpn("cat/pkg")
         new_dep = pickle.loads(pickle.dumps(dep))
         assert dep == new_dep

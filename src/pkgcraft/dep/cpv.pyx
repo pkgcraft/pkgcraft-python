@@ -3,7 +3,8 @@ cimport cython
 from .. cimport C
 from .._misc cimport cstring_to_str
 from ..restrict cimport Restrict
-from . cimport Dep
+from .cpn cimport Cpn
+from .pkg cimport Dep
 from .version cimport Version
 
 from ..error import InvalidCpv, PkgcraftError
@@ -263,14 +264,14 @@ cdef class Cpv:
 
     @property
     def cpn(self):
-        """Get the category and package of a Cpv.
+        """Get the Cpn of a Cpv.
 
         >>> from pkgcraft.dep import Cpv
         >>> cpv = Cpv('cat/pkg-1-r2')
-        >>> cpv.cpn
+        >>> str(cpv.cpn)
         'cat/pkg'
         """
-        return cstring_to_str(C.pkgcraft_cpv_cpn(self.ptr))
+        return Cpn.from_ptr(C.pkgcraft_cpv_cpn(self.ptr))
 
     def matches(self, r: Restrict):
         """Determine if a restriction matches a Cpv.

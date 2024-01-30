@@ -70,8 +70,13 @@ class InvalidPkg(PkgcraftError):
     _kinds = (C.ERROR_KIND_PKG,)
 
 
+class InvalidCpn(PkgcraftError, ValueError):
+    """Cpn doesn't meet required specifications."""
+    _kinds = ()
+
+
 class InvalidCpv(PkgcraftError, ValueError):
-    """Package CPV doesn't meet required specifications."""
+    """Cpv doesn't meet required specifications."""
     _kinds = ()
 
 

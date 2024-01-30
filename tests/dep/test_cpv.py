@@ -21,7 +21,7 @@ class TestCpv:
         assert cpv.pr == "r2"
         assert cpv.pv == "1"
         assert cpv.pvr == "1-r2"
-        assert cpv.cpn == "cat/pkg"
+        assert cpv.cpn == Cpn("cat/pkg")
         assert str(cpv) == "cat/pkg-1-r2"
         assert "Cpv 'cat/pkg-1-r2' at 0x" in repr(cpv)
 

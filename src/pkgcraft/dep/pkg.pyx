@@ -1,6 +1,5 @@
 from enum import IntEnum
 
-cimport cython
 from cpython.mem cimport PyMem_Free, PyMem_Malloc
 
 from .. cimport C
@@ -8,7 +7,8 @@ from .._misc cimport SENTINEL, cstring_to_str
 from ..eapi cimport Eapi
 from ..restrict cimport Restrict
 from ..types cimport OrderedFrozenSet
-from . cimport Cpv
+from .cpn cimport Cpn
+from .cpv cimport Cpv
 from .use cimport UseDep
 from .version cimport Version
 
@@ -620,17 +620,17 @@ cdef class Dep:
 
     @property
     def cpn(self):
-        """Get the category and package of a package dependency.
+        """Get the Cpn of a package dependency.
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2')
-        >>> dep.cpn
+        >>> str(dep.cpn)
         'cat/pkg'
         >>> dep = Dep('cat/pkg')
-        >>> dep.cpn
+        >>> str(dep.cpn)
         'cat/pkg'
         """
-        return cstring_to_str(C.pkgcraft_dep_cpn(self.ptr))
+        return Cpn.from_ptr(C.pkgcraft_dep_cpn(self.ptr))
 
     @property
     def cpv(self):
@@ -811,16 +811,3 @@ class DepCachedWeak(Dep, metaclass=WeakInstanceCache):
     >>> repr(d) != dep_id
     True
     """
-
-
-@cython.final
-cdef class Cpn(Dep):
-    """Unversioned package dependency."""
-
-    def __init__(self, s: str):
-        self.ptr = C.pkgcraft_dep_new_cpn(s.encode())
-        if self.ptr is NULL:
-            raise InvalidDep
-
-    def __reduce__(self):
-        return self.__class__, (str(self),)

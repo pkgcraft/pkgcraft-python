@@ -113,6 +113,10 @@ cdef extern from "pkgcraft.h":
     cdef struct Config:
         pass
 
+    # Opaque wrapper for pkgcraft::dep::cpv::Cpn<String> objects.
+    cdef struct Cpn:
+        pass
+
     # Opaque wrapper for pkgcraft::dep::cpv::Cpv<String> objects.
     cdef struct Cpv:
         pass
@@ -333,6 +337,71 @@ cdef extern from "pkgcraft.h":
     # The config argument must be a non-null Config pointer.
     RepoSet *pkgcraft_config_repos_set(Config *c, const RepoFormat *format)
 
+    # Get the category of a Cpn object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpn pointer.
+    char *pkgcraft_cpn_category(Cpn *c)
+
+    # Compare two Cpns returning -1, 0, or 1 if the first is less than, equal to, or
+    # greater than the second, respectively.
+    #
+    # # Safety
+    # The arguments must be non-null Cpn pointers.
+    int pkgcraft_cpn_cmp(Cpn *c1, Cpn *c2)
+
+    # Free a Cpn.
+    #
+    # # Safety
+    # The argument must be a Cpn pointer or NULL.
+    void pkgcraft_cpn_free(Cpn *c)
+
+    # Return the hash value for a Cpn object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpn pointer.
+    uint64_t pkgcraft_cpn_hash(Cpn *c)
+
+    # Parse a string into a Cpn object.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should be a UTF-8 string.
+    Cpn *pkgcraft_cpn_new(const char *s)
+
+    # Get the package name of a Cpn object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpn pointer.
+    char *pkgcraft_cpn_package(Cpn *c)
+
+    # Determine if a string is a valid package Cpn.
+    #
+    # Returns NULL on error.
+    #
+    # # Safety
+    # The argument should point to a UTF-8 string.
+    const char *pkgcraft_cpn_parse(const char *s)
+
+    # Return the restriction for a Cpn object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpn pointer.
+    Restrict *pkgcraft_cpn_restrict(Cpn *c)
+
+    # Determine if a restriction matches a Cpn object.
+    #
+    # # Safety
+    # The arguments must be valid Restrict and Cpn pointers.
+    bool pkgcraft_cpn_restrict_matches(Cpn *c, Restrict *r)
+
+    # Return the string for a Cpn object.
+    #
+    # # Safety
+    # The argument must be a non-null Cpn pointer.
+    char *pkgcraft_cpn_str(Cpn *c)
+
     # Get the category of a Cpv object.
     #
     # # Safety
@@ -346,11 +415,11 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null Cpv pointers.
     int pkgcraft_cpv_cmp(Cpv *c1, Cpv *c2)
 
-    # Get the category and package of a Cpv object.
+    # Get the Cpn of a Cpv object.
     #
     # # Safety
     # The argument must be a non-null Cpv pointer.
-    char *pkgcraft_cpv_cpn(Cpv *c)
+    Cpn *pkgcraft_cpv_cpn(Cpv *c)
 
     # Free a Cpv.
     #
@@ -376,7 +445,7 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null Cpv and Dep pointers.
     bool pkgcraft_cpv_intersects_dep(Cpv *c, Dep *d)
 
-    # Parse a CPV string into a Cpv object.
+    # Parse a string into a Cpv object.
     #
     # Returns NULL on error.
     #
@@ -496,12 +565,11 @@ cdef extern from "pkgcraft.h":
     # The arguments must be non-null Dep pointers.
     int pkgcraft_dep_cmp(Dep *d1, Dep *d2)
 
-    # Get the category and package of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "cat/pkg".
+    # Get the Cpn of a package dependency.
     #
     # # Safety
     # The argument must be a non-null Dep pointer.
-    char *pkgcraft_dep_cpn(Dep *d)
+    Cpn *pkgcraft_dep_cpn(Dep *d)
 
     # Get the category, package, and version of a package dependency.
     # For example, the package dependency "=cat/pkg-1-r2" returns "cat/pkg-1-r2".
@@ -553,14 +621,6 @@ cdef extern from "pkgcraft.h":
     # The eapi argument may be NULL to use the default EAPI.
     Dep *pkgcraft_dep_new(const char *s,
                           const Eapi *eapi)
-
-    # Parse a string into an unversioned package dependency.
-    #
-    # Returns NULL on error.
-    #
-    # # Safety
-    # The argument must be a UTF-8 string.
-    Dep *pkgcraft_dep_new_cpn(const char *s)
 
     # Get the package and revision of a package dependency.
     # For example, the package dependency "=cat/pkg-1-r2" returns "pkg-1".
