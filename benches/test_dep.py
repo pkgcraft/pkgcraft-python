@@ -41,7 +41,7 @@ def test_bench_dep_valid(benchmark, lib):
         case "pkgcraft":
             from pkgcraft.dep import Dep
 
-            func = Dep.valid
+            func = Dep.parse
         case "portage":
             from portage.dep import isvalidatom
 
