@@ -59,13 +59,9 @@ fi
 
 # manually build cargo-c for arches without native binaries
 [[ -n ${SOURCE_CARGO_C} ]] && doecho cargo install cargo-c
+# output cargo-c version
+cargo cinstall --version
 
-if [[ ${PKGCRAFT_C_REF} =~ ^pkgcraft-c-* ]]; then
-	# build and install C library from release tarball
-	curl -L https://github.com/pkgcraft/pkgcraft/releases/download/${PKGCRAFT_C_REF}/${PKGCRAFT_C_REF}.tar.xz | tar -Jxf -
-	cd ${PKGCRAFT_C_REF} && doecho cargo cinstall
-else
-	# build and install C library from git
-	doecho git clone -b ${PKGCRAFT_C_REF} --recurse-submodules https://github.com/pkgcraft/pkgcraft.git
-	cd pkgcraft && doecho cargo cinstall -p pkgcraft-c
-fi
+# build and install C library
+doecho git clone --depth 1 -b ${PKGCRAFT_C_REF} --recurse-submodules https://github.com/pkgcraft/pkgcraft.git
+cd pkgcraft && doecho cargo cinstall --profile release-strip -p pkgcraft-c
