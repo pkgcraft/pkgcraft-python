@@ -138,28 +138,21 @@ jobs:
     needs: ["build-sdist", "build-wheels"]
     runs-on: ubuntu-latest
     steps:
-    - name: Download sdist and wheel artifacts
+    - name: Download artifacts
       uses: actions/download-artifact@v4
       with:
         path: ${{ github.ref_name }}
         merge-multiple: true
 
-    - name: Upload sdist to PyPI
+    - name: Upload files to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
-        packages_dir: ${{ github.ref_name }}/sdist/
-        print_hash: true
-
-    - name: Upload wheels to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
-        packages_dir: ${{ github.ref_name }}/wheels/
-        print_hash: true
+        packages-dir: ${{ github.ref_name }}
+        print-hash: true
 
     - name: Create GitHub release
       uses: softprops/action-gh-release@v1
       with:
-        files: ${{ github.ref_name }}/sdist/*.tar.gz
+        files: ${{ github.ref_name }}/*.tar.gz
         fail_on_unmatched_files: true
