@@ -128,7 +128,7 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: wheels
+        name: ${{ matrix.arch }}-wheels
         path: wheels/
         if-no-files-found: error
         retention-days: 3
@@ -140,23 +140,26 @@ jobs:
     steps:
     - name: Download sdist and wheel artifacts
       uses: actions/download-artifact@v4
+      with:
+        path: ${{ github.ref_name }}
+        merge-multiple: true
 
     - name: Upload sdist to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
-        packages_dir: sdist/
+        packages_dir: ${{ github.ref_name }}/sdist/
         print_hash: true
 
     - name: Upload wheels to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
-        packages_dir: wheels/
+        packages_dir: ${{ github.ref_name }}/wheels/
         print_hash: true
 
     - name: Create GitHub release
       uses: softprops/action-gh-release@v1
       with:
-        files: sdist/*.tar.gz
+        files: ${{ github.ref_name }}/sdist/*.tar.gz
         fail_on_unmatched_files: true
