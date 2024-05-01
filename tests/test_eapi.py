@@ -27,7 +27,7 @@ class TestEapi:
         assert Eapi.parse("01")
         for s in ("@1", "-1", ".1"):
             assert not Eapi.parse(s)
-            with pytest.raises(PkgcraftError, match=f"invalid EAPI: {s}"):
+            with pytest.raises(PkgcraftError, match=f"invalid EAPI: \"{s}\""):
                 Eapi.parse(s, raised=True)
 
     def test_has(self):
