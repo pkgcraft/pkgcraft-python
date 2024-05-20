@@ -41,8 +41,7 @@ class TestConfig:
         assert r == config.repos[0]
 
         # existing
-        with pytest.raises(ConfigError, match="existing repos: fake"):
-            config.add_repo(path, "fake")
+        assert r == config.add_repo(path, "fake")
 
         # existing using a different id
         with pytest.raises(ConfigError, match="existing repos: existing"):
@@ -84,9 +83,8 @@ class TestConfig:
         assert config.repos != {}
         assert config.repos == {"r2": r2, "r1": r1}
 
-        # re-adding a repo fails
-        with pytest.raises(ConfigError, match="existing repos: r1"):
-            config.add_repo(r1)
+        # re-adding a repo succeeds
+        assert r1 == config.add_repo(r1)
 
     def test_repo_sets(self, config, make_ebuild_repo, make_fake_repo):
         # empty
@@ -155,11 +153,10 @@ class TestConfig:
         config.load_portage_conf(conf_path)
         assert set(config.repos) == {"test1"}
 
-        # reloading causes an existence error
-        with pytest.raises(ConfigError, match="existing repos: test1"):
-            config.load_portage_conf(conf_path)
+        # reloading succeeds
+        config.load_portage_conf(conf_path)
 
-        # reloading using a different id still causes an error
+        # reloading using a different id causes an error
         f.write_text(
             textwrap.dedent(
                 f"""
