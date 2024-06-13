@@ -1,23 +1,5 @@
 # valgrind suppressions for pkgcraft
 
-# TODO: remove when CI has >=3.22.0
-{
-	wcscat_avx2
-	Memcheck:Cond
-	fun:__wcscat_avx2
-	fun:_PyPathConfig_Calculate
-	...
-}
-
-# TODO: remove when CI has >=3.22.0
-{
-	wcsncpy_avx2
-	Memcheck:Addr32
-	fun:__wcsncpy_avx2
-	fun:_Py_wrealpath
-	...
-}
-
 {
 	from regex-syntax crate
 	Memcheck:Cond
