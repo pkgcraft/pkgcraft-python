@@ -8,11 +8,3 @@
 	fun:_ZN8pkgcraft*
 	...
 }
-
-{
-	from regex-syntax crate
-	Memcheck:Cond
-	...
-	fun:_ZN12regex_syntax3ast7visitor5visit*
-	...
-}
