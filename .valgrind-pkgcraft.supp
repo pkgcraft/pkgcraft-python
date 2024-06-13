@@ -1,6 +1,15 @@
 # valgrind suppressions for pkgcraft
 
 {
+	ignore lazy hashmap usage
+	Memcheck:Cond
+	fun:_ZN9hashbrown3map28HashMap*
+	...
+	fun:_ZN8pkgcraft*
+	...
+}
+
+{
 	from regex-syntax crate
 	Memcheck:Cond
 	...
