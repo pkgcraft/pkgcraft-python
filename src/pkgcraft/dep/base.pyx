@@ -68,6 +68,36 @@ cdef class Dependency:
         self.kind = DependencyKind(ptr.kind)
         self.ptr = ptr
 
+    @classmethod
+    def package(cls, s: str, eapi: Eapi | str = None):
+        """Parse a string into a package dependency."""
+        return cls(s, eapi, set=DependencySetKind.Package)
+
+    @classmethod
+    def license(cls, s: str):
+        """Parse a string into a LICENSE dependency."""
+        return cls(s, set=DependencySetKind.License)
+
+    @classmethod
+    def properties(cls, s: str):
+        """Parse a string into a PROPERTIES dependency."""
+        return cls(s, set=DependencySetKind.Properties)
+
+    @classmethod
+    def required_use(cls, s: str):
+        """Parse a string into a REQUIRED_USE dependency."""
+        return cls(s, set=DependencySetKind.RequiredUse)
+
+    @classmethod
+    def restrict(cls, s: str):
+        """Parse a string into a RESTRICT dependency."""
+        return cls(s, set=DependencySetKind.Restrict)
+
+    @classmethod
+    def src_uri(cls, s: str):
+        """Parse a string into a SRC_URI dependency."""
+        return cls(s, set=DependencySetKind.SrcUri)
+
     @staticmethod
     cdef Dependency from_ptr(C.Dependency *ptr):
         """Create a Dependency from a pointer and type."""
@@ -197,6 +227,36 @@ cdef class DependencySet:
 
         self.set = DependencySetKind(ptr.set)
         self.ptr = ptr
+
+    @classmethod
+    def package(cls, s: str, eapi: Eapi | str = None):
+        """Parse a string into a package dependency set."""
+        return cls(s, eapi, set=DependencySetKind.Package)
+
+    @classmethod
+    def license(cls, s: str):
+        """Parse a string into a LICENSE dependency set."""
+        return cls(s, set=DependencySetKind.License)
+
+    @classmethod
+    def properties(cls, s: str):
+        """Parse a string into a PROPERTIES dependency set."""
+        return cls(s, set=DependencySetKind.Properties)
+
+    @classmethod
+    def required_use(cls, s: str):
+        """Parse a string into a REQUIRED_USE dependency set."""
+        return cls(s, set=DependencySetKind.RequiredUse)
+
+    @classmethod
+    def restrict(cls, s: str):
+        """Parse a string into a RESTRICT dependency set."""
+        return cls(s, set=DependencySetKind.Restrict)
+
+    @classmethod
+    def src_uri(cls, s: str):
+        """Parse a string into a SRC_URI dependency set."""
+        return cls(s, set=DependencySetKind.SrcUri)
 
     @staticmethod
     cdef DependencySet from_ptr(C.DependencySet *ptr):
