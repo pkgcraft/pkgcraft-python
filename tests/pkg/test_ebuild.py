@@ -77,8 +77,11 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1")
 
         # invalid keys
-        with pytest.raises(PkgcraftError):
-            pkg.dependencies("invalid")
+        for s in ("invalid", "dep"):
+            with pytest.raises(PkgcraftError, match="invalid dep key"):
+                pkg.dependencies(s)
+            with pytest.raises(PkgcraftError, match="invalid dep key"):
+                pkg.dependencies("depend", s)
 
         # empty deps
         deps = pkg.dependencies()
