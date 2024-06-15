@@ -78,9 +78,9 @@ class TestEbuildPkg(BasePkgTests):
 
         # invalid keys
         for s in ("invalid", "dep"):
-            with pytest.raises(PkgcraftError, match="invalid dep key"):
+            with pytest.raises(PkgcraftError, match=f"invalid dep key: {s}"):
                 pkg.dependencies(s)
-            with pytest.raises(PkgcraftError, match="invalid dep key"):
+            with pytest.raises(PkgcraftError, match=f"invalid dep key: {s}"):
                 pkg.dependencies("depend", s)
 
         # empty deps
