@@ -113,31 +113,31 @@ cdef extern from "pkgcraft.h":
     cdef struct Config:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::cpv::Cpn<String> objects.
+    # Unversioned package.
     cdef struct Cpn:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::cpv::Cpv<String> objects.
+    # Versioned package.
     cdef struct Cpv:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::pkg::Dep<String> objects.
+    # Package dependency.
     cdef struct Dep:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::spec::IntoIter<String, T>.
+    # Opaque wrapper for pkgcraft::dep::IntoIter<T>.
     cdef struct DependencyIntoIter:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::IntoIterConditionals<String, T>.
+    # Opaque wrapper for pkgcraft::dep::IntoIterConditionals<T>.
     cdef struct DependencyIntoIterConditionals:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::IntoIterFlatten<String, T>.
+    # Opaque wrapper for pkgcraft::dep::IntoIterFlatten<T>.
     cdef struct DependencyIntoIterFlatten:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::IntoIterRecursive<String, T>.
+    # Opaque wrapper for pkgcraft::dep::IntoIterRecursive<T>.
     cdef struct DependencyIntoIterRecursive:
         pass
 
@@ -181,7 +181,7 @@ cdef extern from "pkgcraft.h":
     cdef struct RepoIterRestrict:
         pass
 
-    # Ordered set of repos
+    # Ordered set of repos.
     cdef struct RepoSet:
         pass
 
@@ -193,7 +193,6 @@ cdef extern from "pkgcraft.h":
     cdef struct Restrict:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::version::Revision<String> objects.
     cdef struct Revision:
         pass
 
@@ -205,7 +204,6 @@ cdef extern from "pkgcraft.h":
     cdef struct UseDepWrapper:
         pass
 
-    # Opaque wrapper for pkgcraft::dep::version::Version<String> objects.
     cdef struct Version:
         pass
 
