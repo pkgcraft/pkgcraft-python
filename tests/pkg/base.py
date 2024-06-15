@@ -32,6 +32,7 @@ class BasePkgTests:
     def test_intersects_base(self, repo):
         pkg = repo.create_pkg("cat/pkg-1-r2")
         assert pkg.intersects(Dep("cat/pkg"))
+        assert not pkg.intersects(Dep("a/b"))
         assert pkg.intersects(Dep("=cat/pkg-1-r2"))
         assert not pkg.intersects(Dep(">cat/pkg-1-r2"))
 

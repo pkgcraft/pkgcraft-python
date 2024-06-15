@@ -40,7 +40,9 @@ class TestEbuildPkg(BasePkgTests):
         pkg = repo.create_pkg("cat/pkg-1", slot="0/1")
         assert pkg.intersects(Dep("cat/pkg"))
         assert pkg.intersects(Dep("cat/pkg:0"))
+        assert not pkg.intersects(Dep("cat/pkg:1"))
         assert pkg.intersects(Dep("cat/pkg:0/1"))
+        assert not pkg.intersects(Dep("cat/pkg:0/2"))
         assert pkg.intersects(Dep("cat/pkg::test"))
         assert not pkg.intersects(Dep("cat/pkg::repo"))
 
