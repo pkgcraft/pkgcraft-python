@@ -211,6 +211,7 @@ cdef class DependencySet:
         return self.create(C.pkgcraft_dependency_set_clone(self.ptr))
 
     # TODO: use @classmethod once cdef methods support them
+    # See https://github.com/cython/cython/issues/1271.
     cdef create(self, C.DependencySet *ptr):
         """Create a DependencySet from a pointer using the instance class."""
         if isinstance(self, MutableDependencySet):
