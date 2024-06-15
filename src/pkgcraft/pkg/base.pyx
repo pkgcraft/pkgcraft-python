@@ -1,6 +1,6 @@
 from .. cimport C
 from .._misc cimport cstring_to_str
-from ..dep cimport Cpv
+from ..dep cimport Cpv, Dep
 from ..eapi cimport Eapi
 from ..error cimport Indirect
 from ..repo cimport Repo
@@ -87,6 +87,12 @@ cdef class Pkg(Indirect):
         if self._version is None:
             self._version = self.cpv.version
         return self._version
+
+    def intersects(self, other):
+        """Determine if a package intersects with another object."""
+        if isinstance(other, Dep):
+            return C.pkgcraft_pkg_intersects_dep(self.ptr, (<Dep>other).ptr)
+        raise TypeError(f"{other.__class__.__name__!r} unsupported type")
 
     def matches(self, r: Restrict):
         """Determine if a restriction matches a package."""

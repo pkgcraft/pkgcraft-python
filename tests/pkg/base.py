@@ -1,6 +1,6 @@
 import pytest
 
-from pkgcraft.dep import Cpn, Cpv, Version
+from pkgcraft.dep import Cpn, Cpv, Dep, Version
 from pkgcraft.eapi import EAPI_LATEST_OFFICIAL
 from pkgcraft.restrict import Restrict
 
@@ -28,6 +28,17 @@ class BasePkgTests:
 
     def test_version_base(self, pkg):
         assert pkg.version == Version("1")
+
+    def test_intersects_base(self, repo):
+        pkg = repo.create_pkg("cat/pkg-1-r2")
+        assert pkg.intersects(Dep("cat/pkg"))
+        assert pkg.intersects(Dep("=cat/pkg-1-r2"))
+        assert not pkg.intersects(Dep(">cat/pkg-1-r2"))
+
+        # invalid types
+        for obj in [None, object()]:
+            with pytest.raises(TypeError):
+                pkg.intersects(obj)
 
     def test_matches_base(self, pkg):
         pkg_restrict = Restrict(pkg)

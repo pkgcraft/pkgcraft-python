@@ -35,6 +35,15 @@ class TestEbuildPkg(BasePkgTests):
         pkg = ebuild_repo.create_pkg("cat/pkg-1", eapi=EAPI_LATEST_OFFICIAL)
         assert pkg.eapi is EAPI_LATEST_OFFICIAL
 
+    def test_intersects(self, make_ebuild_repo):
+        repo = make_ebuild_repo(id="test")
+        pkg = repo.create_pkg("cat/pkg-1", slot="0/1")
+        assert pkg.intersects(Dep("cat/pkg"))
+        assert pkg.intersects(Dep("cat/pkg:0"))
+        assert pkg.intersects(Dep("cat/pkg:0/1"))
+        assert pkg.intersects(Dep("cat/pkg::test"))
+        assert not pkg.intersects(Dep("cat/pkg::repo"))
+
     def test_path(self, ebuild_repo):
         path = ebuild_repo.create_ebuild()
         pkg = next(iter(ebuild_repo))

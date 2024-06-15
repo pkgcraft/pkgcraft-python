@@ -1522,6 +1522,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer.
     uint64_t pkgcraft_pkg_hash(Pkg *p)
 
+    # Determine if a package intersects with a package dependency.
+    #
+    # # Safety
+    # The arguments should be non-null pointers.
+    bool pkgcraft_pkg_intersects_dep(Pkg *p, Dep *d)
+
     # Return a package's repo.
     #
     # # Safety

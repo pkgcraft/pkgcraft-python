@@ -344,9 +344,10 @@ class TestDep:
                 else:
                     assert not obj1.intersects(obj2)
 
-        # invalid type
-        with pytest.raises(TypeError):
-            Dep("cat/pkg").intersects(object())
+        # invalid types
+        for obj in [None, object()]:
+            with pytest.raises(TypeError):
+                Dep("cat/pkg").intersects(obj)
 
     def test_sort(self):
         for d in TEST_DATA.toml("dep.toml")["sorting"]:
