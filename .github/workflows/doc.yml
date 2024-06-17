@@ -33,7 +33,7 @@ jobs:
 
     - name: Download pkgcraft-c library from most recent run
       if: ${{ inputs.event-type == '' }}
-      uses: dawidd6/action-download-artifact@v5
+      uses: dawidd6/action-download-artifact@v6
       with:
         github_token: ${{ secrets.PKGCRAFT_CI_TOKEN }}
         repo: pkgcraft/pkgcraft
