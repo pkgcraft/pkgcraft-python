@@ -109,8 +109,8 @@ jobs:
     - name: Override build variables
       run: |
         echo "PKG_CONFIG_PATH=${pkgcraft_dir}" >> $GITHUB_ENV
-        echo "LD_LIBRARY_PATH=${pkgcraft_dir}/lib" >> $GITHUB_ENV
-        echo "DYLD_LIBRARY_PATH=${pkgcraft_dir}/lib" >> $GITHUB_ENV
+        echo "LD_LIBRARY_PATH=${pkgcraft_dir}" >> $GITHUB_ENV
+        echo "DYLD_LIBRARY_PATH=${pkgcraft_dir}" >> $GITHUB_ENV
 
     - name: Run tests
       run: tox -c tox.ini -e coverage
