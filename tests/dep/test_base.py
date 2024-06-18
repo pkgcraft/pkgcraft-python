@@ -150,14 +150,12 @@ class TestDependency:
             assert len({d1, d2}) == 2
 
     def test_contains(self):
-        # simple dependencies don't contain themselves
-        assert Dependency.required_use("a") not in Dependency.required_use("a")
-
-        # only top-level Dependency objects have membership
+        # Dependency objects
         d = Dependency.required_use("!u1? ( a u2? ( b ) )")
+        assert d in d
         assert Dependency.required_use("a") in d
         assert Dependency.required_use("u2? ( b )") in d
-        assert Dependency.required_use("b") not in d
+        assert Dependency.required_use("b") in d
 
         # substrings
         assert "u2?" in d
@@ -416,15 +414,13 @@ class DependencySetBase:
         assert not d1.evaluate(False)
 
     def test_contains(self):
-        # only top-level Dependency objects have membership
+        # Dependency objects
         assert Dependency("a/b") in self.cls("a/b")
-        assert Dependency("a/b") not in self.cls("u? ( a/b )")
-
-        # valid Dependency objects
-        assert "a/b" in self.cls("a/b")
-        assert "u? ( c/d )" in self.cls("a/b u? ( c/d )")
+        assert Dependency("a/b") in self.cls("u? ( a/b )")
 
         # substrings
+        assert "a/b" in self.cls("a/b")
+        assert "u? ( c/d )" in self.cls("a/b u? ( c/d )")
         assert "u?" in self.cls("a/b u? ( c/d )")
         assert " ( " in self.cls("a/b u? ( c/d )")
 
