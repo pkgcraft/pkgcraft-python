@@ -69,18 +69,13 @@ cdef class UseDep:
         if ptr is NULL:
             raise PkgcraftError
 
-        self.kind = UseDepKind(ptr.kind)
-        self.flag = ptr.flag.decode()
-        if ptr.default_ is NULL:
-            self.default_ = None
-        else:
-            self.default_ = UseDepDefault(ptr.default_[0])
-        self.ptr = ptr
+        UseDep.from_ptr(ptr, self)
 
     @staticmethod
-    cdef UseDep from_ptr(C.UseDep *ptr):
+    cdef UseDep from_ptr(C.UseDep *ptr, UseDep inst = None):
         """Create a UseDep from a pointer."""
-        inst = <UseDep>UseDep.__new__(UseDep)
+        if inst is None:
+            inst = <UseDep>UseDep.__new__(UseDep)
         inst.ptr = <C.UseDep *>ptr
         inst.kind = UseDepKind(ptr.kind)
         inst.flag = ptr.flag.decode()

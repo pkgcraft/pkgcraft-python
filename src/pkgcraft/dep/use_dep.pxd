@@ -10,4 +10,4 @@ cdef class UseDep:
     cdef int _hash
 
     @staticmethod
-    cdef UseDep from_ptr(C.UseDep *)
+    cdef UseDep from_ptr(C.UseDep *, UseDep inst=*)
