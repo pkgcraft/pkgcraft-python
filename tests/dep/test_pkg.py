@@ -240,13 +240,13 @@ class TestDep:
     def test_versioned(self):
         dep1 = Dep("=cat/pkg-1")
         assert dep1.versioned is dep1
-        dep2 = Dep(">=cat/pkg-1")
+        dep2 = Dep(">=cat/pkg-1:2/3[a,!b?]")
         assert dep2.versioned == dep1
 
     def test_no_use_deps(self):
         dep1 = Dep(">=cat/pkg-1-r2:3/4")
         assert dep1.no_use_deps is dep1
-        dep2 = Dep(">=cat/pkg-1-r2:3/4[a,b,c]")
+        dep2 = Dep(">=cat/pkg-1-r2:3/4[a,!b?]")
         assert dep2.no_use_deps == dep1
 
     def test_matches(self):
