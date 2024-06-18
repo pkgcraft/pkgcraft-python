@@ -164,13 +164,14 @@ class TestDependency:
         assert UseDep("u1") not in d
         assert UseDep("u") not in d
 
-        # substrings
-        assert "u2?" in d
-        assert "b ) )" in d
-        assert "z" not in d
+        # stringified, flattened values
+        assert "a" in d
+        assert "b" in d
+        assert "( b )" not in d
 
-        # non-Dependency objects return False
-        assert None not in d
+        # all other object types return False
+        for obj in (None, object()):
+            assert obj not in d
 
     def test_iter(self):
         assert list(Dependency.required_use("a")) == []
@@ -434,15 +435,15 @@ class DependencySetBase:
         assert UseDep("u1") not in d
         assert UseDep("u") not in d
 
-        # substrings
+        # stringified, flattened values
         assert "a/b" in d
-        assert "u2? ( b/c )" in d
-        assert "u2?" in d
-        assert " ( " in d
-        assert "z" not in d
+        assert "c/d" in d
+        assert "u2? ( b/c )" not in d
+        assert "u2?" not in d
 
         # all other object types return False
-        assert None not in d
+        for obj in (None, object()):
+            assert obj not in d
 
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing
