@@ -38,7 +38,7 @@ cdef class Keyword:
     cdef int _hash
 
     @staticmethod
-    cdef Keyword from_ptr(C.Keyword *)
+    cdef Keyword from_ptr(C.Keyword *, Keyword inst=*)
 
 
 cdef class Maintainer(Indirect):

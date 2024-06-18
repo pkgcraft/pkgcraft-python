@@ -251,14 +251,13 @@ cdef class Keyword:
         if ptr is NULL:
             raise PkgcraftError
 
-        self.status = KeywordStatus(ptr.status)
-        self.arch = ptr.arch.decode()
-        self.ptr = ptr
+        Keyword.from_ptr(ptr, self)
 
     @staticmethod
-    cdef Keyword from_ptr(C.Keyword *ptr):
+    cdef Keyword from_ptr(C.Keyword *ptr, Keyword inst = None):
         """Create a Keyword from a pointer."""
-        inst = <Keyword>Keyword.__new__(Keyword)
+        if inst is None:
+            inst = <Keyword>Keyword.__new__(Keyword)
         inst.status = KeywordStatus(ptr.status)
         inst.arch = ptr.arch.decode()
         inst.ptr = ptr
