@@ -650,12 +650,16 @@ cdef class Dep:
     def unversioned(self):
         """Return a new Dep including only the category and package attributes.
 
-        If the Dep is unmodified, the original object is returned.
-
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2:3/4[a,!b?]')
         >>> str(dep.unversioned)
         'cat/pkg'
+
+        If the Dep is unmodified, the original object is returned.
+
+        >>> dep = Dep('cat/pkg')
+        >>> dep.unversioned is dep
+        True
         """
         ptr = C.pkgcraft_dep_unversioned(self.ptr)
         if ptr != self.ptr:
@@ -666,16 +670,21 @@ cdef class Dep:
     def versioned(self):
         """Return a new Dep including only the category, package, and version attributes.
 
-        If the Dep is unmodified, the original object is returned. Note that
-        the version operator is also set to be '=' if it exists.
+        Note that the version operator is also set to be '=' if it exists.
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('>=cat/pkg-1-r2:3/4[a,!b?]')
         >>> str(dep.versioned)
         '=cat/pkg-1-r2'
+
+        If the Dep is unmodified, the original object is returned.
+
         >>> dep = Dep('cat/pkg')
-        >>> str(dep.versioned)
-        'cat/pkg'
+        >>> dep.versioned is dep
+        True
+        >>> dep = Dep('=cat/pkg-1')
+        >>> dep.versioned is dep
+        True
         """
         ptr = C.pkgcraft_dep_versioned(self.ptr)
         if ptr != self.ptr:
@@ -686,15 +695,16 @@ cdef class Dep:
     def no_use_deps(self):
         """Return a new Dep without USE dependencies.
 
-        If the Dep is unmodified, the original object is returned.
-
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('>=cat/pkg-1-r2:3/4[a,!b?]')
         >>> str(dep.no_use_deps)
         '>=cat/pkg-1-r2:3/4'
-        >>> dep = Dep('cat/pkg')
-        >>> str(dep.no_use_deps)
-        'cat/pkg'
+
+        If the Dep is unmodified, the original object is returned.
+
+        >>> dep = Dep('>=cat/pkg-1-r2:3/4')
+        >>> dep.no_use_deps is dep
+        True
         """
         ptr = C.pkgcraft_dep_no_use_deps(self.ptr)
         if ptr != self.ptr:
