@@ -7,7 +7,7 @@ cdef class Dependency:
     cdef readonly object set
 
     @staticmethod
-    cdef Dependency from_ptr(C.Dependency *)
+    cdef Dependency from_ptr(C.Dependency *, Dependency inst=*)
 
 
 cdef class DependencySet:
@@ -15,7 +15,7 @@ cdef class DependencySet:
     cdef readonly object set
 
     @staticmethod
-    cdef DependencySet from_ptr(C.DependencySet *)
+    cdef DependencySet from_ptr(C.DependencySet *, DependencySet inst=*)
 
     cdef clone(self)
     cdef create(self, C.DependencySet *)
@@ -27,4 +27,4 @@ cdef class DependencySet:
 cdef class MutableDependencySet(DependencySet):
 
     @staticmethod
-    cdef MutableDependencySet from_ptr(C.DependencySet *)
+    cdef DependencySet from_ptr(C.DependencySet *, DependencySet inst=*)

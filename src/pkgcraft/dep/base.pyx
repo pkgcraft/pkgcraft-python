@@ -64,9 +64,7 @@ cdef class Dependency:
         if ptr is NULL:
             raise PkgcraftError
 
-        self.set = DependencySetKind(ptr.set)
-        self.kind = DependencyKind(ptr.kind)
-        self.ptr = ptr
+        Dependency.from_ptr(ptr, self)
 
     @classmethod
     def package(cls, s: str = None, eapi: Eapi | str = None):
@@ -99,9 +97,10 @@ cdef class Dependency:
         return cls(s, set=DependencySetKind.SrcUri)
 
     @staticmethod
-    cdef Dependency from_ptr(C.Dependency *ptr):
+    cdef Dependency from_ptr(C.Dependency *ptr, Dependency inst = None):
         """Create a Dependency from a pointer and type."""
-        inst = <Dependency>Dependency.__new__(Dependency)
+        if inst is None:
+            inst = <Dependency>Dependency.__new__(Dependency)
         inst.set = DependencySetKind(ptr.set)
         inst.kind = DependencyKind(ptr.kind)
         inst.ptr = ptr
@@ -229,8 +228,7 @@ cdef class DependencySet:
         if ptr is NULL:
             raise PkgcraftError
 
-        self.set = DependencySetKind(ptr.set)
-        self.ptr = ptr
+        DependencySet.from_ptr(ptr, self)
 
     @classmethod
     def package(cls, s: str = None, eapi: Eapi | str = None):
@@ -263,9 +261,10 @@ cdef class DependencySet:
         return cls(s, set=DependencySetKind.SrcUri)
 
     @staticmethod
-    cdef DependencySet from_ptr(C.DependencySet *ptr):
+    cdef DependencySet from_ptr(C.DependencySet *ptr, DependencySet inst = None):
         """Create a DependencySet from a pointer."""
-        inst = <DependencySet>DependencySet.__new__(DependencySet)
+        if inst is None:
+            inst = <DependencySet>DependencySet.__new__(DependencySet)
         inst.set = DependencySetKind(ptr.set)
         inst.ptr = ptr
         return inst
@@ -527,12 +526,11 @@ cdef class MutableDependencySet(DependencySet):
     """Mutable set of dependency objects."""
 
     @staticmethod
-    cdef MutableDependencySet from_ptr(C.DependencySet *ptr):
+    cdef MutableDependencySet from_ptr(C.DependencySet *ptr, DependencySet inst = None):
         """Create a MutableDependencySet from a pointer."""
-        inst = <MutableDependencySet>MutableDependencySet.__new__(MutableDependencySet)
-        inst.set = DependencySetKind(ptr.set)
-        inst.ptr = ptr
-        return inst
+        if inst is None:
+            inst = <MutableDependencySet>MutableDependencySet.__new__(MutableDependencySet)
+        return DependencySet.from_ptr(ptr, inst)
 
     def sort(self):
         """Recursively sort a DependencySet.
