@@ -620,6 +620,12 @@ cdef extern from "pkgcraft.h":
     Dep *pkgcraft_dep_new(const char *s,
                           const Eapi *eapi)
 
+    # Return a package dependency without USE dependencies.
+    #
+    # # Safety
+    # The argument must a valid Dep pointer.
+    Dep *pkgcraft_dep_no_use_deps(Dep *d)
+
     # Get the package and revision of a package dependency.
     # For example, the package dependency "=cat/pkg-1-r2" returns "pkg-1".
     #

@@ -682,6 +682,25 @@ cdef class Dep:
             return Dep.from_ptr(ptr)
         return self
 
+    @property
+    def no_use_deps(self):
+        """Return a new Dep without USE dependencies.
+
+        If the Dep is unmodified, the original object is returned.
+
+        >>> from pkgcraft.dep import Dep
+        >>> dep = Dep('>=cat/pkg-1-r2:3/4[a,!b?]')
+        >>> str(dep.no_use_deps)
+        '>=cat/pkg-1-r2:3/4'
+        >>> dep = Dep('cat/pkg')
+        >>> str(dep.no_use_deps)
+        'cat/pkg'
+        """
+        ptr = C.pkgcraft_dep_no_use_deps(self.ptr)
+        if ptr != self.ptr:
+            return Dep.from_ptr(ptr)
+        return self
+
     def matches(self, r: Restrict):
         """Determine if a restriction matches a package dependency.
 
