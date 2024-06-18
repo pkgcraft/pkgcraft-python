@@ -31,10 +31,20 @@ class BasePkgTests:
 
     def test_intersects_base(self, repo):
         pkg = repo.create_pkg("cat/pkg-1-r2")
+
+        # Dep intersections
         assert pkg.intersects(Dep("cat/pkg"))
         assert not pkg.intersects(Dep("a/b"))
         assert pkg.intersects(Dep("=cat/pkg-1-r2"))
         assert not pkg.intersects(Dep(">cat/pkg-1-r2"))
+
+        # Cpv intersections
+        assert pkg.intersects(Cpv("cat/pkg-1-r2"))
+        assert not pkg.intersects(Cpv("cat/pkg-1"))
+
+        # Cpn intersections
+        assert pkg.intersects(Cpn("cat/pkg"))
+        assert not pkg.intersects(Cpn("a/b"))
 
         # invalid types
         for obj in [None, object()]:

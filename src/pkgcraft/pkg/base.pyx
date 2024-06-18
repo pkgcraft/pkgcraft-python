@@ -1,6 +1,6 @@
 from .. cimport C
 from .._misc cimport cstring_to_str
-from ..dep cimport Cpv, Dep
+from ..dep cimport Cpn, Cpv, Dep
 from ..eapi cimport Eapi
 from ..error cimport Indirect
 from ..repo cimport Repo
@@ -92,6 +92,10 @@ cdef class Pkg(Indirect):
         """Determine if a package intersects with another object."""
         if isinstance(other, Dep):
             return C.pkgcraft_pkg_intersects_dep(self.ptr, (<Dep>other).ptr)
+        elif isinstance(other, Cpv):
+            return C.pkgcraft_pkg_intersects_cpv(self.ptr, (<Cpv>other).ptr)
+        elif isinstance(other, Cpn):
+            return C.pkgcraft_pkg_intersects_cpn(self.ptr, (<Cpn>other).ptr)
         raise TypeError(f"{other.__class__.__name__!r} unsupported type")
 
     def matches(self, r: Restrict):
