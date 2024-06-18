@@ -9,7 +9,7 @@ from ..restrict cimport Restrict
 from ..types cimport OrderedFrozenSet
 from .cpn cimport Cpn
 from .cpv cimport Cpv
-from .use cimport UseDep
+from .use_dep cimport UseDep
 from .version cimport Version
 
 from .._misc import LruInstanceCache, WeakInstanceCache

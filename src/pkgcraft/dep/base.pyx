@@ -11,7 +11,7 @@ from ..error cimport Indirect
 from ..types cimport OrderedFrozenSet
 from .pkg cimport Dep
 from .uri cimport Uri
-from .use cimport UseDep
+from .use_dep cimport UseDep
 
 from ..error import PkgcraftError
 
