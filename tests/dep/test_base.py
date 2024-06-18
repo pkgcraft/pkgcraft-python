@@ -150,12 +150,19 @@ class TestDependency:
             assert len({d1, d2}) == 2
 
     def test_contains(self):
-        # Dependency objects
         d = Dependency.required_use("!u1? ( a u2? ( b ) )")
+
+        # Dependency objects
         assert d in d
         assert Dependency.required_use("a") in d
         assert Dependency.required_use("u2? ( b )") in d
         assert Dependency.required_use("b") in d
+
+        # UseDep objects
+        assert UseDep("!u1?") in d
+        assert UseDep("u2?") in d
+        assert UseDep("u1") not in d
+        assert UseDep("u") not in d
 
         # substrings
         assert "u2?" in d
@@ -414,18 +421,26 @@ class DependencySetBase:
         assert not d1.evaluate(False)
 
     def test_contains(self):
+        d = self.cls("!u1? ( a/b u2? ( b/c ) ) c/d")
+
         # Dependency objects
-        assert Dependency("a/b") in self.cls("a/b")
-        assert Dependency("a/b") in self.cls("u? ( a/b )")
+        assert Dependency("c/d") in d
+        assert Dependency("u2? ( b/c )") in d
+
+        # UseDep objects
+        assert UseDep("!u1?") in d
+        assert UseDep("u2?") in d
+        assert UseDep("u1") not in d
+        assert UseDep("u") not in d
 
         # substrings
-        assert "a/b" in self.cls("a/b")
-        assert "u? ( c/d )" in self.cls("a/b u? ( c/d )")
-        assert "u?" in self.cls("a/b u? ( c/d )")
-        assert " ( " in self.cls("a/b u? ( c/d )")
+        assert "a/b" in d
+        assert "u2? ( b/c )" in d
+        assert "u2?" in d
+        assert " ( " in d
 
         # all other object types return False
-        assert None not in self.cls("a/b")
+        assert None not in d
 
     def test_eq_and_hash(self):
         # ordering that doesn't matter for equivalence and hashing

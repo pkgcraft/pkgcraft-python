@@ -821,6 +821,12 @@ cdef extern from "pkgcraft.h":
     # The arguments must be valid pointers.
     bool pkgcraft_dependency_contains_str(Dependency *d, const char *s)
 
+    # Determine if a Dependency contains a given UseDep.
+    #
+    # # Safety
+    # The arguments must be valid pointers.
+    bool pkgcraft_dependency_contains_use_dep(Dependency *d, UseDep *u)
+
     # Evaluate a Dependency.
     #
     # # Safety
@@ -919,6 +925,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The arguments must be valid pointers.
     bool pkgcraft_dependency_set_contains_str(DependencySet *d, const char *s)
+
+    # Determine if a DependencySet contains a given UseDep.
+    #
+    # # Safety
+    # The arguments must be valid pointers.
+    bool pkgcraft_dependency_set_contains_use_dep(DependencySet *d, UseDep *u)
 
     # Determine if two DependencySets are equal.
     #

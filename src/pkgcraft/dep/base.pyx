@@ -147,6 +147,8 @@ cdef class Dependency:
             return C.pkgcraft_dependency_contains_dependency(self.ptr, (<Dependency>obj).ptr)
         elif isinstance(obj, str):
             return C.pkgcraft_dependency_contains_str(self.ptr, obj.encode())
+        elif isinstance(obj, UseDep):
+            return C.pkgcraft_dependency_contains_use_dep(self.ptr, (<UseDep>obj).ptr)
         return False
 
     def __iter__(self):
@@ -401,6 +403,8 @@ cdef class DependencySet:
             return C.pkgcraft_dependency_set_contains_dependency(self.ptr, (<Dependency>obj).ptr)
         elif isinstance(obj, str):
             return C.pkgcraft_dependency_set_contains_str(self.ptr, obj.encode())
+        elif isinstance(obj, UseDep):
+            return C.pkgcraft_dependency_set_contains_use_dep(self.ptr, (<UseDep>obj).ptr)
         return False
 
     def __iter__(self):
