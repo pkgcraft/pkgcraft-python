@@ -34,6 +34,36 @@ class TestUseDep:
             with pytest.raises(PkgcraftError, match=f"invalid use dep: {re.escape(s)}"):
                 UseDep(s)
 
+    def test_cmp(self):
+        for s1, s2 in (("a", "b"), ("u", "-u"), ("u(+)", "u(-)"), ("u?", "!u?")):
+            use1 = UseDep(s1)
+            use2 = UseDep(s2)
+            obj = object()
+
+            assert use1 < use2
+            with pytest.raises(TypeError):
+                assert use1 < obj
+
+            assert use1 <= use2
+            assert use2 <= use2
+            with pytest.raises(TypeError):
+                assert use1 <= obj
+
+            assert use1 == use1
+            assert not use1 == obj
+
+            assert use1 != use2
+            assert use1 != obj
+
+            assert use2 >= use1
+            assert use2 >= use2
+            with pytest.raises(TypeError):
+                assert use2 >= obj
+
+            assert use2 > use1
+            with pytest.raises(TypeError):
+                assert use2 > obj
+
     def test_eq_and_hash(self):
         # not equal
         u1 = UseDep("a")
