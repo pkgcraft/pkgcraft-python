@@ -10,8 +10,6 @@ from ..misc import OperatorMap
 
 
 class TestDependency:
-    req_use = partial(Dependency, set=DependencySetKind.RequiredUse)
-
     def test_creation(self):
         # empty strings fail
         with pytest.raises(PkgcraftError):
@@ -22,7 +20,7 @@ class TestDependency:
             Dependency("a/b c/d")
 
         # variants
-        d = self.req_use("a")
+        d = Dependency.required_use("a")
         assert len(d) == 1
         assert str(d) == "a"
         assert d.kind == DependencyKind.Enabled
@@ -30,52 +28,52 @@ class TestDependency:
         assert d.conditional is None
         assert "Enabled 'a' at 0x" in repr(d)
         # EAPI specific
-        assert d == self.req_use("a", eapi=str(EAPI_LATEST_OFFICIAL))
-        assert d == self.req_use("a", eapi=EAPI_LATEST_OFFICIAL)
+        assert d == Dependency.required_use("a")
+        assert d == Dependency.required_use("a")
 
-        d = self.req_use("!a")
+        d = Dependency.required_use("!a")
         assert len(d) == 1
         assert str(d) == "!a"
         assert d.kind == DependencyKind.Disabled
         assert d.conditional is None
         assert "Disabled '!a' at 0x" in repr(d)
 
-        d = self.req_use("( a b )")
+        d = Dependency.required_use("( a b )")
         assert len(d) == 2
         assert str(d) == "( a b )"
         assert d.kind == DependencyKind.AllOf
         assert d.conditional is None
         assert "AllOf '( a b )' at 0x" in repr(d)
 
-        d = self.req_use("|| ( a b )")
+        d = Dependency.required_use("|| ( a b )")
         assert len(d) == 2
         assert str(d) == "|| ( a b )"
         assert d.kind == DependencyKind.AnyOf
         assert d.conditional is None
         assert "AnyOf '|| ( a b )' at 0x" in repr(d)
 
-        d = self.req_use("^^ ( a b )")
+        d = Dependency.required_use("^^ ( a b )")
         assert len(d) == 2
         assert str(d) == "^^ ( a b )"
         assert d.kind == DependencyKind.ExactlyOneOf
         assert d.conditional is None
         assert "ExactlyOneOf '^^ ( a b )' at 0x" in repr(d)
 
-        d = self.req_use("?? ( a b )")
+        d = Dependency.required_use("?? ( a b )")
         assert len(d) == 2
         assert str(d) == "?? ( a b )"
         assert d.kind == DependencyKind.AtMostOneOf
         assert d.conditional is None
         assert "AtMostOneOf '?? ( a b )' at 0x" in repr(d)
 
-        d = self.req_use("u? ( a )")
+        d = Dependency.required_use("u? ( a )")
         assert len(d) == 1
         assert str(d) == "u? ( a )"
         assert d.kind == DependencyKind.Conditional
         assert d.conditional == UseDep("u?")
         assert "Conditional 'u? ( a )' at 0x" in repr(d)
 
-        d = self.req_use("!u1? ( a u2? ( b ) )")
+        d = Dependency.required_use("!u1? ( a u2? ( b ) )")
         assert len(d) == 2
         assert str(d) == "!u1? ( a u2? ( b ) )"
         assert d.kind == DependencyKind.Conditional
@@ -113,7 +111,7 @@ class TestDependency:
                 assert op_func(d1, d2), f"failed {d1} {op} {d2}"
 
         # verify incompatible type comparisons
-        obj = self.req_use("a")
+        obj = Dependency.required_use("a")
         for op, op_func in OperatorMap.items():
             if op == "==":
                 assert not op_func(obj, None)
@@ -136,8 +134,8 @@ class TestDependency:
             ("!u? ( a b )", "!u? ( b a )"),
             ("|| ( a u? ( c b ) )", "|| ( a u? ( b c ) )"),
         ):
-            d1 = self.req_use(s1)
-            d2 = self.req_use(s2)
+            d1 = Dependency.required_use(s1)
+            d2 = Dependency.required_use(s2)
             assert d1 == d2
             assert len({d1, d2}) == 1
 
@@ -148,72 +146,72 @@ class TestDependency:
             ("^^ ( a b )", "^^ ( b a )"),
             ("u? ( a || ( c b ) )", "u? ( a || ( b c ) )"),
         ):
-            d1 = self.req_use(s1)
-            d2 = self.req_use(s2)
+            d1 = Dependency.required_use(s1)
+            d2 = Dependency.required_use(s2)
             assert d1 != d2
             assert len({d1, d2}) == 2
 
     def test_contains(self):
         # simple dependencies don't contain themselves
-        assert self.req_use("a") not in self.req_use("a")
+        assert Dependency.required_use("a") not in Dependency.required_use("a")
 
         # only top-level Dependency objects have membership
-        d = self.req_use("!u1? ( a u2? ( b ) )")
-        assert self.req_use("a") in d
-        assert self.req_use("u2? ( b )") in d
-        assert self.req_use("b") not in d
+        d = Dependency.required_use("!u1? ( a u2? ( b ) )")
+        assert Dependency.required_use("a") in d
+        assert Dependency.required_use("u2? ( b )") in d
+        assert Dependency.required_use("b") not in d
 
         # non-Dependency objects return False
         assert None not in d
 
     def test_iter(self):
-        assert list(self.req_use("a")) == []
-        assert list(iter(self.req_use("!a"))) == []
-        assert list(map(str, self.req_use("( a )"))) == ["a"]
-        assert list(map(str, self.req_use("|| ( a b )"))) == ["a", "b"]
-        assert list(map(str, self.req_use("|| ( u? ( a ) )"))) == ["u? ( a )"]
+        assert list(Dependency.required_use("a")) == []
+        assert list(iter(Dependency.required_use("!a"))) == []
+        assert list(map(str, Dependency.required_use("( a )"))) == ["a"]
+        assert list(map(str, Dependency.required_use("|| ( a b )"))) == ["a", "b"]
+        assert list(map(str, Dependency.required_use("|| ( u? ( a ) )"))) == ["u? ( a )"]
 
     def test_reversed(self):
-        assert list(reversed(self.req_use("a"))) == []
-        assert list(reversed(self.req_use("!a"))) == []
-        assert list(map(str, reversed(self.req_use("( a )")))) == ["a"]
-        assert list(map(str, reversed(self.req_use("|| ( a b )")))) == ["b", "a"]
-        assert list(map(str, reversed(self.req_use("|| ( u? ( a ) )")))) == ["u? ( a )"]
+        assert list(reversed(Dependency.required_use("a"))) == []
+        assert list(reversed(Dependency.required_use("!a"))) == []
+        assert list(map(str, reversed(Dependency.required_use("( a )")))) == ["a"]
+        assert list(map(str, reversed(Dependency.required_use("|| ( a b )")))) == ["b", "a"]
+        assert list(map(str, reversed(Dependency.required_use("|| ( u? ( a ) )")))) == ["u? ( a )"]
 
     def test_iter_conditionals(self):
-        assert list(self.req_use("a").iter_conditionals()) == []
-        assert list(self.req_use("( a )").iter_conditionals()) == []
-        assert list(self.req_use("u? ( a )").iter_conditionals()) == [UseDep("u?")]
-        assert list(self.req_use("!u? ( a )").iter_conditionals()) == [UseDep("!u?")]
-        assert list(self.req_use("|| ( u1? ( b !u2? ( d ) ) )").iter_conditionals()) == [
+        assert list(Dependency.required_use("a").iter_conditionals()) == []
+        assert list(Dependency.required_use("( a )").iter_conditionals()) == []
+        assert list(Dependency.required_use("u? ( a )").iter_conditionals()) == [UseDep("u?")]
+        assert list(Dependency.required_use("!u? ( a )").iter_conditionals()) == [UseDep("!u?")]
+        assert list(Dependency.required_use("|| ( u1? ( b !u2? ( d ) ) )").iter_conditionals()) == [
             UseDep("u1?"),
             UseDep("!u2?"),
         ]
 
     def test_iter_flatten(self):
-        assert list(self.req_use("a").iter_flatten()) == ["a"]
-        assert list(self.req_use("!a").iter_flatten()) == ["a"]
-        assert list(self.req_use("( a )").iter_flatten()) == ["a"]
-        assert list(self.req_use("|| ( a b )").iter_flatten()) == ["a", "b"]
-        assert list(self.req_use("|| ( u? ( a ) )").iter_flatten()) == ["a"]
+        assert list(Dependency.required_use("a").iter_flatten()) == ["a"]
+        assert list(Dependency.required_use("!a").iter_flatten()) == ["a"]
+        assert list(Dependency.required_use("( a )").iter_flatten()) == ["a"]
+        assert list(Dependency.required_use("|| ( a b )").iter_flatten()) == ["a", "b"]
+        assert list(Dependency.required_use("|| ( u? ( a ) )").iter_flatten()) == ["a"]
 
     def test_iter_recursive(self):
-        assert list(map(str, self.req_use("a").iter_recursive())) == ["a"]
-        assert list(map(str, self.req_use("!a").iter_recursive())) == ["!a"]
-        assert list(map(str, self.req_use("( a )").iter_recursive())) == ["( a )", "a"]
-        assert list(map(str, self.req_use("|| ( a b )").iter_recursive())) == [
+        assert list(map(str, Dependency.required_use("a").iter_recursive())) == ["a"]
+        assert list(map(str, Dependency.required_use("!a").iter_recursive())) == ["!a"]
+        assert list(map(str, Dependency.required_use("( a )").iter_recursive())) == ["( a )", "a"]
+        assert list(map(str, Dependency.required_use("|| ( a b )").iter_recursive())) == [
             "|| ( a b )",
             "a",
             "b",
         ]
-        assert list(map(str, self.req_use("|| ( u? ( a ) )").iter_recursive())) == [
+        assert list(map(str, Dependency.required_use("|| ( u? ( a ) )").iter_recursive())) == [
             "|| ( u? ( a ) )",
             "u? ( a )",
             "a",
         ]
 
     def test_evaluate(self):
-        d = self.req_use("a")
+        d = Dependency.required_use("a")
 
         # no conditionals
         assert d.evaluate() == [d]
@@ -222,28 +220,28 @@ class TestDependency:
         assert d.evaluate(False) == [d]
 
         # conditionally enabled
-        d1 = self.req_use("u? ( a )")
+        d1 = Dependency.required_use("u? ( a )")
         assert d1.evaluate() == []
         assert d1.evaluate(["u"]) == [d]
         assert d1.evaluate(True) == [d]
         assert d1.evaluate(False) == []
-        d1 = self.req_use("u? ( a b )")
-        assert d1.evaluate(["u"]) == [self.req_use("a"), self.req_use("b")]
+        d1 = Dependency.required_use("u? ( a b )")
+        assert d1.evaluate(["u"]) == [Dependency.required_use("a"), Dependency.required_use("b")]
 
         # conditionally disabled
-        d1 = self.req_use("!u? ( a )")
+        d1 = Dependency.required_use("!u? ( a )")
         assert d1.evaluate() == [d]
         assert d1.evaluate(["u"]) == []
         assert d1.evaluate(True) == [d]
         assert d1.evaluate(False) == []
 
         # empty dependencies are discarded
-        d1 = self.req_use("|| ( u1? ( a !u2? ( b ) ) )")
+        d1 = Dependency.required_use("|| ( u1? ( a !u2? ( b ) ) )")
         assert not d1.evaluate()
-        assert d1.evaluate(["u1"]) == [self.req_use("|| ( a b )")]
-        assert d1.evaluate(["u1", "u2"]) == [self.req_use("|| ( a )")]
+        assert d1.evaluate(["u1"]) == [Dependency.required_use("|| ( a b )")]
+        assert d1.evaluate(["u1", "u2"]) == [Dependency.required_use("|| ( a )")]
         assert d1.evaluate(["u2"]) == []
-        assert d1.evaluate(True) == [self.req_use("|| ( a b )")]
+        assert d1.evaluate(True) == [Dependency.required_use("|| ( a b )")]
         assert not d1.evaluate(False)
 
 
@@ -636,7 +634,7 @@ class DependencySetBase:
         d &= self.cls()
         assert d == self.cls()
         # invalid
-        for obj in [None, "s", self.req_use()]:
+        for obj in [None, "s", self.cls.required_use()]:
             with pytest.raises(TypeError):
                 d &= obj
 
@@ -651,7 +649,7 @@ class DependencySetBase:
         d |= self.cls("( a/a )")
         assert d == self.cls("a/a ( a/a )")
         # invalid
-        for obj in [None, "s", self.req_use()]:
+        for obj in [None, "s", self.cls.required_use()]:
             with pytest.raises(TypeError):
                 d |= obj
 
@@ -664,7 +662,7 @@ class DependencySetBase:
         d ^= self.cls("d/d")
         assert d == self.cls()
         # invalid
-        for obj in [None, "s", self.req_use()]:
+        for obj in [None, "s", self.cls.required_use()]:
             with pytest.raises(TypeError):
                 d ^= obj
 
@@ -677,7 +675,7 @@ class DependencySetBase:
         d -= self.cls("c/c")
         assert d == self.cls()
         # invalid
-        for obj in [None, "s", self.req_use()]:
+        for obj in [None, "s", self.cls.required_use()]:
             with pytest.raises(TypeError):
                 d -= obj
 
@@ -688,7 +686,7 @@ class DependencySetBase:
         assert (d & self.cls("d/d")) == self.cls()
         assert (d & self.cls()) == self.cls()
         # invalid
-        for obj in [None, "s", self.req_use()]:
+        for obj in [None, "s", self.cls.required_use()]:
             for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
                     x & y
@@ -699,7 +697,7 @@ class DependencySetBase:
         assert (d | self.cls("c/c")) == self.cls("a/a c/c")
         assert (d | self.cls()) == self.cls("a/a")
         # invalid
-        for obj in [None, "s", self.req_use()]:
+        for obj in [None, "s", self.cls.required_use()]:
             for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
                     x | y
@@ -711,7 +709,7 @@ class DependencySetBase:
         assert (d ^ self.cls("d/d")) == self.cls("a/a b/b c/c d/d")
         assert (d ^ self.cls()) == self.cls("a/a b/b c/c")
         # invalid
-        for obj in [None, "s", self.req_use()]:
+        for obj in [None, "s", self.cls.required_use()]:
             for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
                     x ^ y
@@ -724,7 +722,7 @@ class DependencySetBase:
         assert (d - self.cls("d/d")) == self.cls("a/a b/b c/c")
         assert (d - self.cls()) == self.cls("a/a b/b c/c")
         # invalid
-        for obj in [None, "s", self.req_use()]:
+        for obj in [None, "s", self.cls.required_use()]:
             for x, y in [(d, obj), (obj, d)]:
                 with pytest.raises(TypeError):
                     x - y
@@ -732,12 +730,10 @@ class DependencySetBase:
 
 class TestDependencySet(DependencySetBase):
     cls = DependencySet
-    req_use = partial(DependencySet, set=DependencySetKind.RequiredUse)
 
 
 class TestMutableDependencySet(DependencySetBase):
     cls = MutableDependencySet
-    req_use = partial(MutableDependencySet, set=DependencySetKind.RequiredUse)
 
     def test_freeze(self):
         d1 = MutableDependencySet("a/a")
