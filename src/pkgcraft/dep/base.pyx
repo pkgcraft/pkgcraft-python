@@ -69,32 +69,32 @@ cdef class Dependency:
         self.ptr = ptr
 
     @classmethod
-    def package(cls, s: str, eapi: Eapi | str = None):
+    def package(cls, s: str = None, eapi: Eapi | str = None):
         """Parse a string into a package dependency."""
         return cls(s, eapi, set=DependencySetKind.Package)
 
     @classmethod
-    def license(cls, s: str):
+    def license(cls, s: str = None):
         """Parse a string into a LICENSE dependency."""
         return cls(s, set=DependencySetKind.License)
 
     @classmethod
-    def properties(cls, s: str):
+    def properties(cls, s: str = None):
         """Parse a string into a PROPERTIES dependency."""
         return cls(s, set=DependencySetKind.Properties)
 
     @classmethod
-    def required_use(cls, s: str):
+    def required_use(cls, s: str = None):
         """Parse a string into a REQUIRED_USE dependency."""
         return cls(s, set=DependencySetKind.RequiredUse)
 
     @classmethod
-    def restrict(cls, s: str):
+    def restrict(cls, s: str = None):
         """Parse a string into a RESTRICT dependency."""
         return cls(s, set=DependencySetKind.Restrict)
 
     @classmethod
-    def src_uri(cls, s: str):
+    def src_uri(cls, s: str = None):
         """Parse a string into a SRC_URI dependency."""
         return cls(s, set=DependencySetKind.SrcUri)
 
@@ -229,32 +229,32 @@ cdef class DependencySet:
         self.ptr = ptr
 
     @classmethod
-    def package(cls, s: str, eapi: Eapi | str = None):
+    def package(cls, s: str = None, eapi: Eapi | str = None):
         """Parse a string into a package dependency set."""
         return cls(s, eapi, set=DependencySetKind.Package)
 
     @classmethod
-    def license(cls, s: str):
+    def license(cls, s: str = None):
         """Parse a string into a LICENSE dependency set."""
         return cls(s, set=DependencySetKind.License)
 
     @classmethod
-    def properties(cls, s: str):
+    def properties(cls, s: str = None):
         """Parse a string into a PROPERTIES dependency set."""
         return cls(s, set=DependencySetKind.Properties)
 
     @classmethod
-    def required_use(cls, s: str):
+    def required_use(cls, s: str = None):
         """Parse a string into a REQUIRED_USE dependency set."""
         return cls(s, set=DependencySetKind.RequiredUse)
 
     @classmethod
-    def restrict(cls, s: str):
+    def restrict(cls, s: str = None):
         """Parse a string into a RESTRICT dependency set."""
         return cls(s, set=DependencySetKind.Restrict)
 
     @classmethod
-    def src_uri(cls, s: str):
+    def src_uri(cls, s: str = None):
         """Parse a string into a SRC_URI dependency set."""
         return cls(s, set=DependencySetKind.SrcUri)
 
