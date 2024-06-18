@@ -232,16 +232,22 @@ class TestDep:
                 dep.modify(**kwargs)
 
     def test_unversioned(self):
-        dep = Dep("cat/pkg")
-        assert dep.unversioned is dep
-        dep = Dep(">=cat/pkg-1")
-        assert str(dep.unversioned) == "cat/pkg"
+        dep1 = Dep("cat/pkg")
+        assert dep1.unversioned is dep1
+        dep2 = Dep(">=cat/pkg-1")
+        assert dep2.unversioned == dep1
 
     def test_versioned(self):
-        dep = Dep("=cat/pkg-1")
-        assert dep.versioned is dep
-        dep = Dep(">=cat/pkg-1")
-        assert str(dep.versioned) == "=cat/pkg-1"
+        dep1 = Dep("=cat/pkg-1")
+        assert dep1.versioned is dep1
+        dep2 = Dep(">=cat/pkg-1")
+        assert dep2.versioned == dep1
+
+    def test_no_use_deps(self):
+        dep1 = Dep(">=cat/pkg-1-r2:3/4")
+        assert dep1.no_use_deps is dep1
+        dep2 = Dep(">=cat/pkg-1-r2:3/4[a,b,c]")
+        assert dep2.no_use_deps == dep1
 
     def test_matches(self):
         dep = Dep("=cat/pkg-1")
