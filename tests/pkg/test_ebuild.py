@@ -60,6 +60,18 @@ class TestEbuildPkg(BasePkgTests):
         with pytest.raises(PkgcraftError):
             pkg.ebuild
 
+    def test_deprecated(self):
+        pkg = TEST_DATA.repos["metadata"]["deprecated/deprecated-0"]
+        assert pkg.deprecated
+        pkg = TEST_DATA.repos["metadata"]["deprecated/deprecated-1"]
+        assert not pkg.deprecated
+
+    def test_masked(self):
+        pkg = TEST_DATA.repos["metadata"]["masked/masked-0"]
+        assert pkg.masked
+        pkg = TEST_DATA.repos["metadata"]["masked/masked-1"]
+        assert not pkg.masked
+
     def test_description(self):
         pkg = TEST_DATA.repos["metadata"]["optional/none-8"]
         assert pkg.description == "ebuild with no optional metadata fields"
