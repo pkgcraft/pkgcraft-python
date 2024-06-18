@@ -4,6 +4,7 @@ import pytest
 
 from pkgcraft.dep import *
 from pkgcraft.error import InvalidCpn
+from pkgcraft.restrict import Restrict
 
 
 class TestCpn:
@@ -37,6 +38,12 @@ class TestCpn:
         for obj in [object(), None]:
             with pytest.raises(TypeError):
                 Cpn.parse(obj)
+
+    def test_matches(self):
+        cpn = Cpn("cat/pkg")
+        r = Restrict(cpn)
+        assert cpn.matches(r)
+        assert not cpn.matches(~r)
 
     def test_cmp(self):
         cpn1 = Cpn("a/b")
