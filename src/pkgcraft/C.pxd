@@ -1383,6 +1383,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer.
     DependencySet *pkgcraft_pkg_ebuild_dependencies(Pkg *p, char **keys, uintptr_t len)
 
+    # Return a package's deprecated status.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    bool pkgcraft_pkg_ebuild_deprecated(Pkg *p)
+
     # Return a package's description.
     #
     # # Safety
@@ -1465,6 +1471,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be the value received from pkgcraft_pkg_ebuild_maintainers() or NULL along
     # with the length of the array.
     void pkgcraft_pkg_ebuild_maintainers_free(Maintainer **maintainers, uintptr_t len)
+
+    # Return a package's masked status.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    bool pkgcraft_pkg_ebuild_masked(Pkg *p)
 
     # Return a package's path.
     #

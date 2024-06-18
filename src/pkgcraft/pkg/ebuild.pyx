@@ -32,6 +32,16 @@ cdef class EbuildPkg(Pkg):
         raise PkgcraftError
 
     @property
+    def deprecated(self):
+        """Get a package's deprecated status."""
+        return C.pkgcraft_pkg_ebuild_deprecated(self.ptr)
+
+    @property
+    def masked(self):
+        """Get a package's masked status."""
+        return C.pkgcraft_pkg_ebuild_masked(self.ptr)
+
+    @property
     def description(self):
         """Get a package's description."""
         if self._description is None:
