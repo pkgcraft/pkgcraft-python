@@ -25,7 +25,9 @@ class TestUseDep:
                 use = UseDep(s)
                 assert use.kind == kind
                 assert use.flag == "u"
-                assert use.missing == default
+                assert use.default == default
+                # verify the internal field is hidden from native python
+                assert getattr(use, "default_", None) is None
                 assert str(use) == s
                 assert s in repr(use)
 

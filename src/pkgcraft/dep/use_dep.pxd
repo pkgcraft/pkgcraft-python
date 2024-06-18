@@ -5,7 +5,7 @@ cdef class UseDep:
     cdef C.UseDep *ptr
     cdef readonly object kind
     cdef readonly str flag
-    cdef readonly object missing
+    cdef object default_
     # cached fields
     cdef int _hash
 

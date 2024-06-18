@@ -211,7 +211,7 @@ cdef extern from "pkgcraft.h":
     cdef struct UseDep:
         UseDepKind kind
         char *flag
-        UseDepDefault *missing
+        UseDepDefault *default_
         UseDepWrapper *dep
 
     # C-compatible wrapper for pkgcraft::dep::Dependency.

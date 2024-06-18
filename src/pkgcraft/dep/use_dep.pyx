@@ -43,7 +43,7 @@ cdef class UseDep:
         'use'
         >>> u.kind == UseDepKind.DisabledConditional
         True
-        >>> u.missing is None
+        >>> u.default is None
         True
         >>> str(u)
         '!use?'
@@ -52,7 +52,7 @@ cdef class UseDep:
         'use'
         >>> u.kind == UseDepKind.Equal
         True
-        >>> u.missing == UseDepDefault.Enabled
+        >>> u.default == UseDepDefault.Enabled
         True
         >>> str(u)
         'use(+)='
@@ -71,10 +71,10 @@ cdef class UseDep:
 
         self.kind = UseDepKind(ptr.kind)
         self.flag = ptr.flag.decode()
-        if ptr.missing is NULL:
-            self.missing = None
+        if ptr.default_ is NULL:
+            self.default_ = None
         else:
-            self.missing = UseDepDefault(ptr.missing[0])
+            self.default_ = UseDepDefault(ptr.default_[0])
         self.ptr = ptr
 
     @staticmethod
@@ -84,11 +84,17 @@ cdef class UseDep:
         inst.ptr = <C.UseDep *>ptr
         inst.kind = UseDepKind(ptr.kind)
         inst.flag = ptr.flag.decode()
-        if ptr.missing is NULL:
-            inst.missing = None
+        if ptr.default_ is NULL:
+            inst.default_ = None
         else:
-            inst.missing = UseDepDefault(ptr.missing[0])
+            inst.default_ = UseDepDefault(ptr.default_[0])
         return inst
+
+    # Re-export the default field using its proper name, if exposed directly via
+    # an attribute the bindings fail to compile.
+    @property
+    def default(self):
+        return self.default_
 
     def __lt__(self, other):
         if isinstance(other, UseDep):
