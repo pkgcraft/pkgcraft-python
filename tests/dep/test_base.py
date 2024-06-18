@@ -167,6 +167,7 @@ class TestDependency:
         # substrings
         assert "u2?" in d
         assert "b ) )" in d
+        assert "z" not in d
 
         # non-Dependency objects return False
         assert None not in d
@@ -438,6 +439,7 @@ class DependencySetBase:
         assert "u2? ( b/c )" in d
         assert "u2?" in d
         assert " ( " in d
+        assert "z" not in d
 
         # all other object types return False
         assert None not in d
