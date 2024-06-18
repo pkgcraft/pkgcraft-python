@@ -159,6 +159,10 @@ class TestDependency:
         assert Dependency.required_use("u2? ( b )") in d
         assert Dependency.required_use("b") not in d
 
+        # substrings
+        assert "u2?" in d
+        assert "b ) )" in d
+
         # non-Dependency objects return False
         assert None not in d
 
@@ -416,9 +420,13 @@ class DependencySetBase:
         assert Dependency("a/b") in self.cls("a/b")
         assert Dependency("a/b") not in self.cls("u? ( a/b )")
 
-        # valid Dependency strings work
+        # valid Dependency objects
         assert "a/b" in self.cls("a/b")
         assert "u? ( c/d )" in self.cls("a/b u? ( c/d )")
+
+        # substrings
+        assert "u?" in self.cls("a/b u? ( c/d )")
+        assert " ( " in self.cls("a/b u? ( c/d )")
 
         # all other object types return False
         assert None not in self.cls("a/b")

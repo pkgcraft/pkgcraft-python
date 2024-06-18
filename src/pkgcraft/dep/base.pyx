@@ -145,6 +145,8 @@ cdef class Dependency:
     def __contains__(self, obj):
         if isinstance(obj, Dependency):
             return C.pkgcraft_dependency_contains_dependency(self.ptr, (<Dependency>obj).ptr)
+        elif isinstance(obj, str):
+            return C.pkgcraft_dependency_contains_str(self.ptr, obj.encode())
         return False
 
     def __iter__(self):
@@ -395,15 +397,10 @@ cdef class DependencySet:
         return depset
 
     def __contains__(self, obj):
-        cdef Dependency dep = None
-
         if isinstance(obj, Dependency):
-            dep = obj
+            return C.pkgcraft_dependency_set_contains_dependency(self.ptr, (<Dependency>obj).ptr)
         elif isinstance(obj, str):
-            dep = Dependency(obj, set=self.set)
-
-        if dep is not None:
-            return C.pkgcraft_dependency_set_contains_dependency(self.ptr, dep.ptr)
+            return C.pkgcraft_dependency_set_contains_str(self.ptr, obj.encode())
         return False
 
     def __iter__(self):
