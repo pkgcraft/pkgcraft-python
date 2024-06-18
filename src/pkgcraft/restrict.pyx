@@ -1,7 +1,7 @@
 cimport cython
 
 from . cimport C
-from .dep cimport Cpv, Dep
+from .dep cimport Cpn, Cpv, Dep
 from .pkg cimport Pkg
 
 from .error import InvalidCpv, InvalidDep, InvalidRestrict
@@ -35,7 +35,9 @@ cdef class Restrict:
     """Generic restriction."""
 
     def __init__(self, obj not None):
-        if isinstance(obj, Cpv):
+        if isinstance(obj, Cpn):
+            self.ptr = C.pkgcraft_cpn_restrict((<Cpn>obj).ptr)
+        elif isinstance(obj, Cpv):
             self.ptr = C.pkgcraft_cpv_restrict((<Cpv>obj).ptr)
         elif isinstance(obj, Dep):
             self.ptr = C.pkgcraft_dep_restrict((<Dep>obj).ptr)
