@@ -66,6 +66,12 @@ class TestEbuildPkg(BasePkgTests):
         pkg = TEST_DATA.repos["metadata"]["deprecated/deprecated-1"]
         assert not pkg.deprecated
 
+    def test_live(self):
+        pkg = TEST_DATA.repos["qa-primary"]["Keywords/KeywordsLive-9999"]
+        assert pkg.live
+        pkg = TEST_DATA.repos["qa-primary"]["Keywords/KeywordsLive-0"]
+        assert not pkg.live
+
     def test_masked(self):
         pkg = TEST_DATA.repos["metadata"]["masked/masked-0"]
         assert pkg.masked

@@ -1451,6 +1451,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Pkg pointer.
     DependencySet *pkgcraft_pkg_ebuild_license(Pkg *p)
 
+    # Return a package's live status.
+    #
+    # # Safety
+    # The argument must be a non-null Pkg pointer.
+    bool pkgcraft_pkg_ebuild_live(Pkg *p)
+
     # Return a package's long description.
     #
     # Returns NULL on nonexistence.

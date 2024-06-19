@@ -37,6 +37,11 @@ cdef class EbuildPkg(Pkg):
         return C.pkgcraft_pkg_ebuild_deprecated(self.ptr)
 
     @property
+    def live(self):
+        """Get a package's live status."""
+        return C.pkgcraft_pkg_ebuild_live(self.ptr)
+
+    @property
     def masked(self):
         """Get a package's masked status."""
         return C.pkgcraft_pkg_ebuild_masked(self.ptr)
