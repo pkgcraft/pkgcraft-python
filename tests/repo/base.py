@@ -110,8 +110,10 @@ class BaseRepoTests:
         pkg = repo.create_pkg("cat/pkg-1")
         assert pkg == repo["cat/pkg-1"]
         assert pkg == repo[Cpv("cat/pkg-1")]
+        assert pkg == repo[Dep("=cat/pkg-1")]
+        assert pkg == repo[Dep(">=cat/pkg-1")]
 
-        for obj in ("cat/pkg-2", Cpv("cat/pkg-3")):
+        for obj in ("cat/pkg-2", Cpv("cat/pkg-3"), Dep("<cat/pkg-1")):
             with pytest.raises(KeyError):
                 _ = repo[obj]
 
