@@ -9,6 +9,7 @@ doecho() {
 	"$@"
 }
 
+: ${CARGO_C_RELEASE:=v0.9.29}
 : ${PKGCRAFT_C_REF:=main}
 echo Building pkgcraft-c on ${OSTYPE} for ${HOSTTYPE}
 
@@ -41,15 +42,15 @@ install_pkgs() {
 # install binary cargo-c package if available
 if [[ ${OSTYPE} == "linux-"* ]]; then
 	if [[ ${HOSTTYPE} == "aarch64" ]]; then
-		curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-aarch64-unknown-linux-musl.tar.gz | tar xvzf - -C "${HOME}"/.cargo/bin
+		curl -L https://github.com/lu-zero/cargo-c/releases/download/${CARGO_C_RELEASE}/cargo-c-aarch64-unknown-linux-musl.tar.gz | tar xvzf - -C "${HOME}"/.cargo/bin
 	elif [[ ${HOSTTYPE} == "x86_64" ]]; then
-		curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-x86_64-unknown-linux-musl.tar.gz | tar xvzf - -C "${HOME}"/.cargo/bin
+		curl -L https://github.com/lu-zero/cargo-c/releases/download/${CARGO_C_RELEASE}/cargo-c-x86_64-unknown-linux-musl.tar.gz | tar xvzf - -C "${HOME}"/.cargo/bin
 	else
 		SOURCE_CARGO_C=true
 	fi
 elif [[ ${OSTYPE} == "darwin"* ]]; then
 	if [[ ${HOSTTYPE} == "x86_64" ]]; then
-		curl -L https://github.com/lu-zero/cargo-c/releases/latest/download/cargo-c-macos.zip > cargo-c.zip
+		curl -L https://github.com/lu-zero/cargo-c/releases/download/${CARGO_C_RELEASE}/cargo-c-macos.zip > cargo-c.zip
 		unzip -o cargo-c.zip -d "${HOME}"/.cargo/bin
 		rm cargo-c.zip
 	else
