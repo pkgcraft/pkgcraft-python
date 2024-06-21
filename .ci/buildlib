@@ -59,7 +59,7 @@ elif [[ ${OSTYPE} == "darwin"* ]]; then
 fi
 
 # manually build cargo-c for arches without native binaries
-[[ -n ${SOURCE_CARGO_C} ]] && doecho cargo install cargo-c@{CARGO_C_VERSION}
+[[ -n ${SOURCE_CARGO_C} ]] && doecho cargo install cargo-c@${CARGO_C_VERSION}
 # output cargo-c version
 cargo cinstall --version
 
