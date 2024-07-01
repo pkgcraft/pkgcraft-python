@@ -809,6 +809,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a valid Dependency pointer.
     UseDep *pkgcraft_dependency_conditional(Dependency *d)
 
+    # Determine if a Dependency contains a given Dep.
+    #
+    # # Safety
+    # The arguments must be valid pointers.
+    bool pkgcraft_dependency_contains_dep(Dependency *d, Dep *dep)
+
     # Determine if a Dependency contains a given Dependency.
     #
     # # Safety
@@ -913,6 +919,12 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The argument must be a valid DependencySet pointer.
     DependencySet *pkgcraft_dependency_set_clone(DependencySet *d)
+
+    # Determine if a DependencySet contains a given Dep.
+    #
+    # # Safety
+    # The arguments must be valid pointers.
+    bool pkgcraft_dependency_set_contains_dep(DependencySet *d, Dep *dep)
 
     # Determine if a DependencySet contains a given Dependency.
     #

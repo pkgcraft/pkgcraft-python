@@ -164,6 +164,9 @@ class TestDependency:
         assert UseDep("u1") not in d
         assert UseDep("u") not in d
 
+        # Dep objects
+        assert Dep("a/b") not in d
+
         # stringified, flattened values
         assert "a" in d
         assert "b" in d
@@ -434,6 +437,10 @@ class DependencySetBase:
         assert UseDep("u2?") in d
         assert UseDep("u1") not in d
         assert UseDep("u") not in d
+
+        # Dep objects
+        assert Dep("a/b") in d
+        assert Dep("a/b:0") not in d
 
         # stringified, flattened values
         assert "a/b" in d
