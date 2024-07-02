@@ -634,17 +634,19 @@ cdef class Dep:
 
     @property
     def cpv(self):
-        """Get the category, package, and version of a package dependency.
+        """Get the Cpv of a package dependency if one exists.
 
         >>> from pkgcraft.dep import Dep
         >>> dep = Dep('=cat/pkg-1-r2:3/4[a,!b?]')
-        >>> dep.cpv
+        >>> str(dep.cpv)
         'cat/pkg-1-r2'
         >>> dep = Dep('cat/pkg')
-        >>> dep.cpv
-        'cat/pkg'
+        >>> dep.cpv is None
+        True
         """
-        return cstring_to_str(C.pkgcraft_dep_cpv(self.ptr))
+        if ptr := C.pkgcraft_dep_cpv(self.ptr):
+            return Cpv.from_ptr(ptr)
+        return None
 
     @property
     def unversioned(self):

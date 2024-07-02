@@ -569,12 +569,13 @@ cdef extern from "pkgcraft.h":
     # The argument must be a non-null Dep pointer.
     Cpn *pkgcraft_dep_cpn(Dep *d)
 
-    # Get the category, package, and version of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "cat/pkg-1-r2".
+    # Get the Cpv of a package dependency if one exists.
+    #
+    # Returns NULL on nonexistence.
     #
     # # Safety
     # The argument must be a non-null Dep pointer.
-    char *pkgcraft_dep_cpv(Dep *d)
+    Cpv *pkgcraft_dep_cpv(Dep *d)
 
     # Free a package dependency.
     #

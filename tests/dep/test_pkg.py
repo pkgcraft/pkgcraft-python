@@ -57,7 +57,7 @@ class TestDep:
         assert dep.pv is None
         assert dep.pvr is None
         assert dep.cpn == Cpn("cat/pkg")
-        assert dep.cpv == "cat/pkg"
+        assert dep.cpv is None
         assert str(dep) == "cat/pkg"
         assert "Dep 'cat/pkg' at 0x" in repr(dep)
 
@@ -83,7 +83,7 @@ class TestDep:
         assert dep.pv == "1"
         assert dep.pvr == "1-r2"
         assert dep.cpn == Cpn("cat/pkg")
-        assert dep.cpv == "cat/pkg-1-r2"
+        assert dep.cpv == Cpv("cat/pkg-1-r2")
         assert str(dep) == "!!>=cat/pkg-1-r2:0/2=::repo[a,-b,c(+)?]"
         assert "Dep '!!>=cat/pkg-1-r2:0/2=::repo[a,-b,c(+)?]' at 0x" in repr(dep)
 
