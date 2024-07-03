@@ -1138,11 +1138,17 @@ cdef extern from "pkgcraft.h":
                                                       uintptr_t index,
                                                       Dependency *value)
 
-    # Recursively sort a DependencySet.
+    # Sort a DependencySet.
     #
     # # Safety
     # The argument must be a valid DependencySet pointer.
     void pkgcraft_dependency_set_sort(DependencySet *d)
+
+    # Recursively sort a DependencySet.
+    #
+    # # Safety
+    # The argument must be a valid DependencySet pointer.
+    void pkgcraft_dependency_set_sort_recursive(DependencySet *d)
 
     # Return the formatted string for a DependencySet object.
     #

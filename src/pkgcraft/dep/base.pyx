@@ -541,7 +541,7 @@ cdef class MutableDependencySet(DependencySet):
         return DependencySet.from_ptr(ptr, inst)
 
     def sort(self):
-        """Recursively sort a DependencySet.
+        """Sort a DependencySet.
 
         >>> from pkgcraft.dep import MutableDependencySet
         >>> d = MutableDependencySet('a/c a/b')
@@ -551,14 +551,34 @@ cdef class MutableDependencySet(DependencySet):
         >>> str(d)
         'a/b a/c'
 
-        Dependency objects are ordered by type and recursively sorted if possible.
+        Dependency objects are ordered by type and sorted if possible.
 
         >>> d = MutableDependencySet('( a/c a/b ( b/d b/c ) ) || ( a/c a/b ) a/z')
         >>> d.sort()
         >>> str(d)
-        'a/z ( a/b a/c ( b/c b/d ) ) || ( a/c a/b )'
+        'a/z ( a/c a/b ( b/d b/c ) ) || ( a/c a/b )'
         """
         C.pkgcraft_dependency_set_sort(self.ptr)
+
+    def sort_recursive(self):
+        """Recursively sort a DependencySet.
+
+        >>> from pkgcraft.dep import MutableDependencySet
+        >>> d = MutableDependencySet('a/c a/b')
+        >>> str(d)
+        'a/c a/b'
+        >>> d.sort_recursive()
+        >>> str(d)
+        'a/b a/c'
+
+        Dependency objects are ordered by type and recursively sorted if possible.
+
+        >>> d = MutableDependencySet('( a/c a/b ( b/d b/c ) ) || ( a/c a/b ) a/z')
+        >>> d.sort_recursive()
+        >>> str(d)
+        'a/z ( a/b a/c ( b/c b/d ) ) || ( a/c a/b )'
+        """
+        C.pkgcraft_dependency_set_sort_recursive(self.ptr)
 
     def add(self, elem):
         cdef Dependency value
