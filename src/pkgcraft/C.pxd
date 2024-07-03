@@ -627,13 +627,6 @@ cdef extern from "pkgcraft.h":
     # The argument must a valid Dep pointer.
     Dep *pkgcraft_dep_no_use_deps(Dep *d)
 
-    # Get the package and revision of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "pkg-1".
-    #
-    # # Safety
-    # The argument must be a non-null Dep pointer.
-    char *pkgcraft_dep_p(Dep *d)
-
     # Get the package name of a package dependency.
     # For example, the package dependency "=cat/pkg-1-r2" returns "pkg".
     #
@@ -648,40 +641,6 @@ cdef extern from "pkgcraft.h":
     # # Safety
     # The eapi argument may be NULL to use the default EAPI.
     const char *pkgcraft_dep_parse(const char *s, const Eapi *eapi)
-
-    # Get the package, version, and revision of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "pkg-1-r2".
-    #
-    # # Safety
-    # The argument must be a non-null Dep pointer.
-    char *pkgcraft_dep_pf(Dep *d)
-
-    # Get the revision of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "r2".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Dep pointer.
-    char *pkgcraft_dep_pr(Dep *d)
-
-    # Get the version of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "1".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Dep pointer.
-    char *pkgcraft_dep_pv(Dep *d)
-
-    # Get the version and revision of a package dependency.
-    # For example, the package dependency "=cat/pkg-1-r2" returns "1-r2".
-    #
-    # Returns NULL on nonexistence.
-    #
-    # # Safety
-    # The argument must be a non-null Dep pointer.
-    char *pkgcraft_dep_pvr(Dep *d)
 
     # Get the repo of a package dependency.
     # For example, the package dependency "=cat/pkg-1-r2:3/4::repo" returns "repo".

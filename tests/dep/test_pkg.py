@@ -51,11 +51,6 @@ class TestDep:
         assert dep.repo is None
         assert dep.version is None
         assert dep.revision is None
-        assert dep.p == "pkg"
-        assert dep.pf == "pkg"
-        assert dep.pr is None
-        assert dep.pv is None
-        assert dep.pvr is None
         assert dep.cpn == Cpn("cat/pkg")
         assert dep.cpv is None
         assert str(dep) == "cat/pkg"
@@ -77,11 +72,6 @@ class TestDep:
         assert dep.op == Operator.GreaterOrEqual
         assert dep.op == ">="
         assert dep.revision == Revision("2")
-        assert dep.p == "pkg-1"
-        assert dep.pf == "pkg-1-r2"
-        assert dep.pr == "r2"
-        assert dep.pv == "1"
-        assert dep.pvr == "1-r2"
         assert dep.cpn == Cpn("cat/pkg")
         assert dep.cpv == Cpv("cat/pkg-1-r2")
         assert str(dep) == "!!>=cat/pkg-1-r2:0/2=::repo[a,-b,c(+)?]"
