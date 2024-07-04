@@ -12,7 +12,7 @@ from ..restrict cimport Restrict
 from ..types cimport OrderedFrozenSet
 from . cimport ConfiguredRepo, EbuildRepo, FakeRepo
 
-from ..error import InvalidRepo, PkgcraftError
+from ..error import InvalidRepo
 
 
 cdef class Repo:
