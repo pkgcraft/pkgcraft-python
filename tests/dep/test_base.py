@@ -174,7 +174,8 @@ class TestDependency:
 
         # Uri objects
         uri_dep = Dependency.src_uri("( https://a/url )")
-        uri = next(iter(uri_dep))
+        uri = next(uri_dep.iter_flatten())
+        assert isinstance(uri, Uri)
         assert uri in uri_dep
         assert uri not in d
 
@@ -463,7 +464,8 @@ class DependencySetBase:
 
         # Uri objects
         uri_dep_set = DependencySet.src_uri("https://a/url https://b/url")
-        uri = list(uri_dep_set)[-1]
+        uri = list(uri_dep_set.iter_flatten())[-1]
+        assert isinstance(uri, Uri)
         assert uri in uri_dep_set
         assert uri not in d
 
