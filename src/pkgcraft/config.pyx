@@ -102,8 +102,13 @@ cdef class Config:
         Raises:
             PkgcraftError: on config loading failures
         """
-        path = str(path).encode() if path is not None else None
-        if C.pkgcraft_config_load_portage_conf(self.ptr, path) is NULL:
+        cdef char* c_str = NULL
+
+        if path is not None:
+            path = str(path).encode()
+            c_str = path
+
+        if C.pkgcraft_config_load_portage_conf(self.ptr, c_str) is NULL:
             raise PkgcraftError
 
         # force repos attr refresh
