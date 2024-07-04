@@ -10,8 +10,8 @@ cdef class Eapi(Indirect):
     # cached fields
     cdef OrderedFrozenSet dep_keys
     cdef OrderedFrozenSet metadata_keys
-    cdef str id
-    cdef int hash
+    cdef str _id
+    cdef int _hash
 
     @staticmethod
     cdef Eapi from_ptr(const C.Eapi *, bint init=*)

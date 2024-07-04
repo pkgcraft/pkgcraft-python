@@ -87,8 +87,6 @@ cdef class Eapi(Indirect):
         if init:
             eapi = <Eapi>Eapi.__new__(Eapi)
             eapi.ptr = ptr
-            eapi.id = cstring_to_str(C.pkgcraft_eapi_as_str(ptr))
-            eapi.hash = C.pkgcraft_eapi_hash(ptr)
         else:
             id = cstring_to_str(C.pkgcraft_eapi_as_str(ptr))
             eapi = EAPIS[id]
@@ -213,7 +211,9 @@ cdef class Eapi(Indirect):
         return NotImplemented
 
     def __str__(self):
-        return self.id
+        if self._id is None:
+            self._id = cstring_to_str(C.pkgcraft_eapi_as_str(self.ptr))
+        return self._id
 
     def __repr__(self):
         addr = <size_t>&self.ptr
@@ -221,7 +221,9 @@ cdef class Eapi(Indirect):
         return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __hash__(self):
-        return self.hash
+        if not self._hash:
+            self._hash = C.pkgcraft_eapi_hash(self.ptr)
+        return self._hash
 
     def __reduce__(self):
-        return Eapi.from_obj, (self.id,)
+        return Eapi.from_obj, (str(self),)
