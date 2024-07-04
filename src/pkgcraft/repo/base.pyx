@@ -185,10 +185,8 @@ cdef class _IterCpv(Indirect):
     @staticmethod
     cdef _IterCpv create(Repo r):
         inst = <_IterCpv>_IterCpv.__new__(_IterCpv)
-        if ptr := C.pkgcraft_repo_iter_cpv(r.ptr):
-            inst.ptr = ptr
-            return inst
-        raise PkgcraftError
+        inst.ptr = C.pkgcraft_repo_iter_cpv(r.ptr)
+        return inst
 
     def __iter__(self):
         return self
@@ -211,10 +209,8 @@ cdef class _Iter(Indirect):
     @staticmethod
     cdef _Iter create(Repo r):
         inst = <_Iter>_Iter.__new__(_Iter)
-        if ptr := C.pkgcraft_repo_iter(r.ptr):
-            inst.ptr = ptr
-            return inst
-        raise PkgcraftError
+        inst.ptr = C.pkgcraft_repo_iter(r.ptr)
+        return inst
 
     def __iter__(self):
         return self
@@ -238,10 +234,8 @@ cdef class _IterRestrict(Indirect):
     cdef _IterRestrict create(Repo repo, object obj):
         cdef Restrict r = obj if isinstance(obj, Restrict) else Restrict(obj)
         inst = <_IterRestrict>_IterRestrict.__new__(_IterRestrict)
-        if ptr := C.pkgcraft_repo_iter_restrict(repo.ptr, r.ptr):
-            inst.ptr = ptr
-            return inst
-        raise PkgcraftError
+        inst.ptr = C.pkgcraft_repo_iter_restrict(repo.ptr, r.ptr)
+        return inst
 
     def __iter__(self):
         return self
