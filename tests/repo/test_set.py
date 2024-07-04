@@ -152,7 +152,6 @@ class BaseTests:
         s = self.cls(r1)
         assert s[:] == s
         assert s[0] == r1
-        assert s["r1"] == r1
         assert s["cat/pkg"] == pkg
         assert s["cat/pkg-1"] == pkg
         assert s[Cpv("cat/pkg-1")] == pkg
@@ -166,7 +165,6 @@ class BaseTests:
         s = self.cls(r1, r2)
         assert s[:] == s
         assert s[-1] == r2
-        assert s["r2"] == r2
         assert s["cat/pkg"] == [pkg, pkg1, pkg2]
         assert s["cat/pkg-1"] == [pkg, pkg1]
         assert s["=cat/pkg-1::r2"] == pkg1
