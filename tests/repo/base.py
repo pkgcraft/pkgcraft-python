@@ -120,6 +120,11 @@ class BaseRepoTests:
             with pytest.raises(KeyError):
                 _ = repo[obj]
 
+        # invalid key values
+        for obj in ("<cat/pkg", "maintainer is"):
+            with pytest.raises(ValueError):
+                repo[obj]
+
         # invalid key types
         for obj in (object(), None):
             with pytest.raises(TypeError):

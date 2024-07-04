@@ -171,6 +171,11 @@ class BaseTests:
         assert s[Dep("=cat/pkg-1::r2")] == pkg1
         assert s["cat/pkg-2"] == pkg2
 
+        # invalid key values
+        for obj in ("<cat/pkg", "maintainer is"):
+            with pytest.raises(ValueError):
+                s[obj]
+
         # invalid key types
         for obj in (object(), None):
             with pytest.raises(TypeError):
