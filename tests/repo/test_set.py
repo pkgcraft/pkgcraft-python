@@ -165,6 +165,8 @@ class BaseTests:
         s = self.cls(r1, r2)
         assert s[:] == s
         assert s[-1] == r2
+        assert s["*"] == [pkg, pkg1, pkg2]
+        assert s["pkg"] == [pkg, pkg1, pkg2]
         assert s["cat/pkg"] == [pkg, pkg1, pkg2]
         assert s["cat/pkg-1"] == [pkg, pkg1]
         assert s["=cat/pkg-1::r2"] == pkg1

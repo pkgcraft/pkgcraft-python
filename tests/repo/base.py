@@ -109,11 +109,13 @@ class BaseRepoTests:
     def test_getitem_base(self, repo):
         pkg1 = repo.create_pkg("cat/pkg-1")
         pkg2 = repo.create_pkg("cat/pkg-2")
-        assert pkg1 == repo["cat/pkg-1"]
-        assert pkg1 == repo[Cpv("cat/pkg-1")]
-        assert pkg1 == repo[Dep("=cat/pkg-1")]
-        assert pkg2 == repo[Dep(">=cat/pkg-2")]
-        assert [pkg1, pkg2] == repo["cat/pkg"]
+        assert repo["cat/pkg-1"] == pkg1
+        assert repo[Cpv("cat/pkg-1")] == pkg1
+        assert repo[Dep("=cat/pkg-1")] == pkg1
+        assert repo[Dep(">=cat/pkg-2")] == pkg2
+        assert repo["cat/pkg"] == [pkg1, pkg2]
+        assert repo["pkg"] == [pkg1, pkg2]
+        assert repo["*"] == [pkg1, pkg2]
 
         # nonexistent matches
         for obj in ("cat/pkg-3", Cpv("cat/pkg-3"), Dep("<cat/pkg-1")):
