@@ -86,6 +86,7 @@ cdef class Eapi(Indirect):
         inst.ptr = ptr
         return inst
 
+    # TODO: merge with Eapi.from_obj() when static cpdef methods are supported
     @staticmethod
     cdef Eapi _from_obj(object obj):
         """Try to convert an object to an Eapi object."""
