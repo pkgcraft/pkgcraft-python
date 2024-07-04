@@ -19,6 +19,8 @@ class TestDependency:
 
         # metadata variants
         Dependency.package("a/b")
+        Dependency.package("a/b", EAPI_LATEST_OFFICIAL)
+        Dependency.package("a/b", str(EAPI_LATEST_OFFICIAL))
         Dependency.license("a")
         Dependency.properties("a")
         Dependency.required_use("a")
@@ -273,6 +275,8 @@ class DependencySetBase:
     def test_creation(self):
         # metadata variants
         self.cls.package("a/b c/d")
+        self.cls.package("a/b c/d", EAPI_LATEST_OFFICIAL)
+        self.cls.package("a/b c/d", str(EAPI_LATEST_OFFICIAL))
         self.cls.license("a b")
         self.cls.properties("a b")
         self.cls.required_use("a b")
