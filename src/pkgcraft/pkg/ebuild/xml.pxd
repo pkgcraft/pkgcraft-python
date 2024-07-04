@@ -39,5 +39,3 @@ cdef class Upstream(Indirect):
 
     @staticmethod
     cdef Upstream from_ptr(C.Upstream *)
-
-

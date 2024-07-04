@@ -101,6 +101,3 @@ cdef class Upstream(Indirect):
         inst.doc = cstring_to_str(u.doc, free=False)
         C.pkgcraft_pkg_ebuild_upstream_free(u)
         return inst
-
-
-
