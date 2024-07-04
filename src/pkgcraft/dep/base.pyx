@@ -141,6 +141,19 @@ cdef class Dependency:
         """Recursively iterate over the Dependency objects of a Dependency."""
         return _IntoIterRecursive.from_dependency(self.ptr)
 
+    def sort(self):
+        """Recursively sort a Dependency.
+
+        >>> from pkgcraft.dep import Dependency
+        >>> d = Dependency('( a/c a/b )')
+        >>> str(d)
+        '( a/c a/b )'
+        >>> d.sort()
+        >>> str(d)
+        '( a/b a/c )'
+        """
+        C.pkgcraft_dependency_sort(self.ptr)
+
     def __contains__(self, obj):
         if isinstance(obj, Dependency):
             return C.pkgcraft_dependency_contains_dependency(self.ptr, (<Dependency>obj).ptr)

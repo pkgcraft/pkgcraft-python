@@ -1156,6 +1156,12 @@ cdef extern from "pkgcraft.h":
     # The argument must be a valid DependencySet pointer.
     char *pkgcraft_dependency_set_str(DependencySet *d)
 
+    # Recursively sort a Dependency.
+    #
+    # # Safety
+    # The argument must be a valid Dependency pointer.
+    void pkgcraft_dependency_sort(Dependency *d)
+
     # Return the formatted string for a Dependency object.
     #
     # # Safety
