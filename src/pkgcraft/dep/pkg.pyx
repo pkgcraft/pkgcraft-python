@@ -168,7 +168,7 @@ cdef class Dep:
         return valid
 
     def without(self, *fields: str):
-        """Return a Dep without the given attributes.
+        """Return a new Dep without the given attributes.
 
         Args:
             fields: The supported attribute names include the following:
@@ -217,7 +217,7 @@ cdef class Dep:
         return self
 
     def modify(self, **kwargs: str | None):
-        """Return a Dep modifying the given attributes.
+        """Return a new Dep modifying the given attributes.
 
         Args:
             kwargs: The keyword arguments must be attribute names with their corresponding
