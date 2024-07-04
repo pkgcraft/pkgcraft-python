@@ -107,13 +107,15 @@ class BaseRepoTests:
                 assert obj in r1
 
     def test_getitem_base(self, repo):
-        pkg = repo.create_pkg("cat/pkg-1")
-        assert pkg == repo["cat/pkg-1"]
-        assert pkg == repo[Cpv("cat/pkg-1")]
-        assert pkg == repo[Dep("=cat/pkg-1")]
-        assert pkg == repo[Dep(">=cat/pkg-1")]
+        pkg1 = repo.create_pkg("cat/pkg-1")
+        pkg2 = repo.create_pkg("cat/pkg-2")
+        assert pkg1 == repo["cat/pkg-1"]
+        assert pkg1 == repo[Cpv("cat/pkg-1")]
+        assert pkg1 == repo[Dep("=cat/pkg-1")]
+        assert pkg2 == repo[Dep(">=cat/pkg-2")]
+        assert [pkg1, pkg2] == repo["cat/pkg"]
 
-        for obj in ("cat/pkg-2", Cpv("cat/pkg-3"), Dep("<cat/pkg-1")):
+        for obj in ("cat/pkg-3", Cpv("cat/pkg-3"), Dep("<cat/pkg-1")):
             with pytest.raises(KeyError):
                 _ = repo[obj]
 

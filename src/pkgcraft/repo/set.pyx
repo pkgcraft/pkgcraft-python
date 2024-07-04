@@ -52,11 +52,12 @@ cdef class RepoSet:
             if repo := next(matching_repos, None):
                 return repo
 
-        # try to return the first pkg match from a restriction
-        try:
-            return next(self.iter(key))
-        except StopIteration:
-            raise KeyError(key)
+        # try to return the pkgs matching a restriction
+        if pkgs := list(self.iter(key)):
+            if len(pkgs) > 1:
+                return pkgs
+            return pkgs[0]
+        raise KeyError(key)
 
     def iter(self, restrict=None):
         """Iterate over a repo set's packages, optionally applying a restriction."""

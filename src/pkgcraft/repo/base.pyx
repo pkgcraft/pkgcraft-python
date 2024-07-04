@@ -106,10 +106,11 @@ cdef class Repo:
         return bool(next(self.iter(obj), None))
 
     def __getitem__(self, object obj not None):
-        try:
-            return next(self.iter(obj))
-        except StopIteration:
-            raise KeyError(obj)
+        if pkgs := list(self.iter(obj)):
+            if len(pkgs) > 1:
+                return pkgs
+            return pkgs[0]
+        raise KeyError(obj)
 
     def __iter__(self):
         return _Iter.create(self)

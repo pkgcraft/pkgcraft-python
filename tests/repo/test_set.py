@@ -167,8 +167,8 @@ class BaseTests:
         assert s[:] == s
         assert s[-1] == r2
         assert s["r2"] == r2
-        assert s["cat/pkg"] == pkg
-        assert s["cat/pkg-1"] == pkg
+        assert s["cat/pkg"] == [pkg, pkg1, pkg2]
+        assert s["cat/pkg-1"] == [pkg, pkg1]
         assert s["=cat/pkg-1::r2"] == pkg1
         assert s[Dep("=cat/pkg-1::r2")] == pkg1
         assert s["cat/pkg-2"] == pkg2
