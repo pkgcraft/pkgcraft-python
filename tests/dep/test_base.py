@@ -17,7 +17,15 @@ class TestDependency:
         with pytest.raises(PkgcraftError):
             Dependency("a/b c/d")
 
-        # variants
+        # metadata variants
+        Dependency.package("a/b")
+        Dependency.license("a")
+        Dependency.properties("a")
+        Dependency.required_use("a")
+        Dependency.restrict("a")
+        Dependency.src_uri("https://a/url")
+
+        # dependency variants
         d = Dependency.required_use("a")
         assert len(d) == 1
         assert str(d) == "a"
@@ -25,9 +33,6 @@ class TestDependency:
         assert d.set == DependencySetKind.RequiredUse
         assert d.conditional is None
         assert "Enabled 'a' at 0x" in repr(d)
-        # EAPI specific
-        assert d == Dependency.required_use("a")
-        assert d == Dependency.required_use("a")
 
         d = Dependency.required_use("!a")
         assert len(d) == 1
@@ -259,7 +264,15 @@ class TestDependency:
 
 class DependencySetBase:
     def test_creation(self):
-        # empty DependencySets
+        # metadata variants
+        self.cls.package("a/b c/d")
+        self.cls.license("a b")
+        self.cls.properties("a b")
+        self.cls.required_use("a b")
+        self.cls.restrict("a b")
+        self.cls.src_uri("https://a/url https://b/url")
+
+        # empty
         d = self.cls()
         assert d == self.cls("")
         assert not d
