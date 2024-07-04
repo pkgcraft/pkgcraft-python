@@ -171,6 +171,11 @@ class BaseTests:
         assert s[Dep("=cat/pkg-1::r2")] == pkg1
         assert s["cat/pkg-2"] == pkg2
 
+        # invalid key types
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                s[obj]
+
     def test_bool_and_len(self, make_fake_repo):
         s = self.cls()
         assert not s

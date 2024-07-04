@@ -115,9 +115,15 @@ class BaseRepoTests:
         assert pkg2 == repo[Dep(">=cat/pkg-2")]
         assert [pkg1, pkg2] == repo["cat/pkg"]
 
+        # nonexistent matches
         for obj in ("cat/pkg-3", Cpv("cat/pkg-3"), Dep("<cat/pkg-1")):
             with pytest.raises(KeyError):
                 _ = repo[obj]
+
+        # invalid key types
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                repo[obj]
 
     def test_bool_and_len_base(self, repo):
         # empty repo

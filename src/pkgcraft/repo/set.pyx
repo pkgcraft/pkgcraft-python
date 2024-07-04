@@ -39,7 +39,7 @@ cdef class RepoSet:
     def __iter__(self):
         return _Iter(self)
 
-    def __getitem__(self, key):
+    def __getitem__(self, object key not None):
         if isinstance(key, int):
             # return a singular Repo for integers
             return self.repos[key]

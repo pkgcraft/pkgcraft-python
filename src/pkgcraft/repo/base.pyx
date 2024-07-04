@@ -105,12 +105,12 @@ cdef class Repo:
             return C.pkgcraft_repo_contains_path(self.ptr, str(obj).encode())
         return bool(next(self.iter(obj), None))
 
-    def __getitem__(self, object obj not None):
-        if pkgs := list(self.iter(obj)):
+    def __getitem__(self, object key not None):
+        if pkgs := list(self.iter(key)):
             if len(pkgs) > 1:
                 return pkgs
             return pkgs[0]
-        raise KeyError(obj)
+        raise KeyError(key)
 
     def __iter__(self):
         return _Iter.create(self)
