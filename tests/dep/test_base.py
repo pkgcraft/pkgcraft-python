@@ -190,6 +190,30 @@ class TestDependency:
         for obj in (None, object()):
             assert obj not in d
 
+    def test_getitem(self):
+        # indexing doesn't work for flat dependency types
+        for s in ("a", "!a"):
+            d = Dependency.required_use(s)
+            with pytest.raises(IndexError):
+                d[0]
+
+        # integers
+        d = Dependency.required_use("( a b )")
+        assert d[0] == Dependency.required_use("a")
+        assert d[1] == Dependency.required_use("b")
+        assert d[-1] == Dependency.required_use("b")
+        assert d[-2] == Dependency.required_use("a")
+
+        # nonexistent indices
+        for idx in [2, -3]:
+            with pytest.raises(IndexError):
+                d[idx]
+
+        # invalid arg types
+        for obj in [None, "a", "0:1", object()]:
+            with pytest.raises(TypeError):
+                d[obj]
+
     def test_iter(self):
         assert list(Dependency.required_use("a")) == []
         assert list(iter(Dependency.required_use("!a"))) == []

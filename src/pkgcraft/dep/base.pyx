@@ -167,6 +167,17 @@ cdef class Dependency:
             return C.pkgcraft_dependency_contains_uri(self.ptr, (<Uri>obj).ptr)
         return False
 
+    def __getitem__(self, key):
+        if isinstance(key, int):
+            if key < 0:
+                key = len(self) + key
+            if key < 0 or key >= len(self):
+                raise IndexError(f"{self.__class__.__name__} index out of range")
+            if ptr := C.pkgcraft_dependency_get_index(self.ptr, key):
+                return Dependency.from_ptr(ptr)
+            raise IndexError(f"{self.__class__.__name__} index out of range")
+        raise TypeError(f"{self.__class__.__name__} indices must be integers")
+
     def __iter__(self):
         return _IntoIter.from_dependency(self.ptr)
 

@@ -826,6 +826,14 @@ cdef extern from "pkgcraft.h":
     # The argument must be valid Dep pointer.
     Dependency *pkgcraft_dependency_from_dep(Dep *d)
 
+    # Return the Dependency for a given index if it exists.
+    #
+    # Returns NULL on index nonexistence.
+    #
+    # # Safety
+    # The argument must be a valid Dependency pointer.
+    Dependency *pkgcraft_dependency_get_index(Dependency *d, uintptr_t index)
+
     # Return the hash value for a Dependency.
     #
     # # Safety
