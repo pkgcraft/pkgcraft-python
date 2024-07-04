@@ -172,6 +172,12 @@ class TestDependency:
         # Dep objects
         assert Dep("a/b") not in d
 
+        # Uri objects
+        uri_dep = Dependency.src_uri("( https://a/url )")
+        uri = next(iter(uri_dep))
+        assert uri in uri_dep
+        assert uri not in d
+
         # stringified, flattened values
         assert "a" in d
         assert "b" in d
@@ -454,6 +460,12 @@ class DependencySetBase:
         # Dep objects
         assert Dep("a/b") in d
         assert Dep("a/b:0") not in d
+
+        # Uri objects
+        uri_dep_set = DependencySet.src_uri("https://a/url https://b/url")
+        uri = list(uri_dep_set)[-1]
+        assert uri in uri_dep_set
+        assert uri not in d
 
         # stringified, flattened values
         assert "a/b" in d
