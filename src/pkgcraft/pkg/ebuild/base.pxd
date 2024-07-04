@@ -1,8 +1,8 @@
-from .. cimport C
-from ..dep cimport DependencySet
-from ..error cimport Indirect
-from ..types cimport OrderedFrozenSet
-from . cimport Pkg
+from ... cimport C
+from ...dep cimport DependencySet
+from ...error cimport Indirect
+from ...types cimport OrderedFrozenSet
+from .. cimport Pkg
 
 
 cdef class EbuildPkg(Pkg):
@@ -28,17 +28,6 @@ cdef class EbuildPkg(Pkg):
     cdef OrderedFrozenSet _iuse
     cdef OrderedFrozenSet _maintainers
     cdef object _upstream
-
-
-cdef class Keyword:
-    cdef C.Keyword *ptr
-    cdef readonly str arch
-    cdef readonly object status
-    # cached fields
-    cdef int _hash
-
-    @staticmethod
-    cdef Keyword from_ptr(C.Keyword *, Keyword inst=*)
 
 
 cdef class Maintainer(Indirect):
