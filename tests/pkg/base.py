@@ -19,7 +19,7 @@ class BasePkgTests:
         assert pkg.cpv == Cpv("cat/pkg-1-r2")
 
     def test_eapi_base(self, pkg):
-        assert pkg.eapi is EAPI_LATEST_OFFICIAL
+        assert pkg.eapi == EAPI_LATEST_OFFICIAL
 
     def test_repo(self, pkg, repo):
         assert pkg.repo == repo

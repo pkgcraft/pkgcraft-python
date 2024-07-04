@@ -31,9 +31,9 @@ class TestEbuildPkg(BasePkgTests):
     def test_eapi(self, ebuild_repo):
         EAPI_PREV_OFFICIAL = list(EAPIS_OFFICIAL.values())[-2]
         pkg = ebuild_repo.create_pkg("cat/pkg-1", eapi=EAPI_PREV_OFFICIAL)
-        assert pkg.eapi is EAPI_PREV_OFFICIAL
+        assert pkg.eapi == EAPI_PREV_OFFICIAL
         pkg = ebuild_repo.create_pkg("cat/pkg-1", eapi=EAPI_LATEST_OFFICIAL)
-        assert pkg.eapi is EAPI_LATEST_OFFICIAL
+        assert pkg.eapi == EAPI_LATEST_OFFICIAL
 
     def test_intersects(self, make_ebuild_repo):
         repo = make_ebuild_repo(id="test")

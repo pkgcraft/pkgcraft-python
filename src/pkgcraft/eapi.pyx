@@ -17,7 +17,7 @@ cdef get_official_eapis():
     """Get the mapping of all official EAPIs."""
     cdef size_t length
     c_eapis = C.pkgcraft_eapis_official(&length)
-    eapis = [Eapi.from_ptr(c_eapis[i], init=True) for i in range(length)]
+    eapis = [Eapi.from_ptr(c_eapis[i]) for i in range(length)]
     d = {str(eapi): eapi for eapi in eapis}
     C.pkgcraft_array_free(<void **>c_eapis, length)
 
@@ -34,7 +34,7 @@ cdef get_eapis():
     cdef size_t length
     d = EAPIS_OFFICIAL.copy()
     c_eapis = C.pkgcraft_eapis(&length)
-    eapis = [Eapi.from_ptr(c_eapis[i], init=True) for i in range(len(d), length)]
+    eapis = [Eapi.from_ptr(c_eapis[i]) for i in range(len(d), length)]
     globals()['EAPI_LATEST'] = eapis[-1]
     d.update((str(eapi), eapi) for eapi in eapis)
     C.pkgcraft_array_free(<void **>c_eapis, length)
@@ -80,18 +80,11 @@ cpdef OrderedFrozenSet eapi_range(s: str):
 cdef class Eapi(Indirect):
 
     @staticmethod
-    cdef Eapi from_ptr(const C.Eapi *ptr, bint init=False):
+    cdef Eapi from_ptr(const C.Eapi *ptr):
         """Create an Eapi object from a pointer."""
-        cdef Eapi eapi
-
-        if init:
-            eapi = <Eapi>Eapi.__new__(Eapi)
-            eapi.ptr = ptr
-        else:
-            id = cstring_to_str(C.pkgcraft_eapi_as_str(ptr))
-            eapi = EAPIS[id]
-
-        return eapi
+        inst = <Eapi>Eapi.__new__(Eapi)
+        inst.ptr = ptr
+        return inst
 
     @staticmethod
     cdef Eapi _from_obj(object obj):

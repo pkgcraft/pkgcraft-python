@@ -90,12 +90,12 @@ class TestEbuildRepo(BaseRepoTests):
         # defaults to latest EAPI
         repo = make_raw_ebuild_repo()
         r = EbuildRepo(repo.path)
-        assert r.eapi is EAPI_LATEST_OFFICIAL
+        assert r.eapi == EAPI_LATEST_OFFICIAL
 
         # explicitly force latest EAPI
         repo = make_raw_ebuild_repo(eapi=EAPI_LATEST_OFFICIAL)
         r = EbuildRepo(repo.path)
-        assert r.eapi is EAPI_LATEST_OFFICIAL
+        assert r.eapi == EAPI_LATEST_OFFICIAL
 
     def test_masters(self):
         primary = TEST_DATA.repos["primary"]
