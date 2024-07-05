@@ -74,7 +74,7 @@ class TestConfig:
         r = config.add_repo(f)
         assert len(r) == 3
 
-    def test_add_repo(self, config):
+    def test_add_repo(self, config, make_ebuild_repo):
         assert not config.repos
         r1 = FakeRepo(id="r1", priority=1)
         r2 = FakeRepo(id="r2", priority=2)
@@ -85,6 +85,19 @@ class TestConfig:
 
         # re-adding a repo succeeds
         assert r1 == config.add_repo(r1)
+
+        # overriding a repo fails
+        r = FakeRepo(["cat/pkg-1"], id="r1")
+        with pytest.raises(ConfigError, match="can't override existing repos: r1"):
+            config.add_repo(r)
+
+        # external repos with matching names can be added since they're keyed via path
+        r = make_ebuild_repo(id="r2")
+        config.add_repo(r, external=True)
+
+        # but will fail if not added as an external repo
+        with pytest.raises(ConfigError, match="can't override existing repos: r2"):
+            config.add_repo(r, external=False)
 
     def test_repo_sets(self, config, make_ebuild_repo, make_fake_repo):
         # empty
