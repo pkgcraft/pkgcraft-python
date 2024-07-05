@@ -2,6 +2,7 @@ cimport cython
 
 from .. cimport C
 from .._misc cimport cstring_to_str
+from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from .cpn cimport Cpn
 from .pkg cimport Dep
@@ -284,7 +285,7 @@ cdef class Cpv:
         """
         return C.pkgcraft_cpv_restrict_matches(self.ptr, r.ptr)
 
-    def intersects(self, other: Cpv | Dep):
+    def intersects(self, other):
         """Determine intersection between two Cpv or Dep objects.
 
         Args:
@@ -306,6 +307,8 @@ cdef class Cpv:
             return C.pkgcraft_cpv_intersects(self.ptr, (<Cpv>other).ptr)
         elif isinstance(other, Dep):
             return C.pkgcraft_cpv_intersects_dep(self.ptr, (<Dep>other).ptr)
+        elif isinstance(other, Pkg):
+            return C.pkgcraft_pkg_intersects_cpv((<Pkg>other).ptr, self.ptr)
         raise TypeError(f"{other.__class__.__name__!r} unsupported type")
 
     def __lt__(self, other):

@@ -324,7 +324,7 @@ class TestDep:
                 with pytest.raises(TypeError):
                     op_func(obj, None)
 
-    def test_intersects(self):
+    def test_intersects(self, fake_repo):
         for d in TEST_DATA.toml("dep.toml")["intersects"]:
             # test intersections between all pairs of distinct values
             for s1, s2 in permutations(d["vals"], 2):
@@ -340,8 +340,13 @@ class TestDep:
                 else:
                     assert not obj1.intersects(obj2)
 
+        # packages
+        pkg = fake_repo.create_pkg("cat/pkg-1")
+        assert Dep("=cat/pkg-1").intersects(pkg)
+        assert not Dep(">cat/pkg-1").intersects(pkg)
+
         # invalid types
-        for obj in [None, object()]:
+        for obj in (object(), None):
             with pytest.raises(TypeError):
                 Dep("cat/pkg").intersects(obj)
 

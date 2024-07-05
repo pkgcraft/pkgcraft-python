@@ -5,6 +5,7 @@ from cpython.mem cimport PyMem_Free, PyMem_Malloc
 from .. cimport C
 from .._misc cimport SENTINEL, cstring_to_str
 from ..eapi cimport Eapi
+from ..pkg cimport Pkg
 from ..restrict cimport Restrict
 from ..types cimport OrderedFrozenSet
 from .cpn cimport Cpn
@@ -636,7 +637,7 @@ cdef class Dep:
         """
         return C.pkgcraft_dep_restrict_matches(self.ptr, r.ptr)
 
-    def intersects(self, other: Cpv | Dep):
+    def intersects(self, other):
         """Determine intersection between two Cpv or Dep objects.
 
         Args:
@@ -658,6 +659,8 @@ cdef class Dep:
             return C.pkgcraft_dep_intersects(self.ptr, (<Dep>other).ptr)
         elif isinstance(other, Cpv):
             return C.pkgcraft_dep_intersects_cpv(self.ptr, (<Cpv>other).ptr)
+        elif isinstance(other, Pkg):
+            return C.pkgcraft_pkg_intersects_dep((<Pkg>other).ptr, self.ptr)
         raise TypeError(f"{other.__class__.__name__!r} unsupported type")
 
     def __lt__(self, other):

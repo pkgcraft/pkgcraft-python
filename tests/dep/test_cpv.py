@@ -89,7 +89,7 @@ class TestCpv:
         with pytest.raises(TypeError):
             assert cpv2 > obj
 
-    def test_intersects(self):
+    def test_intersects(self, fake_repo):
         cpv1 = Cpv("cat/pkg-1")
         cpv2 = Cpv("cat/pkg-2")
 
@@ -103,9 +103,15 @@ class TestCpv:
         # unversioned Dep
         assert cpv1.intersects(Dep("cat/pkg"))
 
-        # invalid type
-        with pytest.raises(TypeError):
-            cpv1.intersects(object())
+        # packages
+        pkg = fake_repo.create_pkg("cat/pkg-1")
+        assert cpv1.intersects(pkg)
+        assert not cpv2.intersects(pkg)
+
+        # invalid types
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                cpv1.intersects(obj)
 
     def test_hash(self):
         for d in TEST_DATA.toml("version.toml")["hashing"]:
