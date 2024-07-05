@@ -286,7 +286,7 @@ cdef class Cpv:
         return C.pkgcraft_cpv_restrict_matches(self.ptr, r.ptr)
 
     def intersects(self, other):
-        """Determine intersection between two Cpv or Dep objects.
+        """Determine if a Cpv intersects with another object.
 
         Args:
             other: object to check for intersection against

@@ -638,7 +638,7 @@ cdef class Dep:
         return C.pkgcraft_dep_restrict_matches(self.ptr, r.ptr)
 
     def intersects(self, other):
-        """Determine intersection between two Cpv or Dep objects.
+        """Determine if a Dep intersects with another object.
 
         Args:
             other: object to check for intersection against
