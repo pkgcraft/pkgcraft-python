@@ -46,6 +46,11 @@ class TestRestrict:
         pkg = fake_repo.create_pkg("cat/pkg-1")
         assert r.matches(pkg)
 
+        # invalid types
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                assert Restrict.dep(obj)
+
     def test_pkg(self, ebuild_repo):
         with pytest.raises(InvalidRestrict):
             Restrict.pkg('description ~= "fake"')
@@ -53,6 +58,11 @@ class TestRestrict:
         r = Restrict.pkg('description =~ "fake"')
         pkg = ebuild_repo.create_pkg("cat/pkg-1", description="fake pkg")
         assert r.matches(pkg)
+
+        # invalid types
+        for obj in (object(), None):
+            with pytest.raises(TypeError):
+                assert Restrict.pkg(obj)
 
     def test_matches(self, fake_repo):
         r = Restrict("cat/pkg")
@@ -69,7 +79,7 @@ class TestRestrict:
         assert r.matches(pkg1)
         assert not r.matches(pkg2)
 
-        # unsupported types
+        # invalid types
         for obj in (object(), None):
             with pytest.raises(TypeError):
                 assert r.matches(obj)
@@ -113,7 +123,7 @@ class TestRestrict:
         assert not list(fake_repo.iter(~(r1 | r2)))
         assert not list(fake_repo.iter(~(r1 ^ r2)))
 
-        # verify incompatible types for boolean combinations
+        # verify invalid types for boolean combinations
         with pytest.raises(TypeError):
             r1 & None
         with pytest.raises(TypeError):
