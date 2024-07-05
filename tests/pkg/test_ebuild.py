@@ -521,9 +521,13 @@ class TestEbuildPkg(BasePkgTests):
         # single
         pkg = TEST_DATA.repos["xml"]["pkg/single-8"]
         u = pkg.upstream
-        assert len(u.remote_ids) == 1
+        assert list(map(str, u.maintainers)) == ["upstream (active)"]
+        assert list(map(repr, u.maintainers)) == ["<UpstreamMaintainer 'upstream (active)'>"]
         assert list(map(str, u.remote_ids)) == ["github: pkgcraft/pkgcraft"]
         assert list(map(repr, u.remote_ids)) == ["<RemoteId 'github: pkgcraft/pkgcraft'>"]
+        assert u.bugs_to == "https://github.com/pkgcraft/pkgcraft/issues"
+        assert u.changelog is None
+        assert u.doc == "https://github.com/pkgcraft/pkgcraft"
 
         # multiple
         path = ebuild_repo.create_ebuild("cat/b-1")
