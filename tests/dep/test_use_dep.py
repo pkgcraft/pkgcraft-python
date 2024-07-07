@@ -11,8 +11,8 @@ class TestUseDep:
         # valid
         for d, default in (
             ("", None),
-            ("(+)", UseDepDefault.Enabled),
-            ("(-)", UseDepDefault.Disabled),
+            ("(+)", True),
+            ("(-)", False),
         ):
             for s, kind, enabled in (
                 (f"u{d}", UseDepKind.Enabled, True),

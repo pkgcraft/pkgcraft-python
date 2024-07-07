@@ -12,11 +12,6 @@ class UseDepKind(IntEnum):
     Conditional = C.USE_DEP_KIND_CONDITIONAL
 
 
-class UseDepDefault(IntEnum):
-    Disabled = C.USE_DEP_DEFAULT_DISABLED
-    Enabled = C.USE_DEP_DEFAULT_ENABLED
-
-
 cdef class UseDep:
     """Package USE dependency."""
 
@@ -49,7 +44,7 @@ cdef class UseDep:
         'use'
         >>> u.kind == UseDepKind.Equal
         True
-        >>> u.default == UseDepDefault.Enabled
+        >>> u.default == True
         True
         >>> str(u)
         'use(+)='
@@ -80,7 +75,7 @@ cdef class UseDep:
         if ptr.default_ is NULL:
             inst.default_ = None
         else:
-            inst.default_ = UseDepDefault(ptr.default_[0])
+            inst.default_ = ptr.default_[0]
         return inst
 
     # Re-export the default field using its proper name, if exposed directly via
