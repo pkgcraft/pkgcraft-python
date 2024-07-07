@@ -8,16 +8,13 @@ from ..error import PkgcraftError
 
 class UseDepKind(IntEnum):
     Enabled = C.USE_DEP_KIND_ENABLED
-    Disabled = C.USE_DEP_KIND_DISABLED
     Equal = C.USE_DEP_KIND_EQUAL
-    NotEqual = C.USE_DEP_KIND_NOT_EQUAL
-    EnabledConditional = C.USE_DEP_KIND_ENABLED_CONDITIONAL
-    DisabledConditional = C.USE_DEP_KIND_DISABLED_CONDITIONAL
+    Conditional = C.USE_DEP_KIND_CONDITIONAL
 
 
 class UseDepDefault(IntEnum):
-    Enabled = C.USE_DEP_DEFAULT_ENABLED
     Disabled = C.USE_DEP_DEFAULT_DISABLED
+    Enabled = C.USE_DEP_DEFAULT_ENABLED
 
 
 cdef class UseDep:
@@ -41,7 +38,7 @@ cdef class UseDep:
         >>> u = UseDep('!use?')
         >>> u.flag
         'use'
-        >>> u.kind == UseDepKind.DisabledConditional
+        >>> u.kind == UseDepKind.Conditional
         True
         >>> u.default is None
         True
@@ -77,7 +74,8 @@ cdef class UseDep:
         if inst is None:
             inst = <UseDep>UseDep.__new__(UseDep)
         inst.ptr = <C.UseDep *>ptr
-        inst.kind = UseDepKind(ptr.kind)
+        inst.kind = UseDepKind(ptr.kind.tag)
+        inst.enabled = ptr.kind.enabled
         inst.flag = ptr.flag.decode()
         if ptr.default_ is NULL:
             inst.default_ = None
@@ -132,8 +130,7 @@ cdef class UseDep:
     def __repr__(self):
         addr = <size_t>&self.ptr
         name = self.__class__.__name__
-        kind = self.kind.name
-        return f"<{name} {kind} '{self}' at 0x{addr:0x}>"
+        return f"<{name} '{self}' at 0x{addr:0x}>"
 
     def __dealloc__(self):
         C.pkgcraft_use_dep_free(self.ptr)

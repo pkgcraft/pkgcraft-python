@@ -4,6 +4,7 @@ from .. cimport C
 cdef class UseDep:
     cdef C.UseDep *ptr
     cdef readonly object kind
+    cdef readonly bint enabled
     cdef readonly str flag
     cdef object default_
     # cached fields

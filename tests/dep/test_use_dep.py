@@ -14,16 +14,17 @@ class TestUseDep:
             ("(+)", UseDepDefault.Enabled),
             ("(-)", UseDepDefault.Disabled),
         ):
-            for s, kind in (
-                (f"u{d}", UseDepKind.Enabled),
-                (f"-u{d}", UseDepKind.Disabled),
-                (f"u{d}=", UseDepKind.Equal),
-                (f"!u{d}=", UseDepKind.NotEqual),
-                (f"u{d}?", UseDepKind.EnabledConditional),
-                (f"!u{d}?", UseDepKind.DisabledConditional),
+            for s, kind, enabled in (
+                (f"u{d}", UseDepKind.Enabled, True),
+                (f"-u{d}", UseDepKind.Enabled, False),
+                (f"u{d}=", UseDepKind.Equal, True),
+                (f"!u{d}=", UseDepKind.Equal, False),
+                (f"u{d}?", UseDepKind.Conditional, True),
+                (f"!u{d}?", UseDepKind.Conditional, False),
             ):
                 use = UseDep(s)
                 assert use.kind == kind
+                assert use.enabled == enabled
                 assert use.flag == "u"
                 assert use.default == default
                 # verify the internal field is hidden from native python
@@ -37,7 +38,7 @@ class TestUseDep:
                 UseDep(s)
 
     def test_cmp(self):
-        for s1, s2 in (("a", "b"), ("u", "-u"), ("u(+)", "u(-)"), ("u?", "!u?")):
+        for s1, s2 in (("a", "b"), ("-u", "u"), ("u(-)", "u(+)"), ("!u?", "u?")):
             use1 = UseDep(s1)
             use2 = UseDep(s2)
             obj = object()

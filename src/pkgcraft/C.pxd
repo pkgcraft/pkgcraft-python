@@ -97,17 +97,8 @@ cdef extern from "pkgcraft.h":
 
     # Package USE dependency default when missing.
     cdef enum UseDepDefault:
-        USE_DEP_DEFAULT_ENABLED,
         USE_DEP_DEFAULT_DISABLED,
-
-    # Package USE dependency type.
-    cdef enum UseDepKind:
-        USE_DEP_KIND_ENABLED,
-        USE_DEP_KIND_DISABLED,
-        USE_DEP_KIND_EQUAL,
-        USE_DEP_KIND_NOT_EQUAL,
-        USE_DEP_KIND_ENABLED_CONDITIONAL,
-        USE_DEP_KIND_DISABLED_CONDITIONAL,
+        USE_DEP_DEFAULT_ENABLED,
 
     # System config
     cdef struct Config:
@@ -206,6 +197,18 @@ cdef extern from "pkgcraft.h":
 
     cdef struct Version:
         pass
+
+    # Package USE dependency type.
+    cdef enum UseDepKind_Tag:
+        USE_DEP_KIND_ENABLED,
+        USE_DEP_KIND_EQUAL,
+        USE_DEP_KIND_CONDITIONAL,
+
+    cdef struct UseDepKind:
+        UseDepKind_Tag tag
+        bool enabled
+        bool equal
+        bool conditional
 
     # C-compatible wrapper for pkgcraft::dep::UseDep.
     cdef struct UseDep:
