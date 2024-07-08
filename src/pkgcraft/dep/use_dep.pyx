@@ -69,8 +69,8 @@ cdef class UseDep:
         if inst is None:
             inst = <UseDep>UseDep.__new__(UseDep)
         inst.ptr = <C.UseDep *>ptr
-        inst.kind = UseDepKind(ptr.kind.tag)
-        inst.enabled = ptr.kind.enabled
+        inst.kind = UseDepKind(ptr.kind)
+        inst.enabled = ptr.enabled
         inst.flag = ptr.flag.decode()
         if ptr.default_ is NULL:
             inst.default_ = None

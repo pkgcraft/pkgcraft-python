@@ -95,6 +95,12 @@ cdef extern from "pkgcraft.h":
         SLOT_OPERATOR_EQUAL # = 1,
         SLOT_OPERATOR_STAR,
 
+    # Package USE dependency type.
+    cdef enum UseDepKind:
+        USE_DEP_KIND_ENABLED,
+        USE_DEP_KIND_EQUAL,
+        USE_DEP_KIND_CONDITIONAL,
+
     # System config
     cdef struct Config:
         pass
@@ -193,22 +199,11 @@ cdef extern from "pkgcraft.h":
     cdef struct Version:
         pass
 
-    # Package USE dependency type.
-    cdef enum UseDepKind_Tag:
-        USE_DEP_KIND_ENABLED,
-        USE_DEP_KIND_EQUAL,
-        USE_DEP_KIND_CONDITIONAL,
-
-    cdef struct UseDepKind:
-        UseDepKind_Tag tag
-        bool enabled
-        bool equal
-        bool conditional
-
     # C-compatible wrapper for pkgcraft::dep::UseDep.
     cdef struct UseDep:
-        UseDepKind kind
         char *flag
+        UseDepKind kind
+        bool enabled
         bool *default_
         UseDepWrapper *dep
 
