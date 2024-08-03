@@ -28,7 +28,6 @@ jobs:
         workflow_conclusion: ""
         search_artifacts: true
         name: pkgcraft-c-${{ runner.os }}
-        path: ${{ env.pkgcraft_dir }}
 
     - name: Checkout code
       uses: actions/checkout@v4
