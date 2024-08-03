@@ -86,6 +86,11 @@ jobs:
       with:
         name: pkgcraft-c-${{ runner.os }}
 
+    - name: Unpack library
+      run: |
+        mkdir -p "${pkgcraft_dir}"
+        tar -Jxf pkgcraft-c.tar.xz -C "${pkgcraft_dir}"
+
     - name: Checkout code
       uses: actions/checkout@v4
       with:
@@ -104,9 +109,8 @@ jobs:
     - name: Install dependencies
       run: pip install tox
 
-    - name: Unpack library and override build variables
+    - name: Override build variables
       run: |
-        tar -Jxf pkgcraft-c.tar.xz -C "${pkgcraft_dir}"
         echo "PKG_CONFIG_PATH=${pkgcraft_dir}" >> $GITHUB_ENV
         echo "LD_LIBRARY_PATH=${pkgcraft_dir}" >> $GITHUB_ENV
         echo "DYLD_LIBRARY_PATH=${pkgcraft_dir}" >> $GITHUB_ENV
