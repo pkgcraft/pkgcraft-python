@@ -19,7 +19,7 @@ jobs:
 
     - name: Download prebuilt pkgcraft-c library
       id: download-artifact
-      uses: dawidd6/action-download-artifact@v6
+      uses: dawidd6/action-download-artifact@v8
       with:
         github_token: ${{ secrets.PKGCRAFT_CI_TOKEN }}
         repo: pkgcraft/pkgcraft
